@@ -4,7 +4,7 @@ main: parallelmc.parallelutils.Parallelutils
 api-version: 1.16
 authors: [Jake, Evelyn]
 description: A plugin containing miscellaneous features and changes for play.parallel.ga
-depend: [Multiverse-Core, LibsDisguises]
+depend: [Multiverse-Core]
 commands:
   parallelutils:
     description: Get information about the plugin
@@ -16,3 +16,16 @@ commands:
     usage: /pu
     permission: parallelutils.basic
     permission-message: You do not have permission
+permissions:
+  parallelutils.*:
+    description: Gives access to all PU commands
+    children:
+      parallelutils.basic: true
+      parallelutils.test: true
+    default: false
+  parallelutils.basic:
+    description: Gives access to any PU commands. Required to do anything
+    default: false
+  parallelutils.test:
+    description: Gives access to the test command
+    default: false
