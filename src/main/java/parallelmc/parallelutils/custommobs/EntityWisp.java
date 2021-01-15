@@ -5,6 +5,7 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.jetbrains.annotations.NotNull;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.Plugin;
+import parallelmc.parallelutils.Parallelutils;
 
 import static org.bukkit.attribute.Attribute.*;
 
@@ -20,7 +21,7 @@ public class EntityWisp extends CraftZombie {
     @NotNull
     @Override
     public EntityType getType(){
-        return EntityType.UNKNOWN;
+        return Parallelutils.mobTypes.getType("wisp");
     }
 
     private void editNBT(){
