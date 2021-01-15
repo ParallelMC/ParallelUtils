@@ -46,9 +46,16 @@ public class Commands implements CommandExecutor, TabCompleter {
 							if(sender instanceof Player){
 								Player player = (Player) sender;
 								Inventory inv = player.getInventory();
-								switch (args[1]){
+
+								if (args.length <= 1) {
+									sender.sendMessage("Options:\n" +
+														"wisp");
+									break;
+								}
+
+								switch (args[1]) {
 									case "wisp":
-										ItemStack egg = new ItemStack(Material.LEGACY_MONSTER_EGG);
+										ItemStack egg = new ItemStack(Material.ZOMBIE_SPAWN_EGG);
 										SpawnEggMeta eggMeta = (SpawnEggMeta) egg.getItemMeta();
 										eggMeta.setSpawnedType(Parallelutils.mobTypes.getType("wisp"));
 										inv.addItem(egg);
