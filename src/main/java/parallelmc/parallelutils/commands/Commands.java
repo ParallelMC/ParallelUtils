@@ -58,6 +58,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 							sender.sendMessage("You do not have permission");
 						}
 						break;
+					default:
+						sender.sendMessage("PU: Command not found");
 				}
 			}
 		}
