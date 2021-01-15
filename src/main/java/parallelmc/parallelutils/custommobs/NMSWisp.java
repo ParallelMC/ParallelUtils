@@ -5,6 +5,8 @@ import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class NMSWisp extends EntityZombie {
     public NMSWisp(EntityTypes<? extends EntityZombie> entitytypes, World world) {
@@ -19,13 +21,13 @@ public class NMSWisp extends EntityZombie {
 
     private void goalSetting(){
         //clearing Zombie goals
-        List goalC = (List)getPrivateField("c", PathfinderGoalSelector.class, goalSelector);
+        Map goalC = (Map)getPrivateField("c", PathfinderGoalSelector.class, goalSelector);
         goalC.clear();
-        List goalD = (List)getPrivateField("d", PathfinderGoalSelector.class, goalSelector);
+        Set goalD = (Set) getPrivateField("d", PathfinderGoalSelector.class, goalSelector);
         goalD.clear();
-        List targetC = (List)getPrivateField("c", PathfinderGoalSelector.class, targetSelector);
+        Map targetC = (Map)getPrivateField("c", PathfinderGoalSelector.class, targetSelector);
         targetC.clear();
-        List targetD = (List)getPrivateField("d", PathfinderGoalSelector.class, targetSelector);
+        Set targetD = (Set)getPrivateField("d", PathfinderGoalSelector.class, targetSelector);
         targetD.clear();
 
         this.goalSelector.a(0, new PathfinderGoalMeleeAttack(this,1.0, false));
