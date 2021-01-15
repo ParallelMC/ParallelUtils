@@ -31,9 +31,6 @@ public final class Parallelutils extends JavaPlugin {
 			e.printStackTrace();
 		}
 
-		System.out.println(mobTypes.getType("wisp"));
-
-
 		// Setup commands
 		Commands commands = new Commands(this);
 

@@ -20,9 +20,18 @@ permissions:
     children:
       parallelutils.basic: true
       parallelutils.test: true
+      parallelutils.spawn: true
     default: false
   parallelutils.basic:
     description: Gives access to any PU commands. Required to do anything
+    default: false
+  parallelutils.spawn:
+    description: Gives access to spawning commands, like eggs and monster spawners.
+    children:
+      parallelutils.spawn.egg: true
+    default: false
+  parallelutils.spawn.egg:
+    description: Gives access to spawn egg command.
     default: false
   parallelutils.test:
     description: Gives access to the test command
