@@ -4,7 +4,7 @@ main: parallelmc.parallelutils.Parallelutils
 api-version: 1.16
 authors: [Jake, Evelyn]
 description: A plugin containing miscellaneous features and changes for play.parallel.ga
-depend: [Multiverse-Core, LibsDisguises]
+depend: [LibsDisguises]
 commands:
   parallelutils:
     description: Get information about the plugin

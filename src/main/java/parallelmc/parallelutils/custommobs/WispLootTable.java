@@ -23,7 +23,7 @@ public class WispLootTable implements LootTable {
         this.plugin = plugin;
     }
 
-    @NotNull
+
     @Override
     public Collection<ItemStack> populateLoot(@NotNull Random random, @NotNull LootContext lootContext) {
         ArrayList<ItemStack> loot = new ArrayList<>();

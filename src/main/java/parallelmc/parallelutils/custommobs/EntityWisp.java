@@ -1,10 +1,10 @@
 package parallelmc.parallelutils.custommobs;
 
-import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_16_R1.entity.CraftZombie;
+import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
+import org.jetbrains.annotations.NotNull;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
 
 import static org.bukkit.attribute.Attribute.*;
 
@@ -43,7 +43,7 @@ public class EntityWisp extends CraftZombie {
         this.setLootTable(new WispLootTable(plugin));
 
         //invis
-        this.setInvisible(true);
+        //this.setInvisible(true);
 
         //can't pickup items
         this.setCanPickupItems(false);

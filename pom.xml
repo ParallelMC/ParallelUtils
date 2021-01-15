@@ -14,6 +14,8 @@
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <spigot.version>1.16.1-R0.1-SNAPSHOT</spigot.version>
+        <paper-api.version>1.16.1-R0.1-SNAPSHOT</paper-api.version>
     </properties>
 
     <build>
@@ -62,10 +64,6 @@
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
         <repository>
-            <id>OnARandomBox</id>
-            <url>http://repo.onarandombox.com/content/groups/public</url>
-        </repository>
-        <repository>
             <id>md_5-public</id>
             <url>http://repo.md-5.net/content/groups/public/</url>
         </repository>
@@ -73,17 +71,14 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.16.4-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>13.0</version>
         </dependency>
         <dependency>
-            <groupId>com.onarandombox.multiversecore</groupId>
-            <artifactId>Multiverse-Core</artifactId>
-            <version>4.2.2</version>
-            <type>jar</type>
-            <scope>provided</scope>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.16.4-R0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>LibsDisguises</groupId>
