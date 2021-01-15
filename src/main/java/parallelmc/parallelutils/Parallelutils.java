@@ -11,7 +11,7 @@ public final class Parallelutils extends JavaPlugin {
 	String baseDataFolder = this.getDataFolder().getAbsolutePath();
 	FileConfiguration config = this.getConfig();
 
-	static CustomTypes mobTypes;
+	public static CustomTypes mobTypes;
 
 	@Override
 	public void onEnable() {
