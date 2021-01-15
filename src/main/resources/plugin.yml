@@ -29,9 +29,13 @@ permissions:
     description: Gives access to spawning commands, like eggs and monster spawners.
     children:
       parallelutils.spawn.egg: true
+      parallelutils.spawn.world: true
     default: false
   parallelutils.spawn.egg:
     description: Gives access to spawn egg command.
+    default: false
+  parallelutils.spawn.world:
+    description: Gives access to spawn world command.
     default: false
   parallelutils.test:
     description: Gives access to the test command

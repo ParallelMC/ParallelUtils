@@ -7,13 +7,13 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 public class NMSWisp extends EntityZombie {
-    public NMSWisp(EntityTypes<? extends EntityZombie> entitytypes, org.bukkit.World world) {
-        super(entitytypes, ((CraftWorld)world).getHandle());
+    public NMSWisp(EntityTypes<? extends EntityZombie> entitytypes, World world) {
+        super(entitytypes, world);
         goalSetting();
     }
 
-    public NMSWisp(org.bukkit.World world) {
-        super(((CraftWorld)world).getHandle());
+    public NMSWisp(World world) {
+        super(world);
         goalSetting();
     }
 

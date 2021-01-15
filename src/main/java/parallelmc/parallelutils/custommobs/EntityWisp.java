@@ -14,6 +14,7 @@ public class EntityWisp extends CraftZombie {
 
     public EntityWisp(CraftServer server, NMSWisp entity, Plugin plugin) {
         super(server, entity);
+        System.out.println("after super");
         this.plugin = plugin;
         editNBT();
     }
@@ -21,10 +22,12 @@ public class EntityWisp extends CraftZombie {
     @NotNull
     @Override
     public EntityType getType(){
+        System.out.println("wisppppp");
         return Parallelutils.mobTypes.getType("wisp");
     }
 
     private void editNBT(){
+        System.out.println("editttttt");
         //Attributes
         //Health = 30
         this.getAttribute(GENERIC_MAX_HEALTH).setBaseValue(30.0);
@@ -56,6 +59,7 @@ public class EntityWisp extends CraftZombie {
 
         //silent
         this.setSilent(true);
+        System.out.println("edit done");
     }
 
     @Override
