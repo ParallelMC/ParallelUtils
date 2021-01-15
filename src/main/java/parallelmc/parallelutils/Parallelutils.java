@@ -24,7 +24,7 @@ public final class Parallelutils extends JavaPlugin {
 		saveConfig();
 
 		// More startup logic here
-		short id = 1234;
+		short id = 54;
 		try {
 			mobTypes.addEntityType("wisp", EntityWisp.class, id);
 		} catch (Exception e) {

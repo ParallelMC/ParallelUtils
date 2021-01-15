@@ -1,15 +1,23 @@
 package parallelmc.parallelutils.commands;
 
+import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.*;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.custommobs.EntityWisp;
+import parallelmc.parallelutils.custommobs.NMSWisp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,12 +48,11 @@ public class Commands implements CommandExecutor, TabCompleter {
 							sender.sendMessage("You do not have permission");
 						}
 						break;
-					case "egg":
+					case "world":
 						if (hasPermission(sender, "parallelutils.spawn") ||
-								hasPermission(sender, "parallelutils.spawn.egg")) {
+								hasPermission(sender, "parallelutils.spawn.world")) {
 							if(sender instanceof Player){
 								Player player = (Player) sender;
-								Inventory inv = player.getInventory();
 
 								if (args.length <= 1) {
 									sender.sendMessage("Options:\n" +
@@ -55,10 +62,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 								switch (args[1]) {
 									case "wisp":
-										ItemStack egg = new ItemStack(Material.ZOMBIE_SPAWN_EGG);
-										SpawnEggMeta eggMeta = (SpawnEggMeta) egg.getItemMeta();
-										eggMeta.setSpawnedType(Parallelutils.mobTypes.getType("wisp"));
-										inv.addItem(egg);
+										//player.getWorld().spawnEntity(player.getLocation(), Parallelutils.mobTypes.getType("wisp"));
+										NMSWisp wisp = new NMSWisp(((CraftWorld)player.getWorld()).getHandle());
+										Location l = player.getLocation();
+										wisp.setPosition(l.getX(), l.getY(), l.getZ());
+										((CraftWorld)player.getWorld()).getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
+										break;
 								}
 							}
 						} else {
@@ -85,7 +94,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		if (command.getName().equalsIgnoreCase("parallelutils") || command.getName().equalsIgnoreCase("pu") && args.length == 1) {
 			// List every sub-command
 			list.add("test");
-			list.add("egg");
+			list.add("world");
 		}
 
 		return list;
