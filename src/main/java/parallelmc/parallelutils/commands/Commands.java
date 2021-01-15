@@ -1,7 +1,12 @@
 package parallelmc.parallelutils.commands;
 
+import org.bukkit.Material;
 import org.bukkit.command.*;
 import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Parallelutils;
@@ -35,6 +40,24 @@ public class Commands implements CommandExecutor, TabCompleter {
 							sender.sendMessage("You do not have permission");
 						}
 						break;
+					case "egg":
+						if (hasPermission(sender, "parallelutils.spawn") ||
+								hasPermission(sender, "parallelutils.spawn.egg")) {
+							if(sender instanceof Player){
+								Player player = (Player) sender;
+								Inventory inv = player.getInventory();
+								switch (args[1]){
+									case "wisp":
+										ItemStack egg = new ItemStack(Material.LEGACY_MONSTER_EGG);
+										SpawnEggMeta eggMeta = (SpawnEggMeta) egg.getItemMeta();
+										eggMeta.setSpawnedType(Parallelutils.mobTypes.getType("wisp"));
+										inv.addItem(egg);
+								}
+							}
+						} else {
+							sender.sendMessage("You do not have permission");
+						}
+						break;
 				}
 			}
 		}
@@ -53,6 +76,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		if (command.getName().equalsIgnoreCase("parallelutils") || command.getName().equalsIgnoreCase("pu") && args.length == 1) {
 			// List every sub-command
 			list.add("test");
+			list.add("egg");
 		}
 
 		return list;
