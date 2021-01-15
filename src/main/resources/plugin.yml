@@ -16,3 +16,16 @@ commands:
     usage: /pu
     permission: parallelutils.basic
     permission-message: You do not have permission
+permissions:
+  parallelutils.*:
+    description: Gives access to all PU commands
+    children:
+      parallelutils.basic: true
+      parallelutils.test: true
+    default: false
+  parallelutils.basic:
+    description: Gives access to any PU commands. Required to do anything
+    default: false
+  parallelutils.test:
+    description: Gives access to the test command
+    default: false

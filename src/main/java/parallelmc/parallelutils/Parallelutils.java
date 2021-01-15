@@ -33,11 +33,14 @@ public final class Parallelutils extends JavaPlugin {
 
 		System.out.println(mobTypes.getType("wisp"));
 
+
 		// Setup commands
 		Commands commands = new Commands(this);
 
 		getCommand("parallelutils").setExecutor(commands);
+		getCommand("parallelutils").setTabCompleter(commands);
 		getCommand("pu").setExecutor(commands);
+		getCommand("pu").setTabCompleter(commands);
 	}
 
 	@Override
