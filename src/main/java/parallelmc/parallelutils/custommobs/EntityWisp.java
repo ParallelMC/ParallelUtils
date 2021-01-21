@@ -16,7 +16,7 @@ public class EntityWisp extends CraftZombie {
         super(server, entity);
         System.out.println("after super");
         this.plugin = plugin;
-        editNBT();
+        setupNBT(plugin, this);
     }
 
     @NotNull
@@ -26,39 +26,39 @@ public class EntityWisp extends CraftZombie {
         return Parallelutils.mobTypes.getType("wisp");
     }
 
-    private void editNBT(){
+    public static void setupNBT(Plugin plugin, CraftZombie entity){
         System.out.println("editttttt");
         //Attributes
         //Health = 30
-        this.getAttribute(GENERIC_MAX_HEALTH).setBaseValue(30.0);
-        this.setHealth(this.getAttribute(GENERIC_MAX_HEALTH).getBaseValue());
+        entity.getAttribute(GENERIC_MAX_HEALTH).setBaseValue(30.0);
+        entity.setHealth(entity.getAttribute(GENERIC_MAX_HEALTH).getBaseValue());
 
         //Damage = 8
-        this.getAttribute(GENERIC_ATTACK_DAMAGE).setBaseValue(8.0);
+        entity.getAttribute(GENERIC_ATTACK_DAMAGE).setBaseValue(8.0);
 
         //Follow range = 16
-        this.getAttribute(GENERIC_FOLLOW_RANGE).setBaseValue(16.0);
+        entity.getAttribute(GENERIC_FOLLOW_RANGE).setBaseValue(16.0);
 
         //Movement speed = 0.25
-        this.getAttribute(GENERIC_MOVEMENT_SPEED).setBaseValue(0.25);
+        entity.getAttribute(GENERIC_MOVEMENT_SPEED).setBaseValue(0.25);
 
         //Other stuff
         //Loot table
-        this.setLootTable(new WispLootTable(plugin));
+        entity.setLootTable(new WispLootTable(plugin));
 
         //invis
-        //this.setInvisible(true);
+        entity.setInvisible(true);
 
         //can't pickup items
-        this.setCanPickupItems(false);
+        entity.setCanPickupItems(false);
 
         //no random equipment
-        this.getEquipment().clear();
+        entity.getEquipment().clear();
 
         //TODO: prevent sunburn
 
         //silent
-        this.setSilent(true);
+        entity.setSilent(true);
         System.out.println("edit done");
     }
 

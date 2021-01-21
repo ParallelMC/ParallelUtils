@@ -1,10 +1,16 @@
 package parallelmc.parallelutils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
+import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.custommobs.CustomTypes;
 import parallelmc.parallelutils.custommobs.EntityWisp;
+import parallelmc.parallelutils.custommobs.NMSWisp;
+
+import java.util.UUID;
 
 public final class Parallelutils extends JavaPlugin {
 
@@ -14,14 +20,8 @@ public final class Parallelutils extends JavaPlugin {
 	public static CustomTypes mobTypes;
 
 	@Override
-	public void onEnable() {
+	public void onLoad() {
 		mobTypes = new CustomTypes();
-		// Plugin startup logic
-		this.saveDefaultConfig();
-
-		// Save the config
-		config.options().copyDefaults(true);
-		saveConfig();
 
 		// More startup logic here
 		short id = 54;
@@ -30,6 +30,17 @@ public final class Parallelutils extends JavaPlugin {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void onEnable() {
+
+		// Plugin startup logic
+		this.saveDefaultConfig();
+
+		// Save the config
+		config.options().copyDefaults(true);
+		saveConfig();
 
 		// Setup commands
 		Commands commands = new Commands(this);
