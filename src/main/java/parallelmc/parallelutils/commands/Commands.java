@@ -1,12 +1,18 @@
 package parallelmc.parallelutils.commands;
 
+import net.minecraft.server.v1_16_R3.EntityZombie;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.*;
+import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -21,6 +27,7 @@ import parallelmc.parallelutils.custommobs.NMSWisp;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class Commands implements CommandExecutor, TabCompleter {
 
@@ -62,8 +69,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 								switch (args[1]) {
 									case "wisp":
-										//player.getWorld().spawnEntity(player.getLocation(), Parallelutils.mobTypes.getType("wisp"));
 										NMSWisp wisp = new NMSWisp(((CraftWorld)player.getWorld()).getHandle());
+										EntityWisp.setupNBT(plugin, (CraftZombie)CraftEntity.getEntity((CraftServer)sender.getServer(), wisp));
 										Location l = player.getLocation();
 										wisp.setPosition(l.getX(), l.getY(), l.getZ());
 										((CraftWorld)player.getWorld()).getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -72,6 +79,18 @@ public class Commands implements CommandExecutor, TabCompleter {
 							}
 						} else {
 							sender.sendMessage("You do not have permission");
+						}
+						break;
+					case "reset":
+						Entity mob = Bukkit.getEntity(UUID.fromString("29cff125-d7b0-4a20-a03f-97c0b16149b2"));
+
+						if (mob != null) {
+							EntityWisp.setupNBT(plugin, (CraftZombie)mob);
+
+							EntityZombie wisp = ((CraftZombie) mob).getHandle();
+							NMSWisp.initPathfinder(wisp);
+						} else {
+							System.out.println("Mob is null!");
 						}
 						break;
 					default:
