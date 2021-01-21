@@ -82,7 +82,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 						}
 						break;
 					case "reset":
-						Entity mob = Bukkit.getEntity(UUID.fromString("29cff125-d7b0-4a20-a03f-97c0b16149b2"));
+						/*Entity mob = Bukkit.getEntity(UUID.fromString("29cff125-d7b0-4a20-a03f-97c0b16149b2"));
 
 						if (mob != null) {
 							EntityWisp.setupNBT(plugin, (CraftZombie)mob);
@@ -91,7 +91,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 							NMSWisp.initPathfinder(wisp);
 						} else {
 							System.out.println("Mob is null!");
-						}
+						}*/
 						break;
 					default:
 						sender.sendMessage("PU: Command not found");
