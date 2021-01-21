@@ -1,3 +1,15 @@
 #################
 # ParallelUtils #
 #################
+
+
+# mySQL connection info
+sql:
+  # JDBC Connection String (USE EITHER JDBC OR THE DATABASE INFO BELOW)
+  jdbc:
+
+  # Database info
+  address:
+  database:
+  username:
+  password:
