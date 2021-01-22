@@ -1,24 +1,14 @@
 package parallelmc.parallelutils.commands;
 
-import net.minecraft.server.v1_16_R3.EntityZombie;
-import net.minecraft.server.v1_16_R3.NBTTagCompound;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.*;
-import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
+import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_16_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R1.command.ServerCommandSender;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_16_R1.entity.CraftZombie;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SpawnEggMeta;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Parallelutils;
@@ -27,7 +17,6 @@ import parallelmc.parallelutils.custommobs.NMSWisp;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class Commands implements CommandExecutor, TabCompleter {
 
@@ -70,7 +59,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 								switch (args[1]) {
 									case "wisp":
 										NMSWisp wisp = new NMSWisp(((CraftWorld)player.getWorld()).getHandle());
-										EntityWisp.setupNBT(plugin, (CraftZombie)CraftEntity.getEntity((CraftServer)sender.getServer(), wisp));
+										EntityWisp.setupNBT(plugin, (CraftZombie) CraftEntity.getEntity((CraftServer)sender.getServer(), wisp));
 										Location l = player.getLocation();
 										wisp.setPosition(l.getX(), l.getY(), l.getZ());
 										((CraftWorld)player.getWorld()).getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
