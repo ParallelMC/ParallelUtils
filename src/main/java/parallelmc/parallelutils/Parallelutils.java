@@ -1,24 +1,19 @@
 package parallelmc.parallelutils;
 
-import com.google.gson.Gson;
 import net.minecraft.server.v1_16_R3.EntityZombie;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.WorldCreator;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.custommobs.CustomTypes;
 import parallelmc.parallelutils.custommobs.EntityWisp;
 import parallelmc.parallelutils.custommobs.NMSWisp;
 
-import java.io.File;
 import java.sql.*;
 import java.util.UUID;
 
@@ -145,6 +140,13 @@ public final class Parallelutils extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		// Plugin shutdown logic
+
+		// Handle all entities here
+	}
+
+	@EventHandler
+	public void onChunkUnload(final ChunkUnloadEvent event) {
+		// Handle named and named entities here
 	}
 
 	private void openDatabaseConnection(String jdbc, String username, String password) throws SQLException, ClassNotFoundException {
