@@ -14,6 +14,9 @@ import parallelmc.parallelutils.custommobs.CustomTypes;
 import parallelmc.parallelutils.custommobs.EntityWisp;
 import parallelmc.parallelutils.custommobs.NMSWisp;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.sql.*;
 import java.util.UUID;
 
@@ -59,16 +62,16 @@ public final class Parallelutils extends JavaPlugin {
 			jdbc = "jdbc:mysql://" +address + "/" + database;
 		}
 
-		try {
+		/*try {
 			openDatabaseConnection(jdbc, username, password);
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
-		}
+		}*/
 
 		saveConfig();
 
 		// Create the table if it doesn't exist
-		try {
+		/*try {
 			Statement statement = dbConn.createStatement();
 			statement.execute("CREATE TABLE IF NOT EXISTS WorldMobs" +
 					"(" +
@@ -113,6 +116,8 @@ public final class Parallelutils extends JavaPlugin {
 							EntityWisp.setupNBT(this, (CraftZombie)mob);
 
 							EntityZombie wisp = ((CraftZombie) mob).getHandle();
+							wisp.setShouldBurnInDay(false);
+
 							NMSWisp.initPathfinder(wisp);
 							break;
 						default:
@@ -125,7 +130,7 @@ public final class Parallelutils extends JavaPlugin {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		}
+		}*/
 
 
 		// Setup commands
