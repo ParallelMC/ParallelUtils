@@ -59,7 +59,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 								switch (args[1]) {
 									case "wisp":
 										NMSWisp wisp = new NMSWisp(((CraftWorld)player.getWorld()).getHandle());
-										EntityWisp.setupNBT(plugin, (CraftZombie) CraftEntity.getEntity((CraftServer)sender.getServer(), wisp));
+										CraftZombie zombie = (CraftZombie) CraftEntity.getEntity((CraftServer)sender.getServer(), wisp);
+
+										EntityWisp.setupNBT(plugin, zombie);
 										Location l = player.getLocation();
 										wisp.setPosition(l.getX(), l.getY(), l.getZ());
 										((CraftWorld)player.getWorld()).getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -71,12 +73,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 						}
 						break;
 					case "reset":
-						/*Entity mob = Bukkit.getEntity(UUID.fromString("29cff125-d7b0-4a20-a03f-97c0b16149b2"));
-
+						/*CraftZombie mob = (CraftZombie)Bukkit.getEntity(UUID.fromString("29cff125-d7b0-4a20-a03f-97c0b16149b2"));
+						mob.setShouldBurnInDay(false);
 						if (mob != null) {
-							EntityWisp.setupNBT(plugin, (CraftZombie)mob);
+							EntityWisp.setupNBT(plugin, mob);
 
-							EntityZombie wisp = ((CraftZombie) mob).getHandle();
+							EntityZombie wisp = (mob).getHandle();
 							NMSWisp.initPathfinder(wisp);
 						} else {
 							System.out.println("Mob is null!");
