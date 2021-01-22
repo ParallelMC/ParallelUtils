@@ -55,6 +55,11 @@ public class NMSWisp extends EntityZombie {
         this.targetSelector.a(0, new PathfinderGoalHurtByTarget(this));
     }
 
+    @Override
+    protected boolean T_() {
+        return false;
+    }
+
     public static void initPathfinder(EntityZombie zombie) {
         //clearing Zombie goals
         Map goalC = (Map)getPrivateField("c", PathfinderGoalSelector.class, zombie.goalSelector);
