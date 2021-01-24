@@ -2,9 +2,16 @@ package parallelmc.parallelutils.custommobs;
 
 
 import net.minecraft.server.v1_16_R3.*;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.plugin.java.JavaPlugin;
+import parallelmc.parallelutils.Registry;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -75,5 +82,28 @@ public class NMSWisp extends EntityZombie {
         zombie.goalSelector.a(1, new PathfinderGoalRandomStroll(zombie, 1.0));
 
         zombie.targetSelector.a(0, new PathfinderGoalHurtByTarget(zombie));
+    }
+
+    public static NMSWisp spawn(JavaPlugin plugin, CraftServer server, CraftWorld world, Location l) {
+        NMSWisp wisp = new NMSWisp(world.getHandle());
+        CraftZombie zombie = (CraftZombie) CraftEntity.getEntity(server, wisp);
+
+        EntityWisp.setupNBT(plugin, zombie);
+        wisp.setPosition(l.getX(), l.getY(), l.getZ());
+        world.getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
+
+        Registry.registerEntity(zombie.getUniqueId().toString(), wisp);
+
+        return wisp;
+    }
+
+    public static NMSWisp setup(JavaPlugin plugin, CraftZombie mob) {
+        EntityWisp.setupNBT(plugin, mob);
+
+        EntityZombie wisp = mob.getHandle();
+
+        NMSWisp.initPathfinder(wisp);
+
+        return (NMSWisp)wisp;
     }
 }

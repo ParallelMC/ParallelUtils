@@ -58,13 +58,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 								switch (args[1]) {
 									case "wisp":
-										NMSWisp wisp = new NMSWisp(((CraftWorld)player.getWorld()).getHandle());
-										CraftZombie zombie = (CraftZombie) CraftEntity.getEntity((CraftServer)sender.getServer(), wisp);
-
-										EntityWisp.setupNBT(plugin, zombie);
-										Location l = player.getLocation();
-										wisp.setPosition(l.getX(), l.getY(), l.getZ());
-										((CraftWorld)player.getWorld()).getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
+										NMSWisp wisp = NMSWisp.spawn(plugin, (CraftServer)sender.getServer(), (CraftWorld)player.getWorld(), player.getLocation());
 										break;
 								}
 							}
