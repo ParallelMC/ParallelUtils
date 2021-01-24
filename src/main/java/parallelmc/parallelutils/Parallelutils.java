@@ -167,6 +167,8 @@ public final class Parallelutils extends JavaPlugin implements Listener {
 
 		Registry.registerParticles("wisp", new ParticleData(Particle.CLOUD, 50, 0.5, 1, 0));
 
+
+
 		getServer().getPluginManager().registerEvents(this, this);
 
 		// Setup commands
@@ -252,21 +254,6 @@ public final class Parallelutils extends JavaPlugin implements Listener {
 						break;
 				}
 			}
-		}
-	}
-
-	@EventHandler
-	public void onSpawnEntity(EntitySpawnEvent event){
-		org.bukkit.entity.Entity entity = event.getEntity();
-		EntityPair pair = Registry.getEntity(entity.getUniqueId().toString());
-		if(pair == null){
-			return;
-		}
-		else if(Registry.getParticleData(pair.type) == null){
-			return;
-		}
-		else{
-			BukkitTask task = new ParticleTask(this, pair.type).runTaskTimer(this, 0, 10);
 		}
 	}
 

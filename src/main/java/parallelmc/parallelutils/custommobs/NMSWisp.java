@@ -2,6 +2,7 @@ package parallelmc.parallelutils.custommobs;
 
 
 import net.minecraft.server.v1_16_R3.*;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
@@ -88,7 +89,7 @@ public class NMSWisp extends EntityZombie {
         NMSWisp wisp = new NMSWisp(world.getHandle());
         CraftZombie zombie = (CraftZombie) CraftEntity.getEntity(server, wisp);
 
-        EntityWisp.setupNBT(plugin, zombie);
+        setup(plugin, zombie);
         wisp.setPosition(l.getX(), l.getY(), l.getZ());
         world.getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
@@ -103,6 +104,8 @@ public class NMSWisp extends EntityZombie {
         EntityZombie wisp = mob.getHandle();
 
         NMSWisp.initPathfinder(wisp);
+
+        //TODO: if no ParticleTask is running, create a new ParticleTask. else just Vibe
 
         return wisp;
     }
