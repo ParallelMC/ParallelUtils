@@ -23,6 +23,7 @@ public class ParticleTask extends BukkitRunnable {
     public void run() {
         Collection<EntityPair> pairs = Registry.getEntities();
         if (pairs.isEmpty()){
+            Registry.particleTaskRunning = false;
             this.cancel();
         }
         for(EntityPair pair : pairs){
@@ -34,9 +35,6 @@ public class ParticleTask extends BukkitRunnable {
                 World world = (org.bukkit.World) pair.entity.getWorld();
                 world.spawnParticle(data.particle, pair.entity.getBukkitEntity().getLocation(), data.amount,
                         data.hSpread, data.vSpread, data.hSpread, data.speed);
-            }
-            else{
-                continue;
             }
         }
     }
