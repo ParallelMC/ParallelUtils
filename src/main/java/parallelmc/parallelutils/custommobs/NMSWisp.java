@@ -92,18 +92,18 @@ public class NMSWisp extends EntityZombie {
         wisp.setPosition(l.getX(), l.getY(), l.getZ());
         world.getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
-        Registry.registerEntity(zombie.getUniqueId().toString(), wisp);
+        Registry.registerEntity(zombie.getUniqueId().toString(), "wisp", wisp);
 
         return wisp;
     }
 
-    public static NMSWisp setup(JavaPlugin plugin, CraftZombie mob) {
+    public static EntityZombie setup(JavaPlugin plugin, CraftZombie mob) {
         EntityWisp.setupNBT(plugin, mob);
 
         EntityZombie wisp = mob.getHandle();
 
         NMSWisp.initPathfinder(wisp);
 
-        return (NMSWisp)wisp;
+        return wisp;
     }
 }

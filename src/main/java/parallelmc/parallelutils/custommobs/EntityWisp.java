@@ -42,6 +42,8 @@ public class EntityWisp extends CraftZombie {
         //Movement speed = 0.25
         entity.getAttribute(GENERIC_MOVEMENT_SPEED).setBaseValue(0.25);
 
+        entity.getAttribute(ZOMBIE_SPAWN_REINFORCEMENTS).setBaseValue(0);
+
         //Other stuff
         //Loot table
         entity.setLootTable(new WispLootTable(plugin));
@@ -60,10 +62,5 @@ public class EntityWisp extends CraftZombie {
         //silent
         entity.setSilent(true);
         System.out.println("edit done");
-    }
-
-    @Override
-    public void setCustomName(String name){
-
     }
 }
