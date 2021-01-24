@@ -32,7 +32,7 @@ public class ParticleTask extends BukkitRunnable {
             }
             ParticleData data = Registry.getParticleData(pair.type);
             if(data != null){
-                World world = (org.bukkit.World) pair.entity.getWorld();
+                World world = pair.entity.getBukkitEntity().getWorld();
                 world.spawnParticle(data.particle, pair.entity.getBukkitEntity().getLocation(), data.amount,
                         data.hSpread, data.vSpread, data.hSpread, data.speed);
             }
