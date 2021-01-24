@@ -55,7 +55,7 @@ public class EntityWisp extends CraftZombie {
         //no random equipment
         entity.getEquipment().clear();
 
-        //TODO: prevent sunburn
+        entity.setShouldBurnInDay(false);
 
         //silent
         entity.setSilent(true);
