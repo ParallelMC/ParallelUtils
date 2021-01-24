@@ -1,20 +1,21 @@
 package parallelmc.parallelutils;
 
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
-import com.sun.media.jfxmedia.logging.Logger;
+import net.minecraft.server.v1_16_R3.Entity;
 import net.minecraft.server.v1_16_R3.EntityInsentient;
-import net.minecraft.server.v1_16_R3.EntityZombie;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
-import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.custommobs.CustomTypes;
+import parallelmc.parallelutils.custommobs.EntityPair;
 import parallelmc.parallelutils.custommobs.EntityWisp;
 import parallelmc.parallelutils.custommobs.NMSWisp;
 
@@ -22,7 +23,7 @@ import java.sql.*;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public final class Parallelutils extends JavaPlugin {
+public final class Parallelutils extends JavaPlugin implements Listener {
 
 	public static Level LOG_LEVEL = Level.INFO;
 
@@ -108,6 +109,7 @@ public final class Parallelutils extends JavaPlugin {
 					"ChunkX INT," +
 					"ChunkZ INT" +
 					")");
+			dbConn.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -135,11 +137,13 @@ public final class Parallelutils extends JavaPlugin {
 
 				CraftEntity mob = (CraftEntity)Bukkit.getEntity(UUID.fromString(uuid));
 
+				String entityType = "";
 				EntityInsentient setupEntity = null;
 
 				if (mob != null) {
 					switch (type) {
 						case "wisp":
+							entityType = "wisp";
 							setupEntity = NMSWisp.setup(this, (CraftZombie)mob);
 							break;
 						default:
@@ -150,7 +154,7 @@ public final class Parallelutils extends JavaPlugin {
 				}
 
 				if (setupEntity != null) {
-					Registry.registerEntity(uuid, setupEntity);
+					Registry.registerEntity(uuid, entityType, setupEntity);
 				}
 
 			}
@@ -158,6 +162,7 @@ public final class Parallelutils extends JavaPlugin {
 			e.printStackTrace();
 		}
 
+		getServer().getPluginManager().registerEvents(this, this);
 
 		// Setup commands
 		Commands commands = new Commands(this);
@@ -172,17 +177,60 @@ public final class Parallelutils extends JavaPlugin {
 	public void onDisable() {
 		// Plugin shutdown logic
 
-		// Handle all entities here
-	}
+		// Update the database here
+		try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO WorldMobs (UUID, Type, World, ChunkX, ChunkZ) VALUES (?, ?, ?, ?, ?)")) {
+			int i = 0;
 
-	@EventHandler
-	public void onChunkUnload(final ChunkUnloadEvent event) {
-		// Handle named and named entities here
+			for (EntityPair ep : Registry.getEntities()) {
+				Entity e = ep.entity;
+				CraftEntity craftEntity = e.getBukkitEntity();
+
+				String uuid = craftEntity.getUniqueId().toString();
+
+				Bukkit.getLogger().log(Level.INFO, "[ParallelUtils] Storing entity " + uuid);
+
+				String type = ep.type;
+
+				if (type == null) {
+					Bukkit.getLogger().log(Level.ALL, "[ParallelUtils] Unknown entity type for entity " + uuid);
+					continue;
+				}
+
+				String world = craftEntity.getWorld().getName();
+
+				Chunk c = craftEntity.getChunk();
+
+				statement.setString(1, uuid);
+				statement.setString(2, type);
+				statement.setString(3, world);
+				statement.setInt(4, c.getX());
+				statement.setInt(5, c.getZ());
+
+				statement.addBatch();
+				i++;
+
+				if (i >= 1000) {
+					statement.executeBatch();
+					i = 0;
+				}
+			}
+
+			statement.executeBatch();
+
+			dbConn.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	@EventHandler
 	public void onEntityDespawn(final EntityRemoveFromWorldEvent event) {
-
+		CraftEntity entity = (CraftEntity)event.getEntity();
+		if (Registry.contains(entity.getUniqueId().toString())) {
+			Bukkit.getLogger().log(Level.ALL, "[ParallelUtils] Removing entity " + entity.getUniqueId().toString() + " from world");
+			Registry.removeEntity(entity.getUniqueId().toString());
+		}
 	}
 
 	private void openDatabaseConnection(String jdbc, String username, String password) throws SQLException, ClassNotFoundException {
@@ -191,5 +239,6 @@ public final class Parallelutils extends JavaPlugin {
 		}
 		Class.forName("com.mysql.jdbc.Driver");
 		dbConn = DriverManager.getConnection(jdbc, username, password);
+		dbConn.setAutoCommit(false);
 	}
 }

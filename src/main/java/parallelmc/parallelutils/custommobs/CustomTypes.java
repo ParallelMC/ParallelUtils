@@ -76,4 +76,12 @@ public class CustomTypes {
         modifiersField.setAccessible(true);
         modifiersField.setInt(field, field.getModifiers() & ~ Modifier.FINAL);
     }
+
+    public static String getEntityType(net.minecraft.server.v1_16_R3.Entity entity) {
+        if (entity instanceof NMSWisp) {
+            return "wisp";
+        }
+
+        return null;
+    }
 }
