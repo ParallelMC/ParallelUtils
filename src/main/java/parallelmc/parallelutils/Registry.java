@@ -49,4 +49,6 @@ public class Registry {
 		Bukkit.getLogger().log(Level.ALL, "[ParallelUtils] Does contain " + uuid);
 		return entities.containsKey(uuid);
 	}
+
+	public static boolean particleTaskRunning = false;
 }
