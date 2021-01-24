@@ -184,6 +184,15 @@ public final class Parallelutils extends JavaPlugin implements Listener {
 		// Plugin shutdown logic
 
 		// Update the database here
+		try {
+			Statement removeStatement = dbConn.createStatement();
+			removeStatement.execute("TRUNCATE TABLE WorldMobs");
+			dbConn.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+
 		try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO WorldMobs (UUID, Type, World, ChunkX, ChunkZ) VALUES (?, ?, ?, ?, ?)")) {
 			int i = 0;
 
@@ -265,10 +274,11 @@ public final class Parallelutils extends JavaPlugin implements Listener {
 					ItemStack shard = new ItemStack(Material.PRISMARINE_SHARD, 1);
 					try {
 						ItemMeta shardMeta = shard.getItemMeta();
-						shardMeta.setDisplayName("&fSoul Shard");
+						shardMeta.setDisplayName(ChatColor.WHITE + "Soul Shard");
 						shardMeta.setCustomModelData(1000001);
 						shardMeta.addEnchant(Enchantment.DURABILITY, 1, true);
 						shardMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+						shard.setItemMeta(shardMeta);
 					}
 					catch(NullPointerException e){
 						e.printStackTrace();
@@ -277,6 +287,7 @@ public final class Parallelutils extends JavaPlugin implements Listener {
 					drops.clear();
 					drops.add(shard);
 					event.setDroppedExp(0);
+					break;
 			}
 		}
 	}
