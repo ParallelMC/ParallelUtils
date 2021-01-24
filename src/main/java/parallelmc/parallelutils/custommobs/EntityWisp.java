@@ -9,12 +9,11 @@ import parallelmc.parallelutils.Parallelutils;
 
 import static org.bukkit.attribute.Attribute.*;
 
-public class EntityWisp extends CraftZombie {
+public class EntityWisp extends CraftZombie{
     Plugin plugin;
 
     public EntityWisp(CraftServer server, NMSWisp entity, Plugin plugin) {
         super(server, entity);
-        System.out.println("after super");
         this.plugin = plugin;
         setupNBT(plugin, this);
     }
@@ -22,12 +21,10 @@ public class EntityWisp extends CraftZombie {
     @NotNull
     @Override
     public EntityType getType(){
-        System.out.println("wisppppp");
         return Parallelutils.mobTypes.getType("wisp");
     }
 
     public static void setupNBT(Plugin plugin, CraftZombie entity){
-        System.out.println("editttttt");
         //Attributes
         //Health = 30
         entity.getAttribute(GENERIC_MAX_HEALTH).setBaseValue(30.0);
@@ -42,6 +39,7 @@ public class EntityWisp extends CraftZombie {
         //Movement speed = 0.25
         entity.getAttribute(GENERIC_MOVEMENT_SPEED).setBaseValue(0.25);
 
+        //No zombie reinforcements
         entity.getAttribute(ZOMBIE_SPAWN_REINFORCEMENTS).setBaseValue(0);
 
         //Other stuff
@@ -61,6 +59,5 @@ public class EntityWisp extends CraftZombie {
 
         //silent
         entity.setSilent(true);
-        System.out.println("edit done");
     }
 }
