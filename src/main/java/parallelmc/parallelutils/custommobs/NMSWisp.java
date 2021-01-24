@@ -10,6 +10,8 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.Registry;
 
 import java.lang.reflect.Field;
@@ -105,7 +107,10 @@ public class NMSWisp extends EntityZombie {
 
         NMSWisp.initPathfinder(wisp);
 
-        //TODO: if no ParticleTask is running, create a new ParticleTask. else just Vibe
+        if(!Registry.particleTaskRunning){
+            BukkitTask task = new ParticleTask(plugin).runTaskTimer(plugin, 0, 10);
+            Registry.particleTaskRunning = true;
+        }
 
         return wisp;
     }

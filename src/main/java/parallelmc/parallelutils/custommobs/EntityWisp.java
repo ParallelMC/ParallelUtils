@@ -44,7 +44,7 @@ public class EntityWisp extends CraftZombie{
 
         //Other stuff
         //Loot table
-        entity.setLootTable(new WispLootTable(plugin));
+        //entity.setLootTable(new WispLootTable(plugin));
 
         //invis
         entity.setInvisible(true);
