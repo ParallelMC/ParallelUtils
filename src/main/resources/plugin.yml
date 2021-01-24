@@ -4,15 +4,39 @@ main: parallelmc.parallelutils.Parallelutils
 api-version: 1.16
 authors: [Jake, Evelyn]
 description: A plugin containing miscellaneous features and changes for play.parallel.ga
-depend: [Multiverse-Core, LibsDisguises]
+depend: [LibsDisguises]
 commands:
   parallelutils:
     description: Get information about the plugin
     usage: /parallelutils
-    permission: parallelutils.basic
     permission-message: You do not have permission
   pu:
     description: Get information about the plugin
     usage: /pu
-    permission: parallelutils.basic
     permission-message: You do not have permission
+permissions:
+  parallelutils.*:
+    description: Gives access to all PU commands
+    children:
+      parallelutils.basic: true
+      parallelutils.test: true
+      parallelutils.spawn: true
+    default: false
+  parallelutils.basic:
+    description: Gives access to any PU commands. Required to do anything
+    default: false
+  parallelutils.spawn:
+    description: Gives access to spawning commands, like eggs and monster spawners.
+    children:
+      parallelutils.spawn.egg: true
+      parallelutils.spawn.world: true
+    default: false
+  parallelutils.spawn.egg:
+    description: Gives access to spawn egg command.
+    default: false
+  parallelutils.spawn.world:
+    description: Gives access to spawn world command.
+    default: false
+  parallelutils.test:
+    description: Gives access to the test command
+    default: false
