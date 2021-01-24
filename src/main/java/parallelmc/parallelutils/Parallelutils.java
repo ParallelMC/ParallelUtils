@@ -10,8 +10,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.custommobs.CustomTypes;
@@ -230,6 +234,23 @@ public final class Parallelutils extends JavaPlugin implements Listener {
 		if (Registry.contains(entity.getUniqueId().toString())) {
 			Bukkit.getLogger().log(Level.ALL, "[ParallelUtils] Removing entity " + entity.getUniqueId().toString() + " from world");
 			Registry.removeEntity(entity.getUniqueId().toString());
+		}
+	}
+
+	@EventHandler
+	public void onPlayerDeath(PlayerDeathEvent event){
+		Player player = event.getEntity();
+		EntityDamageEvent lastDamage = player.getLastDamageCause();
+		if(lastDamage instanceof EntityDamageByEntityEvent){
+			org.bukkit.entity.Entity killer = ((EntityDamageByEntityEvent) lastDamage).getDamager();
+			if(Registry.contains(killer.getUniqueId().toString())){
+				EntityPair pair = Registry.getEntity(killer.getUniqueId().toString());
+				switch(pair.type){
+					case "wisp":
+						event.setDeathMessage(player.getDisplayName() + " was slain by Wisp");
+						break;
+				}
+			}
 		}
 	}
 
