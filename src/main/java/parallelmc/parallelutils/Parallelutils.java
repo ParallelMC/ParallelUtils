@@ -6,22 +6,21 @@ import net.minecraft.server.v1_16_R3.EntityInsentient;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntitySpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 import parallelmc.parallelutils.commands.Commands;
-import parallelmc.parallelutils.custommobs.CustomTypes;
-import parallelmc.parallelutils.custommobs.EntityPair;
-import parallelmc.parallelutils.custommobs.EntityWisp;
-import parallelmc.parallelutils.custommobs.NMSWisp;
+import parallelmc.parallelutils.custommobs.*;
 
 import java.sql.*;
 import java.util.UUID;
@@ -166,6 +165,8 @@ public final class Parallelutils extends JavaPlugin implements Listener {
 			e.printStackTrace();
 		}
 
+		Registry.registerParticles("wisp", new ParticleData(Particle.CLOUD, 50, 0.5, 1, 0));
+
 		getServer().getPluginManager().registerEvents(this, this);
 
 		// Setup commands
@@ -231,7 +232,7 @@ public final class Parallelutils extends JavaPlugin implements Listener {
 	@EventHandler
 	public void onEntityDespawn(final EntityRemoveFromWorldEvent event) {
 		CraftEntity entity = (CraftEntity)event.getEntity();
-		if (Registry.contains(entity.getUniqueId().toString())) {
+		if (Registry.containsEntity(entity.getUniqueId().toString())) {
 			Bukkit.getLogger().log(Level.ALL, "[ParallelUtils] Removing entity " + entity.getUniqueId().toString() + " from world");
 			Registry.removeEntity(entity.getUniqueId().toString());
 		}
@@ -243,7 +244,7 @@ public final class Parallelutils extends JavaPlugin implements Listener {
 		EntityDamageEvent lastDamage = player.getLastDamageCause();
 		if(lastDamage instanceof EntityDamageByEntityEvent){
 			org.bukkit.entity.Entity killer = ((EntityDamageByEntityEvent) lastDamage).getDamager();
-			if(Registry.contains(killer.getUniqueId().toString())){
+			if(Registry.containsEntity(killer.getUniqueId().toString())){
 				EntityPair pair = Registry.getEntity(killer.getUniqueId().toString());
 				switch(pair.type){
 					case "wisp":
@@ -251,6 +252,21 @@ public final class Parallelutils extends JavaPlugin implements Listener {
 						break;
 				}
 			}
+		}
+	}
+
+	@EventHandler
+	public void onSpawnEntity(EntitySpawnEvent event){
+		org.bukkit.entity.Entity entity = event.getEntity();
+		EntityPair pair = Registry.getEntity(entity.getUniqueId().toString());
+		if(pair == null){
+			return;
+		}
+		else if(Registry.getParticleData(pair.type) == null){
+			return;
+		}
+		else{
+			BukkitTask task = new ParticleTask(this, pair.type).runTaskTimer(this, 0, 10);
 		}
 	}
 
