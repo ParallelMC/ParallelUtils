@@ -14,11 +14,9 @@ import java.util.Collection;
 public class ParticleTask extends BukkitRunnable {
 
     private final Plugin plugin;
-    private final String entityType;
 
-    public ParticleTask(Plugin plugin, String entityType){
+    public ParticleTask(Plugin plugin){
         this.plugin = plugin;
-        this.entityType = entityType;
     }
 
     @Override
@@ -28,17 +26,17 @@ public class ParticleTask extends BukkitRunnable {
             this.cancel();
         }
         for(EntityPair pair : pairs){
-            if(pair.type.equalsIgnoreCase(entityType)){
-                if(pair.entity == null){
-                    continue;
-                }
-                ParticleData data = Registry.getParticleData(entityType);
-                if(data == null){
-                    continue;
-                }
+            if(pair.entity == null) {
+                continue;
+            }
+            ParticleData data = Registry.getParticleData(pair.type);
+            if(data != null){
                 World world = (org.bukkit.World) pair.entity.getWorld();
                 world.spawnParticle(data.particle, pair.entity.getBukkitEntity().getLocation(), data.amount,
                         data.hSpread, data.vSpread, data.hSpread, data.speed);
+            }
+            else{
+                continue;
             }
         }
     }
