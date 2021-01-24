@@ -43,8 +43,6 @@ public class EntityWisp extends CraftZombie{
         entity.getAttribute(ZOMBIE_SPAWN_REINFORCEMENTS).setBaseValue(0);
 
         //Other stuff
-        //Loot table
-        //entity.setLootTable(new WispLootTable(plugin));
 
         //invis
         entity.setInvisible(true);
