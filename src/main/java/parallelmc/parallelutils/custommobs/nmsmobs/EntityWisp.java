@@ -1,4 +1,4 @@
-package parallelmc.parallelutils.custommobs;
+package parallelmc.parallelutils.custommobs.nmsmobs;
 
 
 import net.minecraft.server.v1_16_R3.*;
@@ -11,6 +11,8 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import parallelmc.parallelutils.Registry;
+import parallelmc.parallelutils.custommobs.ParticleTask;
+import parallelmc.parallelutils.custommobs.bukkitmobs.CraftWisp;
 
 import java.lang.reflect.Field;
 import java.util.Map;

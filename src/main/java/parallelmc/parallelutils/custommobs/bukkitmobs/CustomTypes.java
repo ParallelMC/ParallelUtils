@@ -1,9 +1,10 @@
-package parallelmc.parallelutils.custommobs;
+package parallelmc.parallelutils.custommobs.bukkitmobs;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.*;

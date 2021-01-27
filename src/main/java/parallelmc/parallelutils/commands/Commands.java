@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.custommobs.EntityWisp;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 
 import java.util.ArrayList;
 import java.util.List;
