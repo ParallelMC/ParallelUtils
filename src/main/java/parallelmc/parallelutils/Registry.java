@@ -1,9 +1,7 @@
 package parallelmc.parallelutils;
 
 import net.minecraft.server.v1_16_R3.Entity;
-import net.minecraft.server.v1_16_R3.EntityInsentient;
-import org.bukkit.Bukkit;
-import parallelmc.parallelutils.custommobs.EntityPair;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityPair;
 import parallelmc.parallelutils.custommobs.ParticleData;
 
 import java.util.Collection;
@@ -17,12 +15,12 @@ public class Registry {
 	private static HashMap<String, ParticleData> entityParticles = new HashMap<>();
 
 	public static void registerEntity(String uuid, String type, Entity entity) {
-		Bukkit.getLogger().log(Level.INFO, "[ParallelUtils] Registering entity " + uuid);
+		Parallelutils.log(Level.INFO, "Registering entity " + uuid);
 		entities.put(uuid, new EntityPair(type, entity));
 	}
 
 	public static void registerParticles(String type,ParticleData data) {
-		Bukkit.getLogger().log(Level.INFO, "[ParallelUtils] Registering particles for " + type);
+		Parallelutils.log(Level.INFO, "Registering particles for " + type);
 		entityParticles.put(type, data);
 	}
 
@@ -41,12 +39,12 @@ public class Registry {
 	}
 
 	public static EntityPair removeEntity(String uuid) {
-		Bukkit.getLogger().log(Level.INFO, "[ParallelUtils] Removing entity " + uuid);
+		Parallelutils.log(Level.INFO, "Removing entity " + uuid);
 		return entities.remove(uuid);
 	}
 
 	public static boolean containsEntity(String uuid) {
-		Bukkit.getLogger().log(Level.ALL, "[ParallelUtils] Does contain " + uuid);
+		Parallelutils.log(Level.ALL, "Does contain " + uuid);
 		return entities.containsKey(uuid);
 	}
 
