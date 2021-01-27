@@ -1,4 +1,4 @@
-package parallelmc.parallelutils.custommobs;
+package parallelmc.parallelutils.custommobs.nmsmobs;
 
 import net.minecraft.server.v1_16_R3.Entity;
 

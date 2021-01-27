@@ -9,7 +9,11 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.custommobs.*;
+import parallelmc.parallelutils.custommobs.bukkitmobs.CraftWisp;
+import parallelmc.parallelutils.custommobs.bukkitmobs.CustomTypes;
 import parallelmc.parallelutils.custommobs.events.CustomMobsEventRegistrar;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityPair;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 
 import java.sql.*;
 import java.util.UUID;
@@ -155,12 +159,12 @@ public final class Parallelutils extends JavaPlugin {
 
 				String uuid = craftEntity.getUniqueId().toString();
 
-				Bukkit.getLogger().log(Level.INFO, "[ParallelUtils] Storing entity " + uuid);
+				Parallelutils.log(Level.INFO, "Storing entity " + uuid);
 
 				String type = ep.type;
 
 				if (type == null) {
-					Bukkit.getLogger().log(Level.ALL, "[ParallelUtils] Unknown entity type for entity " + uuid);
+					Parallelutils.log(Level.ALL, "Unknown entity type for entity " + uuid);
 					continue;
 				}
 
@@ -222,10 +226,10 @@ public final class Parallelutils extends JavaPlugin {
 						setupEntity = EntityWisp.setup(this, (CraftZombie)mob);
 						break;
 					default:
-						getLogger().warning("[ParallelUtils] Unknown entity type \"" + type + "\"");
+						Parallelutils.log(Level.WARNING, "Unknown entity type \"" + type + "\"");
 				}
 			} else {
-				System.out.println("Mob is null!");
+				Parallelutils.log(Level.WARNING, "Mob is null! Report this to the devs! Expected UUID: " + uuid);
 			}
 
 			if (setupEntity != null) {
@@ -242,5 +246,10 @@ public final class Parallelutils extends JavaPlugin {
 		Class.forName("com.mysql.jdbc.Driver");
 		dbConn = DriverManager.getConnection(jdbc, username, password);
 		dbConn.setAutoCommit(false);
+	}
+
+
+	public static void log(Level level, String message) {
+		Bukkit.getLogger().log(level, "[ParallelUtils] " + message);
 	}
 }

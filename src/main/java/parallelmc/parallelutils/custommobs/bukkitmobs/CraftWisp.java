@@ -1,4 +1,4 @@
-package parallelmc.parallelutils.custommobs;
+package parallelmc.parallelutils.custommobs.bukkitmobs;
 
 import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.Plugin;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 
 import static org.bukkit.attribute.Attribute.*;
 

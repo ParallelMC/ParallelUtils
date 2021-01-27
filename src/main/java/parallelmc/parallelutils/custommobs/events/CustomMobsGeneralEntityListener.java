@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.Registry;
 
 import java.util.logging.Level;
@@ -16,7 +17,7 @@ public class CustomMobsGeneralEntityListener implements Listener {
 	public void onEntityDespawn(final EntityRemoveFromWorldEvent event) {
 		CraftEntity entity = (CraftEntity)event.getEntity();
 		if (Registry.containsEntity(entity.getUniqueId().toString())) {
-			Bukkit.getLogger().log(Level.ALL, "[ParallelUtils] Removing entity " + entity.getUniqueId().toString() + " from world");
+			Parallelutils.log(Level.ALL, "Removing entity " + entity.getUniqueId().toString() + " from world");
 			Registry.removeEntity(entity.getUniqueId().toString());
 		}
 	}
