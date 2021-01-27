@@ -47,6 +47,8 @@ public final class Parallelutils extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		// Plugin startup logic
+
+		// Read config
 		this.saveDefaultConfig();
 		this.reloadConfig();
 
@@ -69,10 +71,9 @@ public final class Parallelutils extends JavaPlugin {
 
 		Bukkit.getLogger().setLevel(LOG_LEVEL);
 
+		// Either get the database connection URL from the config or construct it from the config
 		String jdbc, address, database, username="", password="";
 		jdbc = config.getString("sql.jdbc");
-
-		System.out.println(jdbc);
 
 		if (jdbc == null || jdbc.trim().equals("")) {
 			address = config.getString("sql.address");
@@ -84,15 +85,15 @@ public final class Parallelutils extends JavaPlugin {
 		username = config.getString("sql.username");
 		password = config.getString("sql.password");
 
-		System.out.println(jdbc);
+		saveConfig();
+
+		// Connect to database
 
 		try {
 			openDatabaseConnection(jdbc, username, password);
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
-
-		saveConfig();
 
 		// Create the table if it doesn't exist
 		try {
@@ -122,10 +123,8 @@ public final class Parallelutils extends JavaPlugin {
 
 		Registry.registerParticles("wisp", new ParticleData(Particle.CLOUD, 50, 0.5, 1, 0));
 
-
 		// Register events for the CustomMobs module
 		CustomMobsEventRegistrar.registerEvents();
-
 
 		// Setup commands
 		Commands commands = new Commands(this);
@@ -140,7 +139,7 @@ public final class Parallelutils extends JavaPlugin {
 	public void onDisable() {
 		// Plugin shutdown logic
 
-		// Update the database here
+		// Clear the database
 		try {
 			Statement removeStatement = dbConn.createStatement();
 			removeStatement.execute("TRUNCATE TABLE WorldMobs");
@@ -149,7 +148,7 @@ public final class Parallelutils extends JavaPlugin {
 			e.printStackTrace();
 		}
 
-
+		// Insert all mobs that we care about into the database
 		try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO WorldMobs (UUID, Type, World, ChunkX, ChunkZ) VALUES (?, ?, ?, ?, ?)")) {
 			int i = 0;
 
@@ -164,7 +163,7 @@ public final class Parallelutils extends JavaPlugin {
 				String type = ep.type;
 
 				if (type == null) {
-					Parallelutils.log(Level.ALL, "Unknown entity type for entity " + uuid);
+					Parallelutils.log(Level.WARNING, "Unknown entity type for entity " + uuid);
 					continue;
 				}
 
@@ -178,9 +177,11 @@ public final class Parallelutils extends JavaPlugin {
 				statement.setInt(4, c.getX());
 				statement.setInt(5, c.getZ());
 
+				// This just lets us execute a bunch of changes at once
 				statement.addBatch();
-				i++;
 
+				// This is here because some implementations of MySQL are weird and don't like very large batches
+				i++;
 				if (i >= 1000) {
 					statement.executeBatch();
 					i = 0;
@@ -209,9 +210,11 @@ public final class Parallelutils extends JavaPlugin {
 
 			//Bukkit.getServer().createWorld(new WorldCreator(world)); // This loads the world
 
-			if (!(new Location(Bukkit.getWorld(world), worldX, 70, worldZ)).getChunk().isLoaded())
+			Location location = new Location(Bukkit.getWorld(world), worldX, 70, worldZ);
+
+			if (!location.getChunk().isLoaded())
 			{
-				(new Location(Bukkit.getWorld(world), worldX, 70, worldZ)).getChunk().load();
+				location.getChunk().load();
 			}
 
 			CraftEntity mob = (CraftEntity)Bukkit.getEntity(UUID.fromString(uuid));
