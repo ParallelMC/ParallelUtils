@@ -1,10 +1,7 @@
-package parallelmc.parallelutils;
+package parallelmc.parallelutils.custommobs.events;
 
-import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,21 +13,13 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import parallelmc.parallelutils.Registry;
 import parallelmc.parallelutils.custommobs.EntityPair;
 
 import java.util.List;
-import java.util.logging.Level;
 
-public class ParallelListener implements Listener {
-	@EventHandler
-	public void onEntityDespawn(final EntityRemoveFromWorldEvent event) {
-		CraftEntity entity = (CraftEntity)event.getEntity();
-		if (Registry.containsEntity(entity.getUniqueId().toString())) {
-			Bukkit.getLogger().log(Level.ALL, "[ParallelUtils] Removing entity " + entity.getUniqueId().toString() + " from world");
-			Registry.removeEntity(entity.getUniqueId().toString());
-		}
-	}
-
+/** For listening for deaths of players and entities **/
+public class CustomMobsDeathListener implements Listener {
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event){
 		Player player = event.getEntity();

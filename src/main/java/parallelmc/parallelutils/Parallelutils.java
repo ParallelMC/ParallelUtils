@@ -9,6 +9,7 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.custommobs.*;
+import parallelmc.parallelutils.custommobs.events.CustomMobsEventRegistrar;
 
 import java.sql.*;
 import java.util.UUID;
@@ -32,7 +33,7 @@ public final class Parallelutils extends JavaPlugin {
 		// More startup logic here
 		short id = 54;
 		try {
-			mobTypes.addEntityType("wisp", EntityWisp.class, id);
+			mobTypes.addEntityType("wisp", CraftWisp.class, id);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -109,46 +110,8 @@ public final class Parallelutils extends JavaPlugin {
 		try {
 			Statement statement = dbConn.createStatement();
 			ResultSet result = statement.executeQuery("SELECT * FROM WorldMobs");
-			while (result.next()) {
-				String uuid = result.getString("UUID");
-				String type = result.getString("Type");
-				String world = result.getString("World");
-				String chunkX = result.getString("ChunkX");
-				String chunkZ = result.getString("ChunkZ");
 
-				int worldX = 16 * Integer.parseInt(chunkX);
-				int worldZ = 16 * Integer.parseInt(chunkZ);
-
-				//Bukkit.getServer().createWorld(new WorldCreator(world)); // This loads the world
-
-				if (!(new Location(Bukkit.getWorld(world), worldX, 70, worldZ)).getChunk().isLoaded())
-				{
-					(new Location(Bukkit.getWorld(world), worldX, 70, worldZ)).getChunk().load();
-				}
-
-				CraftEntity mob = (CraftEntity)Bukkit.getEntity(UUID.fromString(uuid));
-
-				String entityType = "";
-				EntityInsentient setupEntity = null;
-
-				if (mob != null) {
-					switch (type) {
-						case "wisp":
-							entityType = "wisp";
-							setupEntity = NMSWisp.setup(this, (CraftZombie)mob);
-							break;
-						default:
-							getLogger().warning("[ParallelUtils] Unknown entity type \"" + type + "\"");
-					}
-				} else {
-					System.out.println("Mob is null!");
-				}
-
-				if (setupEntity != null) {
-					Registry.registerEntity(uuid, entityType, setupEntity);
-				}
-
-			}
+			readMobs(result);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -156,8 +119,9 @@ public final class Parallelutils extends JavaPlugin {
 		Registry.registerParticles("wisp", new ParticleData(Particle.CLOUD, 50, 0.5, 1, 0));
 
 
+		// Register events for the CustomMobs module
+		CustomMobsEventRegistrar.registerEvents();
 
-		getServer().getPluginManager().registerEvents(new ParallelListener(), this);
 
 		// Setup commands
 		Commands commands = new Commands(this);
@@ -226,6 +190,49 @@ public final class Parallelutils extends JavaPlugin {
 			e.printStackTrace();
 		}
 
+	}
+
+	private void readMobs(ResultSet result) throws SQLException {
+		while (result.next()) {
+			String uuid = result.getString("UUID");
+			String type = result.getString("Type");
+			String world = result.getString("World");
+			String chunkX = result.getString("ChunkX");
+			String chunkZ = result.getString("ChunkZ");
+
+			int worldX = 16 * Integer.parseInt(chunkX);
+			int worldZ = 16 * Integer.parseInt(chunkZ);
+
+			//Bukkit.getServer().createWorld(new WorldCreator(world)); // This loads the world
+
+			if (!(new Location(Bukkit.getWorld(world), worldX, 70, worldZ)).getChunk().isLoaded())
+			{
+				(new Location(Bukkit.getWorld(world), worldX, 70, worldZ)).getChunk().load();
+			}
+
+			CraftEntity mob = (CraftEntity)Bukkit.getEntity(UUID.fromString(uuid));
+
+			String entityType = "";
+			EntityInsentient setupEntity = null;
+
+			if (mob != null) {
+				switch (type) {
+					case "wisp":
+						entityType = "wisp";
+						setupEntity = EntityWisp.setup(this, (CraftZombie)mob);
+						break;
+					default:
+						getLogger().warning("[ParallelUtils] Unknown entity type \"" + type + "\"");
+				}
+			} else {
+				System.out.println("Mob is null!");
+			}
+
+			if (setupEntity != null) {
+				Registry.registerEntity(uuid, entityType, setupEntity);
+			}
+
+		}
 	}
 
 	private void openDatabaseConnection(String jdbc, String username, String password) throws SQLException, ClassNotFoundException {
