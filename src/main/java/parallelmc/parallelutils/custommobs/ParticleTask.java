@@ -1,13 +1,10 @@
 package parallelmc.parallelutils.custommobs;
 
-import org.bukkit.Particle;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.Registry;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityPair;
 
 import java.util.Collection;
 

@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import parallelmc.parallelutils.Registry;
-import parallelmc.parallelutils.custommobs.EntityPair;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityPair;
 
 import java.util.List;
 
