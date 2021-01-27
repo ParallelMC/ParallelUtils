@@ -1,19 +1,14 @@
 package parallelmc.parallelutils.commands;
 
-import org.bukkit.Location;
 import org.bukkit.command.*;
 import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.custommobs.EntityWisp;
-import parallelmc.parallelutils.custommobs.NMSWisp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +53,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 								switch (args[1]) {
 									case "wisp":
-										NMSWisp wisp = NMSWisp.spawn(plugin, (CraftServer)sender.getServer(), (CraftWorld)player.getWorld(), player.getLocation());
+										EntityWisp wisp = EntityWisp.spawn(plugin, (CraftServer)sender.getServer(), (CraftWorld)player.getWorld(), player.getLocation());
 										break;
 								}
 							}

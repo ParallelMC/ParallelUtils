@@ -78,7 +78,7 @@ public class CustomTypes {
     }
 
     public static String getEntityType(net.minecraft.server.v1_16_R3.Entity entity) {
-        if (entity instanceof NMSWisp) {
+        if (entity instanceof EntityWisp) {
             return "wisp";
         }
 
