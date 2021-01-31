@@ -52,7 +52,7 @@ public class EntityWisp extends EntityZombie {
         wisp.setPosition(l.getX(), l.getY(), l.getZ());
         world.getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
-        Registry.registerEntity(zombie.getUniqueId().toString(), "wisp", wisp);
+        Registry.getInstance().registerEntity(zombie.getUniqueId().toString(), "wisp", wisp);
 
         return wisp;
     }
@@ -64,9 +64,9 @@ public class EntityWisp extends EntityZombie {
 
         EntityWisp.initPathfinder(wisp);
 
-        if(!Registry.particleTaskRunning){
+        if(!Registry.getInstance().particleTaskRunning){
             BukkitTask task = new ParticleTask(plugin).runTaskTimer(plugin, 0, 10);
-            Registry.particleTaskRunning = true;
+            Registry.getInstance().particleTaskRunning = true;
         }
 
         return wisp;

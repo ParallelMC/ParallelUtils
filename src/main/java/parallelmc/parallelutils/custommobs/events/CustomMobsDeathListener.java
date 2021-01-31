@@ -26,8 +26,8 @@ public class CustomMobsDeathListener implements Listener {
 		EntityDamageEvent lastDamage = player.getLastDamageCause();
 		if(lastDamage instanceof EntityDamageByEntityEvent){
 			org.bukkit.entity.Entity killer = ((EntityDamageByEntityEvent) lastDamage).getDamager();
-			if(Registry.containsEntity(killer.getUniqueId().toString())){
-				EntityPair pair = Registry.getEntity(killer.getUniqueId().toString());
+			if(Registry.getInstance().containsEntity(killer.getUniqueId().toString())){
+				EntityPair pair = Registry.getInstance().getEntity(killer.getUniqueId().toString());
 				switch(pair.type){
 					case "wisp":
 						event.setDeathMessage(player.getDisplayName() + " was slain by Wisp");
@@ -39,7 +39,7 @@ public class CustomMobsDeathListener implements Listener {
 
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event){
-		EntityPair pair = Registry.getEntity(event.getEntity().getUniqueId().toString());
+		EntityPair pair = Registry.getInstance().getEntity(event.getEntity().getUniqueId().toString());
 		if(pair != null){
 			switch(pair.type){
 				case "wisp":

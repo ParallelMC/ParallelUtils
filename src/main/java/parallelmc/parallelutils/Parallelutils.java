@@ -1,7 +1,9 @@
 package parallelmc.parallelutils;
 
 import net.minecraft.server.v1_16_R3.Entity;
+import net.minecraft.server.v1_16_R3.EntityHorse;
 import net.minecraft.server.v1_16_R3.EntityInsentient;
+import net.minecraft.server.v1_16_R3.SpawnerCreature;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
@@ -121,7 +123,7 @@ public final class Parallelutils extends JavaPlugin {
 			e.printStackTrace();
 		}
 
-		Registry.registerParticles("wisp", new ParticleData(Particle.CLOUD, 50, 0.5, 1, 0));
+		Registry.getInstance().registerParticles("wisp", new ParticleData(Particle.CLOUD, 50, 0.5, 1, 0));
 
 		// Register events for the CustomMobs module
 		CustomMobsEventRegistrar.registerEvents();
@@ -152,7 +154,7 @@ public final class Parallelutils extends JavaPlugin {
 		try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO WorldMobs (UUID, Type, World, ChunkX, ChunkZ) VALUES (?, ?, ?, ?, ?)")) {
 			int i = 0;
 
-			for (EntityPair ep : Registry.getEntities()) {
+			for (EntityPair ep : Registry.getInstance().getEntities()) {
 				Entity e = ep.entity;
 				CraftEntity craftEntity = e.getBukkitEntity();
 
@@ -236,9 +238,8 @@ public final class Parallelutils extends JavaPlugin {
 			}
 
 			if (setupEntity != null) {
-				Registry.registerEntity(uuid, entityType, setupEntity);
+				Registry.getInstance().registerEntity(uuid, entityType, setupEntity);
 			}
-
 		}
 	}
 
