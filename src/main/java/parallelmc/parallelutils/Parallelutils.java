@@ -1,9 +1,7 @@
 package parallelmc.parallelutils;
 
 import net.minecraft.server.v1_16_R3.Entity;
-import net.minecraft.server.v1_16_R3.EntityHorse;
 import net.minecraft.server.v1_16_R3.EntityInsentient;
-import net.minecraft.server.v1_16_R3.SpawnerCreature;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
@@ -11,8 +9,6 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.custommobs.*;
-import parallelmc.parallelutils.custommobs.bukkitmobs.CraftWisp;
-import parallelmc.parallelutils.custommobs.bukkitmobs.CustomTypes;
 import parallelmc.parallelutils.custommobs.events.CustomMobsEventRegistrar;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityPair;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
@@ -28,21 +24,10 @@ public final class Parallelutils extends JavaPlugin {
 	String baseDataFolder = this.getDataFolder().getAbsolutePath();
 	FileConfiguration config = this.getConfig();
 
-	public static CustomTypes mobTypes;
-
 	public static Connection dbConn;
 
 	@Override
 	public void onLoad() {
-		mobTypes = new CustomTypes();
-
-		// More startup logic here
-		short id = 54;
-		try {
-			mobTypes.addEntityType("wisp", CraftWisp.class, id);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
 	}
 
