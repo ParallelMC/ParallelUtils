@@ -18,16 +18,16 @@ public class ParticleTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        Collection<EntityPair> pairs = Registry.getEntities();
+        Collection<EntityPair> pairs = Registry.getInstance().getEntities();
         if (pairs.isEmpty()){
-            Registry.particleTaskRunning = false;
+            Registry.getInstance().particleTaskRunning = false;
             this.cancel();
         }
         for(EntityPair pair : pairs){
             if(pair.entity == null) {
                 continue;
             }
-            ParticleData data = Registry.getParticleData(pair.type);
+            ParticleData data = Registry.getInstance().getParticleData(pair.type);
             if(data != null){
                 World world = pair.entity.getBukkitEntity().getWorld();
                 world.spawnParticle(data.particle, pair.entity.getBukkitEntity().getLocation(), data.amount,

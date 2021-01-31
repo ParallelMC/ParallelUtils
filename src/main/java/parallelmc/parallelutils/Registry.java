@@ -10,43 +10,59 @@ import java.util.logging.Level;
 
 public class Registry {
 
-	private static HashMap<String, EntityPair> entities = new HashMap<>();
+	private HashMap<String, EntityPair> entities;
 
-	private static HashMap<String, ParticleData> entityParticles = new HashMap<>();
+	private HashMap<String, ParticleData> entityParticles;
 
-	public static void registerEntity(String uuid, String type, Entity entity) {
+
+	private static Registry registry;
+
+	private Registry() {
+		entities = new HashMap<>();
+		entityParticles = new HashMap<>();
+	}
+
+	public static Registry getInstance() {
+		if (registry == null) {
+			registry = new Registry();
+		}
+
+		return registry;
+	}
+
+	public void registerEntity(String uuid, String type, Entity entity) {
 		Parallelutils.log(Level.INFO, "Registering entity " + uuid);
 		entities.put(uuid, new EntityPair(type, entity));
 	}
 
-	public static void registerParticles(String type,ParticleData data) {
+	public void registerParticles(String type,ParticleData data) {
 		Parallelutils.log(Level.INFO, "Registering particles for " + type);
 		entityParticles.put(type, data);
 	}
 
-	public static ParticleData getParticleData(String type){ return entityParticles.get(type);}
+	public ParticleData getParticleData(String type){ return entityParticles.get(type);}
 
-	public static EntityPair getEntity(String uuid) {
+	public EntityPair getEntity(String uuid) {
 		return entities.get(uuid);
 	}
 
-	public static Collection<String> getUUIDs() {
+	public Collection<String> getUUIDs() {
 		return entities.keySet();
 	}
 
-	public static Collection<EntityPair> getEntities() {
+	public Collection<EntityPair> getEntities() {
 		return entities.values();
 	}
 
-	public static EntityPair removeEntity(String uuid) {
+	public EntityPair removeEntity(String uuid) {
 		Parallelutils.log(Level.INFO, "Removing entity " + uuid);
 		return entities.remove(uuid);
 	}
 
-	public static boolean containsEntity(String uuid) {
+	public boolean containsEntity(String uuid) {
 		Parallelutils.log(Level.ALL, "Does contain " + uuid);
 		return entities.containsKey(uuid);
 	}
 
-	public static boolean particleTaskRunning = false;
+	public boolean particleTaskRunning = false;
 }
