@@ -1,29 +1,11 @@
 package parallelmc.parallelutils.custommobs.bukkitmobs;
 
-import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
-import org.jetbrains.annotations.NotNull;
-import org.bukkit.entity.EntityType;
 import org.bukkit.plugin.Plugin;
-import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 
 import static org.bukkit.attribute.Attribute.*;
 
-public class CraftWisp extends CraftZombie{
-    Plugin plugin;
-
-    public CraftWisp(CraftServer server, EntityWisp entity, Plugin plugin) {
-        super(server, entity);
-        this.plugin = plugin;
-        setupNBT(plugin, this);
-    }
-
-    @NotNull
-    @Override
-    public EntityType getType(){
-        return Parallelutils.mobTypes.getType("wisp");
-    }
+public class CraftWisp {
 
     public static void setupNBT(Plugin plugin, CraftZombie entity){
         //Attributes
