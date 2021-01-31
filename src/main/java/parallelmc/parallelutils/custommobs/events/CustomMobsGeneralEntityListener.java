@@ -16,9 +16,9 @@ public class CustomMobsGeneralEntityListener implements Listener {
 	@EventHandler
 	public void onEntityDespawn(final EntityRemoveFromWorldEvent event) {
 		CraftEntity entity = (CraftEntity)event.getEntity();
-		if (Registry.containsEntity(entity.getUniqueId().toString())) {
+		if (Registry.getInstance().containsEntity(entity.getUniqueId().toString())) {
 			Parallelutils.log(Level.ALL, "Removing entity " + entity.getUniqueId().toString() + " from world");
-			Registry.removeEntity(entity.getUniqueId().toString());
+			Registry.getInstance().removeEntity(entity.getUniqueId().toString());
 		}
 	}
 }
