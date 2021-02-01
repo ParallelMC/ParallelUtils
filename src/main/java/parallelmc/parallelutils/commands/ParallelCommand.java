@@ -14,7 +14,7 @@ public abstract class ParallelCommand {
 		this.permission = permission;
 	}
 
-	abstract boolean execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String[] args);
+	public abstract boolean execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String[] args);
 
 	protected boolean hasPermissions(CommandSender sender) {
 		if (!permission.hasPermission(sender)) {

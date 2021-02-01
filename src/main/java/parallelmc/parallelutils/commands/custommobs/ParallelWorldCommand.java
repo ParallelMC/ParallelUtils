@@ -1,4 +1,4 @@
-package parallelmc.parallelutils.commands;
+package parallelmc.parallelutils.commands.custommobs;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -11,6 +11,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.commands.ParallelCommand;
+import parallelmc.parallelutils.commands.ParallelPermission;
+import parallelmc.parallelutils.commands.permissions.ParallelOrPermission;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 
 import java.util.logging.Level;
