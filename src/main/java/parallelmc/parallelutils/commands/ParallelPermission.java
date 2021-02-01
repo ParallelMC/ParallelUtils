@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 
 public class ParallelPermission {
 
-	protected String permission;
+	String permission;
 
 	public ParallelPermission(String permission) {
 		this.permission = permission;
@@ -12,5 +12,9 @@ public class ParallelPermission {
 
 	public boolean hasPermission(CommandSender sender) {
 		return Commands.hasPermission(sender, permission);
+	}
+
+	public String getPermission() {
+		return permission;
 	}
 }

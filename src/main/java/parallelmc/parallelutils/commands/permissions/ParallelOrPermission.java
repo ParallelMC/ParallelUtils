@@ -1,13 +1,14 @@
-package parallelmc.parallelutils.commands;
+package parallelmc.parallelutils.commands.permissions;
 
 import org.bukkit.command.CommandSender;
+import parallelmc.parallelutils.commands.ParallelPermission;
 
-public class ParallelOrPermission extends ParallelPermission{
+public class ParallelOrPermission extends ParallelPermission {
 
 	protected ParallelPermission[] permissions;
 
 	public ParallelOrPermission(ParallelPermission[] permissions) {
-		super(permissions[0].permission);
+		super(permissions[0].getPermission());
 		this.permissions = permissions;
 	}
 
