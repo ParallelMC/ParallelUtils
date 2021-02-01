@@ -5,6 +5,7 @@ import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.commands.custommobs.ParallelWorldCommand;
 
 import java.util.ArrayList;
 import java.util.Arrays;
