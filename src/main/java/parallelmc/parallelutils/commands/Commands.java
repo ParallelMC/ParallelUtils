@@ -1,21 +1,13 @@
 package parallelmc.parallelutils.commands;
 
-import org.bukkit.Location;
 import org.bukkit.command.*;
-import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.custommobs.EntityWisp;
-import parallelmc.parallelutils.custommobs.NMSWisp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Commands implements CommandExecutor, TabCompleter {
@@ -38,33 +30,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 			} else {
 				switch (args[0]) {
 					case "test":
-						if (hasPermission(sender, "parallelutils.test")) {
-							sender.sendMessage("tested");
-						} else {
-							sender.sendMessage("You do not have permission");
-						}
+						new ParallelTestCommand().execute(sender, command, args);
 						break;
 					case "world":
-						if (hasPermission(sender, "parallelutils.spawn") ||
-								hasPermission(sender, "parallelutils.spawn.world")) {
-							if(sender instanceof Player){
-								Player player = (Player) sender;
-
-								if (args.length <= 1) {
-									sender.sendMessage("Options:\n" +
-														"wisp");
-									break;
-								}
-
-								switch (args[1]) {
-									case "wisp":
-										NMSWisp wisp = NMSWisp.spawn(plugin, (CraftServer)sender.getServer(), (CraftWorld)player.getWorld(), player.getLocation());
-										break;
-								}
-							}
-						} else {
-							sender.sendMessage("You do not have permission");
-						}
+						new ParallelWorldCommand().execute(sender, command, args);
 						break;
 					case "reset":
 						/*CraftZombie mob = (CraftZombie)Bukkit.getEntity(UUID.fromString("29cff125-d7b0-4a20-a03f-97c0b16149b2"));
@@ -91,7 +60,6 @@ public class Commands implements CommandExecutor, TabCompleter {
 		ArrayList<String> list = new ArrayList<>();
 
 		if (!hasPermission(sender, "parallelutils.basic")) {
-			sender.sendMessage("You do not have permission");
 			return list;
 		}
 
@@ -101,10 +69,16 @@ public class Commands implements CommandExecutor, TabCompleter {
 			list.add("world");
 		}
 
+		if (args.length == 2) {
+			if (args[0].equals("world")) {
+				list.addAll(Arrays.asList(ParallelWorldCommand.WORLD_MOBS));
+			}
+		}
+
 		return list;
 	}
 
-	private boolean hasPermission(CommandSender sender, String permission) {
+	static boolean hasPermission(CommandSender sender, String permission) {
 		return sender instanceof ServerCommandSender || sender.isOp() || sender.hasPermission(permission);
 	}
 }
