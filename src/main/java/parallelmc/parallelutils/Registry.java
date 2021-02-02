@@ -2,7 +2,8 @@ package parallelmc.parallelutils;
 
 import net.minecraft.server.v1_16_R3.Entity;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityPair;
-import parallelmc.parallelutils.custommobs.ParticleData;
+import parallelmc.parallelutils.custommobs.particles.ParticleOptions;
+import parallelmc.parallelutils.custommobs.spawners.SpawnerOptions;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,8 +13,9 @@ public class Registry {
 
 	private HashMap<String, EntityPair> entities;
 
-	private HashMap<String, ParticleData> entityParticles;
+	private HashMap<String, ParticleOptions> entityParticles;
 
+	private HashMap<String, SpawnerOptions> spawners;
 
 	private static Registry registry;
 
@@ -35,12 +37,19 @@ public class Registry {
 		entities.put(uuid, new EntityPair(type, entity));
 	}
 
-	public void registerParticles(String type,ParticleData data) {
+	public void registerParticles(String type, ParticleOptions options) {
 		Parallelutils.log(Level.INFO, "Registering particles for " + type);
-		entityParticles.put(type, data);
+		entityParticles.put(type, options);
 	}
 
-	public ParticleData getParticleData(String type){ return entityParticles.get(type);}
+	public void registerSpawner(String type, SpawnerOptions options){
+		Parallelutils.log(Level.INFO, "Registering spawner for " + type);
+		spawners.put(type, options);
+	}
+
+	public SpawnerOptions getSpawnerOptions(String type){ return spawners.get(type);}
+
+	public ParticleOptions getParticleOptions(String type){ return entityParticles.get(type);}
 
 	public EntityPair getEntity(String uuid) {
 		return entities.get(uuid);
