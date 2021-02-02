@@ -13,4 +13,19 @@ public class SpawnerOptions {
     public boolean resetHealthOnLeash;
     public boolean resetThreatOnLeash;
 
+    public SpawnerOptions(int radiusX, int radiusY, int maxMobs, int mobsPerSpawn, int cooldown, int warmup, boolean checkForPlayers, int activationRange, int leashRange, boolean resetHealthOnLeash, boolean resetThreatOnLeash) {
+        this.radiusX = radiusX;
+        this.radiusY = radiusY;
+        this.maxMobs = maxMobs;
+        this.mobsPerSpawn = mobsPerSpawn;
+        this.cooldown = cooldown;
+        this.warmup = warmup;
+        this.checkForPlayers = checkForPlayers;
+        this.activationRange = activationRange;
+        this.leashRange = leashRange;
+        this.resetHealthOnLeash = resetHealthOnLeash;
+        this.resetThreatOnLeash = resetThreatOnLeash;
+    }
+
+
 }
