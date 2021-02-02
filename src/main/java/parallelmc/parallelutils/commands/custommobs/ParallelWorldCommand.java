@@ -32,8 +32,11 @@ public class ParallelWorldCommand extends ParallelCommand {
 			Player player = (Player) sender;
 
 			if (args.length <= 1) {
-				sender.sendMessage("Options:\n" +
-						"wisp");
+				String options = "Options:\n";
+				for (String s : WORLD_MOBS) {
+					options += s + "\n";
+				}
+				sender.sendMessage(options);
 				return true;
 			}
 
