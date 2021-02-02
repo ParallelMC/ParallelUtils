@@ -10,9 +10,10 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import parallelmc.parallelutils.Registry;
 import parallelmc.parallelutils.custommobs.particles.ParticleTask;
 import parallelmc.parallelutils.custommobs.bukkitmobs.CraftWisp;
+import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
+import parallelmc.parallelutils.custommobs.registry.ParticleRegistry;
 
 public class EntityWisp extends EntityZombie {
     public EntityWisp(EntityTypes<? extends EntityZombie> entitytypes, World world) {
@@ -48,7 +49,7 @@ public class EntityWisp extends EntityZombie {
         wisp.setPosition(l.getX(), l.getY(), l.getZ());
         world.getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
-        Registry.getInstance().registerEntity(zombie.getUniqueId().toString(), "wisp", wisp);
+        EntityRegistry.getInstance().registerEntity(zombie.getUniqueId().toString(), "wisp", wisp);
 
         return wisp;
     }
@@ -60,9 +61,9 @@ public class EntityWisp extends EntityZombie {
 
         EntityWisp.initPathfinder(wisp);
 
-        if(!Registry.getInstance().particleTaskRunning){
+        if(!ParticleRegistry.getInstance().particleTaskRunning){
             BukkitTask task = new ParticleTask(plugin).runTaskTimer(plugin, 0, 10);
-            Registry.getInstance().particleTaskRunning = true;
+            ParticleRegistry.getInstance().particleTaskRunning = true;
         }
 
         return wisp;
