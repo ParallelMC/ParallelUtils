@@ -12,6 +12,8 @@ import parallelmc.parallelutils.custommobs.events.CustomMobsEventRegistrar;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityPair;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 import parallelmc.parallelutils.custommobs.particles.ParticleOptions;
+import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
+import parallelmc.parallelutils.custommobs.registry.ParticleRegistry;
 
 import java.sql.*;
 import java.util.UUID;
@@ -108,7 +110,7 @@ public final class Parallelutils extends JavaPlugin {
 			e.printStackTrace();
 		}
 
-		Registry.getInstance().registerParticles("wisp", new ParticleOptions(Particle.CLOUD, 50, 0.5, 1, 0));
+		ParticleRegistry.getInstance().registerParticles("wisp", new ParticleOptions(Particle.CLOUD, 50, 0.5, 1, 0));
 
 		// Register events for the CustomMobs module
 		CustomMobsEventRegistrar.registerEvents();
@@ -139,7 +141,7 @@ public final class Parallelutils extends JavaPlugin {
 		try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO WorldMobs (UUID, Type, World, ChunkX, ChunkZ) VALUES (?, ?, ?, ?, ?)")) {
 			int i = 0;
 
-			for (EntityPair ep : Registry.getInstance().getEntities()) {
+			for (EntityPair ep : EntityRegistry.getInstance().getEntities()) {
 				Entity e = ep.entity;
 				CraftEntity craftEntity = e.getBukkitEntity();
 
@@ -223,7 +225,7 @@ public final class Parallelutils extends JavaPlugin {
 			}
 
 			if (setupEntity != null) {
-				Registry.getInstance().registerEntity(uuid, entityType, setupEntity);
+				EntityRegistry.getInstance().registerEntity(uuid, entityType, setupEntity);
 			}
 		}
 	}
