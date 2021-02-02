@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.commands.ParallelCommand;
-import parallelmc.parallelutils.commands.ParallelPermission;
+import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 import parallelmc.parallelutils.commands.permissions.ParallelOrPermission;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 

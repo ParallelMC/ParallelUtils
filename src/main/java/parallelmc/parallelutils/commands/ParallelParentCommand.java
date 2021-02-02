@@ -1,7 +1,7 @@
 package parallelmc.parallelutils.commands;
 
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
+import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 
 public abstract class ParallelParentCommand extends ParallelCommand {
 
