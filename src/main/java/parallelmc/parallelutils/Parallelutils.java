@@ -8,10 +8,10 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.Commands;
-import parallelmc.parallelutils.custommobs.*;
 import parallelmc.parallelutils.custommobs.events.CustomMobsEventRegistrar;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityPair;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
+import parallelmc.parallelutils.custommobs.particles.ParticleOptions;
 
 import java.sql.*;
 import java.util.UUID;
@@ -108,7 +108,7 @@ public final class Parallelutils extends JavaPlugin {
 			e.printStackTrace();
 		}
 
-		Registry.getInstance().registerParticles("wisp", new ParticleData(Particle.CLOUD, 50, 0.5, 1, 0));
+		Registry.getInstance().registerParticles("wisp", new ParticleOptions(Particle.CLOUD, 50, 0.5, 1, 0));
 
 		// Register events for the CustomMobs module
 		CustomMobsEventRegistrar.registerEvents();

@@ -1,4 +1,4 @@
-package parallelmc.parallelutils.custommobs;
+package parallelmc.parallelutils.custommobs.particles;
 
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
@@ -27,7 +27,7 @@ public class ParticleTask extends BukkitRunnable {
             if(pair.entity == null) {
                 continue;
             }
-            ParticleData data = Registry.getInstance().getParticleData(pair.type);
+            ParticleOptions data = Registry.getInstance().getParticleOptions(pair.type);
             if(data != null){
                 World world = pair.entity.getBukkitEntity().getWorld();
                 world.spawnParticle(data.particle, pair.entity.getBukkitEntity().getLocation(), data.amount,
