@@ -3,6 +3,7 @@ package parallelmc.parallelutils.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 
 public abstract class ParallelCommand {
 

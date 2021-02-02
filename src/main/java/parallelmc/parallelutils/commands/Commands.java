@@ -79,7 +79,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		return list;
 	}
 
-	static boolean hasPermission(CommandSender sender, String permission) {
+	public static boolean hasPermission(CommandSender sender, String permission) {
 		return sender instanceof ServerCommandSender || sender.isOp() || sender.hasPermission(permission);
 	}
 }
