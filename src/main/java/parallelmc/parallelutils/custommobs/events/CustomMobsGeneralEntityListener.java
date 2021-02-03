@@ -19,5 +19,6 @@ public class CustomMobsGeneralEntityListener implements Listener {
 			Parallelutils.log(Level.ALL, "Removing entity " + entity.getUniqueId().toString() + " from world");
 			EntityRegistry.getInstance().removeEntity(entity.getUniqueId().toString());
 		}
+		//TODO: if entity is from a spawner, decrease the spawners MobCount and remove it from the leash list
 	}
 }
