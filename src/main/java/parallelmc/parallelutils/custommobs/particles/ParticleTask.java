@@ -3,7 +3,7 @@ package parallelmc.parallelutils.custommobs.particles;
 import org.bukkit.World;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import parallelmc.parallelutils.custommobs.nmsmobs.EntityPair;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityData;
 import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
 import parallelmc.parallelutils.custommobs.registry.ParticleRegistry;
 
@@ -19,12 +19,12 @@ public class ParticleTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        Collection<EntityPair> pairs = EntityRegistry.getInstance().getEntities();
+        Collection<EntityData> pairs = EntityRegistry.getInstance().getEntities();
         if (pairs.isEmpty()){
             ParticleRegistry.getInstance().particleTaskRunning = false;
             this.cancel();
         }
-        for(EntityPair pair : pairs){
+        for(EntityData pair : pairs){
             if(pair.entity == null) {
                 continue;
             }
