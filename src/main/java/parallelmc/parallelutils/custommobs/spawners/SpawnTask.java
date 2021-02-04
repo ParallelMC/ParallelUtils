@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
+import parallelmc.parallelutils.custommobs.nmsmobs.SpawnReason;
 import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
 import parallelmc.parallelutils.util.DistanceTools;
@@ -69,15 +70,15 @@ public class SpawnTask extends BukkitRunnable {
 							CraftZombie mob = (CraftZombie) spawnLocation.getWorld()
 									.spawnEntity(spawnLocation, EntityType.ZOMBIE);
 							if (mob != null) {
-								SpawnerRegistry.getInstance().setMobCount(location,
-										SpawnerRegistry.getInstance().getMobCount(location) + 1);
+								SpawnerRegistry.getInstance().incrementMobCount(location);
 								setUpEntity = EntityWisp.setup(plugin, mob);
 							}
 							break;
 					}
 
 					if (setUpEntity != null) {
-						EntityRegistry.getInstance().registerEntity(setUpEntity.getUniqueID().toString(), type, setUpEntity);
+						EntityRegistry.getInstance().registerEntity(setUpEntity.getUniqueID().toString(),
+								type, setUpEntity, SpawnReason.SPAWNER, location);
 						//TODO: leash crap
 					}
 				} else {
