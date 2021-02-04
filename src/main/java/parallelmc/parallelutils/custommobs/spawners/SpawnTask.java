@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
+import parallelmc.parallelutils.util.DistanceTools;
 
 import java.util.Collection;
 import java.util.Random;
@@ -88,7 +89,7 @@ public class SpawnTask extends BukkitRunnable {
     private boolean playerInRange() {
         Collection<? extends Player> online = plugin.getServer().getOnlinePlayers();
         for (Player player : online) {
-            if (SpawnerHelper.distance(location, player.getLocation()) < options.activationRange) {
+            if (DistanceTools.distance(location, player.getLocation()) < options.activationRange) {
                 return true;
             }
         }
