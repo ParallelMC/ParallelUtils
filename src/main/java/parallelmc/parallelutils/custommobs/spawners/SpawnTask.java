@@ -2,6 +2,8 @@ package parallelmc.parallelutils.custommobs.spawners;
 
 import net.minecraft.server.v1_16_R3.EntityInsentient;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -23,12 +25,14 @@ public class SpawnTask extends BukkitRunnable {
 	private final Location location;
 	private int timer;
 
-	public SpawnTask(JavaPlugin plugin, String type, Location location) {
+	public SpawnTask(JavaPlugin plugin, String type, Location location, int startCount) {
 		this.plugin = plugin;
 		this.type = type;
 		this.options = SpawnerRegistry.getInstance().getSpawnerOptions(type);
 		this.location = location;
 		this.timer = options.warmup;
+
+		SpawnerRegistry.getInstance().addCount(location, startCount);
 	}
 
 	@Override
@@ -67,20 +71,15 @@ public class SpawnTask extends BukkitRunnable {
 					EntityInsentient setUpEntity = null;
 					switch (type) {
 						case "wisp":
-							CraftZombie mob = (CraftZombie) spawnLocation.getWorld()
-									.spawnEntity(spawnLocation, EntityType.ZOMBIE);
-							if (mob != null) {
-								SpawnerRegistry.getInstance().incrementMobCount(location);
-								setUpEntity = EntityWisp.setup(plugin, mob);
-							}
+							EntityWisp wisp = EntityWisp.spawn(plugin, (CraftServer)plugin.getServer(),
+									(CraftWorld)location.getWorld(), spawnLocation, SpawnReason.SPAWNER, location);
+							SpawnerRegistry.getInstance().incrementMobCount(location);
 							break;
 					}
 
-					if (setUpEntity != null) {
-						EntityRegistry.getInstance().registerEntity(setUpEntity.getUniqueID().toString(),
-								type, setUpEntity, SpawnReason.SPAWNER, location);
+					//if (setUpEntity != null) {
 						//TODO: leash crap
-					}
+					//}
 				} else {
 					break;
 				}
