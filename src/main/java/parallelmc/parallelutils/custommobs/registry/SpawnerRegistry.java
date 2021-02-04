@@ -51,6 +51,9 @@ public class SpawnerRegistry {
 
 	public void setMobCount(Location loc, int count){mobCounts.replace(loc, count); }
 
+	public void incrementMobCount(Location loc){mobCounts.replace(loc, mobCounts.get(loc)+1);}
+	public void decrementMobCount(Location loc){mobCounts.replace(loc, mobCounts.get(loc)-1);}
+
 	public void removeMobCount(Location loc){mobCounts.remove(loc);}
 
 	public void addSpawnTaskID(Location loc, int id){spawnTaskID.put(loc, id);}
