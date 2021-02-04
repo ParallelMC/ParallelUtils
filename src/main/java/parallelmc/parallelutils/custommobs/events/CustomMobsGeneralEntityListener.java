@@ -5,7 +5,9 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.custommobs.nmsmobs.SpawnReason;
 import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
+import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
 
 import java.util.logging.Level;
 
@@ -15,10 +17,14 @@ public class CustomMobsGeneralEntityListener implements Listener {
 	@EventHandler
 	public void onEntityDespawn(final EntityRemoveFromWorldEvent event) {
 		CraftEntity entity = (CraftEntity)event.getEntity();
-		if (EntityRegistry.getInstance().containsEntity(entity.getUniqueId().toString())) {
-			Parallelutils.log(Level.ALL, "Removing entity " + entity.getUniqueId().toString() + " from world");
-			EntityRegistry.getInstance().removeEntity(entity.getUniqueId().toString());
+		String UUID = entity.getUniqueId().toString();
+		if (EntityRegistry.getInstance().containsEntity(UUID)) {
+			Parallelutils.log(Level.ALL, "Removing entity " + UUID + " from world");
+			if(EntityRegistry.getInstance().getEntity(UUID).spawnReason == SpawnReason.SPAWNER){
+				SpawnerRegistry.getInstance().decrementMobCount(EntityRegistry.getInstance().getEntity(UUID).spawnOrigin);
+				//TODO: remove from leash list when leashes exist
+			}
+			EntityRegistry.getInstance().removeEntity(UUID);
 		}
-		//TODO: if entity is from a spawner, decrease the spawners MobCount and remove it from the leash list
 	}
 }

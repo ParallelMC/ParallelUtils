@@ -1,8 +1,10 @@
 package parallelmc.parallelutils.custommobs.registry;
 
 import net.minecraft.server.v1_16_R3.Entity;
+import org.bukkit.Location;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityData;
+import parallelmc.parallelutils.custommobs.nmsmobs.SpawnReason;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,6 +31,14 @@ public class EntityRegistry {
 	public void registerEntity(String uuid, String type, Entity entity) {
 		Parallelutils.log(Level.INFO, "Registering entity " + uuid);
 		entities.put(uuid, new EntityData(type, entity));
+	}
+	public void registerEntity(String uuid, String type, Entity entity, SpawnReason reason) {
+		Parallelutils.log(Level.INFO, "Registering entity " + uuid);
+		entities.put(uuid, new EntityData(type, entity, reason));
+	}
+	public void registerEntity(String uuid, String type, Entity entity, SpawnReason reason, Location origin) {
+		Parallelutils.log(Level.INFO, "Registering entity " + uuid);
+		entities.put(uuid, new EntityData(type, entity, reason, origin));
 	}
 
 	public EntityData getEntity(String uuid) {
