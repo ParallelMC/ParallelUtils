@@ -18,12 +18,12 @@ import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 
 import java.util.logging.Level;
 
-public class ParallelWorldCommand extends ParallelCommand {
+public class ParallelSummonCommand extends ParallelCommand {
 
-	public static final String[] WORLD_MOBS = new String[]{"wisp"};
+	public static final String[] SUMMON_MOBS = new String[]{"wisp"};
 
-	public ParallelWorldCommand() {
-		super("world", new ParallelOrPermission(new ParallelPermission[]{new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.world")}));
+	public ParallelSummonCommand() {
+		super("summon", new ParallelOrPermission(new ParallelPermission[]{new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.summon")}));
 	}
 
 	@Override
@@ -33,7 +33,7 @@ public class ParallelWorldCommand extends ParallelCommand {
 
 			if (args.length <= 1) {
 				String options = "Options:\n";
-				for (String s : WORLD_MOBS) {
+				for (String s : SUMMON_MOBS) {
 					options += s + "\n";
 				}
 				sender.sendMessage(options);
@@ -44,7 +44,7 @@ public class ParallelWorldCommand extends ParallelCommand {
 			JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.pluginName);
 
 			if (plugin == null) {
-				Parallelutils.log(Level.SEVERE, "Unable to execute command 'world'. Plugin " + Constants.pluginName + " does not exist!");
+				Parallelutils.log(Level.SEVERE, "Unable to execute command 'summon'. Plugin " + Constants.pluginName + " does not exist!");
 				return false;
 			}
 

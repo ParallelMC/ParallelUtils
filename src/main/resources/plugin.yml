@@ -26,16 +26,12 @@ permissions:
     description: Gives access to any PU commands. Required to do anything
     default: false
   parallelutils.spawn:
-    description: Gives access to spawning commands, like eggs and monster spawners.
+    description: Gives access to spawning commands, such as summoning and monster spawners.
     children:
-      parallelutils.spawn.egg: true
-      parallelutils.spawn.world: true
+      parallelutils.spawn.summon: true
     default: false
-  parallelutils.spawn.egg:
-    description: Gives access to spawn egg command.
-    default: false
-  parallelutils.spawn.world:
-    description: Gives access to spawn world command.
+  parallelutils.spawn.summon:
+    description: Gives access to spawn summon command.
     default: false
   parallelutils.test:
     description: Gives access to the test command
