@@ -5,7 +5,7 @@ import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.commands.custommobs.ParallelWorldCommand;
+import parallelmc.parallelutils.commands.custommobs.ParallelSummonCommand;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,20 +33,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 					case "test":
 						new ParallelTestCommand().execute(sender, command, args);
 						break;
-					case "world":
-						new ParallelWorldCommand().execute(sender, command, args);
-						break;
-					case "reset":
-						/*CraftZombie mob = (CraftZombie)Bukkit.getEntity(UUID.fromString("29cff125-d7b0-4a20-a03f-97c0b16149b2"));
-						mob.setShouldBurnInDay(false);
-						if (mob != null) {
-							EntityWisp.setupNBT(plugin, mob);
-
-							EntityZombie wisp = (mob).getHandle();
-							NMSWisp.initPathfinder(wisp);
-						} else {
-							System.out.println("Mob is null!");
-						}*/
+					case "summon":
+						new ParallelSummonCommand().execute(sender, command, args);
 						break;
 					default:
 						sender.sendMessage("PU: Command not found");
@@ -67,12 +55,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 		if (command.getName().equalsIgnoreCase("parallelutils") || command.getName().equalsIgnoreCase("pu") && args.length == 1) {
 			// List every sub-command
 			list.add("test");
-			list.add("world");
+			list.add("summon");
 		}
 
 		if (args.length == 2) {
-			if (args[0].equals("world")) {
-				list.addAll(Arrays.asList(ParallelWorldCommand.WORLD_MOBS));
+			if (args[0].equals("summon")) {
+				list.addAll(Arrays.asList(ParallelSummonCommand.SUMMON_MOBS));
 			}
 		}
 
