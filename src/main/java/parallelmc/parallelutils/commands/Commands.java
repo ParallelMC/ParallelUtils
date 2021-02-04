@@ -60,11 +60,14 @@ public class Commands implements CommandExecutor, TabCompleter {
 			// List every sub-command
 			list.add("test");
 			list.add("summon");
+			list.add("spawnerCreate");
 		}
 
 		if (args.length == 2) {
 			if (args[0].equals("summon")) {
 				list.addAll(Arrays.asList(ParallelSummonCommand.SUMMON_MOBS));
+			} else if (args[0].equals("spawnerCreate")) {
+				list.addAll(Arrays.asList(ParallelSpawnerCreateCommand.SUMMON_MOBS));
 			}
 		}
 

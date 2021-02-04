@@ -15,6 +15,8 @@ import parallelmc.parallelutils.custommobs.nmsmobs.SpawnReason;
 import parallelmc.parallelutils.custommobs.particles.ParticleOptions;
 import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
 import parallelmc.parallelutils.custommobs.registry.ParticleRegistry;
+import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
+import parallelmc.parallelutils.custommobs.spawners.SpawnerOptions;
 
 import java.sql.*;
 import java.util.UUID;
@@ -139,6 +141,12 @@ public final class Parallelutils extends JavaPlugin {
 		}
 
 		ParticleRegistry.getInstance().registerParticles("wisp", new ParticleOptions(Particle.CLOUD, 50, 0.5, 1, 0));
+
+
+		// TODO: This is temporary for testing
+		SpawnerRegistry.getInstance().registerSpawner("wisp", new SpawnerOptions(0, 0, 8,
+				1, 400, 0, true, 40, 32,
+				false, false));
 
 		// Register events for the CustomMobs module
 		CustomMobsEventRegistrar.registerEvents();
