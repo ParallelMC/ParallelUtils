@@ -5,6 +5,7 @@ import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.commands.custommobs.ParallelSpawnerCreateCommand;
 import parallelmc.parallelutils.commands.custommobs.ParallelSummonCommand;
 
 import java.util.ArrayList;
@@ -35,6 +36,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 						break;
 					case "summon":
 						new ParallelSummonCommand().execute(sender, command, args);
+						break;
+					case "spawnerCreate":
+						new ParallelSpawnerCreateCommand().execute(sender,command,args);
 						break;
 					default:
 						sender.sendMessage("PU: Command not found");

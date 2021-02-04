@@ -1,28 +1,29 @@
 package parallelmc.parallelutils.commands.custommobs;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelOrPermission;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
-import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
+import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
+import parallelmc.parallelutils.custommobs.spawners.SpawnTask;
 
 import java.util.logging.Level;
 
 public class ParallelSpawnerCreateCommand extends ParallelCommand {
     public static final String[] SUMMON_MOBS = new String[]{"wisp"};
 
-    public ParallelSpawnerCreateCommand(String name, ParallelPermission permission) {
-        super("spawerCreate", new ParallelOrPermission(new ParallelPermission[]
+    public ParallelSpawnerCreateCommand() {
+        super("spawnerCreate", new ParallelOrPermission(new ParallelPermission[]
                 {new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.spawner"),
                 new ParallelPermission("parallelutils.spawn.spawner.create")}));
     }
@@ -45,13 +46,30 @@ public class ParallelSpawnerCreateCommand extends ParallelCommand {
             JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.pluginName);
 
             if (plugin == null) {
-                Parallelutils.log(Level.SEVERE, "Unable to execute command 'summon'. Plugin " + Constants.pluginName + " does not exist!");
+                Parallelutils.log(Level.SEVERE, "Unable to execute command 'spawnerCreate'. Plugin " + Constants.pluginName + " does not exist!");
                 return false;
+            }
+
+            if(args.length < 5){
+                sender.sendMessage("Please enter a full set of coordinates.");
+                return true;
+            }
+            Location spawnerLocation = null;
+            try {
+                spawnerLocation = new Location(player.getWorld(), Double.parseDouble(args[2]),
+                        Double.parseDouble(args[3]), Double.parseDouble(args[4]));
+            }
+            catch(NumberFormatException e){
+                sender.sendMessage("Incorrect coordinate formatting!");
+                return true;
             }
 
             switch (args[1]) {
                 case "wisp":
-                    EntityWisp wisp = EntityWisp.spawn(plugin, (CraftServer)sender.getServer(), (CraftWorld)player.getWorld(), player.getLocation());
+                    BukkitTask task = new SpawnTask(plugin, "wisp", spawnerLocation, 0)
+                            .runTaskTimer(plugin, 0, SpawnerRegistry.getInstance().
+                                    getSpawnerOptions("wisp").cooldown);
+                    SpawnerRegistry.getInstance().addSpawnTaskID(spawnerLocation, task.getTaskId());
                     break;
             }
         } else {
