@@ -50,6 +50,7 @@ public class ParallelSpawnerCreateCommand extends ParallelCommand {
                 return false;
             }
 
+            // TODO: Make this show that you didn't put in the mob name
             if(args.length < 5){
                 sender.sendMessage("Please enter a full set of coordinates.");
                 return true;

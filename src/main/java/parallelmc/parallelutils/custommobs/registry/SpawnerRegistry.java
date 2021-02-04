@@ -25,6 +25,11 @@ public class SpawnerRegistry {
 
 	private SpawnerRegistry() {
 		spawners = new HashMap<>();
+		mobCounts = new HashMap<>();
+		spawnTaskID = new HashMap<>();
+		leashTaskID = new HashMap<>();
+		leashedEntityLocations = new HashMap<>();
+		leashedEntityLists = new HashMap<>();
 	}
 
 	public static SpawnerRegistry getInstance() {
