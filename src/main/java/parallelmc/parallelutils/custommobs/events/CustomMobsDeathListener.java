@@ -13,7 +13,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import parallelmc.parallelutils.custommobs.nmsmobs.EntityPair;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityData;
 import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
 
 import java.util.List;
@@ -27,7 +27,7 @@ public class CustomMobsDeathListener implements Listener {
 		if(lastDamage instanceof EntityDamageByEntityEvent){
 			org.bukkit.entity.Entity killer = ((EntityDamageByEntityEvent) lastDamage).getDamager();
 			if(EntityRegistry.getInstance().containsEntity(killer.getUniqueId().toString())){
-				EntityPair pair = EntityRegistry.getInstance().getEntity(killer.getUniqueId().toString());
+				EntityData pair = EntityRegistry.getInstance().getEntity(killer.getUniqueId().toString());
 				switch(pair.type){
 					case "wisp":
 						event.setDeathMessage(player.getDisplayName() + " was slain by Wisp");
@@ -39,7 +39,7 @@ public class CustomMobsDeathListener implements Listener {
 
 	@EventHandler
 	public void onEntityDeath(EntityDeathEvent event){
-		EntityPair pair = EntityRegistry.getInstance().getEntity(event.getEntity().getUniqueId().toString());
+		EntityData pair = EntityRegistry.getInstance().getEntity(event.getEntity().getUniqueId().toString());
 		if(pair != null){
 			switch(pair.type){
 				case "wisp":
