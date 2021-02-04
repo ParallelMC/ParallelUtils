@@ -2,7 +2,7 @@ package parallelmc.parallelutils.custommobs.registry;
 
 import net.minecraft.server.v1_16_R3.Entity;
 import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.custommobs.nmsmobs.EntityPair;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityData;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import java.util.logging.Level;
 
 public class EntityRegistry {
 
-	private HashMap<String, EntityPair> entities;
+	private HashMap<String, EntityData> entities;
 
 	private static EntityRegistry registry;
 
@@ -28,10 +28,10 @@ public class EntityRegistry {
 
 	public void registerEntity(String uuid, String type, Entity entity) {
 		Parallelutils.log(Level.INFO, "Registering entity " + uuid);
-		entities.put(uuid, new EntityPair(type, entity));
+		entities.put(uuid, new EntityData(type, entity));
 	}
 
-	public EntityPair getEntity(String uuid) {
+	public EntityData getEntity(String uuid) {
 		return entities.get(uuid);
 	}
 
@@ -39,11 +39,11 @@ public class EntityRegistry {
 		return entities.keySet();
 	}
 
-	public Collection<EntityPair> getEntities() {
+	public Collection<EntityData> getEntities() {
 		return entities.values();
 	}
 
-	public EntityPair removeEntity(String uuid) {
+	public EntityData removeEntity(String uuid) {
 		Parallelutils.log(Level.INFO, "Removing entity " + uuid);
 		return entities.remove(uuid);
 	}

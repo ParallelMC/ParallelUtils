@@ -9,7 +9,7 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.custommobs.events.CustomMobsEventRegistrar;
-import parallelmc.parallelutils.custommobs.nmsmobs.EntityPair;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityData;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 import parallelmc.parallelutils.custommobs.particles.ParticleOptions;
 import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
@@ -141,7 +141,7 @@ public final class Parallelutils extends JavaPlugin {
 		try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO WorldMobs (UUID, Type, World, ChunkX, ChunkZ) VALUES (?, ?, ?, ?, ?)")) {
 			int i = 0;
 
-			for (EntityPair ep : EntityRegistry.getInstance().getEntities()) {
+			for (EntityData ep : EntityRegistry.getInstance().getEntities()) {
 				Entity e = ep.entity;
 				CraftEntity craftEntity = e.getBukkitEntity();
 
