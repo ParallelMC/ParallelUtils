@@ -11,6 +11,7 @@ import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.custommobs.events.CustomMobsEventRegistrar;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityData;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
+import parallelmc.parallelutils.custommobs.nmsmobs.SpawnReason;
 import parallelmc.parallelutils.custommobs.particles.ParticleOptions;
 import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
 import parallelmc.parallelutils.custommobs.registry.ParticleRegistry;
@@ -87,25 +88,52 @@ public final class Parallelutils extends JavaPlugin {
 		// Create the table if it doesn't exist
 		try {
 			Statement statement = dbConn.createStatement();
-			statement.execute("CREATE TABLE IF NOT EXISTS WorldMobs" +
-					"(" +
-					"UUID VARCHAR(36)," +
-					"Type VARCHAR(16)," +
-					"World VARCHAR(32)," +
-					"ChunkX INT," +
-					"ChunkZ INT" +
-					")");
+			statement.execute("create table if not exists WorldMobs\n" +
+					"(\n" +
+					"    UUID        varchar(36) not null,\n" +
+					"    Type        varchar(16) not null,\n" +
+					"    World       varchar(32) not null,\n" +
+					"    ChunkX      int         not null,\n" +
+					"    ChunkZ      int         not null,\n" +
+					"    spawnReason varchar(32) not null,\n" +
+					"    spawnerId   varchar(36) null,\n" +
+					"    constraint WorldMobs_UUID_uindex\n" +
+					"        unique (UUID)\n" +
+					");");
 			dbConn.commit();
+
+			statement.execute("create table if not exists Spawners\n" +
+					"(\n" +
+					"    id       varchar(36) not null,\n" +
+					"    type     varchar(16) not null,\n" +
+					"    world    varchar(32) null,\n" +
+					"    x        int         not null,\n" +
+					"    y        int         not null,\n" +
+					"    z        int         not null,\n" +
+					"    hasLeash tinyint     not null,\n" +
+					"    constraint Spawners_id_uindex\n" +
+					"        unique (id)\n" +
+					");");
+			dbConn.commit();
+
+			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		// Load mobs
+		// Load spawners and mobs
 		try {
 			Statement statement = dbConn.createStatement();
+
+			ResultSet spawnerResults = statement.executeQuery("SELECT * FROM Spawners");
+
+			readSpawners(spawnerResults);
+
 			ResultSet result = statement.executeQuery("SELECT * FROM WorldMobs");
 
 			readMobs(result);
+
+			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -129,9 +157,11 @@ public final class Parallelutils extends JavaPlugin {
 		// Plugin shutdown logic
 
 		// Clear the database
+		// TODO: DON'T DELETE DATABASE IF YOU HAVEN'T FINISHED SETUP
 		try {
 			Statement removeStatement = dbConn.createStatement();
 			removeStatement.execute("TRUNCATE TABLE WorldMobs");
+			removeStatement.execute("TRUNCATE TABLE Spawners");
 			dbConn.commit();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -184,6 +214,20 @@ public final class Parallelutils extends JavaPlugin {
 			e.printStackTrace();
 		}
 
+		// TODO: Insert spawners
+
+		try {
+			dbConn.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void readSpawners(ResultSet result) throws SQLException {
+		while (result.next()) {
+			String id = result.getString("id");
+			// TODO: Read spawners
+		}
 	}
 
 	private void readMobs(ResultSet result) throws SQLException {
@@ -193,6 +237,28 @@ public final class Parallelutils extends JavaPlugin {
 			String world = result.getString("World");
 			String chunkX = result.getString("ChunkX");
 			String chunkZ = result.getString("ChunkZ");
+			SpawnReason spawnReason = SpawnReason.valueOf(result.getString("spawnReason"));
+			String spawnerId = result.getString("spawnerId");
+
+			Location spawnerLocation = null;
+			if (spawnerId != null) {
+				PreparedStatement statement = dbConn.prepareStatement("SELECT * FROM Spawners WHERE id=%");
+
+				statement.setString(0, spawnerId);
+
+				ResultSet spawnerResults = statement.executeQuery();
+				if (!spawnerResults.next()) {
+					Parallelutils.log(Level.WARNING, "Invalid spawner id " + spawnerId);
+					continue;
+				}
+
+				String spawnerWorld = spawnerResults.getString("world");
+				int spawnerX = spawnerResults.getInt("x");
+				int spawnerY = spawnerResults.getInt("y");
+				int spawnerZ = spawnerResults.getInt("z");
+
+				spawnerLocation = new Location(Bukkit.getWorld(spawnerWorld), spawnerX, spawnerY, spawnerZ);
+			}
 
 			int worldX = 16 * Integer.parseInt(chunkX);
 			int worldZ = 16 * Integer.parseInt(chunkZ);
@@ -225,7 +291,11 @@ public final class Parallelutils extends JavaPlugin {
 			}
 
 			if (setupEntity != null) {
-				EntityRegistry.getInstance().registerEntity(uuid, entityType, setupEntity);
+				if (spawnerLocation != null) {
+					EntityRegistry.getInstance().registerEntity(uuid, entityType, setupEntity, spawnReason, spawnerLocation);
+				} else {
+					EntityRegistry.getInstance().registerEntity(uuid, entityType, setupEntity, spawnReason);
+				}
 			}
 		}
 	}
