@@ -53,6 +53,19 @@ public class EntityWisp extends EntityZombie {
 
         return wisp;
     }
+    public static EntityWisp spawn(JavaPlugin plugin, CraftServer server, CraftWorld world, Location l,
+                                   SpawnReason reason, Location origin) {
+        EntityWisp wisp = new EntityWisp(world.getHandle());
+        CraftZombie zombie = (CraftZombie) CraftEntity.getEntity(server, wisp);
+
+        setup(plugin, zombie);
+        wisp.setPosition(l.getX(), l.getY(), l.getZ());
+        world.getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
+
+        EntityRegistry.getInstance().registerEntity(zombie.getUniqueId().toString(), "wisp", wisp, reason, origin);
+
+        return wisp;
+    }
 
     public static EntityZombie setup(JavaPlugin plugin, CraftZombie mob) {
         CraftWisp.setupNBT(plugin, mob);
