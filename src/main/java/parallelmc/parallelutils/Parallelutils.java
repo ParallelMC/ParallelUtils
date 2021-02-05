@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.custommobs.events.CustomMobsEventRegistrar;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityData;
@@ -16,6 +17,8 @@ import parallelmc.parallelutils.custommobs.particles.ParticleOptions;
 import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
 import parallelmc.parallelutils.custommobs.registry.ParticleRegistry;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
+import parallelmc.parallelutils.custommobs.spawners.SpawnTask;
+import parallelmc.parallelutils.custommobs.spawners.SpawnerData;
 import parallelmc.parallelutils.custommobs.spawners.SpawnerOptions;
 
 import java.sql.*;
@@ -31,6 +34,8 @@ public final class Parallelutils extends JavaPlugin {
 
 	public static Connection dbConn;
 
+	private static boolean finishedSetup = false;
+
 	@Override
 	public void onLoad() {
 
@@ -38,6 +43,7 @@ public final class Parallelutils extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		finishedSetup = false;
 		// Plugin startup logic
 
 		// Read config
@@ -144,7 +150,7 @@ public final class Parallelutils extends JavaPlugin {
 
 
 		// TODO: This is temporary for testing
-		SpawnerRegistry.getInstance().registerSpawner("wisp", new SpawnerOptions(0, 0, 8,
+		SpawnerRegistry.getInstance().registerSpawnerType("wisp", new SpawnerOptions(8, 3, 8,
 				1, 400, 0, true, 40, 32,
 				false, false));
 
@@ -158,6 +164,8 @@ public final class Parallelutils extends JavaPlugin {
 		getCommand("parallelutils").setTabCompleter(commands);
 		getCommand("pu").setExecutor(commands);
 		getCommand("pu").setTabCompleter(commands);
+
+		finishedSetup = true;
 	}
 
 	@Override
@@ -165,64 +173,105 @@ public final class Parallelutils extends JavaPlugin {
 		// Plugin shutdown logic
 
 		// Clear the database
-		// TODO: DON'T DELETE DATABASE IF YOU HAVEN'T FINISHED SETUP
-		try {
-			Statement removeStatement = dbConn.createStatement();
-			removeStatement.execute("TRUNCATE TABLE WorldMobs");
-			removeStatement.execute("TRUNCATE TABLE Spawners");
-			dbConn.commit();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		// Insert all mobs that we care about into the database
-		try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO WorldMobs (UUID, Type, World, ChunkX, ChunkZ) VALUES (?, ?, ?, ?, ?)")) {
-			int i = 0;
-
-			for (EntityData ep : EntityRegistry.getInstance().getEntities()) {
-				Entity e = ep.entity;
-				CraftEntity craftEntity = e.getBukkitEntity();
-
-				String uuid = craftEntity.getUniqueId().toString();
-
-				Parallelutils.log(Level.INFO, "Storing entity " + uuid);
-
-				String type = ep.type;
-
-				if (type == null) {
-					Parallelutils.log(Level.WARNING, "Unknown entity type for entity " + uuid);
-					continue;
-				}
-
-				String world = craftEntity.getWorld().getName();
-
-				Chunk c = craftEntity.getChunk();
-
-				statement.setString(1, uuid);
-				statement.setString(2, type);
-				statement.setString(3, world);
-				statement.setInt(4, c.getX());
-				statement.setInt(5, c.getZ());
-
-				// This just lets us execute a bunch of changes at once
-				statement.addBatch();
-
-				// This is here because some implementations of MySQL are weird and don't like very large batches
-				i++;
-				if (i >= 1000) {
-					statement.executeBatch();
-					i = 0;
-				}
+		if (finishedSetup) {
+			try {
+				Statement removeStatement = dbConn.createStatement();
+				removeStatement.execute("TRUNCATE TABLE WorldMobs");
+				removeStatement.execute("TRUNCATE TABLE Spawners");
+				dbConn.commit();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 
-			statement.executeBatch();
+			// Insert all mobs that we care about into the database
+			try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO WorldMobs " +
+					"(UUID, Type, World, ChunkX, ChunkZ, spawnReason, spawnerId) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
+				int i = 0;
 
-			dbConn.commit();
-		} catch (SQLException e) {
-			e.printStackTrace();
+				for (EntityData ep : EntityRegistry.getInstance().getEntities()) {
+					Entity e = ep.entity;
+					CraftEntity craftEntity = e.getBukkitEntity();
+
+					String uuid = craftEntity.getUniqueId().toString();
+
+					Parallelutils.log(Level.INFO, "Storing entity " + uuid);
+
+					String type = ep.type;
+
+					if (type == null) {
+						Parallelutils.log(Level.WARNING, "Unknown entity type for entity " + uuid);
+						continue;
+					}
+
+					String world = craftEntity.getWorld().getName();
+
+					Chunk c = craftEntity.getChunk();
+
+					SpawnReason reason = ep.spawnReason;
+
+					statement.setString(1, uuid);
+					statement.setString(2, type);
+					statement.setString(3, world);
+					statement.setInt(4, c.getX());
+					statement.setInt(5, c.getZ());
+					statement.setString(6, reason.name());
+
+
+					if (reason == SpawnReason.SPAWNER) {
+						String spawnerId = SpawnerRegistry.getInstance().getSpawner(ep.spawnOrigin).getUuid();
+						statement.setString(7, spawnerId);
+					}
+
+					// This just lets us execute a bunch of changes at once
+					statement.addBatch();
+
+					// This is here because some implementations of MySQL are weird and don't like very large batches
+					i++;
+					if (i >= 1000) {
+						statement.executeBatch();
+						i = 0;
+					}
+				}
+
+				statement.executeBatch();
+
+				dbConn.commit();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+			try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO Spawners " +
+					"(id, type, world, x, y, z, hasLeash) VALUES (?,?,?,?,?,?,?)")) {
+				int i = 0;
+
+				for (SpawnerData sd : SpawnerRegistry.getInstance().getSpawnerData()) {
+					statement.setString(1, sd.getUuid());
+					statement.setString(2, sd.getType());
+					Location location = sd.getLocation();
+					statement.setString(3, location.getWorld().getName());
+					statement.setInt(4, location.getBlockX());
+					statement.setInt(5, location.getBlockY());
+					statement.setInt(6, location.getBlockZ());
+					statement.setBoolean(7, sd.hasLeash());
+
+					statement.addBatch();
+
+					i++;
+					if (i >= 1000) {
+						statement.executeBatch();
+						i=0;
+					}
+				}
+
+				statement.executeBatch();
+
+				dbConn.commit();
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
 		}
-
-		// TODO: Insert spawners
 
 		try {
 			dbConn.close();
@@ -234,7 +283,21 @@ public final class Parallelutils extends JavaPlugin {
 	private void readSpawners(ResultSet result) throws SQLException {
 		while (result.next()) {
 			String id = result.getString("id");
-			// TODO: Read spawners
+			String type = result.getString("type");
+			String world = result.getString("world");
+			int x = result.getInt("x");
+			int y = result.getInt("y");
+			int z = result.getInt("z");
+			boolean hasLeash = result.getBoolean("hasLeash");
+
+			Location location = new Location(this.getServer().getWorld(world), x, y, z);
+
+			SpawnerRegistry.getInstance().registerSpawner(id, type, location, hasLeash);
+
+			BukkitTask task = new SpawnTask(this, type, location, 0)
+					.runTaskTimer(this, 0, SpawnerRegistry.getInstance().
+							getSpawnerOptions(type).cooldown);
+			SpawnerRegistry.getInstance().addSpawnTaskID(location, task.getTaskId());
 		}
 	}
 
@@ -301,6 +364,12 @@ public final class Parallelutils extends JavaPlugin {
 			if (setupEntity != null) {
 				if (spawnerLocation != null) {
 					EntityRegistry.getInstance().registerEntity(uuid, entityType, setupEntity, spawnReason, spawnerLocation);
+					SpawnerRegistry.getInstance().incrementMobCount(spawnerLocation);
+					if (SpawnerRegistry.getInstance().getSpawner(location).hasLeash()) {
+						SpawnerRegistry.getInstance().addLeashedEntity(location, uuid);
+					}
+
+					// TODO: Add leash task id
 				} else {
 					EntityRegistry.getInstance().registerEntity(uuid, entityType, setupEntity, spawnReason);
 				}
