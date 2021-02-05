@@ -50,10 +50,15 @@ public class ParallelSpawnerCreateCommand extends ParallelCommand {
                 return false;
             }
 
-            // TODO: Make this show that you didn't put in the mob name
             if(args.length < 5){
-                sender.sendMessage("Please enter a full set of coordinates.");
-                return true;
+                if(validMobType(args[1])){
+                    sender.sendMessage("Please enter a valid mob type.");
+                    return true;
+                }
+                else {
+                    sender.sendMessage("Please enter a full set of coordinates.");
+                    return true;
+                }
             }
             Location spawnerLocation = null;
             try {
@@ -78,6 +83,15 @@ public class ParallelSpawnerCreateCommand extends ParallelCommand {
             return false;
         }
         return true;
+    }
+
+    private boolean validMobType(String type){
+        for(String s : SUMMON_MOBS){
+            if(s.equalsIgnoreCase(type)){
+                return true;
+            }
+        }
+        return false;
     }
 }
 
