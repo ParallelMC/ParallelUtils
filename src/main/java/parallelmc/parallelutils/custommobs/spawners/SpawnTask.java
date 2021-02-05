@@ -4,14 +4,11 @@ import net.minecraft.server.v1_16_R3.EntityInsentient;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 import parallelmc.parallelutils.custommobs.nmsmobs.SpawnReason;
-import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
 import parallelmc.parallelutils.util.DistanceTools;
 
@@ -71,9 +68,12 @@ public class SpawnTask extends BukkitRunnable {
 					EntityInsentient setUpEntity = null;
 					switch (type) {
 						case "wisp":
-							EntityWisp wisp = EntityWisp.spawn(plugin, (CraftServer)plugin.getServer(),
+							if(location.getWorld().getBlockAt(location).isEmpty() &&
+									location.getWorld().getBlockAt(location.add(0,1,0)).isEmpty()){
+								setUpEntity = EntityWisp.spawn(plugin, (CraftServer)plugin.getServer(),
 									(CraftWorld)location.getWorld(), spawnLocation, SpawnReason.SPAWNER, location);
-							SpawnerRegistry.getInstance().incrementMobCount(location);
+								SpawnerRegistry.getInstance().incrementMobCount(location);
+							}
 							break;
 					}
 
