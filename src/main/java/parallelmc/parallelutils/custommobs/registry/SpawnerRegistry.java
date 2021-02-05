@@ -2,15 +2,20 @@ package parallelmc.parallelutils.custommobs.registry;
 
 import org.bukkit.Location;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.custommobs.spawners.SpawnerData;
 import parallelmc.parallelutils.custommobs.spawners.SpawnerOptions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class SpawnerRegistry {
 
-	private HashMap<String, SpawnerOptions> spawners;
+	private HashMap<String, SpawnerOptions> spawnerTypes;
+
+	private HashMap<Location, SpawnerData> spawners;
 
 	private HashMap<Location, Integer> mobCounts;
 
@@ -18,17 +23,18 @@ public class SpawnerRegistry {
 
 	private HashMap<Location, Integer> leashTaskID;
 
-	private HashMap<String, Location> leashedEntityLocations;
+
+	// TODO: Re-set this up
 	private HashMap<Location, ArrayList<String>> leashedEntityLists;
 
 	private static SpawnerRegistry registry;
 
 	private SpawnerRegistry() {
+		spawnerTypes = new HashMap<>();
 		spawners = new HashMap<>();
 		mobCounts = new HashMap<>();
 		spawnTaskID = new HashMap<>();
 		leashTaskID = new HashMap<>();
-		leashedEntityLocations = new HashMap<>();
 		leashedEntityLists = new HashMap<>();
 	}
 
@@ -40,12 +46,32 @@ public class SpawnerRegistry {
 		return registry;
 	}
 
-	public void registerSpawner(String type, SpawnerOptions options){
-		Parallelutils.log(Level.INFO, "Registering spawner for " + type);
-		spawners.put(type, options);
+	public void registerSpawner(String uuid, String type, Location location, boolean hasLeash) {
+		spawners.put(location, new SpawnerData(uuid, type, location, hasLeash));
 	}
 
-	public SpawnerOptions getSpawnerOptions(String type){ return spawners.get(type);}
+	public void registerSpawner(String type, Location location, boolean hasLeash) {
+		registerSpawner(UUID.randomUUID().toString(), type, location, hasLeash);
+	}
+
+	public SpawnerData getSpawner(Location location) {
+		return spawners.get(location);
+	}
+
+	public Collection<Location> getSpawnerLocations() {
+		return spawners.keySet();
+	}
+
+	public Collection<SpawnerData> getSpawnerData() {
+		return spawners.values();
+	}
+
+	public void registerSpawnerType(String type, SpawnerOptions options){
+		Parallelutils.log(Level.INFO, "Registering spawner for " + type);
+		spawnerTypes.put(type, options);
+	}
+
+	public SpawnerOptions getSpawnerOptions(String type){ return spawnerTypes.get(type);}
 
 	public void addCount(Location loc, int count){
 		Parallelutils.log(Level.INFO, "Registering counter for " + loc.toString());
@@ -56,7 +82,13 @@ public class SpawnerRegistry {
 
 	public void setMobCount(Location loc, int count){mobCounts.replace(loc, count); }
 
-	public void incrementMobCount(Location loc){mobCounts.replace(loc, mobCounts.get(loc)+1);}
+	public void incrementMobCount(Location loc){
+		if (!mobCounts.containsKey(loc)) {
+			addCount(loc, 1);
+		} else {
+			mobCounts.replace(loc, mobCounts.get(loc) + 1);
+		}
+	}
 	public void decrementMobCount(Location loc){mobCounts.replace(loc, mobCounts.get(loc)-1);}
 
 	public void removeMobCount(Location loc){mobCounts.remove(loc);}
@@ -74,7 +106,6 @@ public class SpawnerRegistry {
 	public void removeLeashTaskID(Location loc){leashTaskID.remove(loc);}
 
 	public void addLeashedEntity(Location loc, String id){
-		leashedEntityLocations.put(id, loc);
 		if(!leashedEntityLists.containsKey(loc)){
 			leashedEntityLists.put(loc, new ArrayList<String>());
 		}
@@ -83,19 +114,8 @@ public class SpawnerRegistry {
 
 	public ArrayList<String> getLeashedEntityList(Location loc){return leashedEntityLists.get(loc);}
 
-	public Location getLeashedEntitySpawner(String id){return leashedEntityLocations.get(id);}
-
-	public void removeLeashedEntity(String id){
-		Location loc = leashedEntityLocations.get(id);
-		leashedEntityLocations.remove(id);
-		leashedEntityLists.get(loc).remove(id);
-	}
-
 	public void removeSpawnerLeash(Location loc){
 		ArrayList<String> mobs = leashedEntityLists.get(loc);
 		leashedEntityLists.remove(loc);
-		for(String id : mobs){
-			leashedEntityLocations.remove(id);
-		}
 	}
 }
