@@ -47,6 +47,7 @@ public class SpawnerRegistry {
 	}
 
 	public void registerSpawner(String uuid, String type, Location location, boolean hasLeash) {
+		Parallelutils.log(Level.INFO, "Registering spawner " + uuid + " location: " + location.toString());
 		spawners.put(location, new SpawnerData(uuid, type, location, hasLeash));
 	}
 
@@ -67,7 +68,7 @@ public class SpawnerRegistry {
 	}
 
 	public void registerSpawnerType(String type, SpawnerOptions options){
-		Parallelutils.log(Level.INFO, "Registering spawner for " + type);
+		Parallelutils.log(Level.INFO, "Registering spawner type for " + type);
 		spawnerTypes.put(type, options);
 	}
 
@@ -80,20 +81,29 @@ public class SpawnerRegistry {
 
 	public int getMobCount(Location loc){return mobCounts.get(loc);}
 
-	public void setMobCount(Location loc, int count){mobCounts.replace(loc, count); }
+	public void setMobCount(Location loc, int count) {
+		mobCounts.replace(loc, count);
+	}
 
 	public void incrementMobCount(Location loc){
+		Parallelutils.log(Level.INFO, "Incrementing mob count for " + loc.toString());
 		if (!mobCounts.containsKey(loc)) {
 			addCount(loc, 1);
 		} else {
 			mobCounts.replace(loc, mobCounts.get(loc) + 1);
 		}
 	}
-	public void decrementMobCount(Location loc){mobCounts.replace(loc, mobCounts.get(loc)-1);}
+	public void decrementMobCount(Location loc){
+		Parallelutils.log(Level.INFO, "Decrementing mob count for " + loc.toString());
+		mobCounts.replace(loc, mobCounts.get(loc)-1);
+	}
 
 	public void removeMobCount(Location loc){mobCounts.remove(loc);}
 
-	public void addSpawnTaskID(Location loc, int id){spawnTaskID.put(loc, id);}
+	public void addSpawnTaskID(Location loc, int id){
+		Parallelutils.log(Level.INFO, "Adding spawn task ID for " + loc.toString());
+		spawnTaskID.put(loc, id);
+	}
 
 	public int getSpawnTaskID(Location loc){return spawnTaskID.get(loc);}
 
@@ -106,6 +116,7 @@ public class SpawnerRegistry {
 	public void removeLeashTaskID(Location loc){leashTaskID.remove(loc);}
 
 	public void addLeashedEntity(Location loc, String id){
+		Parallelutils.log(Level.INFO, "Adding leashed entity for " + loc.toString());
 		if(!leashedEntityLists.containsKey(loc)){
 			leashedEntityLists.put(loc, new ArrayList<String>());
 		}

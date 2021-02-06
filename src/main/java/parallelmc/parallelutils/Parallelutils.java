@@ -50,6 +50,11 @@ public final class Parallelutils extends JavaPlugin {
 		this.saveDefaultConfig();
 		this.reloadConfig();
 
+		// TODO: This is temporary for testing
+		SpawnerRegistry.getInstance().registerSpawnerType("wisp", new SpawnerOptions(8, 3, 8,
+				1, 400, 0, true, 40, 32,
+				false, false));
+
 		int logLevel = config.getInt("debug", 2);
 
 		switch (logLevel) {
@@ -149,11 +154,6 @@ public final class Parallelutils extends JavaPlugin {
 		ParticleRegistry.getInstance().registerParticles("wisp", new ParticleOptions(Particle.CLOUD, 50, 0.5, 1, 0));
 
 
-		// TODO: This is temporary for testing
-		SpawnerRegistry.getInstance().registerSpawnerType("wisp", new SpawnerOptions(8, 3, 8,
-				1, 400, 0, true, 40, 32,
-				false, false));
-
 		// Register events for the CustomMobs module
 		CustomMobsEventRegistrar.registerEvents();
 
@@ -245,6 +245,7 @@ public final class Parallelutils extends JavaPlugin {
 				int i = 0;
 
 				for (SpawnerData sd : SpawnerRegistry.getInstance().getSpawnerData()) {
+					Parallelutils.log(Level.INFO, sd.toString());
 					statement.setString(1, sd.getUuid());
 					statement.setString(2, sd.getType());
 					Location location = sd.getLocation();
@@ -313,9 +314,9 @@ public final class Parallelutils extends JavaPlugin {
 
 			Location spawnerLocation = null;
 			if (spawnerId != null) {
-				PreparedStatement statement = dbConn.prepareStatement("SELECT * FROM Spawners WHERE id=%");
+				PreparedStatement statement = dbConn.prepareStatement("SELECT * FROM Spawners WHERE id=?");
 
-				statement.setString(0, spawnerId);
+				statement.setString(1, spawnerId);
 
 				ResultSet spawnerResults = statement.executeQuery();
 				if (!spawnerResults.next()) {
@@ -365,8 +366,8 @@ public final class Parallelutils extends JavaPlugin {
 				if (spawnerLocation != null) {
 					EntityRegistry.getInstance().registerEntity(uuid, entityType, setupEntity, spawnReason, spawnerLocation);
 					SpawnerRegistry.getInstance().incrementMobCount(spawnerLocation);
-					if (SpawnerRegistry.getInstance().getSpawner(location).hasLeash()) {
-						SpawnerRegistry.getInstance().addLeashedEntity(location, uuid);
+					if (SpawnerRegistry.getInstance().getSpawner(spawnerLocation).hasLeash()) {
+						SpawnerRegistry.getInstance().addLeashedEntity(spawnerLocation, uuid);
 					}
 
 					// TODO: Add leash task id
