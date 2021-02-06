@@ -76,6 +76,7 @@ public class ParallelSpawnerCreateCommand extends ParallelCommand {
                             .runTaskTimer(plugin, 0, SpawnerRegistry.getInstance().
                                     getSpawnerOptions("wisp").cooldown);
                     SpawnerRegistry.getInstance().addSpawnTaskID(spawnerLocation, task.getTaskId());
+                    SpawnerRegistry.getInstance().registerSpawner("wisp", spawnerLocation, false); // TODO: This is not leashed!
                     break;
             }
         } else {

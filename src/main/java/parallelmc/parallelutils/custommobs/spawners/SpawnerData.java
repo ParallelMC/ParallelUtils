@@ -31,4 +31,14 @@ public class SpawnerData {
 	public boolean hasLeash() {
 		return hasLeash;
 	}
+
+	@Override
+	public String toString() {
+		return "SpawnerData{" +
+				"uuid='" + uuid + '\'' +
+				", type='" + type + '\'' +
+				", location=" + location +
+				", hasLeash=" + hasLeash +
+				'}';
+	}
 }
