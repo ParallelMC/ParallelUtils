@@ -22,6 +22,8 @@ public class SpawnTask extends BukkitRunnable {
 	private final Location location;
 	private int timer;
 
+	private final int MAX_TRIES = 10;
+
 	public SpawnTask(JavaPlugin plugin, String type, Location location, int startCount) {
 		this.plugin = plugin;
 		this.type = type;
@@ -47,39 +49,49 @@ public class SpawnTask extends BukkitRunnable {
 		if (!options.checkForPlayers || playerInRange()) { // either you don't need to check for players, or one is close
 			for (int i = 0; i < options.mobsPerSpawn; i++) { // run at least once
 				if (SpawnerRegistry.getInstance().getMobCount(location) < options.maxMobs) { // count from spawner < max
-					// create a random spawn location in radius
-					Location spawnLocation = new Location(location.getWorld(),
-							location.getX(), location.getY(), location.getZ());
-					double randomX = random.nextDouble() * options.radiusX;
-					double randomY = random.nextDouble() * options.radiusY;
-					double randomZ = random.nextDouble() * options.radiusX;
-					if (random.nextBoolean()) {
-						randomX *= -1;
-					}
-					if (random.nextBoolean()) {
-						randomY *= -1;
-					}
-					if (random.nextBoolean()) {
-						randomZ *= -1;
-					}
-					spawnLocation.add(randomX, randomY, randomZ);
 
-					//try to spawn entity there
-					EntityInsentient setUpEntity = null;
-					switch (type) {
-						case "wisp":
-							if(location.getWorld().getBlockAt(location).isEmpty() &&
-									location.getWorld().getBlockAt(location.add(0,1,0)).isEmpty()){
-								setUpEntity = EntityWisp.spawn(plugin, (CraftServer)plugin.getServer(),
-									(CraftWorld)location.getWorld(), spawnLocation, SpawnReason.SPAWNER, location);
-								SpawnerRegistry.getInstance().incrementMobCount(location);
-							}
-							break;
-					}
+					boolean wasSuccessful = false;
+					int tries = 0;
 
-					//if (setUpEntity != null) {
+					while (tries < MAX_TRIES && !wasSuccessful) {
+
+						// create a random spawn location in radius
+						Location spawnLocation = new Location(location.getWorld(),
+								location.getX(), location.getY(), location.getZ());
+						double randomX = random.nextInt(options.radiusX + 1);
+						double randomY = random.nextInt(options.radiusY + 1);
+						double randomZ = random.nextInt(options.radiusX + 1);
+						if (random.nextBoolean()) {
+							randomX *= -1;
+						}
+						if (random.nextBoolean()) {
+							randomY *= -1;
+						}
+						if (random.nextBoolean()) {
+							randomZ *= -1;
+						}
+						spawnLocation.add(randomX + 0.5, randomY, randomZ + 0.5);
+
+						//try to spawn entity there
+						EntityInsentient setUpEntity = null;
+						switch (type) {
+							case "wisp":
+								if (location.getWorld().getBlockAt(spawnLocation).isEmpty() &&
+										location.getWorld().getBlockAt(spawnLocation.clone().add(0, 1, 0)).isEmpty()) {
+									wasSuccessful = true;
+									setUpEntity = EntityWisp.spawn(plugin, (CraftServer) plugin.getServer(),
+											(CraftWorld) location.getWorld(), spawnLocation, SpawnReason.SPAWNER, location);
+									SpawnerRegistry.getInstance().incrementMobCount(location);
+								}
+								break;
+						}
+
+						//if (setUpEntity != null) {
 						//TODO: leash crap
-					//}
+						//}
+
+						tries++;
+					}
 				} else {
 					break;
 				}
