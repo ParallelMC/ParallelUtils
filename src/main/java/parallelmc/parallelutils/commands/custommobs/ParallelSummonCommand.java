@@ -15,6 +15,7 @@ import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 import parallelmc.parallelutils.commands.permissions.ParallelOrPermission;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
+import parallelmc.parallelutils.custommobs.nmsmobs.SpawnReason;
 
 import java.util.logging.Level;
 
@@ -50,7 +51,7 @@ public class ParallelSummonCommand extends ParallelCommand {
 
 			switch (args[1]) {
 				case "wisp":
-					EntityWisp wisp = EntityWisp.spawn(plugin, (CraftServer)sender.getServer(), (CraftWorld)player.getWorld(), player.getLocation());
+					EntityWisp wisp = EntityWisp.spawn(plugin, (CraftServer)sender.getServer(), (CraftWorld)player.getWorld(), player.getLocation(), SpawnReason.COMMAND, player.getLocation());
 					break;
 			}
 		} else {
