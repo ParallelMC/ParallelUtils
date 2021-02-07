@@ -1,7 +1,10 @@
 package parallelmc.parallelutils.commands;
 
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.*;
 import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Parallelutils;
@@ -76,5 +79,42 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	public static boolean hasPermission(CommandSender sender, String permission) {
 		return sender instanceof ServerCommandSender || sender.isOp() || sender.hasPermission(permission);
+	}
+
+	public static Location convertLocation(CommandSender sender, String sx, String sy, String sz) {
+		int x, y, z;
+
+		World world;
+
+		if (sender instanceof Player) {
+			Player player = (Player) sender;
+
+			Location playerLoc = player.getLocation();
+
+			world = playerLoc.getWorld();
+
+			if (sx.trim().startsWith("~")) {
+				x = playerLoc.getBlockX() + Integer.parseInt(sx.trim().substring(1));
+			} else {
+				x = Integer.parseInt(sx);
+			}
+			if (sy.trim().startsWith("~")) {
+				y = playerLoc.getBlockY() + Integer.parseInt(sy.trim().substring(1));
+			} else {
+				y = Integer.parseInt(sy);
+			}
+			if (sz.trim().startsWith("~")) {
+				z = playerLoc.getBlockZ() + Integer.parseInt(sz.trim().substring(1));
+			} else {
+				z = Integer.parseInt(sz);
+			}
+		} else {
+			world = null;
+			x = Integer.parseInt(sx);
+			y = Integer.parseInt(sy);
+			z = Integer.parseInt(sz);
+		}
+
+		return new Location(world, x, y, z);
 	}
 }
