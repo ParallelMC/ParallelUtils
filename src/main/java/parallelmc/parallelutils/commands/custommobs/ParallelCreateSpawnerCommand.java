@@ -72,11 +72,11 @@ public class ParallelCreateSpawnerCommand extends ParallelCommand {
 
             switch (args[1]) {
                 case "wisp":
+                    SpawnerRegistry.getInstance().registerSpawner("wisp", spawnerLocation, true);
                     BukkitTask task = new SpawnTask(plugin, "wisp", spawnerLocation, 0)
                             .runTaskTimer(plugin, 0, SpawnerRegistry.getInstance().
                                     getSpawnerOptions("wisp").cooldown);
                     SpawnerRegistry.getInstance().addSpawnTaskID(spawnerLocation, task.getTaskId());
-                    SpawnerRegistry.getInstance().registerSpawner("wisp", spawnerLocation, true);
                     break;
             }
         } else {
