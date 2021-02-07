@@ -7,6 +7,7 @@ import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 import parallelmc.parallelutils.custommobs.nmsmobs.SpawnReason;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
@@ -19,6 +20,7 @@ public class SpawnTask extends BukkitRunnable {
 	private final JavaPlugin plugin;
 	private final String type;
 	private final SpawnerOptions options;
+	private final SpawnerData data;
 	private final Location location;
 	private int timer;
 
@@ -29,6 +31,7 @@ public class SpawnTask extends BukkitRunnable {
 		this.type = type;
 		this.options = SpawnerRegistry.getInstance().getSpawnerOptions(type);
 		this.location = location;
+		this.data = SpawnerRegistry.getInstance().getSpawner(location);
 		this.timer = options.warmup;
 
 		SpawnerRegistry.getInstance().addCount(location, startCount);
@@ -86,9 +89,13 @@ public class SpawnTask extends BukkitRunnable {
 								break;
 						}
 
-						//if (setUpEntity != null) {
-						//TODO: leash crap
-						//}
+						if (setUpEntity != null && data.hasLeash()) {
+							SpawnerRegistry.getInstance().addLeashedEntity(location, setUpEntity.getUniqueID().toString());
+							if(SpawnerRegistry.getInstance().getSpawnTaskID(location) == null){
+								BukkitTask task = new LeashTask(plugin, location).runTaskTimer(plugin, 0, 10);
+								SpawnerRegistry.getInstance().addSpawnTaskID(location, task.getTaskId());
+							}
+						}
 
 						tries++;
 					}
