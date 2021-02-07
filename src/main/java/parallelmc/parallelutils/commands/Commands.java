@@ -5,7 +5,7 @@ import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.commands.custommobs.ParallelSpawnerCreateCommand;
+import parallelmc.parallelutils.commands.custommobs.ParallelCreateSpawnerCommand;
 import parallelmc.parallelutils.commands.custommobs.ParallelSummonCommand;
 
 import java.util.ArrayList;
@@ -37,8 +37,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 					case "summon":
 						new ParallelSummonCommand().execute(sender, command, args);
 						break;
-					case "spawnerCreate":
-						new ParallelSpawnerCreateCommand().execute(sender,command,args);
+					case "createspawner":
+						new ParallelCreateSpawnerCommand().execute(sender,command,args);
 						break;
 					default:
 						sender.sendMessage("PU: Command not found");
@@ -67,7 +67,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			if (args[0].equals("summon")) {
 				list.addAll(Arrays.asList(ParallelSummonCommand.SUMMON_MOBS));
 			} else if (args[0].equals("spawnerCreate")) {
-				list.addAll(Arrays.asList(ParallelSpawnerCreateCommand.SUMMON_MOBS));
+				list.addAll(Arrays.asList(ParallelCreateSpawnerCommand.SUMMON_MOBS));
 			}
 		}
 

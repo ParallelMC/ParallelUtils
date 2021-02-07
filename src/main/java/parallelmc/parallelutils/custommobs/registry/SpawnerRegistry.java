@@ -23,8 +23,6 @@ public class SpawnerRegistry {
 
 	private HashMap<Location, Integer> leashTaskID;
 
-
-	// TODO: Re-set this up
 	private HashMap<Location, ArrayList<String>> leashedEntityLists;
 
 	private static SpawnerRegistry registry;
@@ -79,7 +77,7 @@ public class SpawnerRegistry {
 		mobCounts.put(loc, count);
 	}
 
-	public int getMobCount(Location loc){return mobCounts.get(loc);}
+	public Integer getMobCount(Location loc){return mobCounts.get(loc);}
 
 	public void setMobCount(Location loc, int count) {
 		mobCounts.replace(loc, count);
@@ -105,13 +103,13 @@ public class SpawnerRegistry {
 		spawnTaskID.put(loc, id);
 	}
 
-	public int getSpawnTaskID(Location loc){return spawnTaskID.get(loc);}
+	public Integer getSpawnTaskID(Location loc){return spawnTaskID.get(loc);}
 
 	public void removeSpawnTaskID(Location loc){spawnTaskID.remove(loc);}
 
 	public void addLeashTaskID(Location loc, int id){leashTaskID.put(loc, id);}
 
-	public int getLeashTaskID(Location loc){return leashTaskID.get(loc);}
+	public Integer getLeashTaskID(Location loc){return leashTaskID.get(loc);}
 
 	public void removeLeashTaskID(Location loc){leashTaskID.remove(loc);}
 
@@ -121,6 +119,10 @@ public class SpawnerRegistry {
 			leashedEntityLists.put(loc, new ArrayList<String>());
 		}
 		leashedEntityLists.get(loc).add(id);
+	}
+
+	public void removeLeashedEntity(Location loc, String id){
+		leashedEntityLists.get(loc).remove(id);
 	}
 
 	public ArrayList<String> getLeashedEntityList(Location loc){return leashedEntityLists.get(loc);}
