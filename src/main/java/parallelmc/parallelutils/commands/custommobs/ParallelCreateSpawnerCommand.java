@@ -19,11 +19,11 @@ import parallelmc.parallelutils.custommobs.spawners.SpawnTask;
 
 import java.util.logging.Level;
 
-public class ParallelSpawnerCreateCommand extends ParallelCommand {
+public class ParallelCreateSpawnerCommand extends ParallelCommand {
     public static final String[] SUMMON_MOBS = new String[]{"wisp"};
 
-    public ParallelSpawnerCreateCommand() {
-        super("spawnerCreate", new ParallelOrPermission(new ParallelPermission[]
+    public ParallelCreateSpawnerCommand() {
+        super("createspawner", new ParallelOrPermission(new ParallelPermission[]
                 {new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.spawner"),
                 new ParallelPermission("parallelutils.spawn.spawner.create")}));
     }
@@ -76,7 +76,7 @@ public class ParallelSpawnerCreateCommand extends ParallelCommand {
                             .runTaskTimer(plugin, 0, SpawnerRegistry.getInstance().
                                     getSpawnerOptions("wisp").cooldown);
                     SpawnerRegistry.getInstance().addSpawnTaskID(spawnerLocation, task.getTaskId());
-                    SpawnerRegistry.getInstance().registerSpawner("wisp", spawnerLocation, false); // TODO: This is not leashed!
+                    SpawnerRegistry.getInstance().registerSpawner("wisp", spawnerLocation, true);
                     break;
             }
         } else {

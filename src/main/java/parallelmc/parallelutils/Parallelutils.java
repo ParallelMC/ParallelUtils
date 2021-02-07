@@ -17,6 +17,7 @@ import parallelmc.parallelutils.custommobs.particles.ParticleOptions;
 import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
 import parallelmc.parallelutils.custommobs.registry.ParticleRegistry;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
+import parallelmc.parallelutils.custommobs.spawners.LeashTask;
 import parallelmc.parallelutils.custommobs.spawners.SpawnTask;
 import parallelmc.parallelutils.custommobs.spawners.SpawnerData;
 import parallelmc.parallelutils.custommobs.spawners.SpawnerOptions;
@@ -50,8 +51,8 @@ public final class Parallelutils extends JavaPlugin {
 		this.saveDefaultConfig();
 		this.reloadConfig();
 
-		// TODO: This is temporary for testing
-		SpawnerRegistry.getInstance().registerSpawnerType("wisp", new SpawnerOptions(8, 3, 8,
+
+		SpawnerRegistry.getInstance().registerSpawnerType("wisp", new SpawnerOptions(0, 0, 8,
 				1, 400, 0, true, 40, 32,
 				false, false));
 
@@ -368,9 +369,11 @@ public final class Parallelutils extends JavaPlugin {
 					SpawnerRegistry.getInstance().incrementMobCount(spawnerLocation);
 					if (SpawnerRegistry.getInstance().getSpawner(spawnerLocation).hasLeash()) {
 						SpawnerRegistry.getInstance().addLeashedEntity(spawnerLocation, uuid);
+						if(SpawnerRegistry.getInstance().getSpawnTaskID(location) == null){
+							BukkitTask task = new LeashTask(this, location).runTaskTimer(this, 0, 10);
+							SpawnerRegistry.getInstance().addSpawnTaskID(location, task.getTaskId());
+						}
 					}
-
-					// TODO: Add leash task id
 				} else {
 					EntityRegistry.getInstance().registerEntity(uuid, entityType, setupEntity, spawnReason);
 				}
