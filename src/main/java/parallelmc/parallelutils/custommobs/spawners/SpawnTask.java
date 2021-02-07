@@ -91,9 +91,9 @@ public class SpawnTask extends BukkitRunnable {
 
 						if (setUpEntity != null && data.hasLeash()) {
 							SpawnerRegistry.getInstance().addLeashedEntity(location, setUpEntity.getUniqueID().toString());
-							if(SpawnerRegistry.getInstance().getSpawnTaskID(location) == null){
+							if(SpawnerRegistry.getInstance().getLeashTaskID(location) == null){
 								BukkitTask task = new LeashTask(plugin, location).runTaskTimer(plugin, 0, 10);
-								SpawnerRegistry.getInstance().addSpawnTaskID(location, task.getTaskId());
+								SpawnerRegistry.getInstance().addLeashTaskID(location, task.getTaskId());
 							}
 						}
 

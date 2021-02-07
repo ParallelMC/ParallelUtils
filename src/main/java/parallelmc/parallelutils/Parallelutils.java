@@ -53,7 +53,7 @@ public final class Parallelutils extends JavaPlugin {
 
 
 		SpawnerRegistry.getInstance().registerSpawnerType("wisp", new SpawnerOptions(0, 0, 8,
-				1, 400, 0, true, 40, 32,
+				1, 400, 0, true, 40, 16,
 				false, false));
 
 		int logLevel = config.getInt("debug", 2);
@@ -369,9 +369,9 @@ public final class Parallelutils extends JavaPlugin {
 					SpawnerRegistry.getInstance().incrementMobCount(spawnerLocation);
 					if (SpawnerRegistry.getInstance().getSpawner(spawnerLocation).hasLeash()) {
 						SpawnerRegistry.getInstance().addLeashedEntity(spawnerLocation, uuid);
-						if(SpawnerRegistry.getInstance().getSpawnTaskID(location) == null){
-							BukkitTask task = new LeashTask(this, location).runTaskTimer(this, 0, 10);
-							SpawnerRegistry.getInstance().addSpawnTaskID(location, task.getTaskId());
+						if(SpawnerRegistry.getInstance().getLeashTaskID(spawnerLocation) == null){
+							BukkitTask task = new LeashTask(this, spawnerLocation).runTaskTimer(this, 0, 10);
+							SpawnerRegistry.getInstance().addLeashTaskID(spawnerLocation, task.getTaskId());
 						}
 					}
 				} else {
