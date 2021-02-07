@@ -1,6 +1,7 @@
 package parallelmc.parallelutils.commands.custommobs;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
@@ -11,6 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 import parallelmc.parallelutils.commands.permissions.ParallelOrPermission;
@@ -49,9 +51,18 @@ public class ParallelSummonCommand extends ParallelCommand {
 				return false;
 			}
 
+			Location location = null;
+			try {
+				location = Commands.convertLocation(sender, args[2], args[3], args[4]);
+			}
+			catch(NumberFormatException e){
+				sender.sendMessage("Incorrect coordinate formatting!");
+				return false;
+			}
+
 			switch (args[1]) {
 				case "wisp":
-					EntityWisp wisp = EntityWisp.spawn(plugin, (CraftServer)sender.getServer(), (CraftWorld)player.getWorld(), player.getLocation(), SpawnReason.COMMAND, player.getLocation());
+					EntityWisp wisp = EntityWisp.spawn(plugin, (CraftServer)sender.getServer(), (CraftWorld)location.getWorld(), location);
 					break;
 			}
 		} else {

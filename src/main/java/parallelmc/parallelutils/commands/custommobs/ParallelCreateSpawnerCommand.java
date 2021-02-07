@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelOrPermission;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
@@ -62,8 +63,7 @@ public class ParallelCreateSpawnerCommand extends ParallelCommand {
             }
             Location spawnerLocation = null;
             try {
-                spawnerLocation = new Location(player.getWorld(), Double.parseDouble(args[2]),
-                        Double.parseDouble(args[3]), Double.parseDouble(args[4]));
+                spawnerLocation = Commands.convertLocation(sender, args[2], args[3], args[4]);
             }
             catch(NumberFormatException e){
                 sender.sendMessage("Incorrect coordinate formatting!");
