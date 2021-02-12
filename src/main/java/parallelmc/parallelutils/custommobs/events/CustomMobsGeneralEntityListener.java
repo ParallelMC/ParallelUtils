@@ -12,19 +12,21 @@ import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
 
 import java.util.logging.Level;
 
-/** For non-specific entity listeners **/
+/**
+ * For non-specific entity listeners
+ **/
 public class CustomMobsGeneralEntityListener implements Listener {
 
 	@EventHandler
 	public void onEntityDespawn(final EntityRemoveFromWorldEvent event) {
-		CraftEntity entity = (CraftEntity)event.getEntity();
+		CraftEntity entity = (CraftEntity) event.getEntity();
 		String UUID = entity.getUniqueId().toString();
 		if (EntityRegistry.getInstance().containsEntity(UUID)) {
 			Parallelutils.log(Level.ALL, "Removing entity " + UUID + " from world");
-			if(EntityRegistry.getInstance().getEntity(UUID).spawnReason == SpawnReason.SPAWNER){
+			if (EntityRegistry.getInstance().getEntity(UUID).spawnReason == SpawnReason.SPAWNER) {
 				Location spawner = EntityRegistry.getInstance().getEntity(UUID).spawnOrigin;
 				SpawnerRegistry.getInstance().decrementMobCount(spawner);
-				if(SpawnerRegistry.getInstance().getSpawner(spawner).hasLeash()){
+				if (SpawnerRegistry.getInstance().getSpawner(spawner).hasLeash()) {
 					SpawnerRegistry.getInstance().removeLeashedEntity(spawner, UUID);
 				}
 			}

@@ -26,6 +26,8 @@ import java.sql.*;
 import java.util.UUID;
 import java.util.logging.Level;
 
+
+// TODO: Break this out into multiple functions or classes. This is WAY too big and filled with spaghetti
 public final class Parallelutils extends JavaPlugin {
 
 	public static Level LOG_LEVEL = Level.INFO;
@@ -76,14 +78,14 @@ public final class Parallelutils extends JavaPlugin {
 		Bukkit.getLogger().setLevel(LOG_LEVEL);
 
 		// Either get the database connection URL from the config or construct it from the config
-		String jdbc, address, database, username="", password="";
+		String jdbc, address, database, username = "", password = "";
 		jdbc = config.getString("sql.jdbc");
 
 		if (jdbc == null || jdbc.trim().equals("")) {
 			address = config.getString("sql.address");
 			database = config.getString("sql.database");
 
-			jdbc = "jdbc:mysql://" +address + "/" + database;
+			jdbc = "jdbc:mysql://" + address + "/" + database;
 		}
 
 		username = config.getString("sql.username");
@@ -261,7 +263,7 @@ public final class Parallelutils extends JavaPlugin {
 					i++;
 					if (i >= 1000) {
 						statement.executeBatch();
-						i=0;
+						i = 0;
 					}
 				}
 
@@ -296,7 +298,7 @@ public final class Parallelutils extends JavaPlugin {
 
 			SpawnerRegistry.getInstance().registerSpawner(id, type, location, hasLeash);
 
-			BukkitTask task = new SpawnTask(this, type, location, 0)
+			BukkitTask task = new SpawnTask(type, location, 0)
 					.runTaskTimer(this, 0, SpawnerRegistry.getInstance().
 							getSpawnerOptions(type).cooldown);
 			SpawnerRegistry.getInstance().addSpawnTaskID(location, task.getTaskId());
@@ -340,12 +342,11 @@ public final class Parallelutils extends JavaPlugin {
 
 			Location location = new Location(Bukkit.getWorld(world), worldX, 70, worldZ);
 
-			if (!location.getChunk().isLoaded())
-			{
+			if (!location.getChunk().isLoaded()) {
 				location.getChunk().load();
 			}
 
-			CraftEntity mob = (CraftEntity)Bukkit.getEntity(UUID.fromString(uuid));
+			CraftEntity mob = (CraftEntity) Bukkit.getEntity(UUID.fromString(uuid));
 
 			String entityType = "";
 			EntityInsentient setupEntity = null;
@@ -354,7 +355,7 @@ public final class Parallelutils extends JavaPlugin {
 				switch (type) {
 					case "wisp":
 						entityType = "wisp";
-						setupEntity = EntityWisp.setup(this, (CraftZombie)mob);
+						setupEntity = EntityWisp.setup(this, (CraftZombie) mob);
 						break;
 					default:
 						Parallelutils.log(Level.WARNING, "Unknown entity type \"" + type + "\"");
@@ -369,8 +370,8 @@ public final class Parallelutils extends JavaPlugin {
 					SpawnerRegistry.getInstance().incrementMobCount(spawnerLocation);
 					if (SpawnerRegistry.getInstance().getSpawner(spawnerLocation).hasLeash()) {
 						SpawnerRegistry.getInstance().addLeashedEntity(spawnerLocation, uuid);
-						if(SpawnerRegistry.getInstance().getLeashTaskID(spawnerLocation) == null){
-							BukkitTask task = new LeashTask(this, spawnerLocation).runTaskTimer(this, 0, 10);
+						if (SpawnerRegistry.getInstance().getLeashTaskID(spawnerLocation) == null) {
+							BukkitTask task = new LeashTask(spawnerLocation).runTaskTimer(this, 0, 10);
 							SpawnerRegistry.getInstance().addLeashTaskID(spawnerLocation, task.getTaskId());
 						}
 					}

@@ -29,7 +29,9 @@ public class ParticleRegistry {
 		entityParticles.put(type, options);
 	}
 
-	public ParticleOptions getParticleOptions(String type){ return entityParticles.get(type);}
+	public ParticleOptions getParticleOptions(String type) {
+		return entityParticles.get(type);
+	}
 
 	public boolean particleTaskRunning = false;
 }

@@ -2,6 +2,7 @@ package parallelmc.parallelutils.commands;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.*;
 import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
 import org.bukkit.entity.Player;
@@ -41,7 +42,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 						new ParallelSummonCommand().execute(sender, command, args);
 						break;
 					case "createspawner":
-						new ParallelCreateSpawnerCommand().execute(sender,command,args);
+						new ParallelCreateSpawnerCommand().execute(sender, command, args);
 						break;
 					default:
 						sender.sendMessage("PU: Command not found");
@@ -51,8 +52,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 		return true;
 	}
 
+	// TODO: Figure out a way to make this more modular
 	@Override
-	public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
+	public @Nullable
+	List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
 		ArrayList<String> list = new ArrayList<>();
 
 		if (!hasPermission(sender, "parallelutils.basic")) {
@@ -71,6 +74,60 @@ public class Commands implements CommandExecutor, TabCompleter {
 				list.addAll(Arrays.asList(ParallelSummonCommand.SUMMON_MOBS));
 			} else if (args[0].equals("spawnerCreate")) {
 				list.addAll(Arrays.asList(ParallelCreateSpawnerCommand.SUMMON_MOBS));
+			}
+		} else if (args.length == 3) {
+			if (args[0].equals("summon") || args[0].equals("spawnerCreate")) {
+				if (sender instanceof Player) {
+					Player player = (Player) sender;
+
+					Block targetedBlock = player.getTargetBlock(5);
+
+					if (targetedBlock != null) {
+						// Autofill targeted coords
+						list.add(String.format("%d", targetedBlock.getX()));
+						list.add(String.format("%d %d", targetedBlock.getX(), targetedBlock.getY()));
+						list.add(String.format("%d %d %d", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));
+					} else {
+						// Autofill tildas
+						list.add("~");
+						list.add("~ ~");
+						list.add("~ ~ ~");
+					}
+				}
+			}
+		} else if (args.length == 4) {
+			if (args[0].equals("summon") || args[0].equals("spawnerCreate")) {
+				if (sender instanceof Player) {
+					Player player = (Player) sender;
+
+					Block targetedBlock = player.getTargetBlock(5);
+
+					if (targetedBlock != null) {
+						// Autofill targeted coords
+						list.add(String.format("%d %d", targetedBlock.getX(), targetedBlock.getY()));
+						list.add(String.format("%d %d %d", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));
+					} else {
+						// Autofill tildas
+						list.add("~ ~");
+						list.add("~ ~ ~");
+					}
+				}
+			}
+		} else if (args.length == 5) {
+			if (args[0].equals("summon") || args[0].equals("spawnerCreate")) {
+				if (sender instanceof Player) {
+					Player player = (Player) sender;
+
+					Block targetedBlock = player.getTargetBlock(5);
+
+					if (targetedBlock != null) {
+						// Autofill targeted coords
+						list.add(String.format("%d %d %d", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));
+					} else {
+						// Autofill tildas
+						list.add("~ ~ ~");
+					}
+				}
 			}
 		}
 
@@ -94,17 +151,29 @@ public class Commands implements CommandExecutor, TabCompleter {
 			world = playerLoc.getWorld();
 
 			if (sx.trim().startsWith("~")) {
-				x = playerLoc.getBlockX() + Integer.parseInt(sx.trim().substring(1));
+				if (sx.trim().length() == 1) {
+					x = playerLoc.getBlockX();
+				} else {
+					x = playerLoc.getBlockX() + Integer.parseInt(sx.trim().substring(1));
+				}
 			} else {
 				x = Integer.parseInt(sx);
 			}
 			if (sy.trim().startsWith("~")) {
-				y = playerLoc.getBlockY() + Integer.parseInt(sy.trim().substring(1));
+				if (sy.trim().length() == 1) {
+					y = playerLoc.getBlockY();
+				} else {
+					y = playerLoc.getBlockY() + Integer.parseInt(sy.trim().substring(1));
+				}
 			} else {
 				y = Integer.parseInt(sy);
 			}
 			if (sz.trim().startsWith("~")) {
-				z = playerLoc.getBlockZ() + Integer.parseInt(sz.trim().substring(1));
+				if (sz.trim().length() == 1) {
+					z = playerLoc.getBlockZ();
+				} else {
+					z = playerLoc.getBlockZ() + Integer.parseInt(sz.trim().substring(1));
+				}
 			} else {
 				z = Integer.parseInt(sz);
 			}

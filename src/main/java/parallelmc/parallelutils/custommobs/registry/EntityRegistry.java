@@ -32,10 +32,12 @@ public class EntityRegistry {
 		Parallelutils.log(Level.INFO, "Registering entity " + uuid);
 		entities.put(uuid, new EntityData(type, entity));
 	}
+
 	public void registerEntity(String uuid, String type, Entity entity, SpawnReason reason) {
 		Parallelutils.log(Level.INFO, "Registering entity " + uuid);
 		entities.put(uuid, new EntityData(type, entity, reason));
 	}
+
 	public void registerEntity(String uuid, String type, Entity entity, SpawnReason reason, Location origin) {
 		Parallelutils.log(Level.INFO, "Registering entity " + uuid);
 		entities.put(uuid, new EntityData(type, entity, reason, origin));
