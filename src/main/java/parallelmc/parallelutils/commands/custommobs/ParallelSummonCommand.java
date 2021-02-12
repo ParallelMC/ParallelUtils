@@ -54,15 +54,14 @@ public class ParallelSummonCommand extends ParallelCommand {
 			Location location = null;
 			try {
 				location = Commands.convertLocation(sender, args[2], args[3], args[4]);
-			}
-			catch(NumberFormatException e){
+			} catch (NumberFormatException e) {
 				sender.sendMessage("Incorrect coordinate formatting!");
 				return false;
 			}
 
 			switch (args[1]) {
 				case "wisp":
-					EntityWisp wisp = EntityWisp.spawn(plugin, (CraftServer)sender.getServer(), (CraftWorld)location.getWorld(), location);
+					EntityWisp wisp = EntityWisp.spawn(plugin, (CraftServer) sender.getServer(), (CraftWorld) location.getWorld(), location, SpawnReason.COMMAND, player.getLocation());
 					break;
 			}
 		} else {

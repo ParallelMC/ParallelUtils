@@ -1,13 +1,18 @@
 package parallelmc.parallelutils.custommobs.spawners;
 
 import net.minecraft.server.v1_16_R3.EntityInsentient;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.IllegalPluginAccessException;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 import parallelmc.parallelutils.custommobs.nmsmobs.SpawnReason;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
@@ -15,6 +20,7 @@ import parallelmc.parallelutils.util.DistanceTools;
 
 import java.util.Collection;
 import java.util.Random;
+import java.util.logging.Level;
 
 public class SpawnTask extends BukkitRunnable {
 	private final JavaPlugin plugin;
@@ -26,8 +32,15 @@ public class SpawnTask extends BukkitRunnable {
 
 	private final int MAX_TRIES = 10;
 
-	public SpawnTask(JavaPlugin plugin, String type, Location location, int startCount) {
-		this.plugin = plugin;
+	public SpawnTask(String type, Location location, int startCount) {
+		PluginManager manager = Bukkit.getPluginManager();
+		plugin = (JavaPlugin) manager.getPlugin(Constants.pluginName);
+
+		if (plugin == null) {
+			Parallelutils.log(Level.SEVERE, "Unable to create SpawnTask. Plugin " + Constants.pluginName + "does not exist!");
+			throw new IllegalPluginAccessException("Unable to create SpawnTask. Plugin " + Constants.pluginName + "does not exist!");
+		}
+
 		this.type = type;
 		this.options = SpawnerRegistry.getInstance().getSpawnerOptions(type);
 		this.location = location;
@@ -91,8 +104,8 @@ public class SpawnTask extends BukkitRunnable {
 
 						if (setUpEntity != null && data.hasLeash()) {
 							SpawnerRegistry.getInstance().addLeashedEntity(location, setUpEntity.getUniqueID().toString());
-							if(SpawnerRegistry.getInstance().getLeashTaskID(location) == null){
-								BukkitTask task = new LeashTask(plugin, location).runTaskTimer(plugin, 0, 10);
+							if (SpawnerRegistry.getInstance().getLeashTaskID(location) == null) {
+								BukkitTask task = new LeashTask(location).runTaskTimer(plugin, 0, 10);
 								SpawnerRegistry.getInstance().addLeashTaskID(location, task.getTaskId());
 							}
 						}
@@ -115,6 +128,4 @@ public class SpawnTask extends BukkitRunnable {
 		}
 		return false;
 	}
-
-
 }
