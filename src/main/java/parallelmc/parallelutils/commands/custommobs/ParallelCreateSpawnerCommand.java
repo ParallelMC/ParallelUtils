@@ -54,11 +54,10 @@ public class ParallelCreateSpawnerCommand extends ParallelCommand {
 			if (args.length < 5) {
 				if (validMobType(args[1])) {
 					sender.sendMessage("Please enter a valid mob type.");
-					return true;
 				} else {
 					sender.sendMessage("Please enter a full set of coordinates.");
-					return true;
 				}
+				return true;
 			}
 			Location spawnerLocation = null;
 			try {

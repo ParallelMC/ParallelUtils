@@ -38,10 +38,14 @@ permissions:
     description: Gives access to commands involving spawners.
     children:
       parallelutils.spawn.spawners.create: true
+      parallelutils.spawn.spawners.list: true
       parallelutils.spawn.spawners.delete: true
     default: false
   parallelutils.spawn.spawners.create:
     description: Gives access to creating spawners.
+    default: false
+  parallelutils.spawn.spawners.list:
+    description: Gives access to listing spawners
     default: false
   parallelutils.spawn.spawners.delete:
     description: Gives access to deleting spawners.
