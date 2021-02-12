@@ -65,25 +65,29 @@ public class SpawnerRegistry {
 		return spawners.values();
 	}
 
-	public void registerSpawnerType(String type, SpawnerOptions options){
+	public void registerSpawnerType(String type, SpawnerOptions options) {
 		Parallelutils.log(Level.INFO, "Registering spawner type for " + type);
 		spawnerTypes.put(type, options);
 	}
 
-	public SpawnerOptions getSpawnerOptions(String type){ return spawnerTypes.get(type);}
+	public SpawnerOptions getSpawnerOptions(String type) {
+		return spawnerTypes.get(type);
+	}
 
-	public void addCount(Location loc, int count){
+	public void addCount(Location loc, int count) {
 		Parallelutils.log(Level.INFO, "Registering counter for " + loc.toString());
 		mobCounts.put(loc, count);
 	}
 
-	public Integer getMobCount(Location loc){return mobCounts.get(loc);}
+	public Integer getMobCount(Location loc) {
+		return mobCounts.get(loc);
+	}
 
 	public void setMobCount(Location loc, int count) {
 		mobCounts.replace(loc, count);
 	}
 
-	public void incrementMobCount(Location loc){
+	public void incrementMobCount(Location loc) {
 		Parallelutils.log(Level.INFO, "Incrementing mob count for " + loc.toString());
 		if (!mobCounts.containsKey(loc)) {
 			addCount(loc, 1);
@@ -91,43 +95,58 @@ public class SpawnerRegistry {
 			mobCounts.replace(loc, mobCounts.get(loc) + 1);
 		}
 	}
-	public void decrementMobCount(Location loc){
+
+	public void decrementMobCount(Location loc) {
 		Parallelutils.log(Level.INFO, "Decrementing mob count for " + loc.toString());
-		mobCounts.replace(loc, mobCounts.get(loc)-1);
+		mobCounts.replace(loc, mobCounts.get(loc) - 1);
 	}
 
-	public void removeMobCount(Location loc){mobCounts.remove(loc);}
+	public void removeMobCount(Location loc) {
+		mobCounts.remove(loc);
+	}
 
-	public void addSpawnTaskID(Location loc, int id){
+	public void addSpawnTaskID(Location loc, int id) {
 		Parallelutils.log(Level.INFO, "Adding spawn task ID for " + loc.toString());
 		spawnTaskID.put(loc, id);
 	}
 
-	public Integer getSpawnTaskID(Location loc){return spawnTaskID.get(loc);}
+	public Integer getSpawnTaskID(Location loc) {
+		return spawnTaskID.get(loc);
+	}
 
-	public void removeSpawnTaskID(Location loc){spawnTaskID.remove(loc);}
+	public void removeSpawnTaskID(Location loc) {
+		spawnTaskID.remove(loc);
+	}
 
-	public void addLeashTaskID(Location loc, int id){leashTaskID.put(loc, id);}
+	public void addLeashTaskID(Location loc, int id) {
+		leashTaskID.put(loc, id);
+	}
 
-	public Integer getLeashTaskID(Location loc){return leashTaskID.get(loc);}
+	public Integer getLeashTaskID(Location loc) {
+		return leashTaskID.get(loc);
+	}
 
-	public void removeLeashTaskID(Location loc){leashTaskID.remove(loc);}
+	public void removeLeashTaskID(Location loc) {
+		leashTaskID.remove(loc);
+	}
 
-	public void addLeashedEntity(Location loc, String id){
+	public void addLeashedEntity(Location loc, String id) {
 		Parallelutils.log(Level.INFO, "Adding leashed entity for " + loc.toString());
-		if(!leashedEntityLists.containsKey(loc)){
+		if (!leashedEntityLists.containsKey(loc)) {
 			leashedEntityLists.put(loc, new ArrayList<String>());
 		}
 		leashedEntityLists.get(loc).add(id);
 	}
 
-	public void removeLeashedEntity(Location loc, String id){
+	public void removeLeashedEntity(Location loc, String id) {
 		leashedEntityLists.get(loc).remove(id);
 	}
 
-	public ArrayList<String> getLeashedEntityList(Location loc){return leashedEntityLists.get(loc);}
+	public ArrayList<String> getLeashedEntityList(Location loc) {
+		return leashedEntityLists.get(loc);
+	}
 
-	public void removeSpawnerLeash(Location loc){
+	public void removeSpawnerLeash(Location loc) {
 		ArrayList<String> mobs = leashedEntityLists.get(loc);
 		leashedEntityLists.remove(loc);
 	}
