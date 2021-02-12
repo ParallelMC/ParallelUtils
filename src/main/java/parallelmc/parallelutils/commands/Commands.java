@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.commands.custommobs.ParallelCreateSpawnerCommand;
+import parallelmc.parallelutils.commands.custommobs.ParallelListSpawnersCommand;
 import parallelmc.parallelutils.commands.custommobs.ParallelSummonCommand;
 
 import java.util.ArrayList;
@@ -44,6 +45,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 					case "createspawner":
 						new ParallelCreateSpawnerCommand().execute(sender, command, args);
 						break;
+					case "listspawners":
+						new ParallelListSpawnersCommand().execute(sender, command, args);
+						break;
 					default:
 						sender.sendMessage("PU: Command not found");
 				}
@@ -66,23 +70,26 @@ public class Commands implements CommandExecutor, TabCompleter {
 			// List every sub-command
 			list.add("test");
 			list.add("summon");
-			list.add("spawnerCreate");
+			list.add("createspawner");
+			list.add("listspawners");
 		}
 
 		if (args.length == 2) {
 			if (args[0].equals("summon")) {
 				list.addAll(Arrays.asList(ParallelSummonCommand.SUMMON_MOBS));
-			} else if (args[0].equals("spawnerCreate")) {
+			} else if (args[0].equals("createspawner")) {
 				list.addAll(Arrays.asList(ParallelCreateSpawnerCommand.SUMMON_MOBS));
+			} else if (args[0].equals("listspawners")) {
+				list.add("1");
 			}
 		} else if (args.length == 3) {
-			if (args[0].equals("summon") || args[0].equals("spawnerCreate")) {
+			if (args[0].equals("summon") || args[0].equals("createspawner")) {
 				if (sender instanceof Player) {
 					Player player = (Player) sender;
 
 					Block targetedBlock = player.getTargetBlock(5);
 
-					if (targetedBlock != null) {
+					if (targetedBlock != null && targetedBlock.isSolid()) {
 						// Autofill targeted coords
 						list.add(String.format("%d", targetedBlock.getX()));
 						list.add(String.format("%d %d", targetedBlock.getX(), targetedBlock.getY()));
@@ -96,16 +103,16 @@ public class Commands implements CommandExecutor, TabCompleter {
 				}
 			}
 		} else if (args.length == 4) {
-			if (args[0].equals("summon") || args[0].equals("spawnerCreate")) {
+			if (args[0].equals("summon") || args[0].equals("createspawner")) {
 				if (sender instanceof Player) {
 					Player player = (Player) sender;
 
 					Block targetedBlock = player.getTargetBlock(5);
 
-					if (targetedBlock != null) {
+					if (targetedBlock != null && targetedBlock.isSolid()) {
 						// Autofill targeted coords
-						list.add(String.format("%d %d", targetedBlock.getX(), targetedBlock.getY()));
-						list.add(String.format("%d %d %d", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));
+						list.add(String.format("%d", targetedBlock.getY()));
+						list.add(String.format("%d %d", targetedBlock.getY(), targetedBlock.getZ()));
 					} else {
 						// Autofill tildas
 						list.add("~ ~");
@@ -114,15 +121,15 @@ public class Commands implements CommandExecutor, TabCompleter {
 				}
 			}
 		} else if (args.length == 5) {
-			if (args[0].equals("summon") || args[0].equals("spawnerCreate")) {
+			if (args[0].equals("summon") || args[0].equals("createspawner")) {
 				if (sender instanceof Player) {
 					Player player = (Player) sender;
 
 					Block targetedBlock = player.getTargetBlock(5);
 
-					if (targetedBlock != null) {
+					if (targetedBlock != null && targetedBlock.isSolid()) {
 						// Autofill targeted coords
-						list.add(String.format("%d %d %d", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));
+						list.add(String.format("%d", targetedBlock.getX()));
 					} else {
 						// Autofill tildas
 						list.add("~ ~ ~");
