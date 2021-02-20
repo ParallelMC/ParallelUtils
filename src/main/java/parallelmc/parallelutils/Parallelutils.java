@@ -186,6 +186,8 @@ public final class Parallelutils extends JavaPlugin {
 				e.printStackTrace();
 			}
 
+			log(Level.INFO, "Cleared tables");
+
 			// Insert all mobs that we care about into the database
 			try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO WorldMobs " +
 					"(UUID, Type, World, ChunkX, ChunkZ, spawnReason, spawnerId) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
@@ -218,11 +220,18 @@ public final class Parallelutils extends JavaPlugin {
 					statement.setInt(4, c.getX());
 					statement.setInt(5, c.getZ());
 					statement.setString(6, reason.name());
-
+					statement.setString(7, null);
 
 					if (reason == SpawnReason.SPAWNER) {
-						String spawnerId = SpawnerRegistry.getInstance().getSpawner(ep.spawnOrigin).getUuid();
-						statement.setString(7, spawnerId);
+						SpawnerData data = SpawnerRegistry.getInstance().getSpawner(ep.spawnOrigin);
+
+						if (data != null) {
+							String spawnerId = data.getUuid();
+							statement.setString(7, spawnerId);
+						} else {
+							log(Level.INFO, "Spawner does not exist. Ignoring");
+							statement.setString(6, SpawnReason.UNKNOWN.name());
+						}
 					}
 
 					// This just lets us execute a bunch of changes at once
@@ -316,7 +325,7 @@ public final class Parallelutils extends JavaPlugin {
 			String spawnerId = result.getString("spawnerId");
 
 			Location spawnerLocation = null;
-			if (spawnerId != null) {
+			if (spawnReason == SpawnReason.SPAWNER) {
 				PreparedStatement statement = dbConn.prepareStatement("SELECT * FROM Spawners WHERE id=?");
 
 				statement.setString(1, spawnerId);

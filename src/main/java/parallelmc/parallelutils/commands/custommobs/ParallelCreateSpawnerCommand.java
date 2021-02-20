@@ -25,8 +25,8 @@ public class ParallelCreateSpawnerCommand extends ParallelCommand {
 
 	public ParallelCreateSpawnerCommand() {
 		super("createspawner", new ParallelOrPermission(new ParallelPermission[]
-				{new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.spawner"),
-						new ParallelPermission("parallelutils.spawn.spawner.create")}));
+				{new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.spawners"),
+						new ParallelPermission("parallelutils.spawn.spawners.create")}));
 	}
 
 	@Override
