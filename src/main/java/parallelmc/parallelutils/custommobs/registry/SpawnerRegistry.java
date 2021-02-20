@@ -57,6 +57,20 @@ public class SpawnerRegistry {
 		return spawners.get(location);
 	}
 
+	public Location getSpawnerLoc(String uuid) {
+		for (SpawnerData d : getSpawnerData()) {
+			if (d.getUuid().equals(uuid)) {
+				return d.getLocation();
+			}
+		}
+		return null;
+	}
+
+	public boolean deleteSpawner(Location location) {
+		Parallelutils.log(Level.INFO, "Removing spawner " + location.toString());
+		return spawners.remove(location) != null;
+	}
+
 	public Collection<Location> getSpawnerLocations() {
 		return spawners.keySet();
 	}
