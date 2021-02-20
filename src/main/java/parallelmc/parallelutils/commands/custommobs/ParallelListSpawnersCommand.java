@@ -10,21 +10,24 @@ import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
 import parallelmc.parallelutils.custommobs.spawners.SpawnerData;
 
-import java.util.Collection;
-
 public class ParallelListSpawnersCommand extends ParallelCommand {
 
 	private static final int PAGE_SIZE = 10;
 
 	public ParallelListSpawnersCommand() {
 		super("listspawners", new ParallelOrPermission(new ParallelPermission[]
-				{new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.spawner"),
-						new ParallelPermission("parallelutils.spawn.spawner.list")}));
+				{new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.spawners"),
+						new ParallelPermission("parallelutils.spawn.spawners.list")}));
 	}
 
 	@Override
 	public boolean execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String[] args) {
 		SpawnerData[] data = SpawnerRegistry.getInstance().getSpawnerData().toArray(new SpawnerData[0]);
+
+		if (data.length == 0) {
+			sender.sendMessage("No Spawners Exist!");
+			return true;
+		}
 
 		int numPages = (int)Math.ceil((double)data.length / 10.0);
 
