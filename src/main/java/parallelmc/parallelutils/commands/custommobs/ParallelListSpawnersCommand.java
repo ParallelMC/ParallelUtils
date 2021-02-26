@@ -29,7 +29,7 @@ public class ParallelListSpawnersCommand extends ParallelCommand {
 			return true;
 		}
 
-		int numPages = (int)Math.ceil((double)data.length / 10.0);
+		int numPages = (int)Math.ceil((double)data.length / (double)PAGE_SIZE);
 
 		int page = 1;
 

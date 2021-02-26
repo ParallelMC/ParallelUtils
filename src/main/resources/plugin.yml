@@ -21,9 +21,12 @@ permissions:
       parallelutils.basic: true
       parallelutils.test: true
       parallelutils.spawn: true
+      parallelutils.help: true
     default: false
   parallelutils.basic:
     description: Gives access to any PU commands. Required to do anything
+    children:
+      parallelutils.help: true
     default: false
   parallelutils.spawn:
     description: Gives access to spawning commands, such as summoning and monster spawners.
@@ -52,4 +55,7 @@ permissions:
     default: false
   parallelutils.test:
     description: Gives access to the test command
+    default: false
+  parallelutils.help:
+    description: Gives access to the help command
     default: false
