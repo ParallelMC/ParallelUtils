@@ -23,7 +23,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 	public Commands(Parallelutils plugin) {
 		this.plugin = plugin;
 	}
-	
+
 	@Override
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 		if (command.getName().equalsIgnoreCase("parallelutils") || command.getName().equalsIgnoreCase("pu")) {
@@ -33,7 +33,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			}
 			if (args.length == 0) {
 				// Give version information
-				sender.sendMessage("ParallelUtils Version " + Constants.VERSION);
+				sender.sendMessage("ParallelUtils Version " + Constants.VERSION.toString());
 			} else {
 				switch (args[0]) {
 					case "help":
