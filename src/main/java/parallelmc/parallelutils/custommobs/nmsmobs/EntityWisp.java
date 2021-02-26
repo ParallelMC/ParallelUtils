@@ -10,65 +10,67 @@ import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import parallelmc.parallelutils.Registry;
-import parallelmc.parallelutils.custommobs.ParticleTask;
+import parallelmc.parallelutils.custommobs.particles.ParticleTask;
 import parallelmc.parallelutils.custommobs.bukkitmobs.CraftWisp;
-
-import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.Set;
+import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
+import parallelmc.parallelutils.custommobs.registry.ParticleRegistry;
 
 public class EntityWisp extends EntityZombie {
-    public EntityWisp(EntityTypes<? extends EntityZombie> entitytypes, World world) {
-        super(entitytypes, world);
-        initPathfinder();
-    }
+	public EntityWisp(EntityTypes<? extends EntityZombie> entitytypes, World world) {
+		super(entitytypes, world);
+		initPathfinder();
+	}
 
-    public EntityWisp(World world) {
-        super(world);
-        initPathfinder();
-    }
+	public EntityWisp(World world) {
+		super(world);
+		initPathfinder();
+	}
 
-    @Override
-    public void initPathfinder() {
-        initPathfinder(this);
-    }
+	@Override
+	public void initPathfinder() {
+		initPathfinder(this);
+	}
 
-    public static void initPathfinder(EntityZombie zombie) {
-        //clearing Zombie goals
-        CustomEntityHelper.clearGoals(zombie);
+	public static void initPathfinder(EntityZombie zombie) {
+		//clearing Zombie goals
+		CustomEntityHelper.clearGoals(zombie);
 
-        zombie.goalSelector.a(0, new PathfinderGoalMeleeAttack(zombie,1.0, false));
-        zombie.goalSelector.a(1, new PathfinderGoalRandomStroll(zombie, 1.0));
+		zombie.goalSelector.a(0, new PathfinderGoalMeleeAttack(zombie, 1.0, false));
+		zombie.goalSelector.a(1, new PathfinderGoalRandomStroll(zombie, 1.0));
 
-        zombie.targetSelector.a(0, new PathfinderGoalHurtByTarget(zombie));
-    }
+		zombie.targetSelector.a(0, new PathfinderGoalHurtByTarget(zombie));
+	}
 
-    public static EntityWisp spawn(JavaPlugin plugin, CraftServer server, CraftWorld world, Location l) {
-        EntityWisp wisp = new EntityWisp(world.getHandle());
-        CraftZombie zombie = (CraftZombie) CraftEntity.getEntity(server, wisp);
+	public static EntityWisp spawn(JavaPlugin plugin, CraftServer server, CraftWorld world, Location l) {
+		return spawn(plugin, server, world, l, SpawnReason.UNKNOWN, null);
+	}
 
-        setup(plugin, zombie);
-        wisp.setPosition(l.getX(), l.getY(), l.getZ());
-        world.getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
+	public static EntityWisp spawn(JavaPlugin plugin, CraftServer server, CraftWorld world, Location l,
+	                               SpawnReason reason, Location origin) {
+		EntityWisp wisp = new EntityWisp(world.getHandle());
+		CraftZombie zombie = (CraftZombie) CraftEntity.getEntity(server, wisp);
 
-        Registry.getInstance().registerEntity(zombie.getUniqueId().toString(), "wisp", wisp);
+		setup(plugin, zombie);
+		wisp.setPosition(l.getX(), l.getY(), l.getZ());
+		world.getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
-        return wisp;
-    }
+		EntityRegistry.getInstance().registerEntity(zombie.getUniqueId().toString(), "wisp", wisp, reason, origin);
 
-    public static EntityZombie setup(JavaPlugin plugin, CraftZombie mob) {
-        CraftWisp.setupNBT(plugin, mob);
+		return wisp;
+	}
 
-        EntityZombie wisp = mob.getHandle();
+	public static EntityZombie setup(JavaPlugin plugin, CraftZombie mob) {
+		CraftWisp.setupNBT(plugin, mob);
 
-        EntityWisp.initPathfinder(wisp);
+		EntityZombie wisp = mob.getHandle();
 
-        if(!Registry.getInstance().particleTaskRunning){
-            BukkitTask task = new ParticleTask(plugin).runTaskTimer(plugin, 0, 10);
-            Registry.getInstance().particleTaskRunning = true;
-        }
+		EntityWisp.initPathfinder(wisp);
 
-        return wisp;
-    }
+		if (!ParticleRegistry.getInstance().particleTaskRunning) {
+			BukkitTask task = new ParticleTask().runTaskTimer(plugin, 0, 10);
+			ParticleRegistry.getInstance().particleTaskRunning = true;
+		}
+
+		return wisp;
+	}
 }
