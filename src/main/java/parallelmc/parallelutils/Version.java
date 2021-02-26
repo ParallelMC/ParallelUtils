@@ -1,4 +1,4 @@
-package parallelmc.parallelutils.commands;
+package parallelmc.parallelutils;
 
 import org.jetbrains.annotations.NotNull;
 
