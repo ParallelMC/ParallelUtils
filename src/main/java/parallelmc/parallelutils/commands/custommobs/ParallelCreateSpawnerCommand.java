@@ -21,7 +21,7 @@ import parallelmc.parallelutils.custommobs.spawners.SpawnTask;
 import java.util.logging.Level;
 
 public class ParallelCreateSpawnerCommand extends ParallelCommand {
-	public static final String[] SUMMON_MOBS = new String[]{"wisp"};
+	public static final String[] SUMMON_MOBS = new String[]{"wisp", "fire_wisp"};
 
 	public ParallelCreateSpawnerCommand() {
 		super("createspawner", new ParallelOrPermission(new ParallelPermission[]
@@ -70,10 +70,17 @@ public class ParallelCreateSpawnerCommand extends ParallelCommand {
 			switch (args[1]) {
 				case "wisp":
 					SpawnerRegistry.getInstance().registerSpawner("wisp", spawnerLocation, true);
-					BukkitTask task = new SpawnTask("wisp", spawnerLocation, 0)
+					BukkitTask wtask = new SpawnTask("wisp", spawnerLocation, 0)
 							.runTaskTimer(plugin, 0, SpawnerRegistry.getInstance().
 									getSpawnerOptions("wisp").cooldown);
-					SpawnerRegistry.getInstance().addSpawnTaskID(spawnerLocation, task.getTaskId());
+					SpawnerRegistry.getInstance().addSpawnTaskID(spawnerLocation, wtask.getTaskId());
+					break;
+				case "fire_wisp":
+					SpawnerRegistry.getInstance().registerSpawner("fire_wisp", spawnerLocation, true);
+					BukkitTask fwtask = new SpawnTask("fire_wisp", spawnerLocation, 0)
+							.runTaskTimer(plugin, 0, SpawnerRegistry.getInstance().
+									getSpawnerOptions("fire_wisp").cooldown);
+					SpawnerRegistry.getInstance().addSpawnTaskID(spawnerLocation, fwtask.getTaskId());
 					break;
 			}
 		} else {

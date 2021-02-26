@@ -1,7 +1,5 @@
 package parallelmc.parallelutils;
 
-import parallelmc.parallelutils.commands.Version;
-
 public class Constants {
 
 	public static final Version VERSION = new Version(0, 1, 0);
