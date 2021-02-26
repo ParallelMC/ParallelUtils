@@ -19,7 +19,7 @@ public class CraftWisp {
 	public static void setupNBT(Plugin plugin, CraftZombie entity) {
 		//Attributes
 		//Health = 30
-		entity.getAttribute(GENERIC_MAX_HEALTH).setBaseValue(30.0);
+		entity.getAttribute(GENERIC_MAX_HEALTH).setBaseValue(20.0);
 		entity.setHealth(entity.getAttribute(GENERIC_MAX_HEALTH).getBaseValue());
 
 		//Damage = 8
