@@ -44,10 +44,10 @@ public class ParallelSummonCommand extends ParallelCommand {
 			}
 
 			PluginManager manager = Bukkit.getPluginManager();
-			JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.pluginName);
+			JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
 
 			if (plugin == null) {
-				Parallelutils.log(Level.SEVERE, "Unable to execute command 'summon'. Plugin " + Constants.pluginName + " does not exist!");
+				Parallelutils.log(Level.SEVERE, "Unable to execute command 'summon'. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
 				return false;
 			}
 
