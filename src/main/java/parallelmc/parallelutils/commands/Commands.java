@@ -8,11 +8,9 @@ import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.commands.custommobs.ParallelCreateSpawnerCommand;
-import parallelmc.parallelutils.commands.custommobs.ParallelDeleteSpawnerCommand;
-import parallelmc.parallelutils.commands.custommobs.ParallelListSpawnersCommand;
-import parallelmc.parallelutils.commands.custommobs.ParallelSummonCommand;
+import parallelmc.parallelutils.commands.custommobs.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,8 +23,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 	public Commands(Parallelutils plugin) {
 		this.plugin = plugin;
 	}
-
-	// TODO: Add help command
+	
 	@Override
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 		if (command.getName().equalsIgnoreCase("parallelutils") || command.getName().equalsIgnoreCase("pu")) {
@@ -35,9 +32,13 @@ public class Commands implements CommandExecutor, TabCompleter {
 				return true;
 			}
 			if (args.length == 0) {
-				//Give version information
+				// Give version information
+				sender.sendMessage("ParallelUtils Version " + Constants.VERSION);
 			} else {
 				switch (args[0]) {
+					case "help":
+						new ParallelHelpCommand().execute(sender, command, args);
+						break;
 					case "test":
 						new ParallelTestCommand().execute(sender, command, args);
 						break;
@@ -73,6 +74,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		if (command.getName().equalsIgnoreCase("parallelutils") || command.getName().equalsIgnoreCase("pu") && args.length == 1) {
 			// List every sub-command
+			list.add("help");
 			list.add("test");
 			list.add("summon");
 			list.add("createspawner");
@@ -85,7 +87,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 				list.addAll(Arrays.asList(ParallelSummonCommand.SUMMON_MOBS));
 			} else if (args[0].equals("createspawner")) {
 				list.addAll(Arrays.asList(ParallelCreateSpawnerCommand.SUMMON_MOBS));
-			} else if (args[0].equals("listspawners")) {
+			} else if (args[0].equals("listspawners") || args[0].equals("help")) {
 				list.add("1");
 			} else if (args[0].equals("deletespawner")) {
 				list.add("uuid");

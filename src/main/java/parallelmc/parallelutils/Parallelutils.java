@@ -28,6 +28,7 @@ import java.util.logging.Level;
 
 
 // TODO: Break this out into multiple functions or classes. This is WAY too big and filled with spaghetti
+// TODO: Setup test database stuffs
 public final class Parallelutils extends JavaPlugin {
 
 	public static Level LOG_LEVEL = Level.INFO;
@@ -52,7 +53,6 @@ public final class Parallelutils extends JavaPlugin {
 		// Read config
 		this.saveDefaultConfig();
 		this.reloadConfig();
-
 
 		SpawnerRegistry.getInstance().registerSpawnerType("wisp", new SpawnerOptions(0, 0, 8,
 				1, 400, 0, true, 40, 16,

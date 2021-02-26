@@ -26,11 +26,11 @@ public class LeashTask extends BukkitRunnable {
 
 	public LeashTask(Location spawnerLocation) {
 		PluginManager manager = Bukkit.getPluginManager();
-		plugin = (JavaPlugin) manager.getPlugin(Constants.pluginName);
+		plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to create LeashTask. Plugin " + Constants.pluginName + "does not exist!");
-			throw new IllegalPluginAccessException("Unable to create LeashTask. Plugin " + Constants.pluginName + "does not exist!");
+			Parallelutils.log(Level.SEVERE, "Unable to create LeashTask. Plugin " + Constants.PLUGIN_NAME + "does not exist!");
+			throw new IllegalPluginAccessException("Unable to create LeashTask. Plugin " + Constants.PLUGIN_NAME + "does not exist!");
 		}
 
 		this.spawnerLocation = spawnerLocation;
