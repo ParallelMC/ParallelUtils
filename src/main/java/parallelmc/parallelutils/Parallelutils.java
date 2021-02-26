@@ -11,6 +11,7 @@ import org.bukkit.scheduler.BukkitTask;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.custommobs.events.CustomMobsEventRegistrar;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityData;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityFireWisp;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 import parallelmc.parallelutils.custommobs.nmsmobs.SpawnReason;
 import parallelmc.parallelutils.custommobs.particles.ParticleOptions;
@@ -57,6 +58,9 @@ public final class Parallelutils extends JavaPlugin {
 		SpawnerRegistry.getInstance().registerSpawnerType("wisp", new SpawnerOptions(0, 0, 8,
 				1, 400, 0, true, 40, 16,
 				false, false));
+		SpawnerRegistry.getInstance().registerSpawnerType("fire_wisp", new SpawnerOptions(0, 0, 8,
+				1, 400, 0, true, 40, 16,
+				false, false)); //TODO: see if DB wants to change
 
 		int logLevel = config.getInt("debug", 2);
 
@@ -154,7 +158,10 @@ public final class Parallelutils extends JavaPlugin {
 			e.printStackTrace();
 		}
 
-		ParticleRegistry.getInstance().registerParticles("wisp", new ParticleOptions(Particle.CLOUD, 50, 0.5, 1, 0));
+		ParticleRegistry.getInstance().registerParticles("wisp", new ParticleOptions
+				(Particle.CLOUD, 50, 0.5, 1, 0));
+		ParticleRegistry.getInstance().registerParticles("fire_wisp", new ParticleOptions
+				(Particle.LAVA, 40, 0.25, 0.5, 0));
 
 
 		// Register events for the CustomMobs module
@@ -365,6 +372,10 @@ public final class Parallelutils extends JavaPlugin {
 					case "wisp":
 						entityType = "wisp";
 						setupEntity = EntityWisp.setup(this, (CraftZombie) mob);
+						break;
+					case "fire_wisp":
+						entityType = "fire_wisp";
+						setupEntity = EntityFireWisp.setup(this, (CraftZombie) mob);
 						break;
 					default:
 						Parallelutils.log(Level.WARNING, "Unknown entity type \"" + type + "\"");

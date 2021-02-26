@@ -15,7 +15,7 @@ public class ParallelHelpCommand extends ParallelCommand {
 			"/pu help <page>",
 			"/pu test",
 			"/pu summon <mobs> <x> <y> <z>",
-			"/pu createspawner <wisp> <x> <y> <z>",
+			"/pu createspawner <type> <x> <y> <z>",
 			"/pu listspawners <page>",
 			"/pu deletespawner <uuid>",
 			"/pu deletespawner <x> <y> <z>"
