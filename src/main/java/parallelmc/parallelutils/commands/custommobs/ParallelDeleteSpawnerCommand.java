@@ -5,7 +5,6 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.commands.ParallelCommand;
@@ -38,7 +37,7 @@ public class ParallelDeleteSpawnerCommand extends ParallelCommand {
 			}
 		} else if (args.length == 4) {
 			// Location
-			String world = Constants.defaultWorld;
+			String world = Constants.DEFAULT_WORLD;
 
 			if (sender instanceof Player) {
 				Player player = (Player)sender;
