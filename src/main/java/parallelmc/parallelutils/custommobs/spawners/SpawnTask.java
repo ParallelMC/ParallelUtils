@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.custommobs.nmsmobs.EntityFireWisp;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 import parallelmc.parallelutils.custommobs.nmsmobs.SpawnReason;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
@@ -96,6 +97,15 @@ public class SpawnTask extends BukkitRunnable {
 										location.getWorld().getBlockAt(spawnLocation.clone().add(0, 1, 0)).isEmpty()) {
 									wasSuccessful = true;
 									setUpEntity = EntityWisp.spawn(plugin, (CraftServer) plugin.getServer(),
+											(CraftWorld) location.getWorld(), spawnLocation, SpawnReason.SPAWNER, location);
+									SpawnerRegistry.getInstance().incrementMobCount(location);
+								}
+								break;
+							case "fire_wisp":
+								if (location.getWorld().getBlockAt(spawnLocation).isEmpty() &&
+										location.getWorld().getBlockAt(spawnLocation.clone().add(0, 1, 0)).isEmpty()) {
+									wasSuccessful = true;
+									setUpEntity = EntityFireWisp.spawn(plugin, (CraftServer) plugin.getServer(),
 											(CraftWorld) location.getWorld(), spawnLocation, SpawnReason.SPAWNER, location);
 									SpawnerRegistry.getInstance().incrementMobCount(location);
 								}
