@@ -161,7 +161,7 @@ public final class Parallelutils extends JavaPlugin {
 		ParticleRegistry.getInstance().registerParticles("wisp", new ParticleOptions
 				(Particle.CLOUD, 50, 0.5, 1, 0));
 		ParticleRegistry.getInstance().registerParticles("fire_wisp", new ParticleOptions
-				(Particle.LAVA, 50, 0.5, 1.25, 0));
+				(Particle.LAVA, 40, 0.25, 0.5, 0));
 
 
 		// Register events for the CustomMobs module
