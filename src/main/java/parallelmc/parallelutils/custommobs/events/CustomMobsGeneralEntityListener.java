@@ -9,6 +9,7 @@ import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.custommobs.nmsmobs.SpawnReason;
 import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
+import parallelmc.parallelutils.custommobs.spawners.SpawnerData;
 
 import java.util.logging.Level;
 
@@ -26,7 +27,8 @@ public class CustomMobsGeneralEntityListener implements Listener {
 			if (EntityRegistry.getInstance().getEntity(UUID).spawnReason == SpawnReason.SPAWNER) {
 				Location spawner = EntityRegistry.getInstance().getEntity(UUID).spawnOrigin;
 				SpawnerRegistry.getInstance().decrementMobCount(spawner);
-				if (SpawnerRegistry.getInstance().getSpawner(spawner).hasLeash()) {
+				SpawnerData spawnerData = SpawnerRegistry.getInstance().getSpawner(spawner);
+				if (spawnerData != null && spawnerData.hasLeash()) {
 					SpawnerRegistry.getInstance().removeLeashedEntity(spawner, UUID);
 				}
 			}

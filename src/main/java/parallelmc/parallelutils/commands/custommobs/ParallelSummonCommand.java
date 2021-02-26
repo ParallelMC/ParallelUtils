@@ -70,6 +70,9 @@ public class ParallelSummonCommand extends ParallelCommand {
 					EntityFireWisp fireWisp = EntityFireWisp.spawn(plugin, (CraftServer) sender.getServer(),
 							(CraftWorld) location.getWorld(), location, SpawnReason.COMMAND, player.getLocation());
 					break;
+				default:
+					sender.sendMessage("Mob does not exist!");
+					return false;
 			}
 		} else {
 			sender.sendMessage("This command can only be run by a player");

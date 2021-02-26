@@ -38,7 +38,7 @@ public class EntityFireWisp extends EntityZombie {
         zombie.goalSelector.a(0, new PathfinderGoalMeleeAttack(zombie, 1.0, false));
         zombie.goalSelector.a(1, new PathfinderGoalRandomStroll(zombie, 1.0));
 
-        zombie.targetSelector.a(0, new PathfinderGoalNearestAttackableTarget<EntityPlayer>(zombie,
+        zombie.targetSelector.a(0, new PathfinderGoalNearestAttackableTarget<>(zombie,
                 EntityPlayer.class, true));
     }
 
