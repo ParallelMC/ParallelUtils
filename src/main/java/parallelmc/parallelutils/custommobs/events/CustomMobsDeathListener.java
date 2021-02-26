@@ -7,6 +7,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import parallelmc.parallelutils.custommobs.bukkitmobs.CraftFireWisp;
 import parallelmc.parallelutils.custommobs.bukkitmobs.CraftWisp;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityData;
 import parallelmc.parallelutils.custommobs.registry.EntityRegistry;
@@ -27,6 +28,9 @@ public class CustomMobsDeathListener implements Listener {
 					case "wisp":
 						event.setDeathMessage(player.getDisplayName() + " was slain by Wisp");
 						break;
+					case "fire_wisp":
+						event.setDeathMessage(player.getDisplayName() + " was slain by Fire Wisp");
+						break;
 				}
 			}
 		}
@@ -39,6 +43,9 @@ public class CustomMobsDeathListener implements Listener {
 			switch (pair.type) {
 				case "wisp":
 					CraftWisp.deathLoot(event);
+					break;
+				case "fire_wisp":
+					CraftFireWisp.deathLoot(event);
 					break;
 			}
 		}

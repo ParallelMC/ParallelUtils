@@ -112,6 +112,9 @@ public class SpawnerRegistry {
 
 	public void decrementMobCount(Location loc) {
 		Parallelutils.log(Level.INFO, "Decrementing mob count for " + loc.toString());
+		if (!mobCounts.containsKey(loc)) {
+			return;
+		}
 		mobCounts.replace(loc, mobCounts.get(loc) - 1);
 	}
 
