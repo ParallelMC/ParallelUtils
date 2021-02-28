@@ -39,6 +39,10 @@ public final class Parallelutils extends JavaPlugin {
 
 	public static Connection dbConn;
 
+	private String jdbc;
+	private String username = "";
+	private String password = "";
+
 	private static boolean finishedSetup = false;
 
 	@Override
@@ -82,7 +86,7 @@ public final class Parallelutils extends JavaPlugin {
 		Bukkit.getLogger().setLevel(LOG_LEVEL);
 
 		// Either get the database connection URL from the config or construct it from the config
-		String jdbc, address, database, username = "", password = "";
+		String address, database;
 		jdbc = config.getString("sql.jdbc");
 
 		if (jdbc == null || jdbc.trim().equals("")) {
@@ -191,6 +195,24 @@ public final class Parallelutils extends JavaPlugin {
 				dbConn.commit();
 			} catch (SQLException e) {
 				e.printStackTrace();
+				log(Level.WARNING, "Trying again...");
+
+				// Try reconnecting
+				try {
+					if (!dbConn.isClosed()) {
+						dbConn.close();
+					}
+					openDatabaseConnection(jdbc, username, password);
+
+					Statement removeStatement = dbConn.createStatement();
+					removeStatement.execute("TRUNCATE TABLE WorldMobs");
+					removeStatement.execute("TRUNCATE TABLE Spawners");
+					dbConn.commit();
+
+				} catch (SQLException | ClassNotFoundException ex) {
+					ex.printStackTrace();
+					log(Level.WARNING, "Failed Twice. Something is broken!!!");
+				}
 			}
 
 			log(Level.INFO, "Cleared tables");
