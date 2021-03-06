@@ -194,7 +194,7 @@ public final class Parallelutils extends JavaPlugin {
 				removeStatement.execute("TRUNCATE TABLE Spawners");
 				dbConn.commit();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				log(Level.WARNING, "Could not connect to DB");
 				log(Level.WARNING, "Trying again...");
 
 				// Try reconnecting
