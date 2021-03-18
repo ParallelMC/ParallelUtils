@@ -14,3 +14,7 @@ sql:
   database: databaseName
   username: user
   password: pass
+
+# Discord Bot Integration
+token:
+staff_channel_id:
