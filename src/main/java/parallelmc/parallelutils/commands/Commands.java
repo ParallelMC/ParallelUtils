@@ -102,11 +102,13 @@ public class Commands implements CommandExecutor, TabCompleter {
 						list.add(String.format("%d", targetedBlock.getX()));
 						list.add(String.format("%d %d", targetedBlock.getX(), targetedBlock.getY()));
 						list.add(String.format("%d %d %d", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));
+						list.add(String.format("%d %d %d world", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));
 					} else {
 						Location location = player.getLocation();
 						list.add(String.format("%d", location.getBlockX()));
 						list.add(String.format("%d %d", location.getBlockX(), location.getBlockY()));
 						list.add(String.format("%d %d %d", location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+						list.add(String.format("%d %d %d world", location.getBlockX(), location.getBlockY(), location.getBlockZ()));
 					}
 				}
 			}
@@ -139,10 +141,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 						// Autofill targeted coords
 						list.add(String.format("%d", targetedBlock.getY()));
 						list.add(String.format("%d %d", targetedBlock.getY(), targetedBlock.getZ()));
+						list.add(String.format("%d %d, world", targetedBlock.getY(), targetedBlock.getZ()));
 					} else {
 						Location location = player.getLocation();
 						list.add(String.format("%d", location.getBlockY()));
 						list.add(String.format("%d %d", location.getBlockY(), location.getBlockZ()));
+						list.add(String.format("%d %d world", location.getBlockY(), location.getBlockZ()));
 					}
 				}
 			}
@@ -172,9 +176,11 @@ public class Commands implements CommandExecutor, TabCompleter {
 					if (targetedBlock != null && targetedBlock.isSolid()) {
 						// Autofill targeted coords
 						list.add(String.format("%d", targetedBlock.getZ()));
+						list.add(String.format("%d world", targetedBlock.getZ()));
 					} else {
 						Location location = player.getLocation();
 						list.add(String.format("%d", location.getBlockZ()));
+						list.add(String.format("%d world", location.getBlockZ()));
 					}
 				}
 			}
@@ -192,6 +198,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 						// Autofill tildas
 						list.add("~");
 					}
+				}
+			} else if (args[0].equals("deletespawner")) {
+				if (sender instanceof Player) {
+					list.add("world");
 				}
 			}
 		}
