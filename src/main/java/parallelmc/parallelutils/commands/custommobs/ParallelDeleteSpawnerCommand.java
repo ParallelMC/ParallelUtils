@@ -19,7 +19,7 @@ public class ParallelDeleteSpawnerCommand extends ParallelCommand {
 	public ParallelDeleteSpawnerCommand() {
 		super("deletespawner", new ParallelOrPermission(new ParallelPermission[]
 				{new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.spawners"),
-						new ParallelPermission("parallelutils.spawn.spawners.delete")}) );
+						new ParallelPermission("parallelutils.spawn.spawners.delete")}));
 	}
 
 	@Override
@@ -32,20 +32,21 @@ public class ParallelDeleteSpawnerCommand extends ParallelCommand {
 				sender.sendMessage("Spawner " + args[1] + " deleted");
 				return true;
 			} else {
-				sender.sendMessage("Unable to delete spawner " + args[1] +" \nPlease check UUID and try again");
+				sender.sendMessage("Unable to delete spawner " + args[1] + " \nPlease check UUID and try again");
 				return false;
 			}
-		} else if (args.length == 4) {
+		} else if (args.length == 4 || args.length == 5) {
 			// Location
 			String world = Constants.DEFAULT_WORLD;
 
 			if (sender instanceof Player) {
-				Player player = (Player)sender;
+				Player player = (Player) sender;
 
 				world = player.getWorld().getName();
 			}
 
-			int x,y,z;
+			int x, y, z;
+
 
 			try {
 				x = Integer.parseInt(args[1]);
@@ -57,16 +58,20 @@ public class ParallelDeleteSpawnerCommand extends ParallelCommand {
 				return false;
 			}
 
+			if (args.length == 5) {
+				world = args[4];
+			}
+
+
 			Location location = new Location(Bukkit.getWorld(world), x, y, z);
 
-			if(deleteThings(location)) {
+			if (deleteThings(location)) {
 				sender.sendMessage("Spawner " + location.toString() + " deleted");
 				return true;
 			} else {
 				sender.sendMessage("Unable to delete spawner " + location.toString() + "\nPlease check location and try again");
 				return false;
 			}
-
 		} else {
 			// Invalid
 			sender.sendMessage(USAGE);
