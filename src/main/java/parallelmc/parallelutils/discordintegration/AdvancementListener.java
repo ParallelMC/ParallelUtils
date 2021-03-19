@@ -1,11 +1,14 @@
 package parallelmc.parallelutils.discordintegration;
 
+import org.bukkit.Location;
+import org.bukkit.Statistic;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAdvancementDoneEvent;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.util.TimeTools;
 
 import java.util.Arrays;
 import java.util.List;
@@ -29,22 +32,31 @@ public class AdvancementListener implements Listener {
 	public void onAch(PlayerAdvancementDoneEvent event) {
 		Player player = event.getPlayer();
 
+		Location playerLocation = player.getLocation();
+
+		int playtime = player.getStatistic(Statistic.PLAY_ONE_MINUTE); // Ticks played
+
+		String fulltime = TimeTools.fullTime(playtime, TimeTools.TimeUnit.TICKS);
+
 		Advancement advancement = event.getAdvancement();
 
-		// player.sendMessage("Player " + player.getName() + " got advancement " + advancement.getKey().toString());
+		Parallelutils.log(Level.INFO,"Player " + player.getName() + " got advancement " + advancement.getKey().toString());
 
 		if (SPECIAL_ADVANCEMENTS.contains(advancement.getKey().toString())) {
 			if (BotManager.getInstance() != null) {
 				if (!BotManager.getInstance().sendMessage("staff",
-						"Player " + player.getName() + " got advancement " + advancement.getKey().getKey())) {
+						"Player " + player.getName() + " got advancement " + advancement.getKey().getKey() + "." +
+								" They are at " + playerLocation.toString() + " and have " + fulltime + " of playtime")) {
 					Parallelutils.log(Level.WARNING, "Unable to send message. Unknown error.");
 					Parallelutils.log(Level.WARNING,
-							"Player " + player.getName() + " got advancement " + advancement.getKey().getKey());
+							"Player " + player.getName() + " got advancement " + advancement.getKey().getKey() + "." +
+									" They are at " + playerLocation.toString() + " and have " + fulltime + " of playtime");
 				}
 			} else {
 				Parallelutils.log(Level.WARNING, "BotManager not initialized. Can't send message!");
 				Parallelutils.log(Level.WARNING,
-						"Player " + player.getName() + " got advancement " + advancement.getKey().getKey());
+						"Player " + player.getName() + " got advancement " + advancement.getKey().getKey() + "." +
+								" They are at " + playerLocation.toString() + " and have " + fulltime + " of playtime");
 			}
 		}
 	}
