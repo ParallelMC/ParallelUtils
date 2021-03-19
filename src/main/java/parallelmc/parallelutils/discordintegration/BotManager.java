@@ -66,7 +66,7 @@ public class BotManager {
 
 		for (int i = 0; i < NUM_TRIES; i++) {
 			try {
-				restChannel.createMessage(message).block(Duration.ofSeconds(1));
+				restChannel.createMessage(message).block(Duration.ofSeconds(2));
 			} catch (Exception e) {
 				Parallelutils.log(Level.INFO, "Failed to send message. Trying again.");
 				continue;
