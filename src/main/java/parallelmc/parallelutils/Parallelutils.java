@@ -25,6 +25,7 @@ import parallelmc.parallelutils.custommobs.spawners.SpawnerOptions;
 import parallelmc.parallelutils.discordintegration.BotManager;
 import parallelmc.parallelutils.discordintegration.DiscordIntegrationEventRegistrar;
 
+import javax.security.auth.login.LoginException;
 import java.sql.*;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -180,9 +181,14 @@ public final class Parallelutils extends JavaPlugin {
 		CustomMobsEventRegistrar.registerEvents();
 
 		// Register Events for the DiscordIntegration Module
-		BotManager manager = new BotManager(token);
-		manager.addChannel("staff", staffChannel);
-		DiscordIntegrationEventRegistrar.registerEvents();
+		BotManager manager = null;
+		try {
+			manager = new BotManager(token);
+			manager.addChannel("staff", staffChannel);
+			DiscordIntegrationEventRegistrar.registerEvents();
+		} catch (LoginException e) {
+			Parallelutils.log(Level.SEVERE, "Unable to initialize BotManager. Is the token valid?");
+		}
 
 		// Setup commands
 		Commands commands = new Commands(this);
