@@ -22,6 +22,8 @@ import parallelmc.parallelutils.custommobs.spawners.LeashTask;
 import parallelmc.parallelutils.custommobs.spawners.SpawnTask;
 import parallelmc.parallelutils.custommobs.spawners.SpawnerData;
 import parallelmc.parallelutils.custommobs.spawners.SpawnerOptions;
+import parallelmc.parallelutils.discordintegration.BotManager;
+import parallelmc.parallelutils.discordintegration.DiscordIntegrationEventRegistrar;
 
 import java.sql.*;
 import java.util.UUID;
@@ -99,6 +101,12 @@ public final class Parallelutils extends JavaPlugin {
 		username = config.getString("sql.username");
 		password = config.getString("sql.password");
 
+
+		String token = config.getString("token");
+
+		String staffChannel = config.getString("staff_channel_id");
+
+
 		saveConfig();
 
 		// Connect to database
@@ -170,6 +178,11 @@ public final class Parallelutils extends JavaPlugin {
 
 		// Register events for the CustomMobs module
 		CustomMobsEventRegistrar.registerEvents();
+
+		// Register Events for the DiscordIntegration Module
+		BotManager manager = new BotManager(token);
+		manager.addChannel("staff", staffChannel);
+		DiscordIntegrationEventRegistrar.registerEvents();
 
 		// Setup commands
 		Commands commands = new Commands(this);
