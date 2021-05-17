@@ -20,6 +20,10 @@ import parallelmc.parallelutils.custommobs.spawners.SpawnTask;
 
 import java.util.logging.Level;
 
+/**
+ * A command to create a spawner at a given location
+ * Syntax: /pu createspawner mob x y z
+ */
 public class ParallelCreateSpawnerCommand extends ParallelCommand {
 	public static final String[] SUMMON_MOBS = new String[]{"wisp", "fire_wisp"};
 
