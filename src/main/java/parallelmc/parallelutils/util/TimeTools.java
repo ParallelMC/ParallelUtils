@@ -1,5 +1,8 @@
 package parallelmc.parallelutils.util;
 
+/**
+ * A set of utilities to make working with times easier
+ */
 public class TimeTools {
 
 	public enum TimeUnit {
