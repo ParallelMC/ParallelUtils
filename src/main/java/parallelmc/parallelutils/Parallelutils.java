@@ -121,6 +121,7 @@ public final class Parallelutils extends JavaPlugin {
 		// Create the table if it doesn't exist
 		try {
 			Statement statement = dbConn.createStatement();
+			statement.setQueryTimeout(15);
 			statement.execute("create table if not exists WorldMobs\n" +
 					"(\n" +
 					"    UUID        varchar(36) not null,\n" +
@@ -157,6 +158,7 @@ public final class Parallelutils extends JavaPlugin {
 		// Load spawners and mobs
 		try {
 			Statement statement = dbConn.createStatement();
+			statement.setQueryTimeout(15);
 
 			ResultSet spawnerResults = statement.executeQuery("SELECT * FROM Spawners");
 
@@ -209,6 +211,7 @@ public final class Parallelutils extends JavaPlugin {
 		if (finishedSetup) {
 			try {
 				Statement removeStatement = dbConn.createStatement();
+				removeStatement.setQueryTimeout(15);
 				removeStatement.execute("TRUNCATE TABLE WorldMobs");
 				removeStatement.execute("TRUNCATE TABLE Spawners");
 				dbConn.commit();
@@ -224,6 +227,7 @@ public final class Parallelutils extends JavaPlugin {
 					openDatabaseConnection(jdbc, username, password);
 
 					Statement removeStatement = dbConn.createStatement();
+					removeStatement.setQueryTimeout(15);
 					removeStatement.execute("TRUNCATE TABLE WorldMobs");
 					removeStatement.execute("TRUNCATE TABLE Spawners");
 					dbConn.commit();
@@ -240,6 +244,7 @@ public final class Parallelutils extends JavaPlugin {
 			try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO WorldMobs " +
 					"(UUID, Type, World, ChunkX, ChunkZ, spawnReason, spawnerId) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
 				int i = 0;
+				statement.setQueryTimeout(15);
 
 				for (EntityData ep : EntityRegistry.getInstance().getEntities()) {
 					Entity e = ep.entity;
@@ -303,6 +308,7 @@ public final class Parallelutils extends JavaPlugin {
 			try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO Spawners " +
 					"(id, type, world, x, y, z, hasLeash) VALUES (?,?,?,?,?,?,?)")) {
 				int i = 0;
+				statement.setQueryTimeout(15);
 
 				for (SpawnerData sd : SpawnerRegistry.getInstance().getSpawnerData()) {
 					Parallelutils.log(Level.INFO, sd.toString());
