@@ -47,7 +47,6 @@ public class AdvancementListener implements Listener {
 	public void onAch(PlayerAdvancementDoneEvent event) {
 		Player player = event.getPlayer();
 
-		String escapedName = player.getName().replaceAll("_", "\\_");
 		String formattedLocation = formatLocation(player.getLocation());
 
 		int playtime = player.getStatistic(Statistic.PLAY_ONE_MINUTE); // Ticks played
@@ -61,7 +60,7 @@ public class AdvancementListener implements Listener {
 		if (SPECIAL_ADVANCEMENTS.contains(advancement.getKey().toString())) {
 			if (BotManager.getInstance() != null) {
 				if (!BotManager.getInstance().sendMessage("staff",
-						"Player " + escapedName + " got advancement " + advancement.getKey().getKey() + "." +
+						"Player `" + player.getName() + "` got advancement " + advancement.getKey().getKey() + "." +
 								" They are at " + formattedLocation + " and have " + fulltime + " of playtime")) {
 					Parallelutils.log(Level.WARNING, "Unable to send message. Unknown error.");
 					Parallelutils.log(Level.WARNING,
