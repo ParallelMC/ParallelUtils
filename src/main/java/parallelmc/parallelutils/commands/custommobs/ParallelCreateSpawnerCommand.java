@@ -23,10 +23,12 @@ import java.util.logging.Level;
 
 /**
  * A command to create a spawner at a given location
- * Syntax: /pu createspawner mob x y z \<world\>
+ * Usage: /pu createspawner <mob> <x> <y> <z> [world]
  */
 public class ParallelCreateSpawnerCommand extends ParallelCommand {
 	public static final String[] SUMMON_MOBS = new String[]{"wisp", "fire_wisp"};
+
+	private final String USAGE = "Usage: /pu createspawner <mob> <x> <y> <z> [world]";
 
 	public ParallelCreateSpawnerCommand() {
 		// Requires either the parallelutils.spawn permission, the parallelutils.spawn.spawners permission
@@ -38,6 +40,7 @@ public class ParallelCreateSpawnerCommand extends ParallelCommand {
 
 	@Override
 	public boolean execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String[] args) {
+		// If no arguments are given, show what arguments are valid
 		if (args.length <= 1) {
 			String options = "Options:\n";
 			for (String s : SUMMON_MOBS) {
@@ -55,48 +58,55 @@ public class ParallelCreateSpawnerCommand extends ParallelCommand {
 			return false;
 		}
 
+		// Ensure a mob and coordinates were entered and verify that the mob is valid
 		if (args.length < 5) {
 			if (validMobType(args[1])) {
 				sender.sendMessage("Please enter a valid mob type.");
 			} else {
 				sender.sendMessage("Please enter a full set of coordinates.");
 			}
+			sender.sendMessage(USAGE);
 			return true;
 		}
+
 		Location spawnerLocation = null;
 
+		// If this is a player and no world was
 		World world = Bukkit.getWorld(Constants.DEFAULT_WORLD);
 
-		if (sender instanceof Player player) {
-			world = player.getWorld();
+		if (args.length > 5) {
+			world = Bukkit.getWorld(args[5]);
 		} else {
-			if (args.length > 5) {
-				world = Bukkit.getWorld(args[5]);
+			if (sender instanceof Player player) {
+				world = player.getWorld();
 			}
 		}
 
+		// Convert the location from chat notation (+ tildas) to a Location object
 		try {
 			spawnerLocation = Commands.convertLocation(sender, args[2], args[3], args[4], world);
 		} catch (NumberFormatException e) {
 			sender.sendMessage("Incorrect coordinate formatting!");
+			sender.sendMessage(USAGE);
 			return true;
 		}
 
+		// Register the spawner and create the spawner task
 		switch (args[1]) {
-			case "wisp":
+			case "wisp" -> {
 				SpawnerRegistry.getInstance().registerSpawner("wisp", spawnerLocation, true);
 				BukkitTask wtask = new SpawnTask("wisp", spawnerLocation, 0)
 						.runTaskTimer(plugin, 0, SpawnerRegistry.getInstance().
 								getSpawnerOptions("wisp").cooldown);
 				SpawnerRegistry.getInstance().addSpawnTaskID(spawnerLocation, wtask.getTaskId());
-				break;
-			case "fire_wisp":
+			}
+			case "fire_wisp" -> {
 				SpawnerRegistry.getInstance().registerSpawner("fire_wisp", spawnerLocation, true);
 				BukkitTask fwtask = new SpawnTask("fire_wisp", spawnerLocation, 0)
 						.runTaskTimer(plugin, 0, SpawnerRegistry.getInstance().
 								getSpawnerOptions("fire_wisp").cooldown);
 				SpawnerRegistry.getInstance().addSpawnTaskID(spawnerLocation, fwtask.getTaskId());
-				break;
+			}
 		}
 		return true;
 	}

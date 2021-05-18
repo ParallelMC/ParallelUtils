@@ -7,16 +7,24 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelOrPermission;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
 
+/**
+ * A command to delete a spawner at a given location
+ * Usage: /pu deletespawner <uuid>
+ *        /pu deletespawner <x> <y> <z>
+ */
 public class ParallelDeleteSpawnerCommand extends ParallelCommand {
 
-	private String USAGE = "Usage: /pu deletespawner <uuid> \n /pu deletespawner <x> <y> <z>";
+	private final String USAGE = "Usage: /pu deletespawner <uuid> \n /pu deletespawner <x> <y> <z>";
 
 	public ParallelDeleteSpawnerCommand() {
+		// Requires either the parallelutils.spawn permission, the parallelutils.spawn.spawners permission
+		// or the parallelutils.spawn.spawners.delete permission
 		super("deletespawner", new ParallelOrPermission(new ParallelPermission[]
 				{new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.spawners"),
 						new ParallelPermission("parallelutils.spawn.spawners.delete")}));
@@ -27,8 +35,9 @@ public class ParallelDeleteSpawnerCommand extends ParallelCommand {
 
 		if (args.length == 2) {
 			// UUID
+			// Simply lookup the spawner in the registry by uuid and delete if it exists.
 			Location loc = SpawnerRegistry.getInstance().getSpawnerLoc(args[1]);
-			if (loc != null && deleteThings(loc)) {
+			if (loc != null && deleteSpawnerComplete(loc)) {
 				sender.sendMessage("Spawner " + args[1] + " deleted");
 				return true;
 			} else {
@@ -37,35 +46,29 @@ public class ParallelDeleteSpawnerCommand extends ParallelCommand {
 			}
 		} else if (args.length == 4 || args.length == 5) {
 			// Location
+			// Check if a spawner exists at a given location and delete it if it exists
 			String world = Constants.DEFAULT_WORLD;
 
-			if (sender instanceof Player) {
-				Player player = (Player) sender;
-
+			// If a player ran this, use the player's world as the default world
+			if (sender instanceof Player player) {
 				world = player.getWorld().getName();
 			}
 
-			int x, y, z;
+			Location location = null;
 
+			if (args.length == 5) {
+				world = args[4];
+			}
 
 			try {
-				x = Integer.parseInt(args[1]);
-				y = Integer.parseInt(args[2]);
-				z = Integer.parseInt(args[3]);
+				location = Commands.convertLocation(sender, args[1], args[2], args[3], Bukkit.getWorld(world));
 			} catch (NumberFormatException e) {
 				sender.sendMessage("Invalid position.\n");
 				sender.sendMessage(USAGE);
 				return false;
 			}
 
-			if (args.length == 5) {
-				world = args[4];
-			}
-
-
-			Location location = new Location(Bukkit.getWorld(world), x, y, z);
-
-			if (deleteThings(location)) {
+			if (deleteSpawnerComplete(location)) {
 				sender.sendMessage("Spawner " + location.toString() + " deleted");
 				return true;
 			} else {
@@ -79,7 +82,12 @@ public class ParallelDeleteSpawnerCommand extends ParallelCommand {
 		return false;
 	}
 
-	private boolean deleteThings(Location loc) {
+	/**
+	 * Deletes the spawner at a location as well as corresponding trackers and tasks.
+	 * @param loc The location of the spawner to delete
+	 * @return Returns true if the spawner was deleted, false otherwise
+	 */
+	private boolean deleteSpawnerComplete(Location loc) {
 		if (SpawnerRegistry.getInstance().deleteSpawner(loc)) {
 			SpawnerRegistry.getInstance().removeMobCount(loc);
 

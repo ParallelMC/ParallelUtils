@@ -7,6 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 
+/**
+ * A command to display usages of other commands
+ * Usage: /pu help <page>
+ */
 public class ParallelHelpCommand extends ParallelCommand {
 
 	private static final int PAGE_SIZE = 10;
@@ -15,10 +19,10 @@ public class ParallelHelpCommand extends ParallelCommand {
 			"/pu help <page>",
 			"/pu test",
 			"/pu summon <mobs> <x> <y> <z>",
-			"/pu createspawner <type> <x> <y> <z>",
+			"/pu createspawner <type> <x> <y> <z> [world]",
 			"/pu listspawners <page>",
 			"/pu deletespawner <uuid>",
-			"/pu deletespawner <x> <y> <z>"
+			"/pu deletespawner <x> <y> <z> [world]"
 	};
 
 	public ParallelHelpCommand() {
