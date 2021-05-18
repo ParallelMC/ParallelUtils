@@ -36,26 +36,13 @@ public class Commands implements CommandExecutor, TabCompleter {
 				sender.sendMessage("ParallelUtils Version " + Constants.VERSION.toString());
 			} else {
 				switch (args[0]) {
-					case "help":
-						new ParallelHelpCommand().execute(sender, command, args);
-						break;
-					case "test":
-						new ParallelTestCommand().execute(sender, command, args);
-						break;
-					case "summon":
-						new ParallelSummonCommand().execute(sender, command, args);
-						break;
-					case "createspawner":
-						new ParallelCreateSpawnerCommand().execute(sender, command, args);
-						break;
-					case "listspawners":
-						new ParallelListSpawnersCommand().execute(sender, command, args);
-						break;
-					case "deletespawner":
-						new ParallelDeleteSpawnerCommand().execute(sender, command, args);
-						break;
-					default:
-						sender.sendMessage("PU: Command not found");
+					case "help" -> new ParallelHelpCommand().execute(sender, command, args);
+					case "test" -> new ParallelTestCommand().execute(sender, command, args);
+					case "summon" -> new ParallelSummonCommand().execute(sender, command, args);
+					case "createspawner" -> new ParallelCreateSpawnerCommand().execute(sender, command, args);
+					case "listspawners" -> new ParallelListSpawnersCommand().execute(sender, command, args);
+					case "deletespawner" -> new ParallelDeleteSpawnerCommand().execute(sender, command, args);
+					default -> sender.sendMessage("PU: Command not found");
 				}
 			}
 		}
