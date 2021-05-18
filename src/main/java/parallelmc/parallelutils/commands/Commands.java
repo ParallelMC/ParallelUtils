@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
@@ -200,52 +201,65 @@ public class Commands implements CommandExecutor, TabCompleter {
 		return sender instanceof ServerCommandSender || sender.isOp() || sender.hasPermission(permission);
 	}
 
-	public static Location convertLocation(CommandSender sender, String sx, String sy, String sz) {
+	public static Location convertLocation(CommandSender sender, String sx, String sy, String sz, World world) {
 		int x, y, z;
 
-		World world;
+		Location defaultLoc = new Location(world, 0, 0, 0);
 
-		if (sender instanceof Player) {
-			Player player = (Player) sender;
+		if (sender instanceof Player player) {
+			defaultLoc = player.getLocation();
+		}
 
-			Location playerLoc = player.getLocation();
-
-			world = playerLoc.getWorld();
-
-			if (sx.trim().startsWith("~")) {
-				if (sx.trim().length() == 1) {
-					x = playerLoc.getBlockX();
-				} else {
-					x = playerLoc.getBlockX() + Integer.parseInt(sx.trim().substring(1));
-				}
+		if (sx.trim().startsWith("~")) {
+			if (sx.trim().length() == 1) {
+				x = defaultLoc.getBlockX();
 			} else {
-				x = Integer.parseInt(sx);
-			}
-			if (sy.trim().startsWith("~")) {
-				if (sy.trim().length() == 1) {
-					y = playerLoc.getBlockY();
-				} else {
-					y = playerLoc.getBlockY() + Integer.parseInt(sy.trim().substring(1));
-				}
-			} else {
-				y = Integer.parseInt(sy);
-			}
-			if (sz.trim().startsWith("~")) {
-				if (sz.trim().length() == 1) {
-					z = playerLoc.getBlockZ();
-				} else {
-					z = playerLoc.getBlockZ() + Integer.parseInt(sz.trim().substring(1));
-				}
-			} else {
-				z = Integer.parseInt(sz);
+				x = defaultLoc.getBlockX() + Integer.parseInt(sx.trim().substring(1));
 			}
 		} else {
-			world = null;
 			x = Integer.parseInt(sx);
+		}
+		if (sy.trim().startsWith("~")) {
+			if (sy.trim().length() == 1) {
+				y = defaultLoc.getBlockY();
+			} else {
+				y = defaultLoc.getBlockY() + Integer.parseInt(sy.trim().substring(1));
+			}
+		} else {
 			y = Integer.parseInt(sy);
+		}
+		if (sz.trim().startsWith("~")) {
+			if (sz.trim().length() == 1) {
+				z = defaultLoc.getBlockZ();
+			} else {
+				z = defaultLoc.getBlockZ() + Integer.parseInt(sz.trim().substring(1));
+			}
+		} else {
 			z = Integer.parseInt(sz);
 		}
 
-		return new Location(world, x, y, z);
+		World finalWorld = world;
+
+		if (world == null) {
+			if (sender instanceof Player player) {
+				finalWorld = player.getWorld();
+			} else {
+				finalWorld = Bukkit.getWorld(Constants.DEFAULT_WORLD);
+			}
+		}
+
+		return new Location(finalWorld, x, y, z);
+	}
+
+	public static Location convertLocation(CommandSender sender, String sx, String sy, String sz) {
+		if (sender instanceof Player player) {
+			Location playerLoc = player.getLocation();
+
+			World world = playerLoc.getWorld();
+
+			return convertLocation(sender, sx, sy, sz, world);
+		} else {
+			return convertLocation(sender, sx, sy, sz, Bukkit.getWorld(Constants.DEFAULT_WORLD));
+		}
 	}
 }
