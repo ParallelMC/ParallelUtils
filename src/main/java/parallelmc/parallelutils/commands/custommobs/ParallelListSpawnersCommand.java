@@ -13,9 +13,15 @@ import parallelmc.parallelutils.custommobs.spawners.SpawnerData;
 
 import java.util.logging.Level;
 
+/**
+ * A command to list all spawners currently in the world
+ * Usage: /pu listspawners [page]
+ */
 public class ParallelListSpawnersCommand extends ParallelCommand {
 
 	private static final int PAGE_SIZE = 10;
+
+	private final String USAGE = "Usage: /pu listspawners [page]";
 
 	public ParallelListSpawnersCommand() {
 		super("listspawners", new ParallelOrPermission(new ParallelPermission[]
@@ -42,6 +48,7 @@ public class ParallelListSpawnersCommand extends ParallelCommand {
 
 		if (page > numPages || page <= 0) {
 			sender.sendMessage("Invalid page number!");
+			sender.sendMessage(USAGE);
 			return true;
 		}
 
