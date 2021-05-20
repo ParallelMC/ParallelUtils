@@ -193,7 +193,7 @@ public final class Parallelutils extends JavaPlugin {
 		}
 
 		// Setup commands
-		Commands commands = new Commands(this);
+		Commands commands = new Commands();
 
 		getCommand("parallelutils").setExecutor(commands);
 		getCommand("parallelutils").setTabCompleter(commands);
