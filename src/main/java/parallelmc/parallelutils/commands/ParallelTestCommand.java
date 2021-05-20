@@ -5,6 +5,9 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 
+/**
+ * A command to test the Permissions and Command systems
+ */
 public class ParallelTestCommand extends ParallelCommand {
 
 	public ParallelTestCommand() {
