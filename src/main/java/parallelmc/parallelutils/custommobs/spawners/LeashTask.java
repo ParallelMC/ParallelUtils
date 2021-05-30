@@ -13,7 +13,7 @@ import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
 import parallelmc.parallelutils.util.DistanceTools;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -41,7 +41,7 @@ public class LeashTask extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		ArrayList<String> mobs = SpawnerRegistry.getInstance().getLeashedEntityList(spawnerLocation);
+		Collection<String> mobs = SpawnerRegistry.getInstance().getLeashedEntities(spawnerLocation);
 		if (mobs == null || mobs.isEmpty()) {
 			SpawnerRegistry.getInstance().removeLeashTaskID(spawnerLocation);
 			this.cancel();
