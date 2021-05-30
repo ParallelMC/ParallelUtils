@@ -9,10 +9,16 @@ import parallelmc.parallelutils.Parallelutils;
 
 import java.util.logging.Level;
 
+/**
+ * This class is a wrapper that registers events for the custommobs module.
+ */
 public class CustomMobsEventRegistrar {
 
 	private static boolean hasRegistered = false;
 
+	/**
+	 * Register all events related to the custommobs module if they have not been registered.
+	 */
 	public static void registerEvents() {
 		if (!hasRegistered) {
 			PluginManager manager = Bukkit.getPluginManager();

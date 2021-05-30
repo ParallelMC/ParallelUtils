@@ -18,20 +18,25 @@ import java.util.logging.Level;
  **/
 public class CustomMobsGeneralEntityListener implements Listener {
 
+	// Handle despawning custom mobs and removing them from the registry
 	@EventHandler
 	public void onEntityDespawn(final EntityRemoveFromWorldEvent event) {
 		CraftEntity entity = (CraftEntity) event.getEntity();
 		String UUID = entity.getUniqueId().toString();
+
 		if (EntityRegistry.getInstance().containsEntity(UUID)) {
-			Parallelutils.log(Level.ALL, "Removing entity " + UUID + " from world");
+			Parallelutils.log(Level.INFO, "Removing entity " + UUID + " from world");
+
 			if (EntityRegistry.getInstance().getEntity(UUID).spawnReason == SpawnReason.SPAWNER) {
 				Location spawner = EntityRegistry.getInstance().getEntity(UUID).spawnOrigin;
 				SpawnerRegistry.getInstance().decrementMobCount(spawner);
 				SpawnerData spawnerData = SpawnerRegistry.getInstance().getSpawner(spawner);
+
 				if (spawnerData != null && spawnerData.hasLeash()) {
 					SpawnerRegistry.getInstance().removeLeashedEntity(spawner, UUID);
 				}
 			}
+
 			EntityRegistry.getInstance().removeEntity(UUID);
 		}
 	}

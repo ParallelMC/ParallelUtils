@@ -60,7 +60,7 @@ public class EntityWisp extends EntityZombie {
 	}
 
 	public static EntityZombie setup(JavaPlugin plugin, CraftZombie mob) {
-		CraftWisp.setupNBT(plugin, mob);
+		CraftWisp.setupNBT(mob);
 
 		EntityZombie wisp = mob.getHandle();
 
