@@ -15,6 +15,9 @@ import parallelmc.parallelutils.custommobs.registry.ParticleRegistry;
 import java.util.Collection;
 import java.util.logging.Level;
 
+/**
+ * A BukkitRunnable that spawns Particles at specific intervals on mobs
+ */
 public class ParticleTask extends BukkitRunnable {
 
 	private final JavaPlugin plugin;
