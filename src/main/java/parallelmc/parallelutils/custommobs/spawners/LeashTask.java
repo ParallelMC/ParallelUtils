@@ -17,6 +17,9 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.logging.Level;
 
+/**
+ * This BukkitRunnable keeps mobs leashed to spawners when they have a leash enabled
+ */
 public class LeashTask extends BukkitRunnable {
 
 	private final JavaPlugin plugin;
@@ -24,6 +27,10 @@ public class LeashTask extends BukkitRunnable {
 	private final int leashRadius;
 	private final SpawnerOptions options;
 
+	/**
+	 * Create a new LeashTask for a spawner at a given location
+	 * @param spawnerLocation The location of the spawner
+	 */
 	public LeashTask(Location spawnerLocation) {
 		PluginManager manager = Bukkit.getPluginManager();
 		plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);

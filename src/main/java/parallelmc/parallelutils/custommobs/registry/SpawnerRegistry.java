@@ -51,7 +51,7 @@ public class SpawnerRegistry {
 	/**
 	 * Register a spawner in the Registry to keep track of the type of spawner,
 	 * the location of the spawner, and if the spawner leashes entities with a random UUID
-	 * @param type The type of entities the spawner spawns
+	 * @param type The type of spawner
 	 * @param location The location of the spawner
 	 * @param hasLeash True if the spawner leashes entities, false otherwise
 	 */
@@ -63,7 +63,7 @@ public class SpawnerRegistry {
 	 * Register a spawner in the Registry to keep track of a given UUID, the type of spawner,
 	 * the location of the spawner, and if the spawner leashes entities
 	 * @param uuid The specified UUID of the spawner
-	 * @param type The type of entities the spawner spawns
+	 * @param type The type of spawner
 	 * @param location The location of the spawner
 	 * @param hasLeash True if the spawner leashes entities, false otherwise
 	 */
