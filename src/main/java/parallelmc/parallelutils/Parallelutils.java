@@ -24,12 +24,12 @@ import parallelmc.parallelutils.custommobs.spawners.SpawnerData;
 import parallelmc.parallelutils.custommobs.spawners.SpawnerOptions;
 import parallelmc.parallelutils.discordintegration.BotManager;
 import parallelmc.parallelutils.discordintegration.DiscordIntegrationEventRegistrar;
+import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
 import javax.security.auth.login.LoginException;
 import java.sql.*;
 import java.util.UUID;
 import java.util.logging.Level;
-
 
 // TODO: Break this out into multiple functions or classes. This is WAY too big and filled with spaghetti
 // TODO: Add proper versioning to prevent loading invalid configs/data
@@ -79,6 +79,30 @@ public final class Parallelutils extends JavaPlugin {
 		}
 
 		Bukkit.getLogger().setLevel(LOG_LEVEL);
+
+		// Check version
+		String github_token = config.getString("github_token");
+
+		if (github_token != null && !github_token.trim().equals("")) {
+			// Actually check version
+			UpdateChecker checker = new UpdateChecker(github_token);
+			Version latestVersion = checker.getLatestVersion();
+
+			if (latestVersion != null) {
+				int comp = latestVersion.compareTo(Constants.VERSION);
+
+				if (comp > 0) {
+					log(Level.WARNING, "There is a new version of ParallelUtils available for download at https://github.com/ParallelMC/ParallelUtils/releases/latest");
+				} else if (comp == 0) {
+					log(Level.WARNING, "You are running the latest version of ParallelUtils");
+				} else {
+					log(Level.WARNING, "You are running a dev version of ParallelUtils. If this is on a production server, something is broken!");
+				}
+			}
+		} else {
+			log(Level.WARNING, "github_token not found in config. Will not check for updates.");
+		}
+
 
 		// Either get the database connection URL from the config or construct it from the config
 		String address, database;
@@ -462,7 +486,7 @@ public final class Parallelutils extends JavaPlugin {
 		if (dbConn != null && !dbConn.isClosed()) {
 			return;
 		}
-		Class.forName("com.mysql.jdbc.Driver"); // I don't think this is needed anymore?
+		// Class.forName("com.mysql.jdbc.Driver");
 		dbConn = DriverManager.getConnection(jdbc, username, password);
 		dbConn.setAutoCommit(false);
 	}
