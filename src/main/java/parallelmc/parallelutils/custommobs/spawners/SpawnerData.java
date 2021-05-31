@@ -2,13 +2,23 @@ package parallelmc.parallelutils.custommobs.spawners;
 
 import org.bukkit.Location;
 
+/**
+ * A data structure that encapsulates data used for mob spawners
+ */
 public class SpawnerData {
 
-	private String uuid;
-	private String type;
-	private Location location;
-	private boolean hasLeash;
+	private final String uuid;
+	private final String type;
+	private final Location location;
+	private final boolean hasLeash;
 
+	/**
+	 * Create a new SpawnerData object with the spawner's UUID and location as well as the spawner's type and if it has a leash
+	 * @param uuid The UUID of the spawner
+	 * @param type The type the spawner
+	 * @param location The location of the spawner
+	 * @param hasLeash True if this spawner has a leash
+	 */
 	public SpawnerData(String uuid, String type, Location location, boolean hasLeash) {
 		this.uuid = uuid;
 		this.type = type;

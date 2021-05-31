@@ -5,6 +5,9 @@ package parallelmc.parallelutils.util;
  */
 public class TimeTools {
 
+	/**
+	 * An enum to make manipulating different time units easier
+	 */
 	public enum TimeUnit {
 		TICKS(0, 1, "t"),
 		SECONDS(1, 20, "s"),
@@ -16,6 +19,12 @@ public class TimeTools {
 		public int ticks;
 		public String val;
 
+		/**
+		 * Create a new TimeUnit with a given index, ticks equivalent, and one character string representation
+		 * @param index The index of the new TimeUnit
+		 * @param ticks The number of ticks this TimeUnit is equivalent to
+		 * @param s The one character String representation of the time unit
+		 */
 		TimeUnit(int index, int ticks, String s) {
 			this.index = index;
 			this.ticks = ticks;
