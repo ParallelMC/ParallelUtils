@@ -76,6 +76,11 @@ public class AdvancementListener implements Listener {
 		}
 	}
 
+	/**
+	 * Formats a Location object as a String
+	 * @param loc The Location object to format
+	 * @return The formatted String
+	 */
 	private String formatLocation(Location loc){
 		return "X: " + loc.getBlockX() + " Y: " + loc.getBlockY() + " Z: " + loc.getBlockZ() + " in " +
 				loc.getWorld().getName();
