@@ -23,6 +23,9 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.logging.Level;
 
+/**
+ * The BukkitRunnable responsible for spawning entities through mob spawners
+ */
 public class SpawnTask extends BukkitRunnable {
 	private final JavaPlugin plugin;
 	private final String type;
@@ -33,6 +36,12 @@ public class SpawnTask extends BukkitRunnable {
 
 	private final int MAX_TRIES = 10;
 
+	/**
+	 * Create a new SpawnTask with a given spawner type, location, and starting number of entities
+	 * @param type The type of spawner associated with this SpawnTask
+	 * @param location The Location of the associated spawner
+	 * @param startCount The starting count of mobs associated with this spawner
+	 */
 	public SpawnTask(String type, Location location, int startCount) {
 		PluginManager manager = Bukkit.getPluginManager();
 		plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
@@ -56,28 +65,27 @@ public class SpawnTask extends BukkitRunnable {
 		if (location.getWorld() == null) { // if the world is null, we shouldn't be running a spawner in it
 			this.cancel();
 			return;
-		} else if (timer < options.warmup) { // if the warmup isn't over, add cooldown and skip this run
+		} else if (timer < options.warmup) { // If the warmup isn't over, add cooldown and skip this run
 			timer += options.cooldown;
 			return;
 		}
 
 		timer = 0;
 		Random random = new Random();
-		if (!options.checkForPlayers || playerInRange()) { // either you don't need to check for players, or one is close
-			for (int i = 0; i < options.mobsPerSpawn; i++) { // run at least once
-				if (SpawnerRegistry.getInstance().getMobCount(location) < options.maxMobs) { // count from spawner < max
-
+		if (!options.checkForPlayers || playerInRange()) { // Either you don't need to check for players, or one is close
+			for (int i = 0; i < options.mobsPerSpawn; i++) { // Run at least once
+				if (SpawnerRegistry.getInstance().getMobCount(location) < options.maxMobs) { // Count from spawner < max
 					boolean wasSuccessful = false;
 					int tries = 0;
 
 					while (tries < MAX_TRIES && !wasSuccessful) {
-
-						// create a random spawn location in radius
+						// Create a random spawn location in radius
 						Location spawnLocation = new Location(location.getWorld(),
 								location.getX(), location.getY(), location.getZ());
-						double randomX = random.nextInt(options.radiusX + 1);
-						double randomY = random.nextInt(options.radiusY + 1);
-						double randomZ = random.nextInt(options.radiusX + 1);
+						double randomX = random.nextInt(options.radiusH + 1);
+						double randomY = random.nextInt(options.radiusV + 1);
+						double randomZ = random.nextInt(options.radiusH + 1);
+
 						if (random.nextBoolean()) {
 							randomX *= -1;
 						}
@@ -87,6 +95,7 @@ public class SpawnTask extends BukkitRunnable {
 						if (random.nextBoolean()) {
 							randomZ *= -1;
 						}
+
 						spawnLocation.add(randomX + 0.5, randomY, randomZ + 0.5);
 
 						//try to spawn entity there

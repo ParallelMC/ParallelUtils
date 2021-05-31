@@ -72,18 +72,10 @@ public final class Parallelutils extends JavaPlugin {
 		int logLevel = config.getInt("debug", 2);
 
 		switch (logLevel) {
-			case 1:
-				LOG_LEVEL = Level.ALL;
-				break;
-			case 2:
-				LOG_LEVEL = Level.INFO;
-				break;
-			case 3:
-				LOG_LEVEL = Level.WARNING;
-				break;
-			case 4:
-				LOG_LEVEL = Level.SEVERE;
-				break;
+			case 1 -> LOG_LEVEL = Level.ALL;
+			case 2 -> LOG_LEVEL = Level.INFO;
+			case 3 -> LOG_LEVEL = Level.WARNING;
+			case 4 -> LOG_LEVEL = Level.SEVERE;
 		}
 
 		Bukkit.getLogger().setLevel(LOG_LEVEL);
@@ -347,6 +339,11 @@ public final class Parallelutils extends JavaPlugin {
 		}
 	}
 
+	/**
+	 * A helper method to parse the ResultSet from SQL and register the spawner data
+	 * @param result The ResultSet to parse
+	 * @throws SQLException if a database access error occurs or this method is called on a closed result set
+	 */
 	private void readSpawners(ResultSet result) throws SQLException {
 		while (result.next()) {
 			String id = result.getString("id");
@@ -368,6 +365,11 @@ public final class Parallelutils extends JavaPlugin {
 		}
 	}
 
+	/**
+	 * A helper method to parse the ResultSet from SQL and register the mob data
+	 * @param result The ResultSet to parse
+	 * @throws SQLException if a database access error occurs or this method is called on a closed result set
+	 */
 	private void readMobs(ResultSet result) throws SQLException {
 		while (result.next()) {
 			String uuid = result.getString("UUID");
@@ -416,16 +418,15 @@ public final class Parallelutils extends JavaPlugin {
 
 			if (mob != null) {
 				switch (type) {
-					case "wisp":
+					case "wisp" -> {
 						entityType = "wisp";
 						setupEntity = EntityWisp.setup(this, (CraftZombie) mob);
-						break;
-					case "fire_wisp":
+					}
+					case "fire_wisp" -> {
 						entityType = "fire_wisp";
 						setupEntity = EntityFireWisp.setup(this, (CraftZombie) mob);
-						break;
-					default:
-						Parallelutils.log(Level.WARNING, "Unknown entity type \"" + type + "\"");
+					}
+					default -> Parallelutils.log(Level.WARNING, "Unknown entity type \"" + type + "\"");
 				}
 			} else {
 				Parallelutils.log(Level.WARNING, "Mob is null! Report this to the devs! Expected UUID: " + uuid);
@@ -449,16 +450,28 @@ public final class Parallelutils extends JavaPlugin {
 		}
 	}
 
+	/**
+	 * Opens a database connection with the given details and stores it to dbConn
+	 * @param jdbc The jdbc connection string
+	 * @param username The username used to connect
+	 * @param password The password used to connect
+	 * @throws SQLException if a database access error occurs
+	 * @throws ClassNotFoundException if the Driver class cannot be found
+	 */
 	private void openDatabaseConnection(String jdbc, String username, String password) throws SQLException, ClassNotFoundException {
 		if (dbConn != null && !dbConn.isClosed()) {
 			return;
 		}
-		Class.forName("com.mysql.jdbc.Driver");
+		Class.forName("com.mysql.jdbc.Driver"); // I don't think this is needed anymore?
 		dbConn = DriverManager.getConnection(jdbc, username, password);
 		dbConn.setAutoCommit(false);
 	}
 
-
+	/**
+	 * A helper method to log a message at a specific log level with the prefix "[ParallelUtils] "
+	 * @param level The level to log the message at
+	 * @param message The message to log
+	 */
 	public static void log(Level level, String message) {
 		Bukkit.getLogger().log(level, "[ParallelUtils] " + message);
 	}
