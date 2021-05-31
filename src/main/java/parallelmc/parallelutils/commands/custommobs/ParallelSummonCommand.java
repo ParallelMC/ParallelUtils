@@ -73,7 +73,7 @@ public class ParallelSummonCommand extends ParallelCommand {
 		Location location = null;
 		try {
 			location = Commands.convertLocation(sender, args[2], args[3], args[4], world);
-		} catch (NumberFormatException e) {
+		} catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
 			sender.sendMessage("Incorrect coordinate formatting!");
 			sender.sendMessage(USAGE);
 			return false;
