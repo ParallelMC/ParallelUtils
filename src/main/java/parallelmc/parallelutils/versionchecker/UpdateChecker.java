@@ -12,6 +12,9 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * This class handles checking for updates and other update functionality
+ */
 public class UpdateChecker {
 
 	private final OkHttpClient client;
@@ -22,11 +25,19 @@ public class UpdateChecker {
 
 	private final String token;
 
+	/**
+	 * Create a new UpdateChecker with the given github personal access token
+	 * @param token The Github Personal Access Token to use
+	 */
 	public UpdateChecker(String token) {
 		client = new OkHttpClient();
 		this.token = token;
 	}
 
+	/**
+	 * Retrieve the latest released version of ParallelUtils from Github
+	 * @return The latest version of ParallelUtils
+	 */
 	public Version getLatestVersion() {
 		Request request = new Request.Builder()
 				.url(GITHUB_URL)
