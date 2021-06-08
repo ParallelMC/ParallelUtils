@@ -14,6 +14,7 @@ import parallelmc.parallelutils.commands.custommobs.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -22,8 +23,34 @@ import java.util.List;
  */
 public class Commands implements CommandExecutor, TabCompleter {
 
-	public Commands() {
+	private final HashMap<String, ParallelCommand> commandMap;
 
+	public Commands() {
+		commandMap = new HashMap<>();
+
+		// This is here for now, but eventually this will be abstracted into modules
+		addCommand("help", new ParallelHelpCommand());
+		addCommand("test", new ParallelTestCommand());
+		addCommand("summon", new ParallelSummonCommand());
+		addCommand("createspawner", new ParallelCreateSpawnerCommand());
+		addCommand("listspawners", new ParallelListSpawnersCommand());
+		addCommand("deletespawner", new ParallelDeleteSpawnerCommand());
+	}
+
+	/**
+	 * Adds a new command to the commandmap
+	 * @param name The name of the command
+	 * @param command The command to be run when the name is called
+	 * @return Returns true when the command was added successfully, false if the command already exists.
+	 */
+	public boolean addCommand(String name, ParallelCommand command) {
+		if (commandMap.containsKey(name.toLowerCase())) {
+			return false;
+		}
+
+		commandMap.put(name.toLowerCase(), command);
+
+		return true;
 	}
 
 	@Override
@@ -42,14 +69,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 				// Give version information
 				sender.sendMessage("ParallelUtils Version " + Constants.VERSION);
 			} else {
-				switch (args[0]) {
-					case "help" -> new ParallelHelpCommand().execute(sender, command, args);
-					case "test" -> new ParallelTestCommand().execute(sender, command, args);
-					case "summon" -> new ParallelSummonCommand().execute(sender, command, args);
-					case "createspawner" -> new ParallelCreateSpawnerCommand().execute(sender, command, args);
-					case "listspawners" -> new ParallelListSpawnersCommand().execute(sender, command, args);
-					case "deletespawner" -> new ParallelDeleteSpawnerCommand().execute(sender, command, args);
-					default -> sender.sendMessage("PU: Command not found");
+				ParallelCommand executingCommand = commandMap.get(args[0]);
+
+				if (executingCommand != null) {
+					executingCommand.execute(sender, command, args);
+				} else {
+					sender.sendMessage("ParallelUtils: Command not found");
 				}
 			}
 		}
@@ -68,127 +93,17 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		// Show ParallelUtils commands
-		if (command.getName().equalsIgnoreCase("parallelutils") || command.getName().equalsIgnoreCase("pu") && args.length == 1) {
+
+		String lowerName = command.getName().toLowerCase();
+
+		if (lowerName.equals("parallelutils") || lowerName.equals("pu") && args.length == 1) {
 			// List every sub-command
-			list.add("help");
-			list.add("test");
-			list.add("summon");
-			list.add("createspawner");
-			list.add("listspawners");
-			list.add("deletespawner");
-		}
-
-		if (args.length == 2) {
-			switch (args[0]) {
-				case "summon" -> list.addAll(Arrays.asList(ParallelSummonCommand.SUMMON_MOBS));
-				case "createspawner" -> list.addAll(Arrays.asList(ParallelCreateSpawnerCommand.SUMMON_MOBS));
-				case "listspawners", "help" -> list.add("1");
-				case "deletespawner" -> {
-					list.add("uuid");
-					if (sender instanceof Player player) {
-
-						Block targetedBlock = player.getTargetBlock(5);
-
-						if (targetedBlock != null && targetedBlock.isSolid()) {
-							// Autofill targeted coords
-							list.add(String.format("%d", targetedBlock.getX()));
-							list.add(String.format("%d %d", targetedBlock.getX(), targetedBlock.getY()));
-							list.add(String.format("%d %d %d", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));
-							list.add(String.format("%d %d %d world", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));
-						} else {
-							Location location = player.getLocation();
-							list.add(String.format("%d", location.getBlockX()));
-							list.add(String.format("%d %d", location.getBlockX(), location.getBlockY()));
-							list.add(String.format("%d %d %d", location.getBlockX(), location.getBlockY(), location.getBlockZ()));
-							list.add(String.format("%d %d %d world", location.getBlockX(), location.getBlockY(), location.getBlockZ()));
-						}
-					}
-				}
-			}
-		} else if (args.length == 3) {
-			if (args[0].equals("summon") || args[0].equals("createspawner")) {
-				if (sender instanceof Player player) {
-					Block targetedBlock = player.getTargetBlock(5);
-
-					if (targetedBlock != null && targetedBlock.isSolid()) {
-						// Autofill targeted coords
-						list.add(String.format("%d", targetedBlock.getX()));
-						list.add(String.format("%d %d", targetedBlock.getX(), targetedBlock.getY()));
-						list.add(String.format("%d %d %d", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));
-					} else {
-						// Autofill tildas
-						list.add("~");
-						list.add("~ ~");
-						list.add("~ ~ ~");
-					}
-				}
-			} else if (args[0].equals("deletespawner")) {
-				if (sender instanceof Player player) {
-					Block targetedBlock = player.getTargetBlock(5);
-
-					if (targetedBlock != null && targetedBlock.isSolid()) {
-						// Autofill targeted coords
-						list.add(String.format("%d", targetedBlock.getY()));
-						list.add(String.format("%d %d", targetedBlock.getY(), targetedBlock.getZ()));
-						list.add(String.format("%d %d, world", targetedBlock.getY(), targetedBlock.getZ()));
-					} else {
-						Location location = player.getLocation();
-						list.add(String.format("%d", location.getBlockY()));
-						list.add(String.format("%d %d", location.getBlockY(), location.getBlockZ()));
-						list.add(String.format("%d %d world", location.getBlockY(), location.getBlockZ()));
-					}
-				}
-			}
-		} else if (args.length == 4) {
-			if (args[0].equals("summon") || args[0].equals("createspawner")) {
-				if (sender instanceof Player player) {
-					Block targetedBlock = player.getTargetBlock(5);
-
-					if (targetedBlock != null && targetedBlock.isSolid()) {
-						// Autofill targeted coords
-						list.add(String.format("%d", targetedBlock.getY()));
-						list.add(String.format("%d %d", targetedBlock.getY(), targetedBlock.getZ()));
-					} else {
-						// Autofill tildas
-						list.add("~");
-						list.add("~ ~");
-					}
-				}
-			} else if (args[0].equals("deletespawner")) {
-				if (sender instanceof Player player) {
-					Block targetedBlock = player.getTargetBlock(5);
-
-					if (targetedBlock != null && targetedBlock.isSolid()) {
-						// Autofill targeted coords
-						list.add(String.format("%d", targetedBlock.getZ()));
-						list.add(String.format("%d world", targetedBlock.getZ()));
-					} else {
-						Location location = player.getLocation();
-						list.add(String.format("%d", location.getBlockZ()));
-						list.add(String.format("%d world", location.getBlockZ()));
-					}
-				}
-			}
-		} else if (args.length == 5) {
-			if (args[0].equals("summon") || args[0].equals("createspawner")) {
-				if (sender instanceof Player player) {
-					Block targetedBlock = player.getTargetBlock(5);
-
-					if (targetedBlock != null && targetedBlock.isSolid()) {
-						// Autofill targeted coords
-						list.add(String.format("%d", targetedBlock.getZ()));
-					} else {
-						// Autofill tildas
-						list.add("~");
-					}
-				}
-			} else if (args[0].equals("deletespawner")) {
-				if (sender instanceof Player) {
-					list.add("world");
-				}
+			list.addAll(commandMap.keySet());
+		} else {
+			if (commandMap.containsKey(lowerName)) {
+				return commandMap.get(lowerName).getTabComplete(sender, args);
 			}
 		}
-
 		return list;
 	}
 
@@ -281,5 +196,41 @@ public class Commands implements CommandExecutor, TabCompleter {
 		} else {
 			return convertLocation(sender, sx, sy, sz, Bukkit.getWorld(Constants.DEFAULT_WORLD));
 		}
+	}
+
+	/**
+	 * Returns a tab complete list for a targeted block
+	 * @param sender The player of the command to extract targeted block
+	 * @param depth The depth of command positions. If depth==1, format will be similar to "~", if depth==2, format will be similar to "~ ~", and similar for depth==3.
+	 * @return The List of the targeted block tab helper
+	 */
+	public static List<String> getTargetedBlockTabHelper(@NotNull Player player, int depth) {
+		ArrayList<String> list = new ArrayList<>();
+		Block targetedBlock = player.getTargetBlock(5);
+
+		if (targetedBlock != null && targetedBlock.isSolid()) {
+			// Autofill targeted coords
+			if (depth >= 1) {
+				list.add(String.format("%d", targetedBlock.getX()));
+			}
+			if (depth >= 2) {
+				list.add(String.format("%d %d", targetedBlock.getX(), targetedBlock.getY()));
+			}
+			if (depth >= 3) {
+				list.add(String.format("%d %d %d", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));
+			}
+		} else {
+			// Autofill tildas
+			if (depth >= 1) {
+				list.add("~");
+			}
+			if (depth >= 2) {
+				list.add("~ ~");
+			}
+			if (depth >= 3) {
+				list.add("~ ~ ~");
+			}
+		}
+		return list;
 	}
 }

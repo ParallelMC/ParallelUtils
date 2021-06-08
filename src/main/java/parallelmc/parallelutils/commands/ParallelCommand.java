@@ -5,6 +5,8 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 
+import java.util.List;
+
 /**
  * An abstract Command for ParallelUtils
  */
@@ -31,6 +33,14 @@ public abstract class ParallelCommand {
 	 * @return Returns true if the command executed successfully
 	 */
 	public abstract boolean execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String[] args);
+
+	/**
+	 * Retrieve the tab complete array associated with the given command and arguments
+	 * @param sender The sender of this command
+	 * @param args The arguments associated with the command
+	 * @return The List associated with the given command, sender, and arguments
+	 */
+	public abstract List<String> getTabComplete(@NotNull CommandSender sender, @NotNull String[] args);
 
 	/**
 	 * A helper method to check if a CommandSender has the permission associated with this command
