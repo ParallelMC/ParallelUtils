@@ -3,6 +3,7 @@ package parallelmc.parallelutils.commands.custommobs;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
@@ -21,6 +22,9 @@ import parallelmc.parallelutils.custommobs.nmsmobs.EntityFireWisp;
 import parallelmc.parallelutils.custommobs.nmsmobs.EntityWisp;
 import parallelmc.parallelutils.custommobs.nmsmobs.SpawnReason;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -94,5 +98,28 @@ public class ParallelSummonCommand extends ParallelCommand {
 				return false;
 		}
 		return true;
+	}
+
+	@Override
+	public List<String> getTabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
+		ArrayList<String> list = new ArrayList<>();
+
+		if (args.length == 2) {
+			list.addAll(Arrays.asList(ParallelSummonCommand.SUMMON_MOBS));
+		} else if (args.length == 3) {
+			if (sender instanceof Player player) {
+				list.addAll(Commands.getTargetedBlockTabHelper(player, 3));
+			}
+		} else if (args.length == 4) {
+			if (sender instanceof Player player) {
+				list.addAll(Commands.getTargetedBlockTabHelper(player, 2));
+			}
+		} else if (args.length == 5) {
+			if (sender instanceof Player player) {
+				list.addAll(Commands.getTargetedBlockTabHelper(player, 1));
+			}
+		}
+
+		return list;
 	}
 }
