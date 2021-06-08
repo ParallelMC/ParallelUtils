@@ -2,6 +2,7 @@ package parallelmc.parallelutils.commands.custommobs;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,6 +13,9 @@ import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelOrPermission;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A command to delete a spawner at a given location
@@ -80,6 +84,69 @@ public class ParallelDeleteSpawnerCommand extends ParallelCommand {
 			sender.sendMessage(USAGE);
 		}
 		return false;
+	}
+
+	@Override
+	public List<String> getTabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
+		ArrayList<String> list = new ArrayList<>();
+
+		if (args.length == 2) {
+			list.add("uuid");
+			if (sender instanceof Player player) {
+
+				Block targetedBlock = player.getTargetBlock(5);
+
+				if (targetedBlock != null && targetedBlock.isSolid()) {
+					// Autofill targeted coords
+					list.add(String.format("%d", targetedBlock.getX()));
+					list.add(String.format("%d %d", targetedBlock.getX(), targetedBlock.getY()));
+					list.add(String.format("%d %d %d", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));
+					list.add(String.format("%d %d %d world", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));
+				} else {
+					Location location = player.getLocation();
+					list.add(String.format("%d", location.getBlockX()));
+					list.add(String.format("%d %d", location.getBlockX(), location.getBlockY()));
+					list.add(String.format("%d %d %d", location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+					list.add(String.format("%d %d %d world", location.getBlockX(), location.getBlockY(), location.getBlockZ()));
+				}
+			}
+		} else if (args.length == 3) {
+			if (sender instanceof Player player) {
+				Block targetedBlock = player.getTargetBlock(5);
+
+				if (targetedBlock != null && targetedBlock.isSolid()) {
+					// Autofill targeted coords
+					list.add(String.format("%d", targetedBlock.getY()));
+					list.add(String.format("%d %d", targetedBlock.getY(), targetedBlock.getZ()));
+					list.add(String.format("%d %d, world", targetedBlock.getY(), targetedBlock.getZ()));
+				} else {
+					Location location = player.getLocation();
+					list.add(String.format("%d", location.getBlockY()));
+					list.add(String.format("%d %d", location.getBlockY(), location.getBlockZ()));
+					list.add(String.format("%d %d world", location.getBlockY(), location.getBlockZ()));
+				}
+			}
+		} else if (args.length == 4) {
+			if (sender instanceof Player player) {
+				Block targetedBlock = player.getTargetBlock(5);
+
+				if (targetedBlock != null && targetedBlock.isSolid()) {
+					// Autofill targeted coords
+					list.add(String.format("%d", targetedBlock.getZ()));
+					list.add(String.format("%d world", targetedBlock.getZ()));
+				} else {
+					Location location = player.getLocation();
+					list.add(String.format("%d", location.getBlockZ()));
+					list.add(String.format("%d world", location.getBlockZ()));
+				}
+			}
+		} else if (args.length == 5) {
+			if (sender instanceof Player) {
+				list.add("world");
+			}
+		}
+
+		return list;
 	}
 
 	/**

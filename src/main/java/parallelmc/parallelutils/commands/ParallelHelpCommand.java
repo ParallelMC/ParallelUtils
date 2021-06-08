@@ -1,4 +1,4 @@
-package parallelmc.parallelutils.commands.custommobs;
+package parallelmc.parallelutils.commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -6,6 +6,9 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A command to display usages of other commands
@@ -63,5 +66,15 @@ public class ParallelHelpCommand extends ParallelCommand {
 		sender.sendMessage(sb.toString());
 
 		return true;
+	}
+
+	@Override
+	public List<String> getTabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
+		ArrayList<String> list = new ArrayList<>();
+		if (args.length == 2) {
+			list.add("1");
+		}
+
+		return list;
 	}
 }

@@ -11,6 +11,8 @@ import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 import parallelmc.parallelutils.custommobs.registry.SpawnerRegistry;
 import parallelmc.parallelutils.custommobs.spawners.SpawnerData;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -82,5 +84,16 @@ public class ParallelListSpawnersCommand extends ParallelCommand {
 		sender.sendMessage(sb.toString());
 
 		return true;
+	}
+
+	@Override
+	public List<String> getTabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
+		ArrayList<String> list = new ArrayList<>();
+
+		if (args.length == 2) {
+			list.add("1");
+		}
+
+		return list;
 	}
 }
