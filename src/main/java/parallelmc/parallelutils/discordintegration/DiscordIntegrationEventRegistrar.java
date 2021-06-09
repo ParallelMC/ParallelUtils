@@ -29,6 +29,7 @@ public class DiscordIntegrationEventRegistrar {
 			}
 
 			manager.registerEvents(new AdvancementListener(), plugin);
+			manager.registerEvents(new JoinSuppressorListener(), plugin);
 
 			hasRegistered = true;
 		}

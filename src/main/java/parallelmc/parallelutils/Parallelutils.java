@@ -120,9 +120,10 @@ public final class Parallelutils extends JavaPlugin {
 
 
 		String token = config.getString("token");
+		String serverId = config.getString("server_id");
+		String staffId = config.getString("staff_id");
 
 		String staffChannel = config.getString("staff_channel_id");
-
 
 		saveConfig();
 
@@ -201,7 +202,7 @@ public final class Parallelutils extends JavaPlugin {
 		// Register Events for the DiscordIntegration Module
 		BotManager manager = null;
 		try {
-			manager = new BotManager(token);
+			manager = new BotManager(token, serverId, staffId);
 			manager.addChannel("staff", staffChannel);
 			DiscordIntegrationEventRegistrar.registerEvents();
 		} catch (LoginException e) {

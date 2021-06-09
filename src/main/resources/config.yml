@@ -18,6 +18,8 @@ sql:
 # Discord Bot Integration
 token:
 staff_channel_id:
+server_id:
+staff_id:
 
 # Github integration for version checking
 github_token:
