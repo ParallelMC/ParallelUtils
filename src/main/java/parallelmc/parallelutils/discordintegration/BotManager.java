@@ -18,6 +18,7 @@ import javax.security.auth.login.LoginException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Level;
 
 /**
@@ -53,8 +54,10 @@ public class BotManager extends ListenerAdapter {
 		}).build();
 		channels = new HashMap<>();
 
-		this.serverId = serverId;
+		this.serverId = serverId.strip().toLowerCase();
 		this.staffId = staffId;
+
+		client.addEventListener(this);
 
 		if (manager == null) {
 			manager = this;
@@ -106,7 +109,9 @@ public class BotManager extends ListenerAdapter {
 	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
 		if (event.isFromType(ChannelType.TEXT)) {
 			// Only look in the correct server
-			if (event.getTextChannel().getId().equals(serverId)) {
+			Parallelutils.log(Level.INFO, event.getTextChannel().getId().strip());
+			Parallelutils.log(Level.INFO, serverId);
+			if (event.getGuild().getId().strip().toLowerCase().equals(serverId)) {
 				// Is this message a command?
 				String message = event.getMessage().getContentStripped();
 				if (message.charAt(0) == PREFIX) {
@@ -118,6 +123,7 @@ public class BotManager extends ListenerAdapter {
 						List<Role> roles = member.getRoles();
 						for (Role r : roles) {
 							if (r.getId().equals(staffId)) {
+								Parallelutils.log(Level.INFO, "Trying to run command...");
 								// Can be executed
 								String[] parts = command.split(" ");
 								executeCommand(event, parts[0],  Arrays.copyOfRange(parts, 1, parts.length));
@@ -130,15 +136,23 @@ public class BotManager extends ListenerAdapter {
 		}
 	}
 
+	/**
+	 * Execute a discord command from a given message event
+	 * @param event The event the command originated from
+	 * @param command The command to execute
+	 * @param args The arguments for the command
+	 */
 	private void executeCommand(@NotNull MessageReceivedEvent event, String command, String[] args) {
 		if (command.strip().equals("vanish")) {
 			String target = args[0].strip();
-			if (!JoinSuppressorListener.hiddenUsers.contains(target)) {
-				JoinSuppressorListener.hiddenUsers.add(target);
-				event.getTextChannel().sendMessage("Vanished user " + target).queue();
-			} else {
-				JoinSuppressorListener.hiddenUsers.remove(target);
-				event.getTextChannel().sendMessage("Un-vanished user " + target).queue();
+			synchronized (JoinSuppressorListener.hiddenUsersLock) {
+				if (!JoinSuppressorListener.hiddenUsers.contains(target)) {
+					JoinSuppressorListener.hiddenUsers.add(target);
+					event.getTextChannel().sendMessage("Vanished user " + target).queue();
+				} else {
+					JoinSuppressorListener.hiddenUsers.remove(target);
+					event.getTextChannel().sendMessage("Un-vanished user " + target).queue();
+				}
 			}
 		}
 	}
