@@ -97,10 +97,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			// List every sub-command
 			list.addAll(commandMap.keySet());
 		} else {
-			Parallelutils.log(Level.INFO, "Tab Complete: " + args[0].toLowerCase().strip());
-			commandMap.forEach((x, y) -> Parallelutils.log(Level.INFO, x));
 			if (commandMap.containsKey(args[0].toLowerCase().strip())) {
-				Parallelutils.log(Level.INFO, "Exists");
 				return commandMap.get(args[0].toLowerCase().strip()).getTabComplete(sender, args);
 			}
 		}
