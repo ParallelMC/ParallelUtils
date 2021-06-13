@@ -13,6 +13,8 @@ import java.util.logging.Level;
 
 public class DiscordIntegration implements ParallelModule {
 
+	private BotManager botManager;
+
 	@Override
 	public void onEnable() {
 		PluginManager manager = Bukkit.getPluginManager();
@@ -39,7 +41,6 @@ public class DiscordIntegration implements ParallelModule {
 		String staffChannel = config.getString("staff_channel_id");
 
 		// Register Events for the DiscordIntegration Module
-		BotManager botManager = null;
 		try {
 			botManager = new BotManager(token, serverId, staffId);
 			botManager.addChannel("staff", staffChannel);
@@ -51,6 +52,8 @@ public class DiscordIntegration implements ParallelModule {
 
 	@Override
 	public void onDisable() {
-
+		if (botManager != null) {
+			botManager.disable();
+		}
 	}
 }
