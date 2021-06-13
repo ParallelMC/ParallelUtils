@@ -155,4 +155,11 @@ public class BotManager extends ListenerAdapter {
 			}
 		}
 	}
+
+	/**
+	 * Shutsdown JDA
+	 */
+	public void disable() {
+		client.shutdownNow();
+	}
 }
