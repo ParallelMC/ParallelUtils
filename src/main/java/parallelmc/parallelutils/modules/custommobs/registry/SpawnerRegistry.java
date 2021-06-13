@@ -68,8 +68,10 @@ public class SpawnerRegistry {
 	 * @param hasLeash True if the spawner leashes entities, false otherwise
 	 */
 	public void registerSpawner(String uuid, String type, Location location, boolean hasLeash) {
+		location.setPitch(0);
+		location.setYaw(0);
 		Parallelutils.log(Level.INFO, "Registering spawner " + uuid + " location: " + location.toString());
-		spawners.put(location, new SpawnerData(uuid, type, location, hasLeash));
+		spawners.put(location, new SpawnerData(uuid, type, location.toBlockLocation(), hasLeash));
 	}
 
 	/**
