@@ -77,7 +77,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 		return true;
 	}
-	
+
 	@Override
 	@Nullable
 	public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {

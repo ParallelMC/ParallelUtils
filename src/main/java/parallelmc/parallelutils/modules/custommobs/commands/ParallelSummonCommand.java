@@ -73,13 +73,18 @@ public class ParallelSummonCommand extends ParallelCommand {
 			}
 		}
 
-		Location location = null;
-		try {
-			location = Commands.convertLocation(sender, args[2], args[3], args[4], world);
-		} catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
-			sender.sendMessage("Incorrect coordinate formatting!");
-			sender.sendMessage(USAGE);
-			return false;
+		Location location;
+
+		if (args.length == 2 && sender instanceof Player player) {
+			location = player.getLocation();
+		} else {
+			try {
+				location = Commands.convertLocation(sender, args[2], args[3], args[4], world);
+			} catch (ArrayIndexOutOfBoundsException | NumberFormatException e) {
+				sender.sendMessage("Incorrect coordinate formatting!");
+				sender.sendMessage(USAGE);
+				return false;
+			}
 		}
 
 		switch (args[1]) {
