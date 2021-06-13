@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelOrPermission;
@@ -16,6 +17,7 @@ import parallelmc.parallelutils.modules.custommobs.registry.SpawnerRegistry;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * A command to delete a spawner at a given location
@@ -66,6 +68,7 @@ public class ParallelDeleteSpawnerCommand extends ParallelCommand {
 
 			try {
 				location = Commands.convertLocation(sender, args[1], args[2], args[3], Bukkit.getWorld(world));
+				Parallelutils.log(Level.INFO, location.toString());
 			} catch (NumberFormatException e) {
 				sender.sendMessage("Invalid position.\n");
 				sender.sendMessage(USAGE);
