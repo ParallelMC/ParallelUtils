@@ -61,8 +61,9 @@ public class ParallelCreateSpawnerCommand extends ParallelCommand {
 			return false;
 		}
 
+
 		// Ensure a mob and coordinates were entered and verify that the mob is valid
-		if (args.length < 5) {
+		if (args.length < 5 && args.length != 2) {
 			if (validMobType(args[1])) {
 				sender.sendMessage("Please enter a valid mob type.");
 			} else {
@@ -72,26 +73,31 @@ public class ParallelCreateSpawnerCommand extends ParallelCommand {
 			return true;
 		}
 
-		Location spawnerLocation = null;
+		Location spawnerLocation;
 
-		// If this is a player and no world was
-		World world = Bukkit.getWorld(Constants.DEFAULT_WORLD);
-
-		if (args.length > 5) {
-			world = Bukkit.getWorld(args[5]);
+		if (args.length == 2 && sender instanceof Player player) {
+			spawnerLocation = player.getLocation().toBlockLocation();
 		} else {
-			if (sender instanceof Player player) {
-				world = player.getWorld();
-			}
-		}
 
-		// Convert the location from chat notation (+ tildas) to a Location object
-		try {
-			spawnerLocation = Commands.convertLocation(sender, args[2], args[3], args[4], world);
-		} catch (NumberFormatException e) {
-			sender.sendMessage("Incorrect coordinate formatting!");
-			sender.sendMessage(USAGE);
-			return true;
+			// If this is a player and no world was
+			World world = Bukkit.getWorld(Constants.DEFAULT_WORLD);
+
+			if (args.length > 5) {
+				world = Bukkit.getWorld(args[5]);
+			} else {
+				if (sender instanceof Player player) {
+					world = player.getWorld();
+				}
+			}
+
+			// Convert the location from chat notation (+ tildas) to a Location object
+			try {
+				spawnerLocation = Commands.convertLocation(sender, args[2], args[3], args[4], world);
+			} catch (NumberFormatException e) {
+				sender.sendMessage("Incorrect coordinate formatting!");
+				sender.sendMessage(USAGE);
+				return true;
+			}
 		}
 
 		// Register the spawner and create the spawner task
