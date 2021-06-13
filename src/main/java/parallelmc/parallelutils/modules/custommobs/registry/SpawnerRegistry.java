@@ -87,17 +87,9 @@ public class SpawnerRegistry {
 	 * @return The location of the spawner
 	 */
 	public Location getSpawnerLoc(String uuid) {
-		// TODO: Verify this works
 		Optional<SpawnerData> data = getSpawnerData().stream().filter(x -> x.getUuid().equals(uuid)).findFirst();
 
 		return data.map(SpawnerData::getLocation).orElse(null);
-
-		/*for (SpawnerData d : getSpawnerData()) {
-			if (d.getUuid().equals(uuid)) {
-				return d.getLocation();
-			}
-		}
-		return null;*/
 	}
 
 	/**
