@@ -116,6 +116,7 @@ public class ParallelCreateSpawnerCommand extends ParallelCommand {
 
 	@Override
 	public List<String> getTabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
+		Parallelutils.log(Level.INFO, "Createspawner");
 		ArrayList<String> list = new ArrayList<>();
 
 		if (args.length == 2) {

@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.custommobs.commands.ParallelCreateSpawnerCommand;
 import parallelmc.parallelutils.modules.custommobs.commands.ParallelDeleteSpawnerCommand;
 import parallelmc.parallelutils.modules.custommobs.commands.ParallelListSpawnersCommand;
@@ -18,6 +19,7 @@ import parallelmc.parallelutils.modules.custommobs.commands.ParallelSummonComman
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * This class implements the Bukkit {@code CommandExecutor} and {@code TabCompleter} and is responsible for
@@ -33,16 +35,17 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	/**
 	 * Adds a new command to the commandmap
-	 * @param name The name of the command
+	 *
+	 * @param name    The name of the command
 	 * @param command The command to be run when the name is called
 	 * @return Returns true when the command was added successfully, false if the command already exists.
 	 */
 	public boolean addCommand(String name, ParallelCommand command) {
-		if (commandMap.containsKey(name.toLowerCase())) {
+		if (commandMap.containsKey(name.toLowerCase().strip())) {
 			return false;
 		}
 
-		commandMap.put(name.toLowerCase(), command);
+		commandMap.put(name.toLowerCase().strip(), command);
 
 		return true;
 	}
@@ -88,14 +91,17 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		// Show ParallelUtils commands
 
-		String lowerName = command.getName().toLowerCase();
+		String lowerName = command.getName().toLowerCase().strip();
 
 		if (lowerName.equals("parallelutils") || lowerName.equals("pu") && args.length == 1) {
 			// List every sub-command
 			list.addAll(commandMap.keySet());
 		} else {
-			if (commandMap.containsKey(lowerName)) {
-				return commandMap.get(lowerName).getTabComplete(sender, args);
+			Parallelutils.log(Level.INFO, "Tab Complete: " + args[0].toLowerCase().strip());
+			commandMap.forEach((x, y) -> Parallelutils.log(Level.INFO, x));
+			if (commandMap.containsKey(args[0].toLowerCase().strip())) {
+				Parallelutils.log(Level.INFO, "Exists");
+				return commandMap.get(args[0].toLowerCase().strip()).getTabComplete(sender, args);
 			}
 		}
 		return list;
@@ -103,7 +109,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	/**
 	 * Checks if the CommandSender is the server, if the sender is an op, or if the sender has the requested permission
-	 * @param sender The sender to check
+	 *
+	 * @param sender     The sender to check
 	 * @param permission The permission to check the sender has
 	 * @return Return true if the sender has permission
 	 */
@@ -113,11 +120,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	/**
 	 * Converts a location from command syntax (with tildas) to a Location object.
+	 *
 	 * @param sender The sender requesting this conversion (sets world to the sender's world if {@code world} is null)
-	 * @param sx The x location param
-	 * @param sy The y location param
-	 * @param sz The z location param
-	 * @param world The World location param
+	 * @param sx     The x location param
+	 * @param sy     The y location param
+	 * @param sz     The z location param
+	 * @param world  The World location param
 	 * @return The constructed Location object
 	 * @throws NumberFormatException Thrown if x, y, or z is not a valid integer
 	 */
@@ -173,14 +181,15 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	/**
 	 * Converts a location from command syntax (with tildas) to a Location object.
+	 *
 	 * @param sender The sender requesting this conversion (sets world to the sender's world if sender is a player)
-	 * @param sx The x location param
-	 * @param sy The y location param
-	 * @param sz The z location param
+	 * @param sx     The x location param
+	 * @param sy     The y location param
+	 * @param sz     The z location param
 	 * @return The constructed Location object
 	 * @throws NumberFormatException Thrown if x, y, or z is not a valid integer
 	 */
-	public static Location convertLocation(CommandSender sender, String sx, String sy, String sz) throws NumberFormatException{
+	public static Location convertLocation(CommandSender sender, String sx, String sy, String sz) throws NumberFormatException {
 		if (sender instanceof Player player) {
 			Location playerLoc = player.getLocation();
 
@@ -194,8 +203,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	/**
 	 * Returns a tab complete list for a targeted block
+	 *
 	 * @param sender The player of the command to extract targeted block
-	 * @param depth The depth of command positions. If depth==1, format will be similar to "~", if depth==2, format will be similar to "~ ~", and similar for depth==3.
+	 * @param depth  The depth of command positions. If depth==1, format will be similar to "~", if depth==2, format will be similar to "~ ~", and similar for depth==3.
 	 * @return The List of the targeted block tab helper
 	 */
 	public static List<String> getTargetedBlockTabHelper(@NotNull Player player, int depth) {
