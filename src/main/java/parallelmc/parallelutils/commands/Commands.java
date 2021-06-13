@@ -10,10 +10,12 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.commands.custommobs.*;
+import parallelmc.parallelutils.modules.custommobs.commands.ParallelCreateSpawnerCommand;
+import parallelmc.parallelutils.modules.custommobs.commands.ParallelDeleteSpawnerCommand;
+import parallelmc.parallelutils.modules.custommobs.commands.ParallelListSpawnersCommand;
+import parallelmc.parallelutils.modules.custommobs.commands.ParallelSummonCommand;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,14 +29,6 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	public Commands() {
 		commandMap = new HashMap<>();
-
-		// This is here for now, but eventually this will be abstracted into modules
-		addCommand("help", new ParallelHelpCommand());
-		addCommand("test", new ParallelTestCommand());
-		addCommand("summon", new ParallelSummonCommand());
-		addCommand("createspawner", new ParallelCreateSpawnerCommand());
-		addCommand("listspawners", new ParallelListSpawnersCommand());
-		addCommand("deletespawner", new ParallelDeleteSpawnerCommand());
 	}
 
 	/**
