@@ -117,6 +117,9 @@ public class ParallelCreateSpawnerCommand extends ParallelCommand {
 				SpawnerRegistry.getInstance().addSpawnTaskID(spawnerLocation, fwtask.getTaskId());
 			}
 		}
+
+		sender.sendMessage("Created " + args[1] + " spawner at " + spawnerLocation.toString());
+
 		return true;
 	}
 
