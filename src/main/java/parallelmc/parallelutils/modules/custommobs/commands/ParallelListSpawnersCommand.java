@@ -1,5 +1,11 @@
 package parallelmc.parallelutils.modules.custommobs.commands;
 
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -11,6 +17,7 @@ import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 import parallelmc.parallelutils.modules.custommobs.registry.SpawnerRegistry;
 import parallelmc.parallelutils.modules.custommobs.spawners.SpawnerData;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -21,7 +28,7 @@ import java.util.logging.Level;
  */
 public class ParallelListSpawnersCommand extends ParallelCommand {
 
-	private static final int PAGE_SIZE = 10;
+	private static final int PAGE_SIZE = 3;
 
 	private final String USAGE = "Usage: /pu listspawners [page]";
 
@@ -61,27 +68,50 @@ public class ParallelListSpawnersCommand extends ParallelCommand {
 			end = data.length;
 		}
 
-		StringBuilder sb = new StringBuilder();
+		ComponentBuilder componentBuilder = new ComponentBuilder();
 		for (int i = start; i < end; i++) {
 			try {
-				sb.append("--------------------------------------------\n");
-				sb.append("ID: ").append(data[i].getUuid()).append("\n");
-				sb.append("Type: ").append(data[i].getType()).append("\n");
+				componentBuilder.append("--------------------------------------------\n");
+				componentBuilder.append("ID: ").append(data[i].getUuid()).append("\n");
+				componentBuilder.append("Type: ").append(data[i].getType()).append("\n");
 				Location location = data[i].getLocation();
-				sb.append("World: ").append(location.getWorld().getName()).append("\n");
-				sb.append("Location: ").append(location.getBlockX())
-						.append(" ").append(location.getBlockY())
-						.append(" ").append(location.getBlockZ()).append("\n");
-				sb.append("HasLeash: ").append(data[i].hasLeash()).append("\n");
+				componentBuilder.append("World: ").append(location.getWorld().getName()).append("\n");
+
+				String locString = "" + location.getBlockX() + ", " + location.getBlockY() + ", " + location.getBlockZ();
+				TextComponent locComponent = new TextComponent(locString);
+				locComponent.setColor(ChatColor.AQUA);
+				locComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " +
+						location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ()));
+				locComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text("Teleport")));
+				componentBuilder.append("Location: ").append(locComponent).append("\n", ComponentBuilder.FormatRetention.NONE);
+
+				componentBuilder.append("HasLeash: ").append("" + data[i].hasLeash()).append("\n");
 			} catch (NullPointerException e) {
-				Parallelutils.log(Level.INFO, "NullPointerException, skipping");
+				Parallelutils.log(Level.INFO, "NullPointerException, skipping...");
 			}
 		}
-		sb.append("--------------------------------------------\n");
-		sb.append("Page ").append(page).append("/").append(numPages);
+		componentBuilder.append("--------------------------------------------\n");
 
+		if (page != 1) {
+			TextComponent backComponent = new TextComponent("[Back] ");
+			backComponent.setColor(ChatColor.AQUA);
+			backComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pu listspawners " + (page-1)));
+			componentBuilder.append(backComponent);
+		}
+		componentBuilder.append("Page ", ComponentBuilder.FormatRetention.NONE);
+		componentBuilder.append("" + page).append("/").append("" + numPages);
 
-		sender.sendMessage(sb.toString());
+		if (page != numPages) {
+			TextComponent backComponent = new TextComponent(" [Forward]");
+			backComponent.setColor(ChatColor.AQUA);
+			backComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pu listspawners " + (page+1)));
+			componentBuilder.append(backComponent);
+			TextComponent resetLocColor = new TextComponent();
+			resetLocColor.setColor(ChatColor.RESET);
+			componentBuilder.append(resetLocColor, ComponentBuilder.FormatRetention.NONE);
+		}
+
+		sender.sendMessage(componentBuilder.create());
 
 		return true;
 	}
