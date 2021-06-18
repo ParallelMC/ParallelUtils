@@ -1,12 +1,17 @@
 package parallelmc.parallelutils.modules.custommobs.nmsmobs;
 
-
-import net.minecraft.server.v1_16_R3.*;
+import net.minecraft.server.level.EntityPlayer;
+import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.ai.goal.PathfinderGoalMeleeAttack;
+import net.minecraft.world.entity.ai.goal.PathfinderGoalRandomStroll;
+import net.minecraft.world.entity.ai.goal.target.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.world.entity.monster.EntityZombie;
+import net.minecraft.world.level.World;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
+import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftZombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -38,10 +43,10 @@ public class EntityFireWisp extends EntityZombie {
         //clearing Zombie goals
         CustomEntityHelper.clearGoals(zombie);
 
-        zombie.goalSelector.a(0, new PathfinderGoalMeleeAttack(zombie, 1.0, false));
-        zombie.goalSelector.a(1, new PathfinderGoalRandomStroll(zombie, 1.0));
+        zombie.bO.a(0, new PathfinderGoalMeleeAttack(zombie, 1.0, false));
+        zombie.bO.a(1, new PathfinderGoalRandomStroll(zombie, 1.0));
 
-        zombie.targetSelector.a(0, new PathfinderGoalNearestAttackableTarget<>(zombie,
+        zombie.bP.a(0, new PathfinderGoalNearestAttackableTarget<>(zombie,
                 EntityPlayer.class, true));
     }
 

@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftZombie;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemFlag;
