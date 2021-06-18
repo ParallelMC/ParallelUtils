@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftZombie;
+import org.bukkit.craftbukkit.v1_17_R1.entity.CraftZombie;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemFlag;
@@ -80,7 +80,7 @@ public class CraftWisp {
 
 			try {
 				ItemMeta shardMeta = shard.getItemMeta();
-				shardMeta.setDisplayName(ChatColor.WHITE + "Soul Shard");
+				shardMeta.setDisplayName(ChatColor.WHITE + "Soul Shard"); // TODO: Investigate this deprecation
 				shardMeta.setCustomModelData(1000001); // Show custom texture
 				shardMeta.addEnchant(Enchantment.DURABILITY, 1, true); // Make it look enchanted
 				shardMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
