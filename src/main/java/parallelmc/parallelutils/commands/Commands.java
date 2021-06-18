@@ -5,21 +5,15 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.*;
-import org.bukkit.craftbukkit.v1_16_R3.command.ServerCommandSender;
+import org.bukkit.craftbukkit.v1_17_R1.command.ServerCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.modules.custommobs.commands.ParallelCreateSpawnerCommand;
-import parallelmc.parallelutils.modules.custommobs.commands.ParallelDeleteSpawnerCommand;
-import parallelmc.parallelutils.modules.custommobs.commands.ParallelListSpawnersCommand;
-import parallelmc.parallelutils.modules.custommobs.commands.ParallelSummonCommand;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
 
 /**
  * This class implements the Bukkit {@code CommandExecutor} and {@code TabCompleter} and is responsible for
@@ -200,7 +194,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 	/**
 	 * Returns a tab complete list for a targeted block
 	 *
-	 * @param sender The player of the command to extract targeted block
+	 * @param player The player of the command to extract targeted block
 	 * @param depth  The depth of command positions. If depth==1, format will be similar to "~", if depth==2, format will be similar to "~ ~", and similar for depth==3.
 	 * @return The List of the targeted block tab helper
 	 */
