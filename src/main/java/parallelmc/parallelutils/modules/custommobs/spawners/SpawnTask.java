@@ -107,7 +107,9 @@ public class SpawnTask extends BukkitRunnable {
 									wasSuccessful = true;
 									setUpEntity = EntityWisp.spawn(plugin, (CraftServer) plugin.getServer(),
 											(CraftWorld) location.getWorld(), spawnLocation, SpawnReason.SPAWNER, location);
-									SpawnerRegistry.getInstance().incrementMobCount(location);
+									if (setUpEntity != null) {
+										SpawnerRegistry.getInstance().incrementMobCount(location);
+									}
 								}
 								break;
 							case "fire_wisp":
@@ -116,7 +118,9 @@ public class SpawnTask extends BukkitRunnable {
 									wasSuccessful = true;
 									setUpEntity = EntityFireWisp.spawn(plugin, (CraftServer) plugin.getServer(),
 											(CraftWorld) location.getWorld(), spawnLocation, SpawnReason.SPAWNER, location);
-									SpawnerRegistry.getInstance().incrementMobCount(location);
+									if (setUpEntity != null) {
+										SpawnerRegistry.getInstance().incrementMobCount(location);
+									}
 								}
 								break;
 						}

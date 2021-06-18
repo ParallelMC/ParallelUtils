@@ -28,7 +28,7 @@ public class JoinQuitSuppressorListener implements Listener {
 
 				if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
 					Server server = Bukkit.getServer();
-					server.dispatchCommand(server.getConsoleSender(), "/v " + player.getName().strip());
+					server.dispatchCommand(server.getConsoleSender(), "v " + player.getName().strip());
 				}
 			}
 		}
