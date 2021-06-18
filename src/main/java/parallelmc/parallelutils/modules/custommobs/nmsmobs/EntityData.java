@@ -1,6 +1,6 @@
 package parallelmc.parallelutils.modules.custommobs.nmsmobs;
 
-import net.minecraft.server.v1_16_R3.Entity;
+import net.minecraft.world.entity.Entity;
 import org.bukkit.Location;
 
 /**
