@@ -1,15 +1,19 @@
 package parallelmc.parallelutils.commands;
 
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.commands.ParallelCommand;
+import org.w3c.dom.Text;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO: Make this dynamic
 /**
  * A command to display usages of other commands
  * Usage: /pu help <page>
@@ -55,15 +59,43 @@ public class ParallelHelpCommand extends ParallelCommand {
 			end = HELP_MESSAGES.length;
 		}
 
-		StringBuilder sb = new StringBuilder();
-		sb.append(ChatColor.YELLOW).append("--------- ").append(ChatColor.WHITE).append("Help: Index (")
-				.append(page).append("/").append(numPages).append(")")
-				.append(ChatColor.YELLOW).append(" --------------------\n").append(ChatColor.RESET);
+		// TODO: Is there a better way to do this? It's so messy
+		ComponentBuilder componentBuilder = new ComponentBuilder();
+
+		TextComponent smallYellow = new TextComponent("--------- ");
+		smallYellow.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
+
+		TextComponent largeYellow = new TextComponent(" --------------------\n");
+		largeYellow.setColor(net.md_5.bungee.api.ChatColor.YELLOW);
+
+		componentBuilder.append(smallYellow, ComponentBuilder.FormatRetention.NONE)
+				.append("Help: Index (", ComponentBuilder.FormatRetention.NONE)
+				.append("" + page).append("/").append("" + numPages).append(")")
+				.append(largeYellow, ComponentBuilder.FormatRetention.NONE);
 		for (int i=start; i<end; i++) {
-			sb.append(ChatColor.GREEN).append(HELP_MESSAGES[i]).append("\n").append(ChatColor.RESET);
+			TextComponent helpComponent = new TextComponent(HELP_MESSAGES[i]);
+			helpComponent.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+			componentBuilder.append(helpComponent, ComponentBuilder.FormatRetention.NONE)
+					.append("\n", ComponentBuilder.FormatRetention.NONE);
 		}
 
-		sender.sendMessage(sb.toString());
+		if (page != 1) {
+			TextComponent backComponent = new TextComponent("[Back] ");
+			backComponent.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+			backComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pu help " + (page-1)));
+			componentBuilder.append(backComponent);
+		}
+		if (page != numPages) {
+			TextComponent backComponent = new TextComponent(" [Forward]");
+			backComponent.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+			backComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pu help " + (page+1)));
+			componentBuilder.append(backComponent);
+			TextComponent resetLocColor = new TextComponent();
+			resetLocColor.setColor(ChatColor.RESET);
+			componentBuilder.append(resetLocColor, ComponentBuilder.FormatRetention.NONE);
+		}
+
+		sender.sendMessage(componentBuilder.create());
 
 		return true;
 	}

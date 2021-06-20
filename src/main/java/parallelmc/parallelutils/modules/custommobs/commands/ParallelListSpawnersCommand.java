@@ -111,7 +111,7 @@ public class ParallelListSpawnersCommand extends ParallelCommand {
 			componentBuilder.append(resetLocColor, ComponentBuilder.FormatRetention.NONE);
 		}
 
-		sender.sendMessage(componentBuilder.create());
+		sender.sendMessage(componentBuilder.create()); // TODO: Figure out how to do this without the deprecated method
 
 		return true;
 	}
