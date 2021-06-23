@@ -37,6 +37,12 @@
             <url>https://jcenter.bintray.com</url>
         </repository>
     </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>apache.snapshots</id>
+            <url>https://repository.apache.org/snapshots/</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <build>
         <plugins>
@@ -46,6 +52,8 @@
                 <version>3.8.1</version>
                 <configuration>
                     <release>16</release>
+                    <source>16</source>
+                    <target>16</target>
                 </configuration>
             </plugin>
             <plugin>

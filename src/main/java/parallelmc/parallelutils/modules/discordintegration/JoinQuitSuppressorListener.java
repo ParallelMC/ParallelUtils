@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.discordintegration;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -24,7 +25,7 @@ public class JoinQuitSuppressorListener implements Listener {
 
 		synchronized (hiddenUsersLock) { // NOTE: This MIGHT cause lag problems. It shouldn't, but beware
 			if (hiddenUsers.contains(player.getName().strip())) {
-				event.setJoinMessage(""); // This might need to change, but it needs to be tested
+				event.joinMessage(Component.text("")); // This might need to change, but it needs to be tested
 
 				if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
 					Server server = Bukkit.getServer();
@@ -40,7 +41,7 @@ public class JoinQuitSuppressorListener implements Listener {
 
 		synchronized (hiddenUsersLock) { // NOTE: This MIGHT cause lag problems. It shouldn't, but beware
 			if (hiddenUsers.contains(player.getName().strip())) {
-				event.setQuitMessage(""); // This might need to change, but it needs to be tested
+				event.quitMessage(Component.text((""))); // This might need to change, but it needs to be tested
 			}
 		}
 	}
