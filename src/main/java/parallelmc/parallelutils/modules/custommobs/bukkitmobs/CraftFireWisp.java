@@ -1,5 +1,9 @@
 package parallelmc.parallelutils.modules.custommobs.bukkitmobs;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -81,7 +85,8 @@ public class CraftFireWisp {
 
             try {
                 ItemMeta shardMeta = shard.getItemMeta();
-                shardMeta.setDisplayName(ChatColor.GOLD + "Unstable Soul Shard");
+                TextComponent name = Component.text("Unstable Soul Shard", NamedTextColor.GOLD);
+                shardMeta.displayName(name);
                 shardMeta.setCustomModelData(1000002); // Show the custom texture
                 shardMeta.addEnchant(Enchantment.DURABILITY, 1, true); // Make it look enchanted
                 shardMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS); // Hide the enchantment
