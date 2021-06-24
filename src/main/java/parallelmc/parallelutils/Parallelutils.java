@@ -9,6 +9,7 @@ import parallelmc.parallelutils.commands.ParallelHelpCommand;
 import parallelmc.parallelutils.commands.ParallelTestCommand;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
+import parallelmc.parallelutils.modules.gamemode4.sunkenTreasure.SunkenTreasure;
 import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
 import java.sql.*;
@@ -130,6 +131,9 @@ public final class Parallelutils extends JavaPlugin {
 		// This will eventually be a separate config file
 		DiscordIntegration discordIntegration = new DiscordIntegration();
 		discordIntegration.onEnable();
+
+		SunkenTreasure sunkenTreasure = new SunkenTreasure();
+		sunkenTreasure.onEnable();
 
 		finishedSetup = true;
 	}
