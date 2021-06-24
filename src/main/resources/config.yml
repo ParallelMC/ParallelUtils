@@ -23,3 +23,6 @@ staff_id:
 
 # Github integration for version checking
 github_token:
+
+# Sunken Treasure
+treasure_loot:
