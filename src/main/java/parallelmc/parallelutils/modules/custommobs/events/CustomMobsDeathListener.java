@@ -1,5 +1,7 @@
 package parallelmc.parallelutils.modules.custommobs.events;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -30,8 +32,14 @@ public class CustomMobsDeathListener implements Listener {
 				EntityData pair = EntityRegistry.getInstance().getEntity(killer.getUniqueId().toString());
 
 				switch (pair.type) {
-					case "wisp" -> event.setDeathMessage(player.getDisplayName() + " was slain by Wisp");
-					case "fire_wisp" -> event.setDeathMessage(player.getDisplayName() + " was slain by Fire Wisp");
+					case "wisp" -> {
+						TextComponent message = Component.text("").append(player.displayName())
+								.append(Component.text("was slain by Wisp."));
+						event.deathMessage(message);}
+					case "fire_wisp" -> {
+						TextComponent message = Component.text("").append(player.displayName())
+								.append(Component.text("was slain by Fire Wisp."));
+						event.deathMessage(message);}
 				}
 			}
 		}
