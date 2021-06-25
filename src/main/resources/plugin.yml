@@ -60,3 +60,6 @@ permissions:
   parallelutils.help:
     description: Gives access to the help command
     default: false
+  parallelutils.effects:
+    description: Gives access to effects debug command
+    default: false
