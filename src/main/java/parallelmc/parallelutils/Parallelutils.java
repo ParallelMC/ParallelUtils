@@ -9,6 +9,8 @@ import parallelmc.parallelutils.commands.ParallelHelpCommand;
 import parallelmc.parallelutils.commands.ParallelTestCommand;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
+import parallelmc.parallelutils.modules.effectextender.EffectExtender;
+import parallelmc.parallelutils.modules.effectextender.commands.ParallelEffectsCommand;
 import parallelmc.parallelutils.modules.gamemode4.sunkenTreasure.SunkenTreasure;
 import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
@@ -115,6 +117,7 @@ public final class Parallelutils extends JavaPlugin {
 
 		addCommand("help", new ParallelHelpCommand());
 		addCommand("test", new ParallelTestCommand());
+		addCommand("effects", new ParallelEffectsCommand());
 
 		getCommand("parallelutils").setExecutor(commands);
 		getCommand("parallelutils").setTabCompleter(commands);
@@ -134,6 +137,9 @@ public final class Parallelutils extends JavaPlugin {
 
 		SunkenTreasure sunkenTreasure = new SunkenTreasure();
 		sunkenTreasure.onEnable();
+
+		EffectExtender effectExtender = new EffectExtender();
+		effectExtender.onEnable();
 
 		finishedSetup = true;
 	}
