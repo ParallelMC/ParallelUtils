@@ -2,6 +2,7 @@ package parallelmc.parallelutils.modules.effectextender.handlers;
 
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import parallelmc.parallelutils.modules.effectextender.EffectListener;
 
@@ -12,12 +13,15 @@ public class ActionRemovedHandler implements ActionHandler {
     public void execute(EntityPotionEffectEvent event, LivingEntity player) {
         if (EffectListener.playerEffects.containsKey(player)) {
             HashMap<PotionEffectType, Integer> maxes = EffectListener.playerEffects.get(player);
-            PotionEffectType oldEffectType = event.getOldEffect().getType();
+
+            PotionEffect oldEffect = event.getOldEffect();
+
+            if (oldEffect == null) return;
+
+            PotionEffectType oldEffectType = oldEffect.getType();
 
             // clean each player's hashmap as effects get removed
-            if (maxes.containsKey(oldEffectType)) {
-                maxes.remove(oldEffectType);
-            }
+            maxes.remove(oldEffectType);
         }
     }
 }

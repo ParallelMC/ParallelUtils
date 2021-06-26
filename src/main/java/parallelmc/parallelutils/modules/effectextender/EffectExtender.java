@@ -6,9 +6,13 @@ import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.effectextender.commands.ParallelEffectsCommand;
 
 import java.util.logging.Level;
 
+/**
+ * A module to allow stacking of potions
+ */
 public class EffectExtender implements ParallelModule {
 
     @Override
@@ -21,7 +25,12 @@ public class EffectExtender implements ParallelModule {
             return;
         }
 
+        Parallelutils puPlugin = (Parallelutils) plugin;
+
         manager.registerEvents(new EffectListener(), plugin);
+
+        puPlugin.addCommand("effects", new ParallelEffectsCommand());
+
         Parallelutils.log(Parallelutils.LOG_LEVEL, "EntityPotionEffectEvent registered successfully.");
     }
 

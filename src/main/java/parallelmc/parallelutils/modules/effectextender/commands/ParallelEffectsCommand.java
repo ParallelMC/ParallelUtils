@@ -13,6 +13,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * A command to display the current max effect durations for the player
+ * Usage: /pu effects
+ */
 public class ParallelEffectsCommand extends ParallelCommand {
 
     public ParallelEffectsCommand() {
@@ -25,8 +29,7 @@ public class ParallelEffectsCommand extends ParallelCommand {
             return false;
         }
 
-        if (sender instanceof Player) {
-            Player player = (Player)sender;
+        if (sender instanceof Player player) {
             HashMap<PotionEffectType, Integer> maxes = EffectListener.playerEffects.get(player);
             if (maxes == null || maxes.values().size() <= 0) {
                 player.sendMessage("You do not have any active effects!");
