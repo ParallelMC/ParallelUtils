@@ -18,6 +18,8 @@ public class ActionAddedHandler implements ActionHandler {
         HashMap<PotionEffectType, Integer> maxes = EffectListener.playerEffects.get(player);
         PotionEffect newEffect = event.getNewEffect();
 
+        if (newEffect == null) return;
+
         // if effect is new, use it as the max
         if (!maxes.containsKey(newEffect.getType())) {
             maxes.put(newEffect.getType(), newEffect.getDuration() * 2);
