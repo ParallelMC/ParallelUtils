@@ -16,6 +16,9 @@ public class ActionChangedHandler implements ActionHandler {
             PotionEffect newEffect = event.getNewEffect();
             PotionEffect oldEffect = event.getOldEffect();
             HashMap<PotionEffectType, Integer> maxes = EffectListener.playerEffects.get(player);
+
+            if (newEffect == null || oldEffect == null) return;
+
             int curMax = maxes.get(newEffect.getType());
             int newDuration = newEffect.getDuration();
             int oldDuration = oldEffect.getDuration();
