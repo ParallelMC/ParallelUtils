@@ -117,7 +117,6 @@ public final class Parallelutils extends JavaPlugin {
 
 		addCommand("help", new ParallelHelpCommand());
 		addCommand("test", new ParallelTestCommand());
-		addCommand("effects", new ParallelEffectsCommand());
 
 		getCommand("parallelutils").setExecutor(commands);
 		getCommand("parallelutils").setTabCompleter(commands);
