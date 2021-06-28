@@ -54,6 +54,9 @@ permissions:
   parallelutils.spawn.spawners.delete:
     description: Gives access to deleting spawners.
     default: false
+  parallelutils.give:
+    description: Gives access to giving ParallelItems.
+    default: false
   parallelutils.test:
     description: Gives access to the test command
     default: false
