@@ -21,7 +21,7 @@ public class DiscordIntegration implements ParallelModule {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to enable CustomMobs. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
+			Parallelutils.log(Level.SEVERE, "Unable to enable DiscordIntegration. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
 			return;
 		}
 
