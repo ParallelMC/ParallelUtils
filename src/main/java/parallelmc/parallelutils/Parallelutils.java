@@ -9,6 +9,7 @@ import parallelmc.parallelutils.commands.ParallelHelpCommand;
 import parallelmc.parallelutils.commands.ParallelTestCommand;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
+import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
 import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
 import java.sql.*;
@@ -131,6 +132,9 @@ public final class Parallelutils extends JavaPlugin {
 		DiscordIntegration discordIntegration = new DiscordIntegration();
 		discordIntegration.onEnable();
 
+		ParallelItems parallelItems = new ParallelItems();
+		parallelItems.onEnable();
+
 		finishedSetup = true;
 	}
 
@@ -198,6 +202,15 @@ public final class Parallelutils extends JavaPlugin {
 
 		registeredModules.put(name, module);
 		return true;
+	}
+
+	/**
+	 * Gets registered module by name
+	 * @param name
+	 * @return module
+	 */
+	public ParallelModule getModule(String name){
+		return registeredModules.get(name);
 	}
 
 	/**
