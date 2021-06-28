@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -17,9 +18,7 @@ import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 /**
@@ -130,6 +129,17 @@ public class ParallelItemsGiveCommand extends ParallelCommand {
 
     @Override
     public List<String> getTabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
-        return null;
+        ArrayList<String> list = new ArrayList<>();
+
+        if(args.length == 2){
+            list.addAll(sender.getServer().getOnlinePlayers().stream().map(HumanEntity::getName).toList());
+        }
+        else if(args.length == 3){
+            list.addAll(Arrays.stream(ITEMS).toList());
+        }
+        else if(args.length == 4){
+            list.add("[amount]");
+        }
+        return list;
     }
 }
