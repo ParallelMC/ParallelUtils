@@ -62,18 +62,16 @@ public class ParallelItemsGiveCommand extends ParallelCommand {
         if (args.length <= 1) {
             sender.sendMessage(USAGE);
             return true;
-        }
-        else if (args.length == 2){
+        } else if (args.length == 2) {
             String options = "Options:\n";
             for (String s : ITEMS) {
                 options += s + "\n";
             }
             sender.sendMessage(options);
             return true;
-        }
-        else if(args.length == 3 || args.length == 4){
+        } else if(args.length == 3 || args.length == 4) {
             Player player = Bukkit.getServer().getPlayer(args[1]);
-            if(player == null){
+            if(player == null) {
                 sender.sendMessage("No player found with that username!");
                 return false;
             }
@@ -81,7 +79,7 @@ public class ParallelItemsGiveCommand extends ParallelCommand {
             PlayerInventory inv = player.getInventory();
 
             int amt = 1;
-            if(args.length == 4){
+            if(args.length == 4) {
                 try {
                     amt = Integer.parseInt(args[3]);
                     if(amt > 255){

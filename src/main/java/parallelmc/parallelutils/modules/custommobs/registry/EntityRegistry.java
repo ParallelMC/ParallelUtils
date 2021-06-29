@@ -114,7 +114,6 @@ public class EntityRegistry {
 	 * @return Returns true if the given entity is in the registry
 	 */
 	public boolean containsEntity(String uuid) {
-		Parallelutils.log(Level.INFO, "Does contain " + uuid);
 		return entities.containsKey(uuid);
 	}
 }
