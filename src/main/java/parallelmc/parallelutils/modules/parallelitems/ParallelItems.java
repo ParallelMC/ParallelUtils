@@ -22,6 +22,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
 
+/**
+ * A module that adds custom items to Parallel
+ */
 public class ParallelItems implements ParallelModule {
 
     private final HashMap<String, ItemStack> itemRegistry = new HashMap<>();
