@@ -9,8 +9,8 @@ import parallelmc.parallelutils.commands.ParallelHelpCommand;
 import parallelmc.parallelutils.commands.ParallelTestCommand;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
+import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
 import parallelmc.parallelutils.modules.effectextender.EffectExtender;
-import parallelmc.parallelutils.modules.effectextender.commands.ParallelEffectsCommand;
 import parallelmc.parallelutils.modules.gamemode4.sunkenTreasure.SunkenTreasure;
 import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
@@ -134,6 +134,8 @@ public final class Parallelutils extends JavaPlugin {
 		DiscordIntegration discordIntegration = new DiscordIntegration();
 		discordIntegration.onEnable();
 
+		ParallelItems parallelItems = new ParallelItems();
+		parallelItems.onEnable();
 		SunkenTreasure sunkenTreasure = new SunkenTreasure();
 		sunkenTreasure.onEnable();
 
@@ -207,6 +209,15 @@ public final class Parallelutils extends JavaPlugin {
 
 		registeredModules.put(name, module);
 		return true;
+	}
+
+	/**
+	 * Gets registered module by name
+	 * @param name
+	 * @return module
+	 */
+	public ParallelModule getModule(String name){
+		return registeredModules.get(name);
 	}
 
 	/**
