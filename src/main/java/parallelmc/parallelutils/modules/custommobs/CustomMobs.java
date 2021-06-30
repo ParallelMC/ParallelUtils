@@ -155,7 +155,7 @@ public class CustomMobs implements ParallelModule {
 				removeStatement.execute("TRUNCATE TABLE WorldMobs");
 				removeStatement.execute("TRUNCATE TABLE Spawners");
 				dbConn.commit();
-			} catch (SQLException e) {
+			} catch (SQLException | NullPointerException e) {
 				Parallelutils.log(Level.WARNING, "Could not connect to DB");
 				Parallelutils.log(Level.WARNING, "Trying again...");
 

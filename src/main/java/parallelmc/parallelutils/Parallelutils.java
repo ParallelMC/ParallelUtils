@@ -8,6 +8,7 @@ import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.ParallelHelpCommand;
 import parallelmc.parallelutils.commands.ParallelTestCommand;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
+import parallelmc.parallelutils.modules.customtrees.ParallelTrees;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
 import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
 import parallelmc.parallelutils.modules.effectextender.EffectExtender;
@@ -141,6 +142,9 @@ public final class Parallelutils extends JavaPlugin {
 
 		EffectExtender effectExtender = new EffectExtender();
 		effectExtender.onEnable();
+
+		ParallelTrees parallelTrees = new ParallelTrees();
+		parallelTrees.onEnable();
 
 		finishedSetup = true;
 	}
