@@ -5,7 +5,7 @@ api-version: 1.17
 authors: [Jake, Evelyn]
 description: A plugin containing miscellaneous features and changes for play.parallel.ga
 depend: []
-softdepend: [Multiverse-Core]
+softdepend: [Multiverse-Core, FractalForest]
 commands:
   parallelutils:
     description: Get information about the plugin
