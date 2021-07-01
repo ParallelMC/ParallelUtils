@@ -154,7 +154,15 @@ public final class Parallelutils extends JavaPlugin {
 		// Plugin shutdown logic
 
 		// Clean up modules
-		registeredModules.forEach((name, module) -> module.onDisable());
+		registeredModules.forEach((name, module) -> {
+			try {
+				module.onDisable();
+			} catch (Exception e) {
+				Parallelutils.log(Level.SEVERE, "EXCEPTION WHILE DISABLING PARALLELUTILS. CAUGHT TO AVOID PROBLEMS");
+				e.printStackTrace();
+			}
+		});
+
 
 		try {
 			dbConn.close();
