@@ -14,10 +14,9 @@ import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.customtrees.habitats.MushroomHabitat;
 import parallelmc.parallelutils.modules.customtrees.habitats.NetherExtHabitat;
-import parallelmc.parallelutils.modules.customtrees.themes.CoralTheme;
-import parallelmc.parallelutils.modules.customtrees.themes.CrimsonTheme;
-import parallelmc.parallelutils.modules.customtrees.themes.WarpedTheme;
+import parallelmc.parallelutils.modules.customtrees.themes.*;
 
 import java.util.logging.Level;
 
@@ -56,6 +55,17 @@ public class ParallelTrees implements ParallelModule {
 		MagicSapling.saplingMaterials.add(XMaterial.WARPED_FUNGUS.parseMaterial());
 		Species.addSpecies(new Species("WARPED_TREE", Scale.MASSIVE, GenomeType.OAK.value(),
 				new FSapling(XMaterial.WARPED_FUNGUS), new WarpedTheme(), new NetherExtHabitat(), EffectType.NETHER.getEffects()));
+
+		MagicSapling.saplingMaterials.add(XMaterial.BROWN_MUSHROOM_BLOCK.parseMaterial());
+		Species.addSpecies(new Species("BROWN_MUSHROOM", Scale.MEDIUM, GenomeType.SECCHI.value(),
+				new FSapling(XMaterial.BROWN_MUSHROOM_BLOCK), new BrownMushroomTheme(), new MushroomHabitat(), EffectType.FOREST.getEffects()));
+
+		MagicSapling.saplingMaterials.add(XMaterial.RED_MUSHROOM_BLOCK.parseMaterial());
+		Species.addSpecies(new Species("RED_MUSHROOM", Scale.MEDIUM, GenomeType.SECCHI.value(),
+				new FSapling(XMaterial.RED_MUSHROOM_BLOCK), new RedMushroomTheme(), new MushroomHabitat(), EffectType.FOREST.getEffects()));
+
+		Species.addSpecies(new Species("RANDOM_TREE", Scale.MASSIVE, GenomeType.ELM.value(),
+				FSapling.OAK_SAPLING, new RandomTheme(), new MushroomHabitat(), EffectType.FOREST.getEffects()));
 	}
 
 	@Override
