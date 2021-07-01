@@ -6,6 +6,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Sapling;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -136,14 +137,23 @@ public class PlayerInteractListener implements Listener {
                         return;
                     }
 
-                    if(event.getFoodLevel() >= 20){
-                        return;
-                    }
-                    if(event.getFoodLevel() >= 15){
+
+                    if(event.getFoodLevel() >= 15 && event.getFoodLevel() < 20){
                         event.setFoodLevel(20);
                     }
                     else{
                         event.setFoodLevel(event.getFoodLevel() + 5);
+                    }
+
+                    HumanEntity entity = event.getEntity();
+                    if(entity.getSaturation() >= event.getFoodLevel()){
+                        return;
+                    }
+                    if(entity.getSaturation() >= event.getFoodLevel()-6.0){
+                        entity.setSaturation(event.getFoodLevel());
+                    }
+                    else{
+                        entity.setSaturation((float)(entity.getSaturation()+6.0));
                     }
                 }
             }
