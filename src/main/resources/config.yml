@@ -18,6 +18,8 @@ sql:
 # Discord Bot Integration
 token:
 staff_channel_id:
+vp_message_channel:
+vp_message_id:
 server_id:
 staff_id:
 
