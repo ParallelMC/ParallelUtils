@@ -48,7 +48,7 @@ public class ParallelItems implements ParallelModule {
         }
 
         registerItems();
-
+        ParallelItemsEventRegistrar.registerEvents();
         puPlugin.addCommand("give", new ParallelItemsGiveCommand());
     }
 
@@ -56,6 +56,16 @@ public class ParallelItems implements ParallelModule {
      * Method to register ItemStacks for each type of ParallelItem
      */
     private void registerItems(){
+        PluginManager manager = Bukkit.getPluginManager();
+        JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
+        if (plugin == null) {
+            Parallelutils.log(Level.SEVERE, "PLUGIN NOT FOUND. THIS IS A PROBLEM");
+            return;
+        }
+
+        // A special tag to keep track of ParallelItems. Each type of item has it's own number.
+        NamespacedKey key = new NamespacedKey(plugin, "ParallelItem");
+
         ItemStack aoeBonemeal = new ItemStack(Material.BONE_MEAL);
         try{
             ItemMeta boneMeta = aoeBonemeal.getItemMeta();
@@ -68,15 +78,6 @@ public class ParallelItems implements ParallelModule {
             boneMeta.addEnchant(Enchantment.DURABILITY, 1, true);
             boneMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 
-            PluginManager manager = Bukkit.getPluginManager();
-            JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
-            if (plugin == null) {
-                Parallelutils.log(Level.SEVERE, "PLUGIN NOT FOUND. THIS IS A PROBLEM");
-                return;
-            }
-
-            // A special tag to keep track of ParallelItems. Each type of item has it's own number.
-            NamespacedKey key = new NamespacedKey(plugin, "ParallelItem");
             boneMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 1);
 
             aoeBonemeal.setItemMeta(boneMeta);
@@ -89,7 +90,24 @@ public class ParallelItems implements ParallelModule {
 
         itemRegistry.put("enhanced_fertilizer", aoeBonemeal);
 
-        ParallelItemsEventRegistrar.registerEvents();
+        ItemStack baguette = new ItemStack(Material.BREAD);
+        try{
+            ItemMeta breada = baguette.getItemMeta();
+            TextComponent name = Component.text("Baguette", NamedTextColor.WHITE);
+            breada.displayName(name);
+            breada.setCustomModelData(1000000);
+
+            breada.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 2);
+
+            baguette.setItemMeta(breada);
+        }
+        catch (NullPointerException e){
+            Parallelutils.log(Level.WARNING,"NullPointerException registering baguette. " +
+                    "Item will not work!");
+            e.printStackTrace();
+        }
+
+        itemRegistry.put("baguette", baguette);
     }
 
     @Override
