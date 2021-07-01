@@ -6,15 +6,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Sapling;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.PluginManager;
@@ -30,6 +28,20 @@ import java.util.logging.Level;
 public class PlayerInteractListener implements Listener {
 
     private final int FERTILIZER_RANGE = 5;
+    private JavaPlugin javaPlugin;
+    private NamespacedKey customKey;
+
+    public PlayerInteractListener(){
+        PluginManager manager = Bukkit.getPluginManager();
+        JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
+        if (plugin == null) {
+            Parallelutils.log(Level.SEVERE, "PLUGIN NOT FOUND. THIS IS A PROBLEM");
+            return;
+        }
+
+        javaPlugin = plugin;
+        customKey = new NamespacedKey(javaPlugin, "ParallelItem");
+    }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -43,16 +55,7 @@ public class PlayerInteractListener implements Listener {
 
             ItemMeta meta = item.getItemMeta();
 
-            PluginManager manager = Bukkit.getPluginManager();
-            JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
-            if (plugin == null) {
-                Parallelutils.log(Level.SEVERE, "PLUGIN NOT FOUND. THIS IS A PROBLEM");
-                return;
-            }
-
-            // check which fancy item this is
-            NamespacedKey key = new NamespacedKey(plugin, "ParallelItem");
-            Integer val = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+            Integer val = meta.getPersistentDataContainer().get(customKey, PersistentDataType.INTEGER);
             if (val == null) {
                 return;
             }
@@ -108,6 +111,39 @@ public class PlayerInteractListener implements Listener {
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onHumanEat(FoodLevelChangeEvent event){
+        ItemStack item = event.getItem();
+        if(item != null){
+            ItemMeta meta = item.getItemMeta();
+
+            Integer val = meta.getPersistentDataContainer().get(customKey, PersistentDataType.INTEGER);
+            if (val == null) {
+                return;
+            }
+
+            switch(val){
+                case 2 -> { //presumably, a baguette
+                    if(item.getType() != Material.BREAD) {
+                        Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:2' are " +
+                                "baguette, but this is not the correct material. Something isn't right.");
+                        return;
+                    }
+
+                    if(event.getFoodLevel() >= 20){
+                        return;
+                    }
+                    if(event.getFoodLevel() >= 15){
+                        event.setFoodLevel(20);
+                    }
+                    else{
+                        event.setFoodLevel(event.getFoodLevel() + 5);
                     }
                 }
             }
