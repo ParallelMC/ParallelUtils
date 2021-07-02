@@ -36,6 +36,10 @@
             <name>jcenter-bintray</name>
             <url>https://jcenter.bintray.com</url>
         </repository>
+        <repository>
+            <id>sk89q-repo</id>
+            <url>https://maven.enginehub.org/repo/</url>
+        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>
@@ -137,6 +141,13 @@
             <version>2.26</version>
             <scope>system</scope>
             <systemPath>${basedir}/libs/VoteParty-2.26.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sk89q.worldguard</groupId>
+            <artifactId>worldguard-bukkit</artifactId>
+            <version>7.0.5</version>
+            <scope>provided</scope>
         </dependency>
 
     </dependencies>
