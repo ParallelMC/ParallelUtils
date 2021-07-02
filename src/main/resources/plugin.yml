@@ -5,7 +5,7 @@ api-version: 1.17
 authors: [Jake, Evelyn]
 description: A plugin containing miscellaneous features and changes for play.parallel.ga
 depend: []
-softdepend: [Multiverse-Core, FractalForest, WorldGuard, VoteParty]
+softdepend: [Multiverse-Core, FractalForest, WorldGuard, VoteParty, FrozenJoin]
 commands:
   parallelutils:
     description: Get information about the plugin
