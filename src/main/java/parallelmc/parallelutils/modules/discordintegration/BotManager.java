@@ -147,7 +147,7 @@ public class BotManager extends ListenerAdapter {
 			if (event.getGuild().getId().strip().toLowerCase().equals(serverId)) {
 				// Is this message a command?
 				String message = event.getMessage().getContentStripped();
-				if (message.charAt(0) == PREFIX) {
+				if (message.length() > 0 && message.charAt(0) == PREFIX) {
 					String command = message.substring(1);
 
 					// Can this member actually execute mod commands?
