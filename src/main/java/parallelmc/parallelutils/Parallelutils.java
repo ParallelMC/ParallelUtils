@@ -10,6 +10,7 @@ import parallelmc.parallelutils.commands.ParallelTestCommand;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
 import parallelmc.parallelutils.modules.customtrees.ParallelTrees;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
+import parallelmc.parallelutils.modules.parallelflags.ParallelFlags;
 import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
 import parallelmc.parallelutils.modules.effectextender.EffectExtender;
 import parallelmc.parallelutils.modules.gamemode4.sunkenTreasure.SunkenTreasure;
@@ -40,7 +41,10 @@ public final class Parallelutils extends JavaPlugin {
 
 	@Override
 	public void onLoad() {
+		registeredModules = new HashMap<>();
 
+		ParallelFlags parallelFlags = new ParallelFlags();
+		parallelFlags.onLoad();
 	}
 
 	@Override
@@ -113,7 +117,6 @@ public final class Parallelutils extends JavaPlugin {
 			e.printStackTrace();
 		}
 
-		registeredModules = new HashMap<>();
 		commands = new Commands();
 
 		addCommand("help", new ParallelHelpCommand());
@@ -146,6 +149,14 @@ public final class Parallelutils extends JavaPlugin {
 		ParallelTrees parallelTrees = new ParallelTrees();
 		parallelTrees.onEnable();
 
+		// TODO: Make this not horrible
+		ParallelModule flags = getModule("ParallelFlags");
+		if (flags instanceof ParallelFlags parallelFlags) {
+			parallelFlags.onEnable();
+		} else {
+			Parallelutils.log(Level.SEVERE, "Unable to enable ParallelFlags!");
+		}
+
 		finishedSetup = true;
 	}
 
@@ -162,6 +173,7 @@ public final class Parallelutils extends JavaPlugin {
 				e.printStackTrace();
 			}
 		});
+		registeredModules = new HashMap<>();
 
 
 		try {
