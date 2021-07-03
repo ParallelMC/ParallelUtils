@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.custommobs.events;
 
+import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
@@ -24,9 +25,9 @@ public class CustomMobsGeneralEntityListener implements Listener {
 		CraftEntity entity = (CraftEntity) event.getEntity();
 		String UUID = entity.getUniqueId().toString();
 
-		if (EntityRegistry.getInstance().containsEntity(UUID)) {
-			Parallelutils.log(Level.INFO, "Removing entity " + UUID + " from world");
+		if (entity.isPersistent() && !entity.isDead()) return; // This is required in 1.17+ because the event was changed
 
+		if (EntityRegistry.getInstance().containsEntity(UUID)) {
 			if (EntityRegistry.getInstance().getEntity(UUID).spawnReason == SpawnReason.SPAWNER) {
 				Location spawner = EntityRegistry.getInstance().getEntity(UUID).spawnOrigin;
 				SpawnerRegistry.getInstance().decrementMobCount(spawner);
@@ -38,6 +39,16 @@ public class CustomMobsGeneralEntityListener implements Listener {
 			}
 
 			EntityRegistry.getInstance().removeEntity(UUID);
+		}
+	}
+
+	@EventHandler
+	public void onEntityAdd(final EntityAddToWorldEvent event) {
+		CraftEntity entity = (CraftEntity) event.getEntity();
+		String UUID = entity.getUniqueId().toString();
+
+		if (EntityRegistry.getInstance().containsEntity(UUID)) {
+			EntityRegistry.getInstance().updateEntity(UUID, entity.getHandle());
 		}
 	}
 }
