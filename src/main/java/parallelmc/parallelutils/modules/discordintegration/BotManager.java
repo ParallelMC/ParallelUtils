@@ -195,6 +195,10 @@ public class BotManager extends ListenerAdapter {
 	 * Shutsdown JDA
 	 */
 	public void disable() {
-		client.shutdownNow();
+		try {
+			client.shutdownNow();
+		} catch (NoClassDefFoundError e) {
+			Parallelutils.log(Level.WARNING, "JDA Class not found! This is a bug with JDA. Handling");
+		}
 	}
 }
