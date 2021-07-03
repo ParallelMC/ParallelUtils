@@ -117,7 +117,8 @@ public class BotManager extends ListenerAdapter {
 
 	/**
 	 * Edits a message sent by ParallelBot
-	 * @param id The id of the message to edit
+	 * @param channel The channel of the message to edit
+	 * @param messageId The id of the message to edit
 	 * @param message The new message
 	 * @return true if the message was edited successfully
 	 */

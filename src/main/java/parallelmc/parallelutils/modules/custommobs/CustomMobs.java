@@ -189,8 +189,6 @@ public class CustomMobs implements ParallelModule {
 
 					String uuid = craftEntity.getUniqueId().toString();
 
-					Parallelutils.log(Level.INFO, "Storing entity " + uuid);
-
 					String type = ep.type;
 
 					if (type == null) {
