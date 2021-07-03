@@ -3,6 +3,7 @@ package parallelmc.parallelutils.modules.parallelitems;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -69,7 +70,8 @@ public class ParallelItems implements ParallelModule {
         ItemStack aoeBonemeal = new ItemStack(Material.BONE_MEAL);
         try{
             ItemMeta boneMeta = aoeBonemeal.getItemMeta();
-            TextComponent name = Component.text("Enhanced Fertilizer", NamedTextColor.DARK_GREEN);
+            TextComponent name = Component.text("Enhanced Fertilizer", NamedTextColor.DARK_GREEN)
+                    .decoration(TextDecoration.ITALIC, false);
             boneMeta.displayName(name);
             ArrayList<Component> lore = new ArrayList<>();
             lore.add(Component.text("Fertilizes crops, saplings,", NamedTextColor.DARK_PURPLE));
@@ -93,7 +95,8 @@ public class ParallelItems implements ParallelModule {
         ItemStack baguette = new ItemStack(Material.BREAD);
         try{
             ItemMeta breada = baguette.getItemMeta();
-            TextComponent name = Component.text("Baguette", NamedTextColor.WHITE);
+            TextComponent name = Component.text("Baguette", NamedTextColor.WHITE)
+                    .decoration(TextDecoration.ITALIC, false);
             breada.displayName(name);
             breada.setCustomModelData(1000000);
 

@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -85,7 +86,8 @@ public class CraftFireWisp {
 
             try {
                 ItemMeta shardMeta = shard.getItemMeta();
-                TextComponent name = Component.text("Unstable Soul Shard", NamedTextColor.GOLD);
+                TextComponent name = Component.text("Unstable Soul Shard", NamedTextColor.GOLD)
+                        .decoration(TextDecoration.ITALIC, false);
                 shardMeta.displayName(name);
                 shardMeta.setCustomModelData(1000002); // Show the custom texture
                 shardMeta.addEnchant(Enchantment.DURABILITY, 1, true); // Make it look enchanted
