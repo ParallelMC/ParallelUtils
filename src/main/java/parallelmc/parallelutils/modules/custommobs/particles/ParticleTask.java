@@ -46,6 +46,7 @@ public class ParticleTask extends BukkitRunnable {
 			ParticleOptions data = ParticleRegistry.getInstance().getParticleOptions(pair.type);
 			if (data != null) {
 				World world = pair.entity.getBukkitEntity().getWorld();
+				Parallelutils.log(Level.WARNING, pair.entity.getBukkitEntity().getLocation().toString());
 				world.spawnParticle(data.particle, pair.entity.getBukkitEntity().getLocation(), data.amount,
 						data.hSpread, data.vSpread, data.hSpread, data.speed);
 			}
