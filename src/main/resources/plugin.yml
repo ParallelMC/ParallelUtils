@@ -5,7 +5,7 @@ api-version: 1.17
 authors: [Jake, Evelyn]
 description: A plugin containing miscellaneous features and changes for play.parallel.ga
 depend: []
-softdepend: [Multiverse-Core]
+softdepend: [Multiverse-Core, FractalForest, WorldGuard, VoteParty, FrozenJoin]
 commands:
   parallelutils:
     description: Get information about the plugin
@@ -53,6 +53,9 @@ permissions:
     default: false
   parallelutils.spawn.spawners.delete:
     description: Gives access to deleting spawners.
+    default: false
+  parallelutils.give:
+    description: Gives access to giving ParallelItems.
     default: false
   parallelutils.test:
     description: Gives access to the test command

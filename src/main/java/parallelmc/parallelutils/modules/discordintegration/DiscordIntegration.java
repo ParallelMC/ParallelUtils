@@ -21,7 +21,7 @@ public class DiscordIntegration implements ParallelModule {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to enable CustomMobs. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
+			Parallelutils.log(Level.SEVERE, "Unable to enable DiscordIntegration. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
 			return;
 		}
 
@@ -40,10 +40,17 @@ public class DiscordIntegration implements ParallelModule {
 
 		String staffChannel = config.getString("staff_channel_id");
 
+		String vpMessageChannel = config.getString("vp_message_channel");
+		String vpMessageId = config.getString("vp_message_id");
+
 		// Register Events for the DiscordIntegration Module
 		try {
 			botManager = new BotManager(token, serverId, staffId);
 			botManager.addChannel("staff", staffChannel);
+			botManager.addChannel("vpMessage", vpMessageChannel);
+
+			botManager.addMessage("vpMessage", vpMessageId);
+
 			DiscordIntegrationEventRegistrar.registerEvents();
 		} catch (LoginException e) {
 			Parallelutils.log(Level.SEVERE, "Unable to initialize BotManager. Is the token valid?");

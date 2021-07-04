@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.discordintegration;
 
+import me.clip.voteparty.plugin.VotePartyPlugin;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -29,7 +30,25 @@ public class DiscordIntegrationEventRegistrar {
 			}
 
 			manager.registerEvents(new AdvancementListener(), plugin);
-			manager.registerEvents(new JoinQuitSuppressorListener(), plugin);
+
+			Plugin frozenJoin = manager.getPlugin("FrozenJoin");
+
+			if (frozenJoin == null) {
+				Parallelutils.log(Level.WARNING, "FrozenJoin not found. Using normal join listener");
+				manager.registerEvents(new JoinQuitSuppressorListener(), plugin);
+			} else {
+				Parallelutils.log(Level.WARNING, "FrozenJoin found. Using FrozenJoin listener");
+				manager.registerEvents(new FrozenJoinQuitSuppressorListener(), plugin);
+			}
+
+			Plugin vp = manager.getPlugin("VoteParty");
+
+			if (vp == null) {
+				Parallelutils.log(Level.WARNING, "VoteParty not found. Skipping integration...");
+			} else {
+				manager.registerEvents(new VotePartyListener(((VotePartyPlugin) vp).getVoteParty()), plugin);
+			}
+
 
 			hasRegistered = true;
 		}
