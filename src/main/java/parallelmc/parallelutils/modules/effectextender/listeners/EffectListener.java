@@ -20,7 +20,6 @@ import java.util.logging.Level;
  */
 public class EffectListener implements Listener {
 
-    // TODO: Make this save across logging off or on and reboots
     public static HashMap<LivingEntity, HashMap<PotionEffectType, Integer>> playerEffects = new HashMap<>();
 
     // could put these in a hashmap but eh

@@ -8,9 +8,9 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.effectextender.commands.ParallelEffectsCommand;
 import parallelmc.parallelutils.modules.effectextender.listeners.EffectListener;
+import parallelmc.parallelutils.modules.effectextender.listeners.JoinLeaveListener;
 
 import java.sql.*;
-import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -19,7 +19,7 @@ import java.util.logging.Level;
 public class EffectExtender implements ParallelModule {
 
     // dont worry about it
-    public static Connection dbConn;
+    private Connection dbConn;
 
     @Override
     public void onEnable() {
@@ -32,12 +32,6 @@ public class EffectExtender implements ParallelModule {
         }
 
         Parallelutils puPlugin = (Parallelutils) plugin;
-
-        manager.registerEvents(new EffectListener(), plugin);
-
-        puPlugin.addCommand("effects", new ParallelEffectsCommand());
-
-        Parallelutils.log(Parallelutils.LOG_LEVEL, "EntityPotionEffectEvent registered successfully.");
 
         dbConn = puPlugin.getDbConn();
 
@@ -58,6 +52,12 @@ public class EffectExtender implements ParallelModule {
             e.printStackTrace();
         }
 
+        manager.registerEvents(new EffectListener(), plugin);
+        manager.registerEvents(new JoinLeaveListener(dbConn), plugin);
+
+        puPlugin.addCommand("effects", new ParallelEffectsCommand());
+
+        Parallelutils.log(Parallelutils.LOG_LEVEL, "EntityPotionEffectEvent registered successfully.");
     }
 
     @Override
@@ -83,6 +83,9 @@ public class EffectExtender implements ParallelModule {
             });
 
             statement.executeBatch();
+
+            dbConn.commit();
+
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
