@@ -1,18 +1,22 @@
 package parallelmc.parallelutils.modules.effectextender.listeners;
 
-import org.bukkit.entity.EvokerFangs;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffectType;
-import parallelmc.parallelutils.modules.effectextender.EffectExtender;
 
 import java.sql.*;
 import java.util.HashMap;
 
 public class JoinLeaveListener implements Listener {
+
+    private final Connection dbConn;
+
+    public JoinLeaveListener(Connection dbConn) {
+        this.dbConn = dbConn;
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -21,7 +25,7 @@ public class JoinLeaveListener implements Listener {
         String uuid = player.getUniqueId().toString();
 
         try {
-            Statement statement = EffectExtender.dbConn.createStatement();
+            Statement statement = dbConn.createStatement();
             statement.setQueryTimeout(10);
             ResultSet result = statement.executeQuery(
                     "select * from PlayerEffects where UUID = '" + uuid + "'");
@@ -39,6 +43,8 @@ public class JoinLeaveListener implements Listener {
                 statement.execute("delete from PlayerEffects where UUID = '" + uuid + "'");
             }
 
+            dbConn.commit();
+
             statement.close();
 
         } catch (SQLException e) {
@@ -54,12 +60,11 @@ public class JoinLeaveListener implements Listener {
         if (!EffectListener.playerEffects.containsKey(player))
             return;
 
-
         try {
             HashMap<PotionEffectType, Integer> effects = EffectListener.playerEffects.get(player);
             String uuid = player.getUniqueId().toString();
             // prepare a batch of sql statements for each effect
-            PreparedStatement statement = EffectExtender.dbConn.prepareStatement("insert into PlayerEffects values (?, ?, ?)");
+            PreparedStatement statement = dbConn.prepareStatement("insert into PlayerEffects values (?, ?, ?)");
             statement.setQueryTimeout(60);
             effects.forEach((effect, maxDuration) -> {
                 // why do I HAVE to handle SQLExceptions
@@ -73,6 +78,7 @@ public class JoinLeaveListener implements Listener {
                 }
             });
             statement.executeBatch();
+            dbConn.commit();
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
