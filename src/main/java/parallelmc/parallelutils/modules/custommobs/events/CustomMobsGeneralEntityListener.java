@@ -2,11 +2,14 @@ package parallelmc.parallelutils.modules.custommobs.events;
 
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
+import net.minecraft.world.entity.Entity;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.custommobs.CustomMobs;
+import parallelmc.parallelutils.modules.custommobs.nmsmobs.EntityData;
 import parallelmc.parallelutils.modules.custommobs.nmsmobs.SpawnReason;
 import parallelmc.parallelutils.modules.custommobs.registry.EntityRegistry;
 import parallelmc.parallelutils.modules.custommobs.registry.SpawnerRegistry;
@@ -48,6 +51,11 @@ public class CustomMobsGeneralEntityListener implements Listener {
 		String UUID = entity.getUniqueId().toString();
 
 		if (EntityRegistry.getInstance().containsEntity(UUID)) {
+			EntityData entityData = EntityRegistry.getInstance().getEntity(UUID);
+			if (entityData.entity == null) {
+				CustomMobs.setupEntity(entityData.type, entity);
+			}
+
 			EntityRegistry.getInstance().updateEntity(UUID, entity.getHandle());
 		}
 	}
