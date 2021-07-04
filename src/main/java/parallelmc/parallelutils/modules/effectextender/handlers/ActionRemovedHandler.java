@@ -4,7 +4,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import parallelmc.parallelutils.modules.effectextender.EffectListener;
+import parallelmc.parallelutils.modules.effectextender.listeners.EffectListener;
 
 import java.util.HashMap;
 
