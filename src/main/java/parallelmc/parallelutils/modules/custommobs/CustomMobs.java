@@ -38,7 +38,7 @@ import java.util.logging.Level;
 
 public class CustomMobs implements ParallelModule {
 
-	private Parallelutils puPlugin;
+	private static Parallelutils puPlugin;
 	private Connection dbConn;
 
 	private boolean finishedSetup = false;
@@ -155,7 +155,7 @@ public class CustomMobs implements ParallelModule {
 				removeStatement.execute("TRUNCATE TABLE WorldMobs");
 				removeStatement.execute("TRUNCATE TABLE Spawners");
 				dbConn.commit();
-			} catch (SQLException e) {
+			} catch (SQLException | NullPointerException e) {
 				Parallelutils.log(Level.WARNING, "Could not connect to DB");
 				Parallelutils.log(Level.WARNING, "Trying again...");
 
@@ -188,8 +188,6 @@ public class CustomMobs implements ParallelModule {
 					CraftEntity craftEntity = e.getBukkitEntity();
 
 					String uuid = craftEntity.getUniqueId().toString();
-
-					Parallelutils.log(Level.INFO, "Storing entity " + uuid);
 
 					String type = ep.type;
 
@@ -280,6 +278,7 @@ public class CustomMobs implements ParallelModule {
 
 	/**
 	 * A helper method to parse the ResultSet from SQL and register the spawner data
+	 *
 	 * @param result The ResultSet to parse
 	 * @throws SQLException if a database access error occurs or this method is called on a closed result set
 	 */
@@ -307,6 +306,7 @@ public class CustomMobs implements ParallelModule {
 
 	/**
 	 * A helper method to parse the ResultSet from SQL and register the mob data
+	 *
 	 * @param result The ResultSet to parse
 	 * @throws SQLException if a database access error occurs or this method is called on a closed result set
 	 */
@@ -351,42 +351,43 @@ public class CustomMobs implements ParallelModule {
 				location.getChunk().load();
 			}
 
+			// This may all be useless in 1.17
 			CraftEntity mob = (CraftEntity) Bukkit.getEntity(UUID.fromString(uuid));
 
-			String entityType = "";
 			EntityInsentient setupEntity = null;
 
 			if (mob != null) {
-				switch (type) {
-					case "wisp" -> {
-						entityType = "wisp";
-						setupEntity = EntityWisp.setup(puPlugin, (CraftZombie) mob);
-					}
-					case "fire_wisp" -> {
-						entityType = "fire_wisp";
-						setupEntity = EntityFireWisp.setup(puPlugin, (CraftZombie) mob);
-					}
-					default -> Parallelutils.log(Level.WARNING, "Unknown entity type \"" + type + "\"");
-				}
-			} else {
-				Parallelutils.log(Level.WARNING, "Mob is null! Report this to the devs! Expected UUID: " + uuid);
+				setupEntity = setupEntity(type, mob);
 			}
 
-			if (setupEntity != null) {
-				if (spawnerLocation != null) {
-					EntityRegistry.getInstance().registerEntity(uuid, entityType, setupEntity, spawnReason, spawnerLocation);
-					SpawnerRegistry.getInstance().incrementMobCount(spawnerLocation);
-					if (SpawnerRegistry.getInstance().getSpawner(spawnerLocation).hasLeash()) {
-						SpawnerRegistry.getInstance().addLeashedEntity(spawnerLocation, uuid);
-						if (SpawnerRegistry.getInstance().getLeashTaskID(spawnerLocation) == null) {
-							BukkitTask task = new LeashTask(spawnerLocation).runTaskTimer(puPlugin, 0, 10);
-							SpawnerRegistry.getInstance().addLeashTaskID(spawnerLocation, task.getTaskId());
-						}
+
+			if (spawnerLocation != null) {
+				EntityRegistry.getInstance().registerEntity(uuid, type, setupEntity, spawnReason, spawnerLocation);
+				SpawnerRegistry.getInstance().incrementMobCount(spawnerLocation);
+				if (SpawnerRegistry.getInstance().getSpawner(spawnerLocation).hasLeash()) {
+					SpawnerRegistry.getInstance().addLeashedEntity(spawnerLocation, uuid);
+					if (SpawnerRegistry.getInstance().getLeashTaskID(spawnerLocation) == null) {
+						BukkitTask task = new LeashTask(spawnerLocation).runTaskTimer(puPlugin, 0, 10);
+						SpawnerRegistry.getInstance().addLeashTaskID(spawnerLocation, task.getTaskId());
 					}
-				} else {
-					EntityRegistry.getInstance().registerEntity(uuid, entityType, setupEntity, spawnReason);
 				}
+			} else {
+				EntityRegistry.getInstance().registerEntity(uuid, type, setupEntity, spawnReason);
 			}
+
 		}
+	}
+
+	public static EntityInsentient setupEntity(String type, CraftEntity mob) {
+		switch (type) {
+			case "wisp" -> {
+				return EntityWisp.setup(puPlugin, (CraftZombie) mob);
+			}
+			case "fire_wisp" -> {
+				return EntityFireWisp.setup(puPlugin, (CraftZombie) mob);
+			}
+			default -> Parallelutils.log(Level.WARNING, "Unknown entity type \"" + type + "\"");
+		}
+		return null;
 	}
 }
