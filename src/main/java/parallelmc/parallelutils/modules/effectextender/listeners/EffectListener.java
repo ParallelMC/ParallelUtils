@@ -1,4 +1,4 @@
-package parallelmc.parallelutils.modules.effectextender;
+package parallelmc.parallelutils.modules.effectextender.listeners;
 
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;

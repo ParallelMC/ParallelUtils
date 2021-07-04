@@ -7,7 +7,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
-import parallelmc.parallelutils.modules.effectextender.EffectListener;
+import parallelmc.parallelutils.modules.effectextender.listeners.EffectListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;

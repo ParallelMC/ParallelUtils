@@ -7,13 +7,19 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.effectextender.commands.ParallelEffectsCommand;
+import parallelmc.parallelutils.modules.effectextender.listeners.EffectListener;
 
+import java.sql.*;
+import java.util.UUID;
 import java.util.logging.Level;
 
 /**
  * A module to allow stacking of potions
  */
 public class EffectExtender implements ParallelModule {
+
+    // dont worry about it
+    public static Connection dbConn;
 
     @Override
     public void onEnable() {
@@ -32,9 +38,55 @@ public class EffectExtender implements ParallelModule {
         puPlugin.addCommand("effects", new ParallelEffectsCommand());
 
         Parallelutils.log(Parallelutils.LOG_LEVEL, "EntityPotionEffectEvent registered successfully.");
+
+        dbConn = puPlugin.getDbConn();
+
+        // create effects table if it doesn't exist
+        try {
+            Statement statement = dbConn.createStatement();
+            statement.setQueryTimeout(15);
+            statement.execute("""
+                            create table if not exists PlayerEffects
+                            (
+                                UUID            varchar(36) not null,
+                                EffectType      varchar(20) not null,
+                                MaxDuration     int         not null
+                            );""");
+            dbConn.commit();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
-    public void onDisable() { }
+    public void onDisable() {
+        // move each player's effects from the hashmap into the db
+        try {
+            // prepare a statement to send in bulk
+            PreparedStatement statement = dbConn.prepareStatement("insert into PlayerEffects values (?, ?, ?)");
+            statement.setQueryTimeout(60);
+            // double foreach lets goooo
+            EffectListener.playerEffects.forEach((player, effects) -> {
+                effects.forEach((effect, maxDuration) -> {
+                    try {
+                        String uuid = player.getUniqueId().toString();
+                        statement.setString(1, uuid);
+                        statement.setString(2, effect.getName());
+                        statement.setInt(3, maxDuration);
+                        statement.addBatch();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+            });
+
+            statement.executeBatch();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
