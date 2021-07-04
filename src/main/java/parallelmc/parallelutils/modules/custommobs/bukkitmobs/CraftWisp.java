@@ -3,6 +3,7 @@ package parallelmc.parallelutils.modules.custommobs.bukkitmobs;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -83,7 +84,8 @@ public class CraftWisp {
 
 			try {
 				ItemMeta shardMeta = shard.getItemMeta();
-				TextComponent name = Component.text("Soul Shard", NamedTextColor.WHITE);
+				TextComponent name = Component.text("Soul Shard", NamedTextColor.WHITE)
+						.decoration(TextDecoration.ITALIC, false);
 				shardMeta.displayName(name);
 				shardMeta.setCustomModelData(1000001); // Show custom texture
 				shardMeta.addEnchant(Enchantment.DURABILITY, 1, true); // Make it look enchanted

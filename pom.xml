@@ -6,7 +6,7 @@
 
     <groupId>parallelmc</groupId>
     <artifactId>parallelutils</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.2</version>
     <packaging>jar</packaging>
 
     <name>Parallelutils</name>
@@ -16,6 +16,7 @@
         <maven.compiler.source>16</maven.compiler.source>
         <maven.compiler.target>16</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <repositories>
@@ -35,6 +36,15 @@
             <id>jcenter</id>
             <name>jcenter-bintray</name>
             <url>https://jcenter.bintray.com</url>
+        </repository>
+        <repository>
+            <id>sk89q-repo</id>
+            <url>https://maven.enginehub.org/repo/</url>
+        </repository>
+        <repository>
+            <id>dv8tion</id>
+            <name>m2-dv8tion</name>
+            <url>https://m2.dv8tion.net/releases</url>
         </repository>
     </repositories>
     <pluginRepositories>
@@ -114,13 +124,40 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>4.2.0_242</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>club.minnced</groupId>
-                    <artifactId>opus-java</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>4.3.0_277</version>
+            <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.eclipsekingdom</groupId>
+            <artifactId>FractalForest</artifactId>
+            <version>1.12</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/FractalForest-1.12.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>VoteParty</artifactId>
+            <version>2.26</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/VoteParty-2.26.jar</systemPath>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sk89q.worldguard</groupId>
+            <artifactId>worldguard-bukkit</artifactId>
+            <version>7.0.5</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.frcsty</groupId>
+            <artifactId>FrozenJoin</artifactId>
+            <version>2.2.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/libs/FrozenJoin-2.2.0.jar</systemPath>
+        </dependency>
+
     </dependencies>
 </project>

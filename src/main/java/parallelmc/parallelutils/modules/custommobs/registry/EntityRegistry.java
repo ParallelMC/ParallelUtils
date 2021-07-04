@@ -109,12 +109,26 @@ public class EntityRegistry {
 	}
 
 	/**
+	 * Updates an entity with a new entity object
+	 * @param uuid The uuid of the entity to update
+	 * @param entity The new Entity object of the entity
+	 * @return True if the entity was updated successfully. False if the entity does not exist or it otherwise failed to update
+	 */
+	public boolean updateEntity(String uuid, Entity entity) {
+		EntityData entityData = entities.get(uuid);
+		if (entityData == null) return false;
+
+		entityData.entity = entity;
+
+		return true;
+	}
+
+	/**
 	 * Checks if the given entity is currently registered
 	 * @param uuid The UUID of the entity to check
 	 * @return Returns true if the given entity is in the registry
 	 */
 	public boolean containsEntity(String uuid) {
-		Parallelutils.log(Level.INFO, "Does contain " + uuid);
 		return entities.containsKey(uuid);
 	}
 }

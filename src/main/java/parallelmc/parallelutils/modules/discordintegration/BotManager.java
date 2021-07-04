@@ -27,6 +27,7 @@ public class BotManager extends ListenerAdapter {
 
 	private final JDA client;
 	private final HashMap<String, String> channels;
+	private final HashMap<String, String> messages;
 
 	private final int NUM_TRIES = 5;
 
@@ -52,6 +53,7 @@ public class BotManager extends ListenerAdapter {
 			}
 		}).build();
 		channels = new HashMap<>();
+		messages = new HashMap<>();
 
 		this.serverId = serverId.strip().toLowerCase();
 		this.staffId = staffId;
@@ -84,6 +86,15 @@ public class BotManager extends ListenerAdapter {
 	}
 
 	/**
+	 * Adds a message and ID pair to the map of messages. This is used to assign useful names to messages in code
+	 * @param name The assigned name for the message id pair
+	 * @param id The id of the message
+	 */
+	public void addMessage(String name, String id) {
+		messages.put(name, id);
+	}
+
+	/**
 	 * Sends a message in the specified channel
 	 *
 	 * @param channel The shortname of the channel to send a message to
@@ -104,6 +115,30 @@ public class BotManager extends ListenerAdapter {
 		return success; // Yes this is dumb, no I'm not changing it. It's an artifact of old code
 	}
 
+	/**
+	 * Edits a message sent by ParallelBot
+	 * @param channel The channel of the message to edit
+	 * @param messageId The id of the message to edit
+	 * @param message The new message
+	 * @return true if the message was edited successfully
+	 */
+	public boolean editMessage(String channel, String messageId, String message) {
+		Parallelutils.log(Level.INFO, "Attempting to edit message");
+
+		boolean success = false;
+		if (ready) {
+			TextChannel textChannel = client.getTextChannelById(channels.get(channel));
+			if (textChannel != null) {
+				textChannel.editMessageById(messages.get(messageId), message).queue();
+				success = true;
+			} else {
+				Parallelutils.log(Level.WARNING, "Unable to find text channel");
+			}
+		}
+
+		return success;
+	}
+
 	@Override
 	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
 		if (event.isFromType(ChannelType.TEXT)) {
@@ -113,7 +148,7 @@ public class BotManager extends ListenerAdapter {
 			if (event.getGuild().getId().strip().toLowerCase().equals(serverId)) {
 				// Is this message a command?
 				String message = event.getMessage().getContentStripped();
-				if (message.charAt(0) == PREFIX) {
+				if (message.length() > 0 && message.charAt(0) == PREFIX) {
 					String command = message.substring(1);
 
 					// Can this member actually execute mod commands?
@@ -160,6 +195,10 @@ public class BotManager extends ListenerAdapter {
 	 * Shutsdown JDA
 	 */
 	public void disable() {
-		client.shutdownNow();
+		try {
+			client.shutdownNow();
+		} catch (NoClassDefFoundError e) {
+			Parallelutils.log(Level.WARNING, "JDA Class not found! This is a bug with JDA. Handling");
+		}
 	}
 }
