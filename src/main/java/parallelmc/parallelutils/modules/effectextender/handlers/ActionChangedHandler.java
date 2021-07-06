@@ -19,7 +19,10 @@ public class ActionChangedHandler implements ActionHandler {
 
             if (newEffect == null || oldEffect == null) return;
 
-            int curMax = maxes.get(newEffect.getType());
+            PotionEffectType type = newEffect.getType();
+            if (!maxes.containsKey(type)) return;
+
+            int curMax = maxes.get(type);
             int newDuration = newEffect.getDuration();
             int oldDuration = oldEffect.getDuration();
 
