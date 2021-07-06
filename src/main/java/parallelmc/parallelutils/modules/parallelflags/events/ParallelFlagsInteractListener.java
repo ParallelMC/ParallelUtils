@@ -7,7 +7,10 @@ import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.Flag;
+import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.flags.StringFlag;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
 import org.bukkit.Material;
@@ -52,6 +55,18 @@ public class ParallelFlagsInteractListener implements Listener {
 				StateFlag.State state = set.queryState(localPlayer, flag);
 
 				if (state == StateFlag.State.DENY) {
+					Flag<String> denyFlag = Flags.DENY_MESSAGE;
+
+					if (denyFlag instanceof StringFlag strFlag) {
+						String message = set.queryValue(localPlayer, strFlag);
+
+						if (message != null) {
+							event.getPlayer().sendMessage(message);
+						}
+					} else {
+						Parallelutils.log(Level.WARNING, "WorldGuard updated! DENY_MESSAGE no longer StringFlag");
+					}
+
 					Parallelutils.log(Level.INFO, "Denied");
 					event.setUseInteractedBlock(Event.Result.DENY);
 				}

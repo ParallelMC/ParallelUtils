@@ -100,7 +100,7 @@ public final class Parallelutils extends JavaPlugin {
 			address = config.getString("sql.address");
 			database = config.getString("sql.database");
 
-			jdbc = "jdbc:mysql://" + address + "/" + database;
+			jdbc = "jdbc:mysql://" + address + "/" + database + ";autoReconnect=true";
 		}
 
 		username = config.getString("sql.username");
@@ -131,30 +131,65 @@ public final class Parallelutils extends JavaPlugin {
 		// Setup modules
 
 		// TODO: Eventually break this out into multiple plugins. This is meant to imitate that
-		CustomMobs customMobs = new CustomMobs();
-		customMobs.onEnable();
+		try {
+			CustomMobs customMobs = new CustomMobs();
+			customMobs.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module CustomMobs!");
+		}
 
 		// This will eventually be a separate config file
-		DiscordIntegration discordIntegration = new DiscordIntegration();
-		discordIntegration.onEnable();
+		try {
+			DiscordIntegration discordIntegration = new DiscordIntegration();
+			discordIntegration.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module DiscordIntegration!");
+			e.printStackTrace();
+		}
 
-		ParallelItems parallelItems = new ParallelItems();
-		parallelItems.onEnable();
-		SunkenTreasure sunkenTreasure = new SunkenTreasure();
-		sunkenTreasure.onEnable();
+		try {
+			ParallelItems parallelItems = new ParallelItems();
+			parallelItems.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelItems!");
+			e.printStackTrace();
+		}
 
-		EffectExtender effectExtender = new EffectExtender();
-		effectExtender.onEnable();
+		try {
+			SunkenTreasure sunkenTreasure = new SunkenTreasure();
+			sunkenTreasure.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module SunkenTreasure!");
+			e.printStackTrace();
+		}
 
-		ParallelTrees parallelTrees = new ParallelTrees();
-		parallelTrees.onEnable();
+		try {
+			EffectExtender effectExtender = new EffectExtender();
+			effectExtender.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module EffectsExtender!");
+			e.printStackTrace();
+		}
+
+		try {
+			ParallelTrees parallelTrees = new ParallelTrees();
+			parallelTrees.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelTrees!");
+			e.printStackTrace();
+		}
 
 		// TODO: Make this not horrible
-		ParallelModule flags = getModule("ParallelFlags");
-		if (flags instanceof ParallelFlags parallelFlags) {
-			parallelFlags.onEnable();
-		} else {
-			Parallelutils.log(Level.SEVERE, "Unable to enable ParallelFlags!");
+		try {
+			ParallelModule flags = getModule("ParallelFlags");
+			if (flags instanceof ParallelFlags parallelFlags) {
+				parallelFlags.onEnable();
+			} else {
+				Parallelutils.log(Level.SEVERE, "Unable to enable ParallelFlags!");
+			}
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelFlags!");
+			e.printStackTrace();
 		}
 
 		finishedSetup = true;
