@@ -7,6 +7,7 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelflags.events.ParallelFlagsInteractListener;
+import parallelmc.parallelutils.modules.parallelflags.events.ParallelFlagsPlaceListener;
 
 import java.util.logging.Level;
 
@@ -46,6 +47,14 @@ public class ParallelFlags implements ParallelModule {
 			if (!registry.addStateflag("allow-trapdoors", true)) {
 				Parallelutils.log(Level.WARNING, "Unable to create trapdoors flag. Will not use");
 			}
+
+			if (manager.getPlugin("placeholderapi") != null) {
+				if (!registry.addIntegerFlag("tnt-disallow-time")) {
+					Parallelutils.log(Level.WARNING, "Unable to create tnt-disallow-time flag. Will not use");
+				}
+			} else {
+				Parallelutils.log(Level.WARNING, "Placeholderapi does not exist. Will not use tnt-disallow-time");
+			}
 		} catch (NoClassDefFoundError e) {
 			Parallelutils.log(Level.SEVERE, "Unable to load WorldGuard! Something is wrong!");
 		}
@@ -70,6 +79,7 @@ public class ParallelFlags implements ParallelModule {
 		}
 
 		manager.registerEvents(new ParallelFlagsInteractListener(), plugin);
+		manager.registerEvents(new ParallelFlagsPlaceListener(), plugin);
 	}
 
 	@Override
