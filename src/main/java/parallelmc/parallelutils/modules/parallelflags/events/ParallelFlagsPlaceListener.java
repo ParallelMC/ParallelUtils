@@ -11,9 +11,12 @@ import com.sk89q.worldguard.protection.flags.IntegerFlag;
 import com.sk89q.worldguard.protection.flags.StringFlag;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.block.Block;
+import org.bukkit.block.Skull;
 import org.bukkit.block.data.type.TNT;
+import org.bukkit.entity.WitherSkull;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -49,6 +52,26 @@ public class ParallelFlagsPlaceListener implements Listener {
 		if (tntFlag != null) {
 			if (block.getBlockData() instanceof TNT) {
 				Integer val = set.queryValue(localPlayer, tntFlag); // In hours
+
+				if (val != null) {
+					int playtime = event.getPlayer().getStatistic(Statistic.PLAY_ONE_MINUTE); // In ticks
+
+					int playtimeHours = (int) (playtime / (20.0 * 60.0 * 60.0));
+
+					if (val > playtimeHours) {
+						// Deny interact
+						denyEvent(event, set, localPlayer, "place that");
+					}
+				}
+			}
+		}
+
+		// wither-skull-disallow-time
+		IntegerFlag witherFlag = registry.getIntegerFlag("wither-skull-disallow-time");
+
+		if (witherFlag != null) {
+			if (block.getType().equals(Material.WITHER_SKELETON_SKULL)) {
+				Integer val = set.queryValue(localPlayer, witherFlag); // In hours
 
 				if (val != null) {
 					int playtime = event.getPlayer().getStatistic(Statistic.PLAY_ONE_MINUTE); // In ticks
