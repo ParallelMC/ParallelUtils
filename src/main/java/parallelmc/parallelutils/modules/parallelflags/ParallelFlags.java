@@ -48,12 +48,12 @@ public class ParallelFlags implements ParallelModule {
 				Parallelutils.log(Level.WARNING, "Unable to create trapdoors flag. Will not use");
 			}
 
-			if (manager.getPlugin("placeholderapi") != null) {
-				if (!registry.addIntegerFlag("tnt-disallow-time")) {
-					Parallelutils.log(Level.WARNING, "Unable to create tnt-disallow-time flag. Will not use");
-				}
-			} else {
-				Parallelutils.log(Level.WARNING, "Placeholderapi does not exist. Will not use tnt-disallow-time");
+			if (!registry.addIntegerFlag("tnt-disallow-time")) {
+				Parallelutils.log(Level.WARNING, "Unable to create tnt-disallow-time flag. Will not use");
+			}
+
+			if (!registry.addIntegerFlag("wither-skull-disallow-time")) {
+				Parallelutils.log(Level.WARNING, "Unable to create wither-skull-disallow-time flag. Will not use");
 			}
 		} catch (NoClassDefFoundError e) {
 			Parallelutils.log(Level.SEVERE, "Unable to load WorldGuard! Something is wrong!");
