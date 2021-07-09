@@ -159,4 +159,32 @@ public class PlayerInteractListener implements Listener {
             }
         }
     }
+
+    // Looting shears
+    @EventHandler(priority = EventPriority.HIGH)
+    public void playerShearEvent(PlayerShearEntityEvent event) {
+        if (event.getEntity() instanceof Sheep) {
+            // check for looting level
+            Player player = event.getPlayer();
+            if (player.getItemInHand().getType() == Material.SHEARS) {
+                if (player.getItemInHand().getItemMeta().hasEnchant(Enchantment.LOOTING)) {
+                    int level = player.getItemInHand().getItemMeta().getEnchantLevel(Enchantment.LOOTING);
+                    event.setCancelled(true);
+                    //Generate random number of wool to drop based on looting level
+                    Random random = new Random();
+                    int min = 1;
+                    int max = 3 + level;
+                    int numWool = random.nextInt((max-min)+1) + min;
+
+                    // Make sheep drop their respective color of wool
+                    Sheep sheep  = (Sheep) event.getEntity();
+                    Dyecolor woolColor = sheep.getColor();
+                    Material wool = Material.getMaterial(woolColor.toString() + "_WOOL");
+                    if (wool != null) {
+                        event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), new ItemStack(wool, numWool));
+                    }
+                }
+            }
+        }
+    }
 }
