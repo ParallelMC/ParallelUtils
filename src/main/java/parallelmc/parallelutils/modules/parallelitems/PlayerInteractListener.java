@@ -6,13 +6,17 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Sapling;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -21,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
 
+import java.util.Random;
 import java.util.logging.Level;
 
 /**
@@ -165,22 +170,29 @@ public class PlayerInteractListener implements Listener {
     public void playerShearEvent(PlayerShearEntityEvent event) {
         if (event.getEntity() instanceof Sheep) {
             // check for looting level
-            Player player = event.getPlayer();
-            if (player.getItemInHand().getType() == Material.SHEARS) {
-                if (player.getItemInHand().getItemMeta().hasEnchant(Enchantment.LOOTING)) {
-                    int level = player.getItemInHand().getItemMeta().getEnchantLevel(Enchantment.LOOTING);
-                    event.setCancelled(true);
-                    //Generate random number of wool to drop based on looting level
+            ItemStack shears = event.getItem();
+
+            if (shears.getType() == Material.SHEARS) {
+                if (shears.getItemMeta().hasEnchant(Enchantment.LOOT_BONUS_MOBS)) {
+                    int level = shears.getItemMeta().getEnchantLevel(Enchantment.LOOT_BONUS_MOBS);
+
+                    // Generate random number of wool to drop based on looting level
                     Random random = new Random();
-                    int min = 1;
                     int max = 3 + level;
-                    int numWool = random.nextInt((max-min)+1) + min;
+                    int numWool = random.nextInt((max-level)+1) + level;
 
                     // Make sheep drop their respective color of wool
                     Sheep sheep  = (Sheep) event.getEntity();
-                    Dyecolor woolColor = sheep.getColor();
-                    Material wool = Material.getMaterial(woolColor.toString() + "_WOOL");
+                    DyeColor woolColor = sheep.getColor();
+                    if (woolColor == null) {
+                        woolColor = DyeColor.WHITE;
+                    }
+
+                    Material wool = Material.getMaterial(woolColor + "_" + "WOOL");
+
                     if (wool != null) {
+                        event.setCancelled(true);
+                        sheep.setSheared(true);
                         event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), new ItemStack(wool, numWool));
                     }
                 }
