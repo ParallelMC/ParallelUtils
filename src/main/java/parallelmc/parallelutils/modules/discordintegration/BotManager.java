@@ -178,6 +178,8 @@ public class BotManager extends ListenerAdapter {
 	 */
 	private void executeCommand(@NotNull MessageReceivedEvent event, String command, String[] args) {
 		if (command.strip().equals("vanish")) {
+			if (args.length <= 0) return;
+
 			String target = args[0].strip();
 			synchronized (JoinQuitSuppressorListener.hiddenUsersLock) {
 				if (!JoinQuitSuppressorListener.hiddenUsers.contains(target)) {

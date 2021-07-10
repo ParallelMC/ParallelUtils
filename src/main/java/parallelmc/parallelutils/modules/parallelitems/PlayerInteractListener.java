@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.parallelitems;
 
+import net.minecraft.world.item.ItemShears;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -19,6 +20,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.Mushroom;
 import org.bukkit.persistence.PersistentDataType;
@@ -170,7 +172,7 @@ public class PlayerInteractListener implements Listener {
     // Looting shears
     @EventHandler(priority = EventPriority.HIGH)
     public void playerShearEvent(PlayerShearEntityEvent event) {
-        if (event.getEntity() instanceof Sheep) {
+        if (event.getEntity() instanceof Sheep sheep) {
             // check for looting level
             ItemStack shears = event.getItem();
             if (shears.getType() == Material.SHEARS) {
@@ -183,7 +185,6 @@ public class PlayerInteractListener implements Listener {
                     int numWool = random.nextInt((max-level)+1) + level;
 
                     // Make sheep drop their respective color of wool
-                    Sheep sheep  = (Sheep) event.getEntity();
                     DyeColor woolColor = sheep.getColor();
                     if (woolColor == null) {
                         woolColor = DyeColor.WHITE;
@@ -196,8 +197,31 @@ public class PlayerInteractListener implements Listener {
                         event.setCancelled(true);
                         sheep.setSheared(true);
                         event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), new ItemStack(wool, numWool));
+
                         Player player = event.getPlayer();
-                        player.playSound(player.getLocation(),Sound.ENTITY_SHEEP_SHEAR, 1f, 1f);
+                        player.playSound(sheep.getLocation(),Sound.ENTITY_SHEEP_SHEAR, 1f, 1f);
+
+                        // TODO: Implement unbreaking here
+
+                        if (!player.getGameMode().equals(GameMode.CREATIVE)) {
+
+                            ItemStack shearsInventory = player.getInventory().getItem(event.getHand());
+
+                            if (shearsInventory != null) {
+                                ItemMeta shearsMeta = shearsInventory.getItemMeta();
+
+                                if (shearsMeta instanceof Damageable shearsDamageable) {
+                                    int newDamage = shearsDamageable.getDamage() + 1;
+                                    shearsDamageable.setDamage(newDamage);
+
+                                    if (shearsDamageable.getDamage() < 0) {
+                                        shearsInventory.setAmount(0);
+                                    } else {
+                                        shearsInventory.setItemMeta(shearsMeta);
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -211,11 +235,17 @@ public class PlayerInteractListener implements Listener {
                     // make mooshroom drop the extra 1-3 respective type of mushroom
                     MushroomCow mooshroom = (MushroomCow) event.getEntity();
                     MushroomCow.Variant variant = mooshroom.getVariant();
+
+                    Material itemMat;
+
                     if (variant == MushroomCow.Variant.RED) {
-                        event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), new ItemStack(Material.getMaterial("RED_MUSHROOM"), level));
-                    } else if (variant == MushroomCow.Variant.BROWN) {
-                        event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), new ItemStack(Material.getMaterial("BROWN_MUSHROOM"), level));
+                        itemMat = Material.RED_MUSHROOM;
+                    } else  {
+                        itemMat = Material.BROWN_MUSHROOM;
                     }
+
+                    event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(),
+                            new ItemStack(itemMat, level));
                 }
             }
         }
