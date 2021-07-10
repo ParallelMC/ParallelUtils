@@ -8,6 +8,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Sapling;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.MushroomCow;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
@@ -19,6 +20,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.material.Mushroom;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -171,7 +173,6 @@ public class PlayerInteractListener implements Listener {
         if (event.getEntity() instanceof Sheep) {
             // check for looting level
             ItemStack shears = event.getItem();
-
             if (shears.getType() == Material.SHEARS) {
                 if (shears.getItemMeta().hasEnchant(Enchantment.LOOT_BONUS_MOBS)) {
                     int level = shears.getItemMeta().getEnchantLevel(Enchantment.LOOT_BONUS_MOBS);
@@ -190,10 +191,30 @@ public class PlayerInteractListener implements Listener {
 
                     Material wool = Material.getMaterial(woolColor + "_" + "WOOL");
 
+                    //Reset the old shearing event and execute our new one
                     if (wool != null) {
                         event.setCancelled(true);
                         sheep.setSheared(true);
                         event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), new ItemStack(wool, numWool));
+                        Player player = event.getPlayer();
+                        player.playSound(player.getLocation(),Sound.ENTITY_SHEEP_SHEAR, 1f, 1f);
+                    }
+                }
+            }
+        } else if (event.getEntity() instanceof MushroomCow) {
+            // check for looting level
+            ItemStack shears = event.getItem();
+            if (shears.getType() == Material.SHEARS) {
+                if (shears.getItemMeta().hasEnchant(Enchantment.LOOT_BONUS_MOBS)) {
+                    int level = shears.getItemMeta().getEnchantLevel(Enchantment.LOOT_BONUS_MOBS);
+
+                    // make mooshroom drop the extra 1-3 respective type of mushroom
+                    MushroomCow mooshroom = (MushroomCow) event.getEntity();
+                    MushroomCow.Variant variant = mooshroom.getVariant();
+                    if (variant == MushroomCow.Variant.RED) {
+                        event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), new ItemStack(Material.getMaterial("RED_MUSHROOM"), level));
+                    } else if (variant == MushroomCow.Variant.BROWN) {
+                        event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), new ItemStack(Material.getMaterial("BROWN_MUSHROOM"), level));
                     }
                 }
             }
