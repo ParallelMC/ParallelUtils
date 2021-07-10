@@ -43,10 +43,10 @@ public class EntityFireWisp extends EntityZombie {
         //clearing Zombie goals
         CustomEntityHelper.clearGoals(zombie);
 
-        zombie.bO.a(0, new PathfinderGoalMeleeAttack(zombie, 1.0, false));
-        zombie.bO.a(1, new PathfinderGoalRandomStroll(zombie, 1.0));
+        zombie.bP.a(0, new PathfinderGoalMeleeAttack(zombie, 1.0, false));
+        zombie.bP.a(1, new PathfinderGoalRandomStroll(zombie, 1.0));
 
-        zombie.bP.a(0, new PathfinderGoalNearestAttackableTarget<>(zombie,
+        zombie.bQ.a(0, new PathfinderGoalNearestAttackableTarget<>(zombie,
                 EntityPlayer.class, true));
     }
 

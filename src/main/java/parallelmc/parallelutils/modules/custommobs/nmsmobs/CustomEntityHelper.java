@@ -2,6 +2,7 @@ package parallelmc.parallelutils.modules.custommobs.nmsmobs;
 
 import net.minecraft.world.entity.EntityInsentient;
 import net.minecraft.world.entity.ai.goal.PathfinderGoalSelector;
+import net.minecraft.world.entity.ai.navigation.NavigationAbstract;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -17,13 +18,14 @@ public class CustomEntityHelper {
 	 * @param entity The entity to clear the pathfinding goals of
 	 */
 	public static void clearGoals(EntityInsentient entity) {
-		Map goalC = (Map) getPrivateField("c", PathfinderGoalSelector.class, entity.bO);
+
+		Map goalC = (Map) getPrivateField("c", PathfinderGoalSelector.class, entity.bP);
 		goalC.clear();
-		Set goalD = (Set) getPrivateField("d", PathfinderGoalSelector.class, entity.bO);
+		Set goalD = (Set) getPrivateField("d", PathfinderGoalSelector.class, entity.bP);
 		goalD.clear();
-		Map targetC = (Map) getPrivateField("c", PathfinderGoalSelector.class, entity.bP);
+		Map targetC = (Map) getPrivateField("c", PathfinderGoalSelector.class, entity.bQ);
 		targetC.clear();
-		Set targetD = (Set) getPrivateField("d", PathfinderGoalSelector.class, entity.bP);
+		Set targetD = (Set) getPrivateField("d", PathfinderGoalSelector.class, entity.bQ);
 		targetD.clear();
 	}
 
