@@ -8,6 +8,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.*;
 import com.sk89q.worldguard.protection.regions.RegionContainer;
 import com.sk89q.worldguard.protection.regions.RegionQuery;
+import org.bukkit.Material;
 import org.bukkit.Statistic;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.TNT;
@@ -17,6 +18,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelflags.CustomFlagRegistry;
 
@@ -29,15 +31,22 @@ public class ParallelFlagsInteractListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Block block = event.getClickedBlock();
+		ItemStack item = event.getItem();
 
-		if (block == null) return;
+		if (block == null && item == null) return;
 
 		if (container == null) {
 			container = WorldGuard.getInstance().getPlatform().getRegionContainer();
 		}
 
 		RegionQuery query = container.createQuery();
-		ApplicableRegionSet set = query.getApplicableRegions(BukkitAdapter.adapt(block.getLocation()));
+		ApplicableRegionSet set;
+		if(block != null) {
+			set = query.getApplicableRegions(BukkitAdapter.adapt(block.getLocation()));
+		}
+		else{
+			set = query.getApplicableRegions(BukkitAdapter.adapt(event.getPlayer().getLocation()));
+		}
 		if (set.isVirtual()) return;
 
 		LocalPlayer localPlayer = WorldGuardPlugin.inst().wrapPlayer(event.getPlayer());
@@ -49,7 +58,7 @@ public class ParallelFlagsInteractListener implements Listener {
 
 		if (trapdoorsFlag != null) {
 
-			if (block.getBlockData() instanceof TrapDoor) {
+			if (block != null && block.getBlockData() instanceof TrapDoor) {
 				StateFlag.State state = set.queryState(localPlayer, trapdoorsFlag);
 
 				if (state == StateFlag.State.DENY) {
@@ -62,7 +71,8 @@ public class ParallelFlagsInteractListener implements Listener {
 		IntegerFlag tntFlag = registry.getIntegerFlag("tnt-disallow-time");
 
 		if (tntFlag != null) {
-			if (block.getBlockData() instanceof TNT) {
+			if ((block != null && block.getBlockData() instanceof TNT) ||
+					(item != null && item.getType().equals(Material.TNT_MINECART))) {
 				Integer val = set.queryValue(localPlayer, tntFlag); // In hours
 
 				if (val != null) {
