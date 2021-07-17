@@ -14,6 +14,7 @@ import parallelmc.parallelutils.modules.parallelflags.ParallelFlags;
 import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
 import parallelmc.parallelutils.modules.effectextender.EffectExtender;
 import parallelmc.parallelutils.modules.gamemode4.sunkenTreasure.SunkenTreasure;
+import parallelmc.parallelutils.modules.performanceTools.PerformanceTools;
 import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
 import java.sql.*;
@@ -176,6 +177,14 @@ public final class Parallelutils extends JavaPlugin {
 			parallelTrees.onEnable();
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelTrees!");
+			e.printStackTrace();
+		}
+
+		try {
+			PerformanceTools performanceTools = new PerformanceTools();
+			performanceTools.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module PerformanceTools!");
 			e.printStackTrace();
 		}
 
