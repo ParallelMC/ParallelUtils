@@ -1,6 +1,8 @@
 package parallelmc.parallelutils.modules.discordintegration;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -20,6 +22,17 @@ public class JoinQuitSuppressorListener implements Listener {
 	public static ArrayList<String> hiddenUsers = new ArrayList<>();
 	public static final Object hiddenUsersLock = new Object();
 
+
+	private final Component joinMessage;
+
+	public JoinQuitSuppressorListener() {
+		joinMessage = Component.text("[", NamedTextColor.DARK_AQUA)
+				.append(Component.text("P", NamedTextColor.WHITE, TextDecoration.BOLD))
+				.append(Component.text("]", NamedTextColor.DARK_AQUA))
+				.append(Component.text(" You are currently vanished from ParallelUtils!", NamedTextColor.AQUA));
+	}
+
+
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
@@ -31,6 +44,7 @@ public class JoinQuitSuppressorListener implements Listener {
 				if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
 					Server server = Bukkit.getServer();
 					server.dispatchCommand(server.getConsoleSender(), "v " + player.getName().strip());
+					player.sendMessage(joinMessage);
 				}
 			}
 		}
