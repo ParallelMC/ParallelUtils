@@ -58,3 +58,6 @@ This is a list of the current modules for ParallelUtils
     
 - ParallelItems
   - Adds custom items for use on play.parallel.ga
+  
+- PerformanceTools
+  - Adds tools to help diagnose performance issues
