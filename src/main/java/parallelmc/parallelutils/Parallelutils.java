@@ -10,6 +10,7 @@ import parallelmc.parallelutils.commands.ParallelTestCommand;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
 import parallelmc.parallelutils.modules.customtrees.ParallelTrees;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
+import parallelmc.parallelutils.modules.gamemode4.beehiveInspector.BeehiveInspector;
 import parallelmc.parallelutils.modules.parallelflags.ParallelFlags;
 import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
 import parallelmc.parallelutils.modules.effectextender.EffectExtender;
@@ -188,6 +189,14 @@ public final class Parallelutils extends JavaPlugin {
 			e.printStackTrace();
 		}
 
+		try {
+			BeehiveInspector beehiveInspector = new BeehiveInspector();
+			beehiveInspector.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module BeehiveInspector!");
+			e.printStackTrace();
+		}
+
 		// TODO: Make this not horrible
 		try {
 			ParallelModule flags = getModule("ParallelFlags");
@@ -274,6 +283,8 @@ public final class Parallelutils extends JavaPlugin {
 		if (registeredModules.containsKey(name)) {
 			return false;
 		}
+
+		Parallelutils.log(Level.INFO, "Registered Module " + name);
 
 		registeredModules.put(name, module);
 		return true;

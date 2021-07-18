@@ -6,9 +6,13 @@ import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.gamemode4.beehiveInspector.events.BeehiveBroken;
 
 import java.util.logging.Level;
 
+/**
+ * A module to replicate the behavior of the Gamemode4 BeehiveInspector datapack
+ */
 public class BeehiveInspector implements ParallelModule {
     @Override
     public void onEnable() {
@@ -26,6 +30,8 @@ public class BeehiveInspector implements ParallelModule {
             Parallelutils.log(Level.SEVERE, "Unable to register module BeehiveInspector! Module may already be registered. Quitting...");
             return;
         }
+
+        manager.registerEvents(new BeehiveBroken(), plugin);
     }
 
     @Override
