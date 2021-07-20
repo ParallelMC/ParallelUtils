@@ -205,10 +205,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 		if (targetedBlock != null && targetedBlock.isSolid()) {
 			// Autofill targeted coords
 			if (depth >= 1) {
-				list.add(String.format("%d", targetedBlock.getX()));
+				list.add(String.format("%d", targetedBlock.getZ()));
 			}
 			if (depth >= 2) {
-				list.add(String.format("%d %d", targetedBlock.getX(), targetedBlock.getY()));
+				list.add(String.format("%d %d", targetedBlock.getY(), targetedBlock.getZ()));
 			}
 			if (depth >= 3) {
 				list.add(String.format("%d %d %d", targetedBlock.getX(), targetedBlock.getY(), targetedBlock.getZ()));

@@ -3,6 +3,7 @@ package parallelmc.parallelutils.modules.custommobs.spawners;
 import net.minecraft.world.entity.EntityInsentient;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
 import org.bukkit.entity.Player;
@@ -93,8 +94,11 @@ public class SpawnTask extends BukkitRunnable {
 						// Try to spawn entity there
 						EntityInsentient setUpEntity = null;
 
-						if (location.getWorld().getBlockAt(spawnLocation).isEmpty() &&
-								location.getWorld().getBlockAt(spawnLocation.clone().add(0, 1, 0)).isEmpty()) {
+						Block blockBelow = location.getWorld().getBlockAt(spawnLocation);
+
+						if (blockBelow.isEmpty() &&
+								location.getWorld().getBlockAt(spawnLocation.clone().add(0, 1, 0)).isEmpty() &&
+								blockBelow.getLightLevel() >= options.minLightLevel && blockBelow.getLightLevel() <= options.maxLightLevel) {
 							wasSuccessful = true;
 							switch (type) {
 								case "wisp" -> setUpEntity = EntityWisp.spawn(plugin, (CraftServer)
