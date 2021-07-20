@@ -60,10 +60,10 @@ public class CustomMobs implements ParallelModule {
 		}
 
 		SpawnerRegistry.getInstance().registerSpawnerType("wisp", new SpawnerOptions(0, 0, 8,
-				1, 400, 0, true, 40, 16,
+				1, 400, 0, true, 40, 0, 15, 16,
 				false, false));
 		SpawnerRegistry.getInstance().registerSpawnerType("fire_wisp", new SpawnerOptions(0, 0, 8,
-				1, 400, 0, true, 40, 16,
+				1, 400, 0, true, 40, 0, 15, 16,
 				false, false));
 
 
