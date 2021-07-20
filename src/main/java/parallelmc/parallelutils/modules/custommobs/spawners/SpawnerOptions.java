@@ -12,9 +12,12 @@ public class SpawnerOptions {
 	public int warmup; // The amount of time from spawner creation it takes to start spawning
 	public boolean checkForPlayers; // If true, spawner only spawns if a player is within the activation range
 	public int activationRange; // The range in which to check for players if checkForPlayers is true
+	public int minLightLevel; // The minimum light level needed to spawn
+	public int maxLightLevel; // The max light level allowed to spawn
 	public int leashRange; // The range in which leashed entities are brought back to the spawner
 	public boolean resetHealthOnLeash; // If true, leashed entities are healed when brought back to the spawner
 	public boolean resetThreatOnLeash; // If true, leashed entities lose target when brought back to the spawner
+
 
 	/**
 	 * Create a new set of spawner options with the given options
@@ -26,11 +29,15 @@ public class SpawnerOptions {
 	 * @param warmup The amount of time from spawner creation it takes to start spawning
 	 * @param checkForPlayers If true, spawner only spawns if a player is within the activation range
 	 * @param activationRange The range in which to check for players if {@code checkForPlayers} is true
+	 * @param minLightLevel The minimum light level needed to spawn
+	 * @param maxLightLevel The max light level allowed to spawn
 	 * @param leashRange The range in which leashed entities are brought back to the spawner
 	 * @param resetHealthOnLeash If true, leashed entities are healed when brought back to the spawner
 	 * @param resetThreatOnLeash If true, leashed entities lose target when brought back to the spawner
 	 */
-	public SpawnerOptions(int radiusH, int radiusV, int maxMobs, int mobsPerSpawn, int cooldown, int warmup, boolean checkForPlayers, int activationRange, int leashRange, boolean resetHealthOnLeash, boolean resetThreatOnLeash) {
+	public SpawnerOptions(int radiusH, int radiusV, int maxMobs, int mobsPerSpawn, int cooldown, int warmup,
+	                      boolean checkForPlayers, int activationRange, int minLightLevel, int maxLightLevel,
+	                      int leashRange, boolean resetHealthOnLeash, boolean resetThreatOnLeash) {
 		this.radiusH = radiusH;
 		this.radiusV = radiusV;
 		this.maxMobs = maxMobs;
@@ -39,6 +46,8 @@ public class SpawnerOptions {
 		this.warmup = warmup;
 		this.checkForPlayers = checkForPlayers;
 		this.activationRange = activationRange;
+		this.minLightLevel = minLightLevel;
+		this.maxLightLevel = maxLightLevel;
 		this.leashRange = leashRange;
 		this.resetHealthOnLeash = resetHealthOnLeash;
 		this.resetThreatOnLeash = resetThreatOnLeash;
