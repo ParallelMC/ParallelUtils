@@ -23,7 +23,7 @@ public class ParallelChat implements ParallelModule {
 
         Parallelutils puPlugin = (Parallelutils) plugin;
 
-        if (!puPlugin.registerModule("ItemChat", this)) {
+        if (!puPlugin.registerModule("ParallelChat", this)) {
             Parallelutils.log(Level.SEVERE, "Unable to register module ParallelChat! " +
                     "Module may already be registered. Quitting...");
             return;
