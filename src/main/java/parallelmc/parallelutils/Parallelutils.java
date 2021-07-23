@@ -1,5 +1,7 @@
 package parallelmc.parallelutils;
 
+import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
+import com.mysql.cj.jdbc.MysqlDataSource;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -18,6 +20,8 @@ import parallelmc.parallelutils.modules.gamemode4.sunkenTreasure.SunkenTreasure;
 import parallelmc.parallelutils.modules.performanceTools.PerformanceTools;
 import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
+import javax.annotation.Nullable;
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -30,11 +34,7 @@ public final class Parallelutils extends JavaPlugin {
 	String baseDataFolder = this.getDataFolder().getAbsolutePath();
 	FileConfiguration config = this.getConfig();
 
-	public static Connection dbConn;
-
-	private String jdbc;
-	private String username = "";
-	private String password = "";
+	private DataSource dataSource;
 
 	private static boolean finishedSetup = false;
 
@@ -96,17 +96,35 @@ public final class Parallelutils extends JavaPlugin {
 
 		// Either get the database connection URL from the config or construct it from the config
 		String address, database;
-		jdbc = config.getString("sql.jdbc");
 
-		if (jdbc == null || jdbc.trim().equals("")) {
-			address = config.getString("sql.address");
-			database = config.getString("sql.database");
+		address = config.getString("sql.address");
+		database = config.getString("sql.database");
 
-			jdbc = "jdbc:mysql://" + address + "/" + database + ";autoReconnect=true";
+		String username = config.getString("sql.username");
+		String password = config.getString("sql.password");
+
+		if (address == null) { // TODO: Make this not quit when the database is invalid
+			log(Level.SEVERE, "Could not retrieve database address. Stopping");
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
 		}
 
-		username = config.getString("sql.username");
-		password = config.getString("sql.password");
+		String[] parts = address.split(":");
+
+		String host = address;
+		int port = 3306;
+
+		if (parts.length == 2) {
+			host = parts[0];
+			String portStr = address.split(":")[1].trim();
+
+			try {
+				port = Integer.parseInt(portStr);
+			} catch (NumberFormatException e) {
+				log(Level.WARNING, "Invalid address string. Using default port");
+				port = 3306;
+			}
+		}
 
 
 		saveConfig();
@@ -114,7 +132,7 @@ public final class Parallelutils extends JavaPlugin {
 		// Connect to database
 
 		try {
-			openDatabaseConnection(jdbc, username, password);
+			createDataSource(host, port, database, username, password);
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -227,50 +245,73 @@ public final class Parallelutils extends JavaPlugin {
 			}
 		});
 		registeredModules = new HashMap<>();
-
-
-		try {
-			dbConn.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 	}
 
 
 	/**
 	 * Opens a database connection with the given details and stores it to dbConn
-	 * @param jdbc The jdbc connection string
+	 * @param host The host address of the database
+	 * @param port The port of the database
+	 * @param database The database of the database
 	 * @param username The username used to connect
 	 * @param password The password used to connect
 	 * @throws SQLException if a database access error occurs
 	 * @throws ClassNotFoundException if the Driver class cannot be found
 	 */
-	private void openDatabaseConnection(String jdbc, String username, String password) throws SQLException, ClassNotFoundException {
-		if (dbConn != null && !dbConn.isClosed()) {
-			return;
-		}
-		// Class.forName("com.mysql.jdbc.Driver");
-		dbConn = DriverManager.getConnection(jdbc, username, password);
-		dbConn.setAutoCommit(false);
+	private void createDataSource(String host, int port, String database, String username, String password)
+			throws SQLException, ClassNotFoundException {
+
+		MysqlDataSource dataSource = new MysqlConnectionPoolDataSource();
+
+		dataSource.setServerName(host);
+		dataSource.setPort(port);
+		dataSource.setDatabaseName(database);
+		dataSource.setUser(username);
+		dataSource.setPassword(password);
+		dataSource.setAutoReconnect(true); // Hopefully this fixes the database issues...
+
+		this.dataSource = dataSource;
+
+		Connection conn = testAndGetConnection(dataSource);
+
+
 	}
 
-	// TODO: FIGURE OUT WHY THIS IS A THINGGGGGG
 	/**
-	 * Resets the database connection. Used when things break
+	 * Creates a new database Connection from the given DataSource and tests if it is valid
+	 * @param dataSource The DataSource to create from
+	 * @return The Connection created from the DataSource
+	 * @throws SQLException Thrown when DataSource#getConnection encounters a database access error
 	 */
-	public void resetDb() throws SQLException, ClassNotFoundException {
-		if (!dbConn.isClosed()) {
-			dbConn.close();
+	@Nullable
+	private Connection testAndGetConnection(DataSource dataSource) throws SQLException {
+		Connection conn = dataSource.getConnection();
+
+		if (!conn.isValid(1000)) {
+			log(Level.WARNING, "Unable to establish database connection");
+			return null;
 		}
-		openDatabaseConnection(jdbc, username, password);
+		return conn;
 	}
 
 	/**
-	 * Returns the DB connection object for ParallelUtils
+	 * Returns a DB connection object for ParallelUtils
 	 * @return the DB Connection object
 	 */
+	@Nullable
 	public Connection getDbConn() {
-		return dbConn;
+		try {
+			Connection connection = testAndGetConnection(dataSource);
+
+			if (connection == null) return null;
+
+			connection.setAutoCommit(false);
+			return connection;
+		} catch (SQLException throwables) {
+			log(Level.WARNING, "Unable to retrieve database Connection. SQL Exception");
+			throwables.printStackTrace();
+			return null;
+		}
 	}
 
 	/**

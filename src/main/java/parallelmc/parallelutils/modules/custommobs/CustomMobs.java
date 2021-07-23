@@ -151,30 +151,24 @@ public class CustomMobs implements ParallelModule {
 		if (finishedSetup) {
 
 			try {
-				if (!dbConn.isValid(30)) {
-					puPlugin.resetDb();
-				}
-
 				Statement removeStatement = dbConn.createStatement();
 				removeStatement.setQueryTimeout(15);
 				removeStatement.execute("TRUNCATE TABLE WorldMobs");
 				removeStatement.execute("TRUNCATE TABLE Spawners");
 				dbConn.commit();
-			} catch (SQLException | NullPointerException | ClassNotFoundException e) {
+			} catch (SQLException | NullPointerException e) {
 				Parallelutils.log(Level.WARNING, "Could not connect to DB");
 				Parallelutils.log(Level.WARNING, "Trying again...");
 
 				// Try reconnecting
 				try {
-					puPlugin.resetDb();
-
 					Statement removeStatement = dbConn.createStatement();
 					removeStatement.setQueryTimeout(15);
 					removeStatement.execute("TRUNCATE TABLE WorldMobs");
 					removeStatement.execute("TRUNCATE TABLE Spawners");
 					dbConn.commit();
 
-				} catch (SQLException | ClassNotFoundException ex) {
+				} catch (SQLException ex) {
 					ex.printStackTrace();
 					Parallelutils.log(Level.WARNING, "Failed Twice. Something is broken!!!");
 				}
