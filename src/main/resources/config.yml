@@ -7,8 +7,6 @@ debug: 2
 
 # mySQL connection info
 sql:
-  # JDBC Connection String (USE EITHER JDBC OR THE DATABASE INFO BELOW)
-  jdbc: jdbc:mysql://example.com/databaseName
   # Database info
   address: example.com:7000
   database: databaseName
