@@ -341,6 +341,22 @@ public final class Parallelutils extends JavaPlugin {
 	}
 
 	/**
+	 * Disables a ParallelUtils module
+	 * @param name The name of the module to disable
+	 * @return True if the module was disabled successfully, false otherwise
+	 */
+	public boolean disableModule(String name) {
+		ParallelModule module = getModule(name);
+
+		if (name != null) {
+			module.onDisable();
+			registeredModules.remove(name);
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * Wrapper for {@code parallelmc.parallelutils.commands.Commands.addCommand}
 	 * Adds a new command to the commandmap
 	 * @param name The name of the command
