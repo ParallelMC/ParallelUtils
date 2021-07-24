@@ -39,7 +39,6 @@ import java.util.logging.Level;
 public class CustomMobs implements ParallelModule {
 
 	private static Parallelutils puPlugin;
-	private Connection dbConn;
 
 	private boolean finishedSetup = false;
 
@@ -69,13 +68,16 @@ public class CustomMobs implements ParallelModule {
 
 		// Get dbConn
 
-		dbConn = puPlugin.getDbConn();
-
 		// Create the table if it doesn't exist
-		try {
-			Statement statement = dbConn.createStatement();
-			statement.setQueryTimeout(15);
-			statement.execute("""
+		try (Connection conn = puPlugin.getDbConn()){
+			if (conn == null) {
+				Parallelutils.log(Level.WARNING, "Unable to establish connection to database. Disabling");
+				puPlugin.disableModule("CustomMobs");
+				return;
+			} else {
+				Statement statement = conn.createStatement();
+				statement.setQueryTimeout(15);
+				statement.execute("""
 					create table if not exists WorldMobs
 					(
 					    UUID        varchar(36) not null,
@@ -86,44 +88,53 @@ public class CustomMobs implements ParallelModule {
 					    spawnReason varchar(32) not null,
 					    spawnerId   varchar(36) null,
 					    constraint WorldMobs_UUID_uindex
-					        unique (UUID)
+					        unique (UUID),
+					    PRIMARY KEY (UUID)
 					);""");
-			dbConn.commit();
+				conn.commit();
 
-			statement.execute("""
-					create table if not exists Spawners
-					(
-					    id       varchar(36) not null,
-					    type     varchar(16) not null,
-					    world    varchar(32) null,
-					    x        int         not null,
-					    y        int         not null,
-					    z        int         not null,
-					    hasLeash tinyint     not null,
-					    constraint Spawners_id_uindex
-					        unique (id)
-					);""");
-			dbConn.commit();
+				statement.execute("""
+						create table if not exists Spawners
+						(
+						    id       varchar(36) not null,
+						    type     varchar(16) not null,
+						    world    varchar(32) null,
+						    x        int         not null,
+						    y        int         not null,
+						    z        int         not null,
+						    hasLeash tinyint     not null,
+						    constraint Spawners_id_uindex
+						        unique (id),
+					        PRIMARY KEY (id)
+						);""");
+				conn.commit();
 
-			statement.close();
+				statement.close();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 		// Load spawners and mobs
-		try {
-			Statement statement = dbConn.createStatement();
-			statement.setQueryTimeout(15);
+		try (Connection conn = puPlugin.getDbConn()){
+			if (conn == null) {
+				Parallelutils.log(Level.WARNING, "Unable to establish connection to database. Disabling");
+				puPlugin.disableModule("CustomMobs");
+				return;
+			} else {
+				Statement statement = conn.createStatement();
+				statement.setQueryTimeout(15);
 
-			ResultSet spawnerResults = statement.executeQuery("SELECT * FROM Spawners");
+				ResultSet spawnerResults = statement.executeQuery("SELECT * FROM Spawners");
 
-			readSpawners(spawnerResults);
+				readSpawners(spawnerResults);
 
-			ResultSet result = statement.executeQuery("SELECT * FROM WorldMobs");
+				ResultSet result = statement.executeQuery("SELECT * FROM WorldMobs");
 
-			readMobs(result);
+				readMobs(result);
 
-			statement.close();
+				statement.close();
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -149,95 +160,6 @@ public class CustomMobs implements ParallelModule {
 	public void onDisable() {
 		// Clear the database
 		if (finishedSetup) {
-
-			try {
-				Statement removeStatement = dbConn.createStatement();
-				removeStatement.setQueryTimeout(15);
-				removeStatement.execute("TRUNCATE TABLE WorldMobs");
-				removeStatement.execute("TRUNCATE TABLE Spawners");
-				dbConn.commit();
-			} catch (SQLException | NullPointerException e) {
-				Parallelutils.log(Level.WARNING, "Could not connect to DB");
-				Parallelutils.log(Level.WARNING, "Trying again...");
-
-				// Try reconnecting
-				try {
-					Statement removeStatement = dbConn.createStatement();
-					removeStatement.setQueryTimeout(15);
-					removeStatement.execute("TRUNCATE TABLE WorldMobs");
-					removeStatement.execute("TRUNCATE TABLE Spawners");
-					dbConn.commit();
-
-				} catch (SQLException ex) {
-					ex.printStackTrace();
-					Parallelutils.log(Level.WARNING, "Failed Twice. Something is broken!!!");
-				}
-			}
-
-			Parallelutils.log(Level.INFO, "Cleared tables");
-
-			// Insert all mobs that we care about into the database
-			try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO WorldMobs " +
-					"(UUID, Type, World, ChunkX, ChunkZ, spawnReason, spawnerId) VALUES (?, ?, ?, ?, ?, ?, ?)")) {
-				int i = 0;
-				statement.setQueryTimeout(15);
-
-				for (EntityData ep : EntityRegistry.getInstance().getEntities()) {
-					Entity e = ep.entity;
-					CraftEntity craftEntity = e.getBukkitEntity();
-
-					String uuid = craftEntity.getUniqueId().toString();
-
-					String type = ep.type;
-
-					if (type == null) {
-						Parallelutils.log(Level.WARNING, "Unknown entity type for entity " + uuid);
-						continue;
-					}
-
-					String world = craftEntity.getWorld().getName();
-
-					Chunk c = craftEntity.getChunk();
-
-					SpawnReason reason = ep.spawnReason;
-
-					statement.setString(1, uuid);
-					statement.setString(2, type);
-					statement.setString(3, world);
-					statement.setInt(4, c.getX());
-					statement.setInt(5, c.getZ());
-					statement.setString(6, reason.name());
-					statement.setString(7, null);
-
-					if (reason == SpawnReason.SPAWNER) {
-						SpawnerData data = SpawnerRegistry.getInstance().getSpawner(ep.spawnOrigin);
-
-						if (data != null) {
-							String spawnerId = data.getUuid();
-							statement.setString(7, spawnerId);
-						} else {
-							Parallelutils.log(Level.INFO, "Spawner does not exist. Ignoring");
-							statement.setString(6, SpawnReason.UNKNOWN.name());
-						}
-					}
-
-					// This just lets us execute a bunch of changes at once
-					statement.addBatch();
-
-					// This is here because some implementations of MySQL are weird and don't like very large batches
-					i++;
-					if (i >= 1000) {
-						statement.executeBatch();
-						i = 0;
-					}
-				}
-
-				statement.executeBatch();
-
-				dbConn.commit();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 
 			try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO Spawners " +
 					"(id, type, world, x, y, z, hasLeash) VALUES (?,?,?,?,?,?,?)")) {
