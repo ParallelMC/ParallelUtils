@@ -1,53 +1,56 @@
 package parallelmc.parallelutils.modules.parallelchat.events;
 
+import io.papermc.paper.chat.ChatRenderer;
+import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextComponent;;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import parallelmc.parallelutils.Parallelutils;
 
 import java.util.logging.Level;
 
 public class OnChatMessage implements Listener {
-    /**
-     * This event handler allows players to link their held item in chat if they type [item]
-     */
-    // receive the message after all other plugins
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onChatMessage(AsyncPlayerChatEvent event) {
-        if (event.getMessage().equals("[item]")) {
-            Player player = event.getPlayer();
-            ItemStack item = player.getInventory().getItemInMainHand();
-            // can't put nothing in chat
-            if (item.getType() == Material.AIR) {
-                event.setCancelled(true);
-                player.sendMessage("§3[§f§lP§3] §fCannot link Air into chat!");
-            }
-            else {
-                // cancel original message
-                event.setCancelled(true);
-                TextComponent component = Component.text("§3[§f§lP§3] ")
-                        .append(player.displayName())
-                        .append(Component.text("§f linked an item: "))
-                        .append(item.displayName())
-                        .append(Component.text(" x" + item.getAmount(), item.displayName().color()))
-                        .build();
+	/**
+	 * This event handler allows players to link their held item in chat if they type [item]
+	 */
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+	public void onChatMessage(AsyncChatEvent event) {
+		Player player = event.getPlayer();
+		ItemStack item = player.getInventory().getItemInMainHand();
 
-                // ik this sucks but its the best way to do it
-                for (Player p : event.getRecipients()) {
-                    p.sendMessage(component);
-                }
+		Component name = item.displayName().hoverEvent(item.asHoverEvent());
+		Parallelutils.log(Level.INFO, item.asHoverEvent().toString());
 
-                // since message is cancelled log it ourselves
-                Parallelutils.log(Level.INFO, player.getName() + " linked a " + item.getI18NDisplayName() + " in chat.");
+		TextComponent component = Component.text()
+				.append(name)
+				.append(Component.text(" x" + item.getAmount(), item.displayName().color()))
+				.build();
 
-            }
+		Component incomingMessage = event.message();
 
-        }
-    }
+		Component outgoingMessage = incomingMessage.replaceText(x -> x.once().match("\\[item\\]").replacement(component));
+
+		// can't put nothing in chat
+		if (item.getType() == Material.AIR) {
+			if (incomingMessage.contains(outgoingMessage)) {
+				// [item] was not found. No need to stop the message
+				return;
+			}
+			player.sendMessage(Component.text("[", NamedTextColor.DARK_AQUA)
+					.append(Component.text("P", NamedTextColor.WHITE, TextDecoration.BOLD))
+					.append(Component.text("]", NamedTextColor.DARK_AQUA))
+					.append(Component.text(" Cannot link Air into chat!", NamedTextColor.WHITE)));
+			event.setCancelled(true);
+		} else {
+			event.renderer(ChatRenderer.defaultRenderer());
+			event.message(outgoingMessage);
+		}
+	}
 }
