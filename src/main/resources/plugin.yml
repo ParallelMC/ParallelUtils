@@ -4,7 +4,7 @@ main: parallelmc.parallelutils.Parallelutils
 api-version: 1.17
 authors: [Jake, Evelyn]
 description: A plugin containing miscellaneous features and changes for play.parallel.ga
-depend: []
+depend: [PlaceholderAPI]
 softdepend: [Multiverse-Core, FractalForest, WorldGuard, VoteParty, FrozenJoin]
 commands:
   parallelutils:
