@@ -1,10 +1,7 @@
 package parallelmc.parallelutils.modules.parallelchat.events;
 
-import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import io.papermc.paper.text.PaperComponents;
 import me.clip.placeholderapi.PlaceholderAPI;
-import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -24,9 +21,17 @@ import java.util.logging.Level;
 
 import static io.papermc.paper.chat.ChatRenderer.viewerUnaware;
 
+/**
+ * This listener handles ItemChat. It's TERRIBLE right now because of mismatched chat APIs.
+ * Paper wants everything to use the new API (AsyncChatEvent and Kyori Adventure), while non-paper plugins
+ * use the legacy API. The problem is, they aren't compatible, like, at all. Many other plugins such as
+ * Essentials X Chat use the legacy API for formatting messages. This means that we cannot get the chat format
+ * through the new API. To combat this, we actually handle both the legacy and new events and message between
+ * them to handle the format. After getting the legacy format, we have to do some parsing and placeholder replacement
+ * then we can create custom TextRenderer and finally send the message.
+ */
 public class OnChatMessage implements Listener {
-
-
+	
 	private final HashMap<String, String> nameformats = new HashMap<>();
 
 	/**
