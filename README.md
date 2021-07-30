@@ -52,7 +52,10 @@ This is a list of the current modules for ParallelUtils
     
 - Gamemode4
   - These are plugin adaptations of the [Gamemode4][https://gm4.co/] datapacks
-    
+
+- ParallelChat
+  - Adds various chat improvements, currently only supporting the linking of items into chat
+  
 - ParallelFlags
   - Adds custom WorldGuard flags
     
