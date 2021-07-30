@@ -37,11 +37,11 @@ public class CustomMobsDeathListener implements Listener {
 				switch (pair.type) {
 					case "wisp" -> {
 						TextComponent message = Component.text("").append(player.displayName())
-								.append(Component.text("was slain by Wisp."));
+								.append(Component.text(" was slain by Wisp."));
 						event.deathMessage(message);}
 					case "fire_wisp" -> {
 						TextComponent message = Component.text("").append(player.displayName())
-								.append(Component.text("was slain by Fire Wisp."));
+								.append(Component.text(" was slain by Fire Wisp."));
 						event.deathMessage(message);}
 				}
 			}

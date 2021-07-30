@@ -13,6 +13,7 @@ import parallelmc.parallelutils.modules.custommobs.CustomMobs;
 import parallelmc.parallelutils.modules.customtrees.ParallelTrees;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
 import parallelmc.parallelutils.modules.gamemode4.beehiveInspector.BeehiveInspector;
+import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.parallelflags.ParallelFlags;
 import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
 import parallelmc.parallelutils.modules.effectextender.EffectExtender;
@@ -212,6 +213,14 @@ public final class Parallelutils extends JavaPlugin {
 			beehiveInspector.onEnable();
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module BeehiveInspector!");
+			e.printStackTrace();
+		}
+
+		try {
+			ParallelChat parallelChat = new ParallelChat();
+			parallelChat.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelChat!");
 			e.printStackTrace();
 		}
 
