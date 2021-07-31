@@ -125,7 +125,7 @@ public class SpawnerRegistry {
 		SpawnerData result = spawners.remove(location);
 
 		if (result != null) {
-			deleteSpawnerDatabase(location);
+			deleteSpawnerDatabase(result.getUuid());
 			return true;
 		}
 
@@ -364,15 +364,9 @@ public class SpawnerRegistry {
 
 	/**
 	 * Removes a spawner from the database
-	 * @param loc The location of the spawner
+	 * @param uuid The UUID of the spawner
 	 */
-	private void deleteSpawnerDatabase(Location loc) {
-		SpawnerData spawner = getSpawner(loc);
-
-		if (spawner == null) return;
-
-		String uuid = spawner.getUuid();
-
+	private void deleteSpawnerDatabase(String uuid) {
 		Bukkit.getScheduler().runTaskAsynchronously(puPlugin, new Runnable() {
 			@Override
 			public void run() {
