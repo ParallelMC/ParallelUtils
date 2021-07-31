@@ -1,10 +1,17 @@
 package parallelmc.parallelutils.modules.custommobs.registry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.custommobs.spawners.SpawnerData;
 import parallelmc.parallelutils.modules.custommobs.spawners.SpawnerOptions;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -27,6 +34,8 @@ public class SpawnerRegistry {
 
 	private static SpawnerRegistry registry;
 
+	private final Parallelutils puPlugin;
+
 	private SpawnerRegistry() {
 		spawnerTypes = new HashMap<>();
 		spawners = new HashMap<>();
@@ -34,6 +43,17 @@ public class SpawnerRegistry {
 		spawnTaskID = new HashMap<>();
 		leashTaskID = new HashMap<>();
 		leashedEntityLists = new HashMap<>();
+
+		PluginManager manager = Bukkit.getPluginManager();
+		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
+
+		if (plugin == null) {
+			Parallelutils.log(Level.SEVERE, "Unable to get ParallelUtils. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
+			puPlugin = null;
+			return;
+		}
+
+		puPlugin = (Parallelutils) plugin;
 	}
 
 	/**
@@ -72,6 +92,7 @@ public class SpawnerRegistry {
 		location.setYaw(0);
 		Parallelutils.log(Level.INFO, "Registering spawner " + uuid + " location: " + location.toString());
 		spawners.put(location, new SpawnerData(uuid, type, location.toBlockLocation(), hasLeash));
+		updateSpawnerDatabase(location);
 	}
 
 	/**
@@ -101,7 +122,14 @@ public class SpawnerRegistry {
 	 */
 	public boolean deleteSpawner(Location location) {
 		Parallelutils.log(Level.INFO, "Removing spawner " + location.toString());
-		return spawners.remove(location) != null;
+		SpawnerData result = spawners.remove(location);
+
+		if (result != null) {
+			deleteSpawnerDatabase(location);
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -291,5 +319,82 @@ public class SpawnerRegistry {
 	public void removeSpawnerLeash(Location loc) {
 		//ArrayList<String> mobs = leashedEntityLists.get(loc);
 		leashedEntityLists.remove(loc);
+	}
+
+	/**
+	 * Adds/updates a spawner in the database
+	 * @param loc The location of the spawner
+	 */
+	private void updateSpawnerDatabase(Location loc) {
+		SpawnerData spawner = getSpawner(loc);
+
+		if (spawner == null) return;
+
+		Bukkit.getScheduler().runTaskAsynchronously(puPlugin, new Runnable() {
+			@Override
+			public void run() {
+				try (Connection conn = puPlugin.getDbConn()) {
+					if (conn == null) throw new SQLException("Unable to establish connection!");
+
+					PreparedStatement statement = conn.prepareStatement(
+							"REPLACE Spawners(id, type, world, x, y, z, hasLeash) " +
+									"VALUES(?, ?, ?, ?, ?, ?, ?)"
+					);
+
+					statement.setString(1, spawner.getUuid());
+					statement.setString(2, spawner.getType());
+					statement.setString(3, loc.getWorld().getName());
+					statement.setInt(4, loc.getBlockX());
+					statement.setInt(5, loc.getBlockY());
+					statement.setInt(6, loc.getBlockZ());
+					statement.setBoolean(7, spawner.hasLeash());
+
+					statement.execute();
+
+					conn.commit();
+
+					statement.close();
+				} catch (SQLException e) {
+					Parallelutils.log(Level.WARNING, "Unable to update spawner in database!");
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Removes a spawner from the database
+	 * @param loc The location of the spawner
+	 */
+	private void deleteSpawnerDatabase(Location loc) {
+		SpawnerData spawner = getSpawner(loc);
+
+		if (spawner == null) return;
+
+		String uuid = spawner.getUuid();
+
+		Bukkit.getScheduler().runTaskAsynchronously(puPlugin, new Runnable() {
+			@Override
+			public void run() {
+				try (Connection conn = puPlugin.getDbConn()) {
+					if (conn == null) throw new SQLException("Unable to establish connection!");
+
+					PreparedStatement statement = conn.prepareStatement(
+							"DELETE FROM Spawners WHERE id = ?"
+					);
+
+					statement.setString(1, uuid);
+
+					statement.execute();
+
+					conn.commit();
+
+					statement.close();
+				} catch (SQLException e) {
+					Parallelutils.log(Level.WARNING, "Unable to delete spawner from database!");
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 }
