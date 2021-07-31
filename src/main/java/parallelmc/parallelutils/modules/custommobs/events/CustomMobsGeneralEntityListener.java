@@ -3,6 +3,7 @@ package parallelmc.parallelutils.modules.custommobs.events;
 import com.destroystokyo.paper.event.entity.EntityAddToWorldEvent;
 import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 import net.minecraft.world.entity.Entity;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
 import org.bukkit.event.EventHandler;
@@ -25,6 +26,8 @@ public class CustomMobsGeneralEntityListener implements Listener {
 	// Handle despawning custom mobs and removing them from the registry
 	@EventHandler
 	public void onEntityDespawn(final EntityRemoveFromWorldEvent event) {
+		if (Bukkit.isStopping()) return; // If we remove entities on shutdown, things get removed from the DB!
+
 		CraftEntity entity = (CraftEntity) event.getEntity();
 		String UUID = entity.getUniqueId().toString();
 
@@ -47,6 +50,8 @@ public class CustomMobsGeneralEntityListener implements Listener {
 
 	@EventHandler
 	public void onEntityAdd(final EntityAddToWorldEvent event) {
+		if (Bukkit.isStopping()) return; // Probably not needed but doesn't hurt
+
 		CraftEntity entity = (CraftEntity) event.getEntity();
 		String UUID = entity.getUniqueId().toString();
 
