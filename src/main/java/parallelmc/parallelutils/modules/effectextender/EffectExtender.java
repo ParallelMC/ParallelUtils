@@ -18,8 +18,7 @@ import java.util.logging.Level;
  */
 public class EffectExtender implements ParallelModule {
 
-    // dont worry about it
-    private Connection dbConn;
+    private Parallelutils puPlugin;
 
     @Override
     public void onEnable() {
@@ -31,13 +30,13 @@ public class EffectExtender implements ParallelModule {
             return;
         }
 
-        Parallelutils puPlugin = (Parallelutils) plugin;
-
-        dbConn = puPlugin.getDbConn();
+        puPlugin = (Parallelutils) plugin;
 
         // create effects table if it doesn't exist
-        try {
-            Statement statement = dbConn.createStatement();
+        try (Connection conn = puPlugin.getDbConn()) {
+            if (conn == null) throw new SQLException("Unable to establish connection!");
+
+            Statement statement = conn.createStatement();
             statement.setQueryTimeout(15);
             statement.execute("""
                             create table if not exists PlayerEffects
@@ -46,14 +45,14 @@ public class EffectExtender implements ParallelModule {
                                 EffectType      varchar(20) not null,
                                 MaxDuration     int         not null
                             );""");
-            dbConn.commit();
+            conn.commit();
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         manager.registerEvents(new EffectListener(), plugin);
-        manager.registerEvents(new JoinLeaveListener(dbConn), plugin);
+        manager.registerEvents(new JoinLeaveListener(puPlugin), plugin);
 
         puPlugin.addCommand("effects", new ParallelEffectsCommand());
 
@@ -63,10 +62,13 @@ public class EffectExtender implements ParallelModule {
     @Override
     public void onDisable() {
         // move each player's effects from the hashmap into the db
-        try {
+        try (Connection conn = puPlugin.getDbConn()) {
+            if (conn == null) throw new SQLException("Unable to establish connection!");
+
             // prepare a statement to send in bulk
-            PreparedStatement statement = dbConn.prepareStatement("insert into PlayerEffects values (?, ?, ?)");
+            PreparedStatement statement = conn.prepareStatement("insert into PlayerEffects values (?, ?, ?)");
             statement.setQueryTimeout(60);
+
             // double foreach lets goooo
             EffectListener.playerEffects.forEach((player, effects) -> {
                 effects.forEach((effect, maxDuration) -> {
@@ -84,7 +86,7 @@ public class EffectExtender implements ParallelModule {
 
             statement.executeBatch();
 
-            dbConn.commit();
+            conn.commit();
 
             statement.close();
         } catch (SQLException e) {

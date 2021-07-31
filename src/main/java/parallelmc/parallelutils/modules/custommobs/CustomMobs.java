@@ -40,8 +40,6 @@ public class CustomMobs implements ParallelModule {
 
 	private static Parallelutils puPlugin;
 
-	private boolean finishedSetup = false;
-
 	public void onEnable() {
 		PluginManager manager = Bukkit.getPluginManager();
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
@@ -154,47 +152,10 @@ public class CustomMobs implements ParallelModule {
 		puPlugin.addCommand("listspawners", new ParallelListSpawnersCommand());
 		puPlugin.addCommand("deletespawner", new ParallelDeleteSpawnerCommand());
 
-		finishedSetup = true;
 	}
 
 	public void onDisable() {
-		// Clear the database
-		if (finishedSetup) {
 
-			try (PreparedStatement statement = dbConn.prepareStatement("INSERT INTO Spawners " +
-					"(id, type, world, x, y, z, hasLeash) VALUES (?,?,?,?,?,?,?)")) {
-				int i = 0;
-				statement.setQueryTimeout(15);
-
-				for (SpawnerData sd : SpawnerRegistry.getInstance().getSpawnerData()) {
-					Parallelutils.log(Level.INFO, sd.toString());
-					statement.setString(1, sd.getUuid());
-					statement.setString(2, sd.getType());
-					Location location = sd.getLocation();
-					statement.setString(3, location.getWorld().getName());
-					statement.setInt(4, location.getBlockX());
-					statement.setInt(5, location.getBlockY());
-					statement.setInt(6, location.getBlockZ());
-					statement.setBoolean(7, sd.hasLeash());
-
-					statement.addBatch();
-
-					i++;
-					if (i >= 1000) {
-						statement.executeBatch();
-						i = 0;
-					}
-				}
-
-				statement.executeBatch();
-
-				dbConn.commit();
-
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-
-		}
 	}
 
 	/**
@@ -217,7 +178,7 @@ public class CustomMobs implements ParallelModule {
 
 			SpawnerRegistry.getInstance().registerSpawner(id, type, location, hasLeash);
 
-			// TODO: Replace puPlugin with this when in separate plugins
+			// TODO: Replace puPlugin with `this` when in separate plugins
 			BukkitTask task = new SpawnTask(type, location, 0)
 					.runTaskTimer(puPlugin, 0, SpawnerRegistry.getInstance().
 							getSpawnerOptions(type).cooldown);
@@ -243,22 +204,31 @@ public class CustomMobs implements ParallelModule {
 
 			Location spawnerLocation = null;
 			if (spawnReason == SpawnReason.SPAWNER) {
-				PreparedStatement statement = dbConn.prepareStatement("SELECT * FROM Spawners WHERE id=?");
+				try (Connection conn = puPlugin.getDbConn()) {
+					if (conn == null) throw new SQLException("Unable to establish connection!");
 
-				statement.setString(1, spawnerId);
+					PreparedStatement statement = conn.prepareStatement("SELECT * FROM Spawners WHERE id=?");
 
-				ResultSet spawnerResults = statement.executeQuery();
-				if (!spawnerResults.next()) {
-					Parallelutils.log(Level.WARNING, "Invalid spawner id " + spawnerId);
-					continue;
+					statement.setString(1, spawnerId);
+
+					ResultSet spawnerResults = statement.executeQuery();
+					if (!spawnerResults.next()) {
+						Parallelutils.log(Level.WARNING, "Invalid spawner id " + spawnerId);
+						continue;
+					}
+
+					String spawnerWorld = spawnerResults.getString("world");
+					int spawnerX = spawnerResults.getInt("x");
+					int spawnerY = spawnerResults.getInt("y");
+					int spawnerZ = spawnerResults.getInt("z");
+
+					spawnerLocation = new Location(Bukkit.getWorld(spawnerWorld), spawnerX, spawnerY, spawnerZ);
+
+					statement.close();
+				} catch (SQLException e) {
+					Parallelutils.log(Level.WARNING, "Unable to read spawner for mob from database!");
+					e.printStackTrace();
 				}
-
-				String spawnerWorld = spawnerResults.getString("world");
-				int spawnerX = spawnerResults.getInt("x");
-				int spawnerY = spawnerResults.getInt("y");
-				int spawnerZ = spawnerResults.getInt("z");
-
-				spawnerLocation = new Location(Bukkit.getWorld(spawnerWorld), spawnerX, spawnerY, spawnerZ);
 			}
 
 			int worldX = 16 * Integer.parseInt(chunkX);
@@ -285,8 +255,10 @@ public class CustomMobs implements ParallelModule {
 			if (spawnerLocation != null) {
 				EntityRegistry.getInstance().registerEntity(uuid, type, setupEntity, spawnReason, spawnerLocation);
 				SpawnerRegistry.getInstance().incrementMobCount(spawnerLocation);
+
 				if (SpawnerRegistry.getInstance().getSpawner(spawnerLocation).hasLeash()) {
 					SpawnerRegistry.getInstance().addLeashedEntity(spawnerLocation, uuid);
+
 					if (SpawnerRegistry.getInstance().getLeashTaskID(spawnerLocation) == null) {
 						BukkitTask task = new LeashTask(spawnerLocation).runTaskTimer(puPlugin, 0, 10);
 						SpawnerRegistry.getInstance().addLeashTaskID(spawnerLocation, task.getTaskId());
