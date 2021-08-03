@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.expstorage.ExpDatabase;
@@ -14,9 +15,11 @@ import java.util.logging.Level;
 
 public class WithdrawExperience implements CommandExecutor {
 
+	private final Parallelutils puPlugin;
 	private final ExpDatabase db;
 
-	public WithdrawExperience(ExpDatabase expDatabase) {
+	public WithdrawExperience(Parallelutils puPlugin, ExpDatabase expDatabase) {
+		this.puPlugin = puPlugin;
 		this.db = expDatabase;
 	}
 
@@ -37,9 +40,7 @@ public class WithdrawExperience implements CommandExecutor {
 			String amount = args[0].toLowerCase();
 
 			if (amount.equals("all")) {
-				player.giveExp(totalExp);
-				db.withdrawExpForPlayer(uuid, totalExp);
-				ExpStorage.sendMessageTo(player, "Withdrew " + totalExp + " experience points!");
+				withdrawExp(totalExp, uuid, player);
 			}
 			else {
 				int requestedExperience;
@@ -60,15 +61,56 @@ public class WithdrawExperience implements CommandExecutor {
 					return true;
 				}
 
-				player.giveExp(requestedExperience);
-				db.withdrawExpForPlayer(uuid, requestedExperience);
-				ExpStorage.sendMessageTo(player, "Withdrew " + requestedExperience + " experience points!");
+				withdrawExp(requestedExperience, uuid, player);
 			}
 			return true;
 		}
 
 		Parallelutils.log(Level.WARNING, "Tried to withdraw experience from non-player command source: " + commandSender.getName());
 		return true;
+	}
+
+	// This is the wrapper to withdraw exp. The process is:
+	// Send a "Withdrawing..." message
+	// Run an async task to execute the database code
+	// On completion, run the callback
+	private void withdrawExp(int amount, String uuid, Player player) {
+		ExpStorage.sendMessageTo(player, "Withdrawing...");
+		depositWithCallback(amount, uuid, player,
+				(amount1, player12) -> {
+					player12.giveExp(amount1);
+					ExpStorage.sendMessageTo(player12, "Withdrew " + amount1 + " experience points!");
+				},
+				player1 -> ExpStorage.sendMessageTo(player1, "Failed to withdraw exp!"));
+	}
+
+	private void depositWithCallback(int amount, String uuid, Player player,
+	                                 WithdrawExpSuccessCallback successfulCallback, WithdrawExpFailCallback failCallback) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				boolean successful = db.withdrawExpForPlayer(uuid, amount);
+
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						if (successful) {
+							successfulCallback.successfulWithdraw(amount, player);
+						} else {
+							failCallback.failedWithdraw(player);
+						}
+					}
+				}.runTask(puPlugin);
+			}
+		}.runTaskAsynchronously(puPlugin);
+	}
+
+	private interface WithdrawExpSuccessCallback {
+		void successfulWithdraw(int amount, Player player);
+	}
+
+	private interface WithdrawExpFailCallback {
+		void failedWithdraw(Player player);
 	}
 
 }

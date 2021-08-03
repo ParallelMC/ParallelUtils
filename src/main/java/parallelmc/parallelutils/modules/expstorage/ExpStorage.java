@@ -37,8 +37,8 @@ public class ExpStorage implements ParallelModule {
 
 		manager.registerEvents(new EnderChestRightClick(puPlugin, database), puPlugin);
 
-		puPlugin.getCommand("depositexp").setExecutor(new DepositExperience(database));
-		puPlugin.getCommand("withdrawexp").setExecutor(new WithdrawExperience(database));
+		puPlugin.getCommand("depositexp").setExecutor(new DepositExperience(puPlugin, database));
+		puPlugin.getCommand("withdrawexp").setExecutor(new WithdrawExperience(puPlugin, database));
 	}
 
 	@Override
