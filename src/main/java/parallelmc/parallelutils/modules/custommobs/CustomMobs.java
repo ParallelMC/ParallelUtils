@@ -1,9 +1,7 @@
 package parallelmc.parallelutils.modules.custommobs;
 
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityInsentient;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
@@ -19,7 +17,6 @@ import parallelmc.parallelutils.modules.custommobs.commands.ParallelDeleteSpawne
 import parallelmc.parallelutils.modules.custommobs.commands.ParallelListSpawnersCommand;
 import parallelmc.parallelutils.modules.custommobs.commands.ParallelSummonCommand;
 import parallelmc.parallelutils.modules.custommobs.events.CustomMobsEventRegistrar;
-import parallelmc.parallelutils.modules.custommobs.nmsmobs.EntityData;
 import parallelmc.parallelutils.modules.custommobs.nmsmobs.EntityFireWisp;
 import parallelmc.parallelutils.modules.custommobs.nmsmobs.EntityWisp;
 import parallelmc.parallelutils.modules.custommobs.nmsmobs.SpawnReason;
@@ -29,7 +26,6 @@ import parallelmc.parallelutils.modules.custommobs.registry.ParticleRegistry;
 import parallelmc.parallelutils.modules.custommobs.registry.SpawnerRegistry;
 import parallelmc.parallelutils.modules.custommobs.spawners.LeashTask;
 import parallelmc.parallelutils.modules.custommobs.spawners.SpawnTask;
-import parallelmc.parallelutils.modules.custommobs.spawners.SpawnerData;
 import parallelmc.parallelutils.modules.custommobs.spawners.SpawnerOptions;
 
 import java.sql.*;
