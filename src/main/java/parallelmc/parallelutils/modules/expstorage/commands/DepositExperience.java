@@ -5,6 +5,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.expstorage.ExpConverter;
@@ -15,9 +16,11 @@ import java.util.logging.Level;
 
 public class DepositExperience implements CommandExecutor {
 
+	private final Parallelutils puPlugin;
 	private final ExpDatabase db;
 
-	public DepositExperience(ExpDatabase expDatabase) {
+	public DepositExperience(Parallelutils puPlugin, ExpDatabase expDatabase) {
+		this.puPlugin = puPlugin;
 		this.db = expDatabase;
 	}
 
@@ -39,9 +42,7 @@ public class DepositExperience implements CommandExecutor {
 			// deposit all experience
 			if (amount.equals("all")) {
 				// take all of their exp
-				player.giveExp(-totalExp);
-				db.storeExpForPlayer(uuid, totalExp);
-				ExpStorage.sendMessageTo(player, "Deposited " + totalExp + " experience points!");
+				depositExp(totalExp, uuid, player);
 			}
 			// deposit a certain number of experience points
 			else {
@@ -63,13 +64,54 @@ public class DepositExperience implements CommandExecutor {
 					return true;
 				}
 
-				player.giveExp(-requestedExperience);
-				db.storeExpForPlayer(uuid, requestedExperience);
-				ExpStorage.sendMessageTo(player, "Deposited " + requestedExperience + " experience points!");
+				depositExp(requestedExperience, uuid, player);
 			}
 			return true;
 		}
 		Parallelutils.log(Level.WARNING, "Tried to deposit experience from non-player command source: " + commandSender.getName());
 		return true;
+	}
+
+	// This is the wrapper to deposit exp. The process is:
+	// Send a "Depositing..." message
+	// Run an async task to execute the database code
+	// On completion, run the callback
+	private void depositExp(int amount, String uuid, Player player) {
+		ExpStorage.sendMessageTo(player, "Depositing...");
+		depositWithCallback(amount, uuid, player,
+				(amount1, player12) -> {
+					player12.giveExp(-amount1);
+					ExpStorage.sendMessageTo(player12, "Deposited " + amount1 + " experience points!");
+				},
+				player1 -> ExpStorage.sendMessageTo(player1, "Failed to deposit exp!"));
+	}
+
+	private void depositWithCallback(int amount, String uuid, Player player,
+	                                 DepositExpSuccessfulCallback successfulCallback, DepositExpFailCallback failCallback) {
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				boolean successful = db.storeExpForPlayer(uuid, amount);
+
+				new BukkitRunnable() {
+					@Override
+					public void run() {
+						if (successful) {
+							successfulCallback.successfulDeposit(amount, player);
+						} else {
+							failCallback.failedDeposit(player);
+						}
+					}
+				}.runTask(puPlugin);
+			}
+		}.runTaskAsynchronously(puPlugin);
+	}
+
+	private interface DepositExpSuccessfulCallback {
+		void successfulDeposit(int amount, Player player);
+	}
+
+	private interface DepositExpFailCallback {
+		void failedDeposit(Player player);
 	}
 }
