@@ -44,7 +44,7 @@ public class ExpDatabase {
 	 * @param uuid The player's UUID
 	 * @param exp How much experience to store
 	 */
-	public void storeExpForPlayer(String uuid, int exp) {
+	public boolean storeExpForPlayer(String uuid, int exp) {
 		try (Connection dbConn = puPlugin.getDbConn()){
 			if (dbConn == null) throw new SQLException("Unable to establish connection!");
 
@@ -62,7 +62,9 @@ public class ExpDatabase {
 			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 
 	/**
@@ -70,7 +72,7 @@ public class ExpDatabase {
 	 * @param uuid The player's UUID
 	 * @param exp How much experience to withdraw
 	 */
-	public void withdrawExpForPlayer(String uuid, int exp) {
+	public boolean withdrawExpForPlayer(String uuid, int exp) {
 		try (Connection dbConn = puPlugin.getDbConn()){
 			if (dbConn == null) throw new SQLException("Unable to establish connection!");
 
@@ -88,6 +90,8 @@ public class ExpDatabase {
 			statement.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
+			return false;
 		}
+		return true;
 	}
 }
