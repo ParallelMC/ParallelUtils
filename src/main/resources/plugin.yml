@@ -15,6 +15,14 @@ commands:
     description: Get information about the plugin
     usage: /pu
     permission-message: You do not have permission
+  depositexp:
+    description: Deposit exp into the player's ender chest
+    usage: /depositexp <amount | all>
+    permission-message: You do not have permission
+  withdrawexp:
+    description: Withdraw exp from the player's ender chest
+    usage: /withdrawexp <amount | all>
+    permission-message: You do not have permission
 permissions:
   parallelutils.*:
     description: Gives access to all PU commands
