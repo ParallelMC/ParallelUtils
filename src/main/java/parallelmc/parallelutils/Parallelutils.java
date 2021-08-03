@@ -12,6 +12,7 @@ import parallelmc.parallelutils.commands.ParallelTestCommand;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
 import parallelmc.parallelutils.modules.customtrees.ParallelTrees;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
+import parallelmc.parallelutils.modules.expstorage.ExpStorage;
 import parallelmc.parallelutils.modules.gamemode4.beehiveInspector.BeehiveInspector;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.parallelflags.ParallelFlags;
@@ -221,6 +222,14 @@ public final class Parallelutils extends JavaPlugin {
 			parallelChat.onEnable();
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelChat!");
+			e.printStackTrace();
+		}
+
+		try {
+			ExpStorage expStorage = new ExpStorage();
+			expStorage.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module ExpStorage!");
 			e.printStackTrace();
 		}
 
