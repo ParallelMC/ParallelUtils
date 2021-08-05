@@ -37,7 +37,9 @@ public class ParallelSummonCommand extends ParallelCommand {
 	private final String USAGE = "Usage: /pu summon <mob> <x> <y> <z>";
 
 	public ParallelSummonCommand() {
-		super("summon", new ParallelOrPermission(new ParallelPermission[]{new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.summon")}));
+		super("summon", "Summon the specified mob at the given coordinates",
+				new ParallelOrPermission(new ParallelPermission[]
+						{new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.summon")}));
 	}
 
 	@Override

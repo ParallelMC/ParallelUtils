@@ -24,7 +24,8 @@ import java.util.List;
 public class FindLoadedChunksCommand extends ParallelCommand {
 
 	public FindLoadedChunksCommand() {
-		super("loadedChunks", new ParallelOrPermission(new ParallelPermission[] {
+		super("loadedChunks", "Lists all loaded chunks on the server, in the given world, or near the given coordinates",
+				new ParallelOrPermission(new ParallelPermission[] {
 				new ParallelPermission("parallelutils.performance"),
 				new ParallelPermission("parallelutils.performance.chunks")
 		}));
@@ -114,13 +115,13 @@ public class FindLoadedChunksCommand extends ParallelCommand {
 
 		ArrayList<String> tabComplete = new ArrayList<>();
 
-		if (args.length == 1) {
+		if (args.length == 2) {
 			tabComplete.add("world");
-		} else if (args.length == 2) {
-			tabComplete.add("x");
 		} else if (args.length == 3) {
-			tabComplete.add("z");
+			tabComplete.add("x");
 		} else if (args.length == 4) {
+			tabComplete.add("z");
+		} else if (args.length == 5) {
 			tabComplete.add("radius");
 		}
 

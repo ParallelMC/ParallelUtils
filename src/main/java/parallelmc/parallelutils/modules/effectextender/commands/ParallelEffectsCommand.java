@@ -20,7 +20,8 @@ import java.util.List;
 public class ParallelEffectsCommand extends ParallelCommand {
 
     public ParallelEffectsCommand() {
-        super("effects", new ParallelPermission("parallelutils.effects"));
+        super("effects", "A debug command to list the current effect maxes the player has",
+                new ParallelPermission("parallelutils.effects"));
     }
 
     @Override

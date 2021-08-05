@@ -13,6 +13,7 @@ import java.util.List;
 public abstract class ParallelCommand {
 
 	public String name;
+	public String helpText;
 	public ParallelPermission permission;
 
 	/**
@@ -22,6 +23,19 @@ public abstract class ParallelCommand {
 	 */
 	public ParallelCommand(String name, ParallelPermission permission) {
 		this.name = name;
+		this.helpText = "";
+		this.permission = permission;
+	}
+
+	/**
+	 * Creates a new ParallelCommand with the specified name, helpText and permission
+	 * @param name The name of the command
+	 * @param helpText The helpText of the command
+	 * @param permission The permission for the created command
+	 */
+	public ParallelCommand(String name, String helpText, ParallelPermission permission) {
+		this.name = name;
+		this.helpText = helpText;
 		this.permission = permission;
 	}
 
