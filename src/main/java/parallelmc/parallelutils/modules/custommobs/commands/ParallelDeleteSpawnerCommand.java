@@ -31,7 +31,8 @@ public class ParallelDeleteSpawnerCommand extends ParallelCommand {
 	public ParallelDeleteSpawnerCommand() {
 		// Requires either the parallelutils.spawn permission, the parallelutils.spawn.spawners permission
 		// or the parallelutils.spawn.spawners.delete permission
-		super("deletespawner", new ParallelOrPermission(new ParallelPermission[]
+		super("deletespawner", "Deletes the specified spawner using its UUID or coordinates",
+				new ParallelOrPermission(new ParallelPermission[]
 				{new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.spawners"),
 						new ParallelPermission("parallelutils.spawn.spawners.delete")}));
 	}

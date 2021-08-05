@@ -33,7 +33,8 @@ public class ParallelListSpawnersCommand extends ParallelCommand {
 	private final String USAGE = "Usage: /pu listspawners [page]";
 
 	public ParallelListSpawnersCommand() {
-		super("listspawners", new ParallelOrPermission(new ParallelPermission[]
+		super("listspawners", "List all of the currently existing CustomMobs spawners",
+				new ParallelOrPermission(new ParallelPermission[]
 				{new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.spawners"),
 						new ParallelPermission("parallelutils.spawn.spawners.list")}));
 	}

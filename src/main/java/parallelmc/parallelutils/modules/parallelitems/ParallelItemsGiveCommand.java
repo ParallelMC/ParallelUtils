@@ -34,7 +34,8 @@ public class ParallelItemsGiveCommand extends ParallelCommand {
     private ParallelItems parallelItems;
 
     public ParallelItemsGiveCommand(){
-        super("give", new ParallelPermission("parallelutils.give"));
+        super("give", "Give a player the specified ParallelItems item",
+                new ParallelPermission("parallelutils.give"));
 
         PluginManager manager = Bukkit.getPluginManager();
         Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
