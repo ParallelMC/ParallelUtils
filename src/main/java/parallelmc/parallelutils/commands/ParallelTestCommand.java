@@ -14,7 +14,8 @@ import java.util.List;
 public class ParallelTestCommand extends ParallelCommand {
 
 	public ParallelTestCommand() {
-		super("test", new ParallelPermission("parallelutils.test"));
+		super("test", "A simple test command",
+				new ParallelPermission("parallelutils.test"));
 	}
 
 	@Override

@@ -36,7 +36,8 @@ public class ParallelCreateSpawnerCommand extends ParallelCommand {
 	public ParallelCreateSpawnerCommand() {
 		// Requires either the parallelutils.spawn permission, the parallelutils.spawn.spawners permission
 		// or the parallelutils.spawn.spawners.create permission
-		super("createspawner", new ParallelOrPermission(new ParallelPermission[]
+		super("createspawner", "Creates a spawner for a CustomMobs mob at the specified coordinates",
+				new ParallelOrPermission(new ParallelPermission[]
 				{new ParallelPermission("parallelutils.spawn"), new ParallelPermission("parallelutils.spawn.spawners"),
 						new ParallelPermission("parallelutils.spawn.spawners.create")}));
 	}
