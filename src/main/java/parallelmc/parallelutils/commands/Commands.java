@@ -14,6 +14,8 @@ import parallelmc.parallelutils.Constants;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * This class implements the Bukkit {@code CommandExecutor} and {@code TabCompleter} and is responsible for
@@ -95,6 +97,15 @@ public class Commands implements CommandExecutor, TabCompleter {
 			}
 		}
 		return list;
+	}
+
+	/**
+	 * Return a deep copy of the command map. Modifying the returned map will not modify the commands
+	 * @return A deep copy of the command map
+	 */
+	public Map<String, ParallelCommand> getCommands() {
+		return commandMap.entrySet().stream()
+				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 	}
 
 	/**

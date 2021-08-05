@@ -26,6 +26,7 @@ import javax.annotation.Nullable;
 import javax.sql.DataSource;
 import java.sql.*;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 
 // TODO: Add proper versioning to prevent loading invalid configs/data
@@ -383,6 +384,14 @@ public final class Parallelutils extends JavaPlugin {
 	 */
 	public boolean addCommand(String name, ParallelCommand command) {
 		return commands.addCommand(name, command);
+	}
+
+	/**
+	 * Wrapper for {@code parallelmc.parallelutils.commands.Commands.getCommands}
+	 * @return A deep copy of the command map
+	 */
+	public Map<String, ParallelCommand> getCommands() {
+		return commands.getCommands();
 	}
 
 	/**
