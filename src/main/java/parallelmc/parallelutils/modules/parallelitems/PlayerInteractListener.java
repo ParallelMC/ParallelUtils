@@ -55,6 +55,19 @@ public class PlayerInteractListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event) {
+        // Feather falling on boots cancels player crop trampling
+        if (event.getAction() == Action.PHYSICAL) {
+            if (event.getClickedBlock().getType() == Material.FARMLAND) {
+                ItemStack boots = event.getPlayer().getInventory().getBoots();
+                if (boots != null) {
+                    if (boots.getItemMeta().hasEnchant(Enchantment.PROTECTION_FALL)) {
+                        event.setCancelled(true);
+                    }
+                }
+            }
+            return;
+        }
+
         if (event.hasItem()) {
             ItemStack item = event.getItem();
 
