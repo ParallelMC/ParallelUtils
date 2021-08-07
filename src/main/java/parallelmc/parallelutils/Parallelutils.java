@@ -32,14 +32,17 @@ import java.util.logging.Level;
 // TODO: Add proper versioning to prevent loading invalid configs/data
 public final class Parallelutils extends JavaPlugin {
 
+	private static final String HEADER =
+			"""
+					#################
+					# ParallelUtils #
+					#################""";
+
 	public static Level LOG_LEVEL = Level.INFO;
 
-	String baseDataFolder = this.getDataFolder().getAbsolutePath();
 	FileConfiguration config = this.getConfig();
 
 	private DataSource dataSource;
-
-	private static boolean finishedSetup = false;
 
 	private HashMap<String, ParallelModule> registeredModules;
 	private Commands commands;
@@ -54,13 +57,14 @@ public final class Parallelutils extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		finishedSetup = false;
 		// Plugin startup logic
 
-		// TODO: Make this read the config properly and actually generate it when it's not there
+		config.options().copyDefaults(true);
+		config.options().copyHeader(true);
+		config.options().header(HEADER);
+
 		// Read config
 		this.saveDefaultConfig();
-		this.reloadConfig();
 
 		int logLevel = config.getInt("debug", 2);
 
@@ -246,8 +250,6 @@ public final class Parallelutils extends JavaPlugin {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelFlags!");
 			e.printStackTrace();
 		}
-
-		finishedSetup = true;
 	}
 
 	@Override
