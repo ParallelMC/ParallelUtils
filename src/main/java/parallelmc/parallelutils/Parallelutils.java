@@ -81,7 +81,7 @@ public final class Parallelutils extends JavaPlugin {
 		// Check version
 		String github_token = config.getString("github_token");
 
-		if (github_token != null && !github_token.trim().equals("")) {
+		if (github_token != null && !github_token.trim().equals("") && !github_token.trim().equals("githubApiToken")) {
 			// Actually check version
 			UpdateChecker checker = new UpdateChecker(github_token);
 			Version latestVersion = checker.getLatestVersion();
@@ -133,15 +133,19 @@ public final class Parallelutils extends JavaPlugin {
 			}
 		}
 
-
-		saveConfig();
-
 		// Connect to database
 
 		try {
-			createDataSource(host, port, database, username, password);
+			if (!createDataSource(host, port, database, username, password)) {
+				Parallelutils.log(Level.SEVERE, "Unable to establish data source. Quitting...");
+				Bukkit.getPluginManager().disablePlugin(this);
+				return;
+			}
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
+			Parallelutils.log(Level.SEVERE, "Unable to establish data source. Quitting...");
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
 		}
 
 		commands = new Commands();
@@ -278,8 +282,9 @@ public final class Parallelutils extends JavaPlugin {
 	 * @param password The password used to connect
 	 * @throws SQLException if a database access error occurs
 	 * @throws ClassNotFoundException if the Driver class cannot be found
+	 * @return True if the data source was successfully created and tested
 	 */
-	private void createDataSource(String host, int port, String database, String username, String password)
+	private boolean createDataSource(String host, int port, String database, String username, String password)
 			throws SQLException, ClassNotFoundException {
 
 		MysqlDataSource dataSource = new MysqlConnectionPoolDataSource();
@@ -290,12 +295,14 @@ public final class Parallelutils extends JavaPlugin {
 		dataSource.setUser(username);
 		dataSource.setPassword(password);
 		dataSource.setAutoReconnect(true); // Hopefully this fixes the database issues...
+		dataSource.setMaxReconnects(1);
+		dataSource.setConnectTimeout(5000);
 
 		this.dataSource = dataSource;
 
 		Connection conn = testAndGetConnection(dataSource);
 
-
+		return conn != null;
 	}
 
 	/**
