@@ -26,3 +26,7 @@ github_token: githubApiToken
 
 # Sunken Treasure
 treasure_loot: sunkenTreasureLootTable
+
+# Parallel Chat
+chat:
+  format: "{deluxetags_tag}&7{DISPLAYNAME}&r &7>&r {MESSAGE}"
