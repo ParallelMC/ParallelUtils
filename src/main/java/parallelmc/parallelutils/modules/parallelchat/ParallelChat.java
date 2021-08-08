@@ -11,6 +11,14 @@ import parallelmc.parallelutils.modules.parallelchat.events.OnChatMessage;
 import java.util.logging.Level;
 
 public class ParallelChat implements ParallelModule {
+
+    private final ChatOptions options;
+
+    public ParallelChat(ChatOptions options) {
+        this.options = options;
+        Parallelutils.log(Level.INFO, options.getFormat());
+    }
+
     @Override
     public void onEnable() {
         PluginManager manager = Bukkit.getPluginManager();

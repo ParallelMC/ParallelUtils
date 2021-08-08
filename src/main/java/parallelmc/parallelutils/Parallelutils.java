@@ -4,6 +4,7 @@ import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.commands.ParallelCommand;
@@ -14,6 +15,7 @@ import parallelmc.parallelutils.modules.customtrees.ParallelTrees;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
 import parallelmc.parallelutils.modules.expstorage.ExpStorage;
 import parallelmc.parallelutils.modules.gamemode4.beehiveInspector.BeehiveInspector;
+import parallelmc.parallelutils.modules.parallelchat.ChatOptions;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.parallelflags.ParallelFlags;
 import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
@@ -57,6 +59,7 @@ public final class Parallelutils extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		ConfigurationSerialization.registerClass(ChatOptions.class, "ChatOptions");
 		// Plugin startup logic
 
 		config.options().copyDefaults(true);
@@ -227,7 +230,9 @@ public final class Parallelutils extends JavaPlugin {
 		}
 
 		try {
-			ParallelChat parallelChat = new ParallelChat();
+			ChatOptions options = config.getSerializable("chat", ChatOptions.class, ChatOptions.DEFAULT);
+
+			ParallelChat parallelChat = new ParallelChat(options);
 			parallelChat.onEnable();
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelChat!");
