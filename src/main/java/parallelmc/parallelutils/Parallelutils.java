@@ -42,7 +42,7 @@ public final class Parallelutils extends JavaPlugin {
 
 	public static Level LOG_LEVEL = Level.INFO;
 
-	FileConfiguration config = this.getConfig();
+	FileConfiguration config;
 
 	private DataSource dataSource;
 
@@ -61,6 +61,8 @@ public final class Parallelutils extends JavaPlugin {
 	public void onEnable() {
 		ConfigurationSerialization.registerClass(ChatOptions.class, "ChatOptions");
 		// Plugin startup logic
+
+		config = this.getConfig();
 
 		config.options().copyDefaults(true);
 		config.options().copyHeader(true);
