@@ -56,7 +56,7 @@ public class ParallelItems implements ParallelModule {
     /**
      * Method to register ItemStacks for each type of ParallelItem
      */
-    private void registerItems(){
+    private void registerItems() {
         PluginManager manager = Bukkit.getPluginManager();
         JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
         if (plugin == null) {
@@ -68,7 +68,7 @@ public class ParallelItems implements ParallelModule {
         NamespacedKey key = new NamespacedKey(plugin, "ParallelItem");
 
         ItemStack aoeBonemeal = new ItemStack(Material.BONE_MEAL);
-        try{
+        try {
             ItemMeta boneMeta = aoeBonemeal.getItemMeta();
             TextComponent name = Component.text("Enhanced Fertilizer", NamedTextColor.DARK_GREEN)
                     .decoration(TextDecoration.ITALIC, false);
@@ -83,8 +83,7 @@ public class ParallelItems implements ParallelModule {
             boneMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 1);
 
             aoeBonemeal.setItemMeta(boneMeta);
-        }
-        catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Parallelutils.log(Level.WARNING,"NullPointerException registering enhanced_fertilizer. " +
                     "Item will not work!");
             e.printStackTrace();
@@ -93,7 +92,7 @@ public class ParallelItems implements ParallelModule {
         itemRegistry.put("enhanced_fertilizer", aoeBonemeal);
 
         ItemStack baguette = new ItemStack(Material.BREAD);
-        try{
+        try {
             ItemMeta breada = baguette.getItemMeta();
             TextComponent name = Component.text("Baguette", NamedTextColor.WHITE)
                     .decoration(TextDecoration.ITALIC, false);
@@ -103,8 +102,7 @@ public class ParallelItems implements ParallelModule {
             breada.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 2);
 
             baguette.setItemMeta(breada);
-        }
-        catch (NullPointerException e){
+        } catch (NullPointerException e) {
             Parallelutils.log(Level.WARNING,"NullPointerException registering baguette. " +
                     "Item will not work!");
             e.printStackTrace();
