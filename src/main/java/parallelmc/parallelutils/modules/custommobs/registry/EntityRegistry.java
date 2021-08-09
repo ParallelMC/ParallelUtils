@@ -185,6 +185,14 @@ public class EntityRegistry {
 					);
 
 					Entity entity = ed.entity;
+
+					if (entity == null) {
+						Parallelutils.log(Level.WARNING, "Entity is null. Will not update!");
+						statement.close();
+						conn.close();
+						return;
+					}
+
 					CraftEntity craftEntity = entity.getBukkitEntity();
 
 					String uuid = craftEntity.getUniqueId().toString();
