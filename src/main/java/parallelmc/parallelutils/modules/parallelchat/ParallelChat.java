@@ -6,6 +6,7 @@ import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.parallelchat.events.ChatFormatterListener;
 import parallelmc.parallelutils.modules.parallelchat.events.OnChatMessage;
 
 import java.util.logging.Level;
@@ -38,7 +39,8 @@ public class ParallelChat implements ParallelModule {
             return;
         }
 
-        manager.registerEvents(new OnChatMessage(), puPlugin);
+        //manager.registerEvents(new OnChatMessage(), puPlugin);
+        manager.registerEvents(new ChatFormatterListener(options), puPlugin);
     }
 
     @Override
