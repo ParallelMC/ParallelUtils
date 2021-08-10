@@ -23,6 +23,16 @@ commands:
     description: Withdraw exp from the player's ender chest
     usage: /withdrawexp <amount | all>
     permission-message: You do not have permission
+  fakejoin:
+    description: Sends a fake join message in chat
+    usage: /fakejoin [player]
+    permission: parallelutils.fakelogin
+    permission-message: You do not have permission
+  fakeleave:
+    description: Sends a fake leave message in chat
+    usage: /fakeleave [player]
+    permission: parallelutils.fakelogin
+    permission-message: You do not have permission
 permissions:
   parallelutils.*:
     description: Gives access to all PU commands
@@ -73,4 +83,7 @@ permissions:
     default: false
   parallelutils.effects:
     description: Gives access to effects debug command
+    default: false
+  parallelutils.fakelogin:
+    description: Gives access to fakejoin and fakeleave commands
     default: false
