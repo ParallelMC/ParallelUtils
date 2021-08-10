@@ -45,4 +45,14 @@ public class ExpStorage implements ParallelModule {
 	public void onDisable() {
 
 	}
+
+	/**
+	 * Sends a chat message to a player
+	 * @param player The player to send the message to
+	 * @param message The message to send
+	 */
+	public static void sendMessageTo(Player player, String message) {
+		Component msg = Component.text("§3[§f§lP§3] §a" + message);
+		player.sendMessage(msg);
+	}
 }
