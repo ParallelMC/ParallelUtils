@@ -9,7 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.expstorage.ExpDatabase;
-import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
+import parallelmc.parallelutils.modules.expstorage.ExpStorage;
 
 import java.util.logging.Level;
 
@@ -27,14 +27,14 @@ public class WithdrawExperience implements CommandExecutor {
 	public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, String[] args) {
 		if (commandSender instanceof Player player) {
 			if (player.getWorld().getBlockAt(player.getLocation()).getType() != Material.ENDER_CHEST) {
-				ParallelChat.sendMessageTo(player, "You must be standing on top of an Ender Chest to run this command!");
+				ExpStorage.sendMessageTo(player, "You must be standing on top of an Ender Chest to run this command!");
 				return true;
 			}
 			String uuid = player.getUniqueId().toString();
 
 			int totalExp = db.getExpForPlayer(uuid);
 			if (args.length == 0 || totalExp == 0) {
-				ParallelChat.sendMessageTo(player, "You have " + totalExp + " experience points available to withdraw.");
+				ExpStorage.sendMessageTo(player, "You have " + totalExp + " experience points available to withdraw.");
 				return true;
 			}
 			String amount = args[0].toLowerCase();
@@ -52,12 +52,12 @@ public class WithdrawExperience implements CommandExecutor {
 				}
 
 				if (requestedExperience <= 0) {
-					ParallelChat.sendMessageTo(player, "You cannot withdraw zero or negative experience points!");
+					ExpStorage.sendMessageTo(player, "You cannot withdraw zero or negative experience points!");
 					return true;
 				}
 
 				if (totalExp < requestedExperience) {
-					ParallelChat.sendMessageTo(player, "You do not have enough stored experience points to withdraw " + requestedExperience + " points!");
+					ExpStorage.sendMessageTo(player, "You do not have enough stored experience points to withdraw " + requestedExperience + " points!");
 					return true;
 				}
 
@@ -75,13 +75,13 @@ public class WithdrawExperience implements CommandExecutor {
 	// Run an async task to execute the database code
 	// On completion, run the callback
 	private void withdrawExp(int amount, String uuid, Player player) {
-		ParallelChat.sendMessageTo(player, "Withdrawing...");
+		ExpStorage.sendMessageTo(player, "Withdrawing...");
 		depositWithCallback(amount, uuid, player,
 				(amount1, player12) -> {
 					player12.giveExp(amount1);
-					ParallelChat.sendMessageTo(player12, "Withdrew " + amount1 + " experience points!");
+					ExpStorage.sendMessageTo(player12, "Withdrew " + amount1 + " experience points!");
 				},
-				player1 -> ParallelChat.sendMessageTo(player1, "Failed to withdraw exp!"));
+				player1 -> ExpStorage.sendMessageTo(player1, "Failed to withdraw exp!"));
 	}
 
 	private void depositWithCallback(int amount, String uuid, Player player,
