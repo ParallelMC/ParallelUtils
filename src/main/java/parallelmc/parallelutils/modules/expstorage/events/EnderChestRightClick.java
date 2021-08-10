@@ -9,7 +9,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.expstorage.ExpDatabase;
-import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
+import parallelmc.parallelutils.modules.expstorage.ExpStorage;
 
 public class EnderChestRightClick implements Listener {
 
@@ -33,7 +33,7 @@ public class EnderChestRightClick implements Listener {
 					@Override
 					public void run() {
 						int totalExp = db.getExpForPlayer(player.getUniqueId().toString());
-						ParallelChat.sendMessageTo(player, "You currently have " + totalExp + " stored experience.");
+						ExpStorage.sendMessageTo(player, "You currently have " + totalExp + " stored experience.");
 					}
 				});
 			}

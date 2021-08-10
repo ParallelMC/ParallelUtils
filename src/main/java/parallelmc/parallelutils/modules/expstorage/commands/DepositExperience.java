@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.expstorage.ExpConverter;
 import parallelmc.parallelutils.modules.expstorage.ExpDatabase;
-import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
+import parallelmc.parallelutils.modules.expstorage.ExpStorage;
 
 import java.util.logging.Level;
 
@@ -29,12 +29,12 @@ public class DepositExperience implements CommandExecutor {
 		if (commandSender instanceof Player player) {
 			// make sure they are standing on an ender chest
 			if (player.getWorld().getBlockAt(player.getLocation()).getType() != Material.ENDER_CHEST) {
-				ParallelChat.sendMessageTo(player, "You must be standing on top of an Ender Chest to run this command!");
+				ExpStorage.sendMessageTo(player, "You must be standing on top of an Ender Chest to run this command!");
 				return true;
 			}
 			int totalExp = ExpConverter.getPlayerCurrentExp(player);
 			if (args.length == 0) {
-				ParallelChat.sendMessageTo(player, "You have " + totalExp + " experience points available to deposit.");
+				ExpStorage.sendMessageTo(player, "You have " + totalExp + " experience points available to deposit.");
 				return true;
 			}
 			String amount = args[0].toLowerCase();
@@ -55,12 +55,12 @@ public class DepositExperience implements CommandExecutor {
 				}
 
 				if (requestedExperience <= 0) {
-					ParallelChat.sendMessageTo(player, "You cannot deposit zero or negative experience points!");
+					ExpStorage.sendMessageTo(player, "You cannot deposit zero or negative experience points!");
 					return true;
 				}
 
 				if (requestedExperience > totalExp) {
-					ParallelChat.sendMessageTo(player, "You do not have enough experience points to deposit " + requestedExperience + " points!");
+					ExpStorage.sendMessageTo(player, "You do not have enough experience points to deposit " + requestedExperience + " points!");
 					return true;
 				}
 
@@ -77,13 +77,13 @@ public class DepositExperience implements CommandExecutor {
 	// Run an async task to execute the database code
 	// On completion, run the callback
 	private void depositExp(int amount, String uuid, Player player) {
-		ParallelChat.sendMessageTo(player, "Depositing...");
+		ExpStorage.sendMessageTo(player, "Depositing...");
 		depositWithCallback(amount, uuid, player,
 				(amount1, player12) -> {
 					player12.giveExp(-amount1);
-					ParallelChat.sendMessageTo(player12, "Deposited " + amount1 + " experience points!");
+					ExpStorage.sendMessageTo(player12, "Deposited " + amount1 + " experience points!");
 				},
-				player1 -> ParallelChat.sendMessageTo(player1, "Failed to deposit exp!"));
+				player1 -> ExpStorage.sendMessageTo(player1, "Failed to deposit exp!"));
 	}
 
 	private void depositWithCallback(int amount, String uuid, Player player,
