@@ -4,6 +4,7 @@ import io.papermc.paper.chat.ChatRenderer;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -31,12 +32,14 @@ public class ParallelRenderer implements ChatRenderer {
 
 		Component formattedComponent = LegacyComponentSerializer.legacyAmpersand().deserialize(formatted);
 
-		try {
+		/*try {
 			formattedComponent = formattedComponent.replaceText(x -> x.once().match("\\{displayname\\}").replacement(player.displayName()));
 			formattedComponent = formattedComponent.replaceText(x -> x.match("\\{MESSAGE\\}|\\{message\\}").replacement(message));
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+		}*/
+
+		Parallelutils.log(Level.INFO, GsonComponentSerializer.gson().serialize(formattedComponent));
 
 		return formattedComponent;
 	}
