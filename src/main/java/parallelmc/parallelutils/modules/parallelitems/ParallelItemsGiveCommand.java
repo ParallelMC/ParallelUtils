@@ -119,7 +119,7 @@ public class ParallelItemsGiveCommand extends ParallelCommand {
                         }
                     }
                 }
-                case "space_helmet" -> {
+                case "space_helmet_red" -> {
                     HashMap<Integer, ItemStack> results = inv.addItem(parallelItems.getItem("space_helmet_red")
                             .asQuantity(amt));
                     if (!results.isEmpty()) {
