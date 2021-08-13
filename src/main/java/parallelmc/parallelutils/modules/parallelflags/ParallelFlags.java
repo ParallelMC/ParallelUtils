@@ -13,6 +13,8 @@ import parallelmc.parallelutils.modules.parallelflags.events.ParallelFlagsIntera
 import parallelmc.parallelutils.modules.parallelflags.events.ParallelFlagsPlaceListener;
 import parallelmc.parallelutils.modules.parallelflags.session.CustomArmorDeny;
 import parallelmc.parallelutils.modules.parallelflags.session.CustomArmorHealth;
+import parallelmc.parallelutils.modules.parallelflags.session.ElytraFlagHandler;
+import parallelmc.parallelutils.modules.parallelflags.session.FlyFlagHandler;
 
 import java.util.logging.Level;
 
@@ -118,6 +120,13 @@ public class ParallelFlags implements ParallelModule {
 			}
 
 
+			if (!registry.addStateflag("parallel-fly", false)) {
+				Parallelutils.log(Level.WARNING, "Unable to create parallel-fly flag. Will not use");
+			}
+			if (!registry.addStateflag("parallel-glide", false)) {
+				Parallelutils.log(Level.WARNING, "Unable to create parallel-glide flag. Will not use");
+			}
+
 		} catch (NoClassDefFoundError e) {
 			Parallelutils.log(Level.SEVERE, "Unable to load WorldGuard! Something is wrong!");
 		}
@@ -145,6 +154,8 @@ public class ParallelFlags implements ParallelModule {
 
 		sessionManager.registerHandler(CustomArmorDeny.FACTORY, null);
 		sessionManager.registerHandler(CustomArmorHealth.FACTORY, null);
+		sessionManager.registerHandler(FlyFlagHandler.FACTORY, null);
+		sessionManager.registerHandler(ElytraFlagHandler.FACTORY, null);
 
 		manager.registerEvents(new ParallelFlagsInteractListener(), plugin);
 		manager.registerEvents(new ParallelFlagsPlaceListener(), plugin);
