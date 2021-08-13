@@ -160,7 +160,7 @@ public class CustomArmorHealth extends Handler {
 			if (message != null) {
 				player.printRaw(CommandUtils.replaceColorMacros(message));
 			}
-		} else if (now - lastDamage > damageDelay * 1000) {
+		} else if (now - lastDamage >= damageDelay * 1000) {
 			// clamp health between minimum and maximum
 			if (bukkitPlayer.getPlayer().getHealth() - damageAmount <= 0) {
 				String deathMessage = set.queryValue(player, customFlagRegistry.getStringFlag("custom-armor-damage-death"));
