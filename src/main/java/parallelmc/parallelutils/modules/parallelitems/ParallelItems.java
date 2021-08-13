@@ -119,9 +119,9 @@ public class ParallelItems implements ParallelModule {
             e.printStackTrace();
         }
 
-        ItemStack spaceHelmet = new ItemStack(Material.PAPER);
+        ItemStack spaceHelmetRed = new ItemStack(Material.PAPER);
         try {
-            net.minecraft.world.item.ItemStack nmsStack = CraftItemStack.asNMSCopy(spaceHelmet);
+            net.minecraft.world.item.ItemStack nmsStack = CraftItemStack.asNMSCopy(spaceHelmetRed);
 
             NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
             NBTTagList modifiers = new NBTTagList();
@@ -146,9 +146,9 @@ public class ParallelItems implements ParallelModule {
             compound.set("AttributeModifiers", modifiers);
             nmsStack.setTag(compound);
 
-            spaceHelmet = CraftItemStack.asBukkitCopy(nmsStack);
+            spaceHelmetRed = CraftItemStack.asBukkitCopy(nmsStack);
 
-            ItemMeta helmetMeta = spaceHelmet.getItemMeta();
+            ItemMeta helmetMeta = spaceHelmetRed.getItemMeta();
             TextComponent name = Component.text("Red Astronaut Hat", NamedTextColor.DARK_RED)
                     .decoration(TextDecoration.BOLD, true)
                     .decoration(TextDecoration.ITALIC, false);
@@ -163,10 +163,10 @@ public class ParallelItems implements ParallelModule {
 
             helmetMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 3);
 
-            spaceHelmet.setItemMeta(helmetMeta);
+            spaceHelmetRed.setItemMeta(helmetMeta);
 
-            itemRegistry.put("space_helmet", spaceHelmet);
-            itemRegistryId.put(3, spaceHelmet);
+            itemRegistry.put("space_helmet_red", spaceHelmetRed);
+            itemRegistryId.put(3, spaceHelmetRed);
         } catch (NullPointerException e) {
             Parallelutils.log(Level.WARNING, "NullPointerException registering space helmet. " +
                     "Item will not work!");
