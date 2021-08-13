@@ -125,7 +125,7 @@ public class ParallelItems implements ParallelModule {
 
             NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
             NBTTagList modifiers = new NBTTagList();
-            
+
             NBTTagCompound armor = new NBTTagCompound();
             armor.set("AttributeName", NBTTagString.a("generic.armor"));
             armor.set("Name", NBTTagString.a("generic.armor"));
@@ -135,8 +135,6 @@ public class ParallelItems implements ParallelModule {
             armor.set("UUIDMost", NBTTagInt.a(2872));
             armor.set("Slot", NBTTagString.a("head"));
             modifiers.add(armor);
-            compound.set("AttributeModifiers", modifiers);
-            nmsStack.setTag(compound);
 
             NBTTagCompound toughness = new NBTTagCompound();
             toughness.set("AttributeName", NBTTagString.a("generic.armor_toughness"));
@@ -147,6 +145,9 @@ public class ParallelItems implements ParallelModule {
             toughness.set("UUIDMost", NBTTagInt.a(2872));
             toughness.set("Slot", NBTTagString.a("head"));
             modifiers.add(toughness);
+
+            compound.set("AttributeModifiers", modifiers);
+            nmsStack.setTag(compound);
 
             spaceHelmetRed = CraftItemStack.asBukkitCopy(nmsStack);
 
