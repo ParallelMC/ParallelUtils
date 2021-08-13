@@ -125,15 +125,7 @@ public class ParallelItems implements ParallelModule {
 
             NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
             NBTTagList modifiers = new NBTTagList();
-            NBTTagCompound toughness = new NBTTagCompound();
-            toughness.set("AttributeName", NBTTagString.a("generic.armor_toughness"));
-            toughness.set("Name", NBTTagString.a("generic.armor_toughness"));
-            toughness.set("Amount", NBTTagInt.a(2));
-            toughness.set("Operation", NBTTagInt.a(0));
-            toughness.set("UUIDLeast", NBTTagInt.a(894654));
-            toughness.set("UUIDMost", NBTTagInt.a(2872));
-            toughness.set("Slot", NBTTagString.a("head"));
-            modifiers.add(toughness);
+            
             NBTTagCompound armor = new NBTTagCompound();
             armor.set("AttributeName", NBTTagString.a("generic.armor"));
             armor.set("Name", NBTTagString.a("generic.armor"));
@@ -145,6 +137,16 @@ public class ParallelItems implements ParallelModule {
             modifiers.add(armor);
             compound.set("AttributeModifiers", modifiers);
             nmsStack.setTag(compound);
+
+            NBTTagCompound toughness = new NBTTagCompound();
+            toughness.set("AttributeName", NBTTagString.a("generic.armor_toughness"));
+            toughness.set("Name", NBTTagString.a("generic.armor_toughness"));
+            toughness.set("Amount", NBTTagInt.a(2));
+            toughness.set("Operation", NBTTagInt.a(0));
+            toughness.set("UUIDLeast", NBTTagInt.a(894654));
+            toughness.set("UUIDMost", NBTTagInt.a(2872));
+            toughness.set("Slot", NBTTagString.a("head"));
+            modifiers.add(toughness);
 
             spaceHelmetRed = CraftItemStack.asBukkitCopy(nmsStack);
 
