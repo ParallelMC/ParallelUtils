@@ -55,6 +55,20 @@ public class PlayerInteractListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerInteract(PlayerInteractEvent event) {
+        // Feather falling on boots cancels player crop trampling
+        if (event.getAction() == Action.PHYSICAL) {
+            Block block = event.getClickedBlock();
+            if (block != null && block.getType() == Material.FARMLAND) {
+                ItemStack boots = event.getPlayer().getInventory().getBoots();
+                if (boots != null) {
+                    if (boots.getItemMeta().hasEnchant(Enchantment.PROTECTION_FALL)) {
+                        event.setCancelled(true);
+                        return;
+                    }
+                }
+            }
+        }
+
         if (event.hasItem()) {
             ItemStack item = event.getItem();
 
@@ -128,9 +142,9 @@ public class PlayerInteractListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGH)
-    public void onHumanEat(FoodLevelChangeEvent event){
+    public void onHumanEat(FoodLevelChangeEvent event) {
         ItemStack item = event.getItem();
-        if(item != null){
+        if(item != null) {
             ItemMeta meta = item.getItemMeta();
 
             Integer val = meta.getPersistentDataContainer().get(customKey, PersistentDataType.INTEGER);
@@ -138,8 +152,8 @@ public class PlayerInteractListener implements Listener {
                 return;
             }
 
-            switch(val){
-                case 2 -> { //presumably, a baguette
+            switch(val) {
+                case 2 -> { // presumably, a baguette
                     if(item.getType() != Material.BREAD) {
                         Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:2' are " +
                                 "baguette, but this is not the correct material. Something isn't right.");
@@ -147,21 +161,19 @@ public class PlayerInteractListener implements Listener {
                     }
 
 
-                    if(event.getFoodLevel() >= 15 && event.getFoodLevel() < 20){
+                    if(event.getFoodLevel() >= 15 && event.getFoodLevel() < 20) {
                         event.setFoodLevel(20);
-                    }
-                    else{
+                    } else {
                         event.setFoodLevel(event.getFoodLevel() + 5);
                     }
 
                     HumanEntity entity = event.getEntity();
-                    if(entity.getSaturation() >= event.getFoodLevel()){
+                    if(entity.getSaturation() >= event.getFoodLevel()) {
                         return;
                     }
-                    if(entity.getSaturation() >= event.getFoodLevel()-6.0){
+                    if(entity.getSaturation() >= event.getFoodLevel()-6.0) {
                         entity.setSaturation(event.getFoodLevel());
-                    }
-                    else{
+                    } else {
                         entity.setSaturation((float)(entity.getSaturation()+6.0));
                     }
                 }
