@@ -41,11 +41,11 @@ public class PerformanceTools implements ParallelModule {
 		puPlugin.addCommand("loadedChunks", new FindLoadedChunksCommand());
 
 		//start searching for chunk loaders every [time]
-		loaderDetector = new LoaderDetectorTask().runTaskTimer(plugin,0,20*60*60*CLDhours);
+		//loaderDetector = new LoaderDetectorTask().runTaskTimer(plugin,0,20*60*60*CLDhours);
 	}
 
 	@Override
 	public void onDisable() {
-		loaderDetector.cancel();
+		//loaderDetector.cancel();
 	}
 }
