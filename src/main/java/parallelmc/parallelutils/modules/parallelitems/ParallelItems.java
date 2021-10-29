@@ -184,7 +184,7 @@ public class ParallelItems implements ParallelModule {
             candyMeta.setCustomModelData(1000000);
 
             ArrayList<Component> lore = new ArrayList<>();
-            lore.add(Component.text("It's flavor is unique, and", NamedTextColor.GOLD));
+            lore.add(Component.text("Its flavor is unique, and", NamedTextColor.GOLD));
             lore.add(Component.text("always changing. Quite spooky!", NamedTextColor.GOLD));
             candyMeta.lore(lore);
 
