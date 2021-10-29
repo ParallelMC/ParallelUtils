@@ -32,14 +32,17 @@ import java.util.logging.Level;
 // TODO: Add proper versioning to prevent loading invalid configs/data
 public final class Parallelutils extends JavaPlugin {
 
+	private static final String HEADER =
+			"""
+					#################
+					# ParallelUtils #
+					#################""";
+
 	public static Level LOG_LEVEL = Level.INFO;
 
-	String baseDataFolder = this.getDataFolder().getAbsolutePath();
 	FileConfiguration config = this.getConfig();
 
 	private DataSource dataSource;
-
-	private static boolean finishedSetup = false;
 
 	private HashMap<String, ParallelModule> registeredModules;
 	private Commands commands;
@@ -54,13 +57,14 @@ public final class Parallelutils extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		finishedSetup = false;
 		// Plugin startup logic
 
-		// TODO: Make this read the config properly and actually generate it when it's not there
+		config.options().copyDefaults(true);
+		config.options().copyHeader(true);
+		config.options().header(HEADER);
+
 		// Read config
 		this.saveDefaultConfig();
-		this.reloadConfig();
 
 		int logLevel = config.getInt("debug", 2);
 
@@ -77,7 +81,7 @@ public final class Parallelutils extends JavaPlugin {
 		// Check version
 		String github_token = config.getString("github_token");
 
-		if (github_token != null && !github_token.trim().equals("")) {
+		if (github_token != null && !github_token.trim().equals("") && !github_token.trim().equals("githubApiToken")) {
 			// Actually check version
 			UpdateChecker checker = new UpdateChecker(github_token);
 			Version latestVersion = checker.getLatestVersion();
@@ -129,15 +133,19 @@ public final class Parallelutils extends JavaPlugin {
 			}
 		}
 
-
-		saveConfig();
-
 		// Connect to database
 
 		try {
-			createDataSource(host, port, database, username, password);
+			if (!createDataSource(host, port, database, username, password)) {
+				Parallelutils.log(Level.SEVERE, "Unable to establish data source. Quitting...");
+				Bukkit.getPluginManager().disablePlugin(this);
+				return;
+			}
 		} catch (SQLException | ClassNotFoundException e) {
 			e.printStackTrace();
+			Parallelutils.log(Level.SEVERE, "Unable to establish data source. Quitting...");
+			Bukkit.getPluginManager().disablePlugin(this);
+			return;
 		}
 
 		commands = new Commands();
@@ -246,8 +254,6 @@ public final class Parallelutils extends JavaPlugin {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelFlags!");
 			e.printStackTrace();
 		}
-
-		finishedSetup = true;
 	}
 
 	@Override
@@ -276,8 +282,9 @@ public final class Parallelutils extends JavaPlugin {
 	 * @param password The password used to connect
 	 * @throws SQLException if a database access error occurs
 	 * @throws ClassNotFoundException if the Driver class cannot be found
+	 * @return True if the data source was successfully created and tested
 	 */
-	private void createDataSource(String host, int port, String database, String username, String password)
+	private boolean createDataSource(String host, int port, String database, String username, String password)
 			throws SQLException, ClassNotFoundException {
 
 		MysqlDataSource dataSource = new MysqlConnectionPoolDataSource();
@@ -288,12 +295,14 @@ public final class Parallelutils extends JavaPlugin {
 		dataSource.setUser(username);
 		dataSource.setPassword(password);
 		dataSource.setAutoReconnect(true); // Hopefully this fixes the database issues...
+		dataSource.setMaxReconnects(1);
+		dataSource.setConnectTimeout(5000);
 
 		this.dataSource = dataSource;
 
 		Connection conn = testAndGetConnection(dataSource);
 
-
+		return conn != null;
 	}
 
 	/**

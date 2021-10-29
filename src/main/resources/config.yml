@@ -14,15 +14,15 @@ sql:
   password: pass
 
 # Discord Bot Integration
-token:
-staff_channel_id:
-vp_message_channel:
-vp_message_id:
-server_id:
-staff_id:
+token: discordApiToken
+staff_channel_id: staffChannelId
+vp_message_channel: discordVotePartyMessageChannel
+vp_message_id: discordVotePartyMessageId
+server_id: discordServerId
+staff_id: discordStaffRoleId
 
 # Github integration for version checking
-github_token:
+github_token: githubApiToken
 
 # Sunken Treasure
-treasure_loot:
+treasure_loot: sunkenTreasureLootTable
