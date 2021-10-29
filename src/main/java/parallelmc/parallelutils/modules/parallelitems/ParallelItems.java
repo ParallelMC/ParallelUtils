@@ -174,6 +174,31 @@ public class ParallelItems implements ParallelModule {
             Parallelutils.log(Level.WARNING, "NullPointerException registering space helmet. " +
                     "Item will not work!");
         }
+
+        ItemStack candy = new ItemStack(Material.COOKIE);
+        try {
+            ItemMeta candyMeta = candy.getItemMeta();
+            TextComponent name = Component.text("Spooky Candy", NamedTextColor.DARK_PURPLE)
+                    .decoration(TextDecoration.ITALIC, false);
+            candyMeta.displayName(name);
+            candyMeta.setCustomModelData(1000000);
+
+            ArrayList<Component> lore = new ArrayList<>();
+            lore.add(Component.text("It's flavor is unique, and", NamedTextColor.GOLD));
+            lore.add(Component.text("always changing. Quite spooky!", NamedTextColor.GOLD));
+            candyMeta.lore(lore);
+
+            candyMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 4);
+
+            candy.setItemMeta(candyMeta);
+
+            itemRegistry.put("candy", candy);
+            itemRegistryId.put(4, candy);
+        } catch (NullPointerException e) {
+            Parallelutils.log(Level.WARNING,"NullPointerException registering candy. " +
+                    "Item will not work!");
+            e.printStackTrace();
+        }
     }
 
     @Override
