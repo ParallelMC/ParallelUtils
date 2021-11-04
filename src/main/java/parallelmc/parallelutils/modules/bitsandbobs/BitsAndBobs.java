@@ -6,7 +6,8 @@ import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.modules.bitsandbobs.events.DoorKnocker;
+import parallelmc.parallelutils.modules.bitsandbobs.minimodules.DoorKnocker;
+import parallelmc.parallelutils.modules.bitsandbobs.minimodules.SpeedyMinecarts;
 
 import java.util.logging.Level;
 
@@ -28,7 +29,7 @@ public class BitsAndBobs implements ParallelModule {
             return;
         }
 
-
+        manager.registerEvents(new SpeedyMinecarts(), plugin);
         manager.registerEvents(new DoorKnocker(), plugin);
     }
 
