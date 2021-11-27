@@ -10,6 +10,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
+import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.util.BukkitTools;
 
 import javax.naming.Name;
@@ -80,7 +81,7 @@ public class CharmOptions {
 		NamespacedKey matKey = new NamespacedKey(plugin, "ParallelCharm.AllowedMats.Mat");
 		int index = 0;
 		for (Material m : allowedMaterials) {
-			PersistentDataContainer matContainer = pdc.getAdapterContext().newPersistentDataContainer();
+			PersistentDataContainer matContainer = charmsContainer.getAdapterContext().newPersistentDataContainer();
 			matContainer.set(matKey, PersistentDataType.STRING, m.getKey().asString());
 			matsArr[index] = matContainer;
 
@@ -91,7 +92,53 @@ public class CharmOptions {
 				PersistentDataType.TAG_CONTAINER_ARRAY, matsArr);
 
 
-		// TODO: Add effects storage
+		int effectsIndex = 0;
+		PersistentDataContainer[] effectsArr = new PersistentDataContainer[effects.size()];
+		// TODO: Make this less of a steaming pile of spaghetti
+		NamespacedKey effectsKey = new NamespacedKey(plugin, "ParallelCharm.Effects");
+		for (HandlerType h : effects.keySet()) {
+			PersistentDataContainer effectContainer = charmsContainer.getAdapterContext().newPersistentDataContainer();
+			String handlerName = h.name();
+
+			// Hopefully these keys are unique locally and not globally
+			effectContainer.set(new NamespacedKey(plugin, "ParallelCharm.Effects.handler"),
+					PersistentDataType.STRING, handlerName);
+
+			HashMap<String, EncapsulatedType> settings = effects.get(h).getSettings();
+
+			int settingsIndex = 0;
+			PersistentDataContainer[] settingsArr = new PersistentDataContainer[settings.size()];
+
+			for (String sName : settings.keySet()) {
+				PersistentDataContainer setting = effectContainer.getAdapterContext().newPersistentDataContainer();
+
+				setting.set(new NamespacedKey(plugin, "ParallelCharm.Effects.settings.name"),
+						PersistentDataType.STRING, sName);
+
+				EncapsulatedType encapsulatedType = settings.get(sName);
+
+				NamespacedKey valKey = new NamespacedKey(plugin, "ParallelCharm.Effects.settings.value");
+				switch (encapsulatedType.getType()) {
+					case BYTE -> setting.set(valKey, PersistentDataType.BYTE, (Byte) encapsulatedType.getVal());
+					case INT -> setting.set(valKey, PersistentDataType.INTEGER, (Integer) encapsulatedType.getVal());
+					case DOUBLE -> setting.set(valKey, PersistentDataType.DOUBLE, (Double) encapsulatedType.getVal());
+					case LONG -> setting.set(valKey, PersistentDataType.LONG, (Long) encapsulatedType.getVal());
+					case STRING -> setting.set(valKey, PersistentDataType.STRING, (String) encapsulatedType.getVal());
+					default -> {
+						Parallelutils.log(Level.WARNING, "Invalid data type! Defaulting to string");
+						setting.set(valKey, PersistentDataType.STRING, (String) encapsulatedType.getVal());
+					}
+				}
+				settingsArr[settingsIndex++] = setting;
+			}
+
+			effectContainer.set(new NamespacedKey(plugin, "ParallelCharm.Effects.settings"),
+					PersistentDataType.TAG_CONTAINER_ARRAY, settingsArr);
+
+			effectsArr[effectsIndex++] = effectContainer;
+		}
+
+		charmsContainer.set(effectsKey, PersistentDataType.TAG_CONTAINER_ARRAY, effectsArr);
 
 		pdc.set(key, PersistentDataType.TAG_CONTAINER, charmsContainer);
 
