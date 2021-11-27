@@ -9,6 +9,7 @@ import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.ParallelHelpCommand;
 import parallelmc.parallelutils.commands.ParallelTestCommand;
+import parallelmc.parallelutils.modules.bitsandbobs.BitsAndBobs;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
 import parallelmc.parallelutils.modules.customtrees.ParallelTrees;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
@@ -239,6 +240,14 @@ public final class Parallelutils extends JavaPlugin {
 			expStorage.onEnable();
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ExpStorage!");
+			e.printStackTrace();
+		}
+
+		try {
+			BitsAndBobs bitsandbobs = new BitsAndBobs();
+			bitsandbobs.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module BitsAndBobs!");
 			e.printStackTrace();
 		}
 
