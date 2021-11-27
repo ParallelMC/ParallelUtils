@@ -30,9 +30,9 @@ public class BitsAndBobs implements ParallelModule {
             return;
         }
 
-        manager.registerEvents(new DoorKnocker(), plugin);
+        //manager.registerEvents(new DoorKnocker(), plugin);
         manager.registerEvents(new KeepSpecialItems(), plugin);
-        manager.registerEvents(new SpeedyMinecarts(), plugin);
+        //manager.registerEvents(new SpeedyMinecarts(), plugin);
     }
 
     @Override
