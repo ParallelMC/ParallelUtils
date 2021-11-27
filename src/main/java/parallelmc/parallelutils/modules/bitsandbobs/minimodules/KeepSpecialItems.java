@@ -3,7 +3,6 @@ package parallelmc.parallelutils.modules.bitsandbobs.minimodules;
 import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -19,15 +18,23 @@ public class KeepSpecialItems implements Listener {
 
     private final HashMap<UUID, ArrayList<ItemStack>> specialItemsLogger = new HashMap<>();
 
+    private final String[] SPECIAL_ITEMS = {"CustomHat", "CustomTrophy"};
+
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         // Creates an empty list for all items to be prevented from dropping
         ArrayList<ItemStack> preventedDrops = new ArrayList<>();
+
         for (ItemStack item : event.getDrops()) {
+            // TODO: This probably doesn't need to be dependent on item type. Just checking the tag is a bit more futureproof
             if (item.getType() == Material.PAPER) {
+                // TODO: Try to change this code to use item.getItemMeta().getPersistentDataContainer()
                 net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
                 // Grabs the NMS items compound and checks if it's null
                 NBTTagCompound compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new NBTTagCompound();
+
+                if (compound == null) continue;
+
                 if (compound.hasKey("CustomHat")) {
                     preventedDrops.add(item);
                 }
@@ -35,6 +42,9 @@ public class KeepSpecialItems implements Listener {
                 net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
                 // Grabs the NMS items compound and checks if it's null
                 NBTTagCompound compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new NBTTagCompound();
+
+                if (compound == null) continue;
+
                 if (compound.hasKey("CustomTrophy")) {
                     preventedDrops.add(item);
                 }
