@@ -20,6 +20,9 @@ public class DoorKnocker implements Listener {
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
                 if (!player.getGameMode().equals(GameMode.CREATIVE)) {
                     Block block = event.getClickedBlock();
+
+                    if (block == null) return;
+
                     // case for iron door
                     if (block.getType().name().contains("IRON_DOOR")) {
                         Location location = block.getLocation();
