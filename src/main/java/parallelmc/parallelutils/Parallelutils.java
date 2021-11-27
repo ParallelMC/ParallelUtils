@@ -247,7 +247,7 @@ public final class Parallelutils extends JavaPlugin {
 			BitsAndBobs bitsandbobs = new BitsAndBobs();
 			bitsandbobs.onEnable();
 		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module ExpStorage!");
+			Parallelutils.log(Level.SEVERE, "Error while enabling module BitsAndBobs!");
 			e.printStackTrace();
 		}
 
