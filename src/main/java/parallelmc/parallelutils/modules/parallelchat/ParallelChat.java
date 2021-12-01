@@ -5,8 +5,6 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -21,6 +19,9 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelchat.commands.*;
 import parallelmc.parallelutils.modules.parallelchat.events.*;
+import parallelmc.parallelutils.modules.parallelchat.events.OnChatMessage;
+import parallelmc.parallelutils.modules.parallelchat.commands.ParallelFakeJoin;
+import parallelmc.parallelutils.modules.parallelchat.commands.ParallelFakeLeave;
 
 import java.io.BufferedWriter;
 import java.io.File;

@@ -63,4 +63,8 @@ public class DiscordIntegration implements ParallelModule {
 			botManager.disable();
 		}
 	}
+
+	public BotManager getBotManager() {
+		return botManager;
+	}
 }
