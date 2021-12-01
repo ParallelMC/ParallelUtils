@@ -10,12 +10,12 @@ import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.ParallelHelpCommand;
 import parallelmc.parallelutils.commands.ParallelTestCommand;
+import parallelmc.parallelutils.modules.bitsandbobs.BitsAndBobs;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
 import parallelmc.parallelutils.modules.customtrees.ParallelTrees;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
 import parallelmc.parallelutils.modules.expstorage.ExpStorage;
 import parallelmc.parallelutils.modules.gamemode4.beehiveInspector.BeehiveInspector;
-import parallelmc.parallelutils.modules.parallelchat.ChatOptions;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.parallelflags.ParallelFlags;
 import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
@@ -59,7 +59,6 @@ public final class Parallelutils extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		ConfigurationSerialization.registerClass(ChatOptions.class, "ChatOptions");
 		// Plugin startup logic
 
 		config = this.getConfig();
@@ -232,9 +231,8 @@ public final class Parallelutils extends JavaPlugin {
 		}
 
 		try {
-			ChatOptions options = config.getSerializable("chat", ChatOptions.class, ChatOptions.DEFAULT);
 
-			ParallelChat parallelChat = new ParallelChat(options);
+			ParallelChat parallelChat = new ParallelChat();
 			parallelChat.onEnable();
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelChat!");
@@ -246,6 +244,14 @@ public final class Parallelutils extends JavaPlugin {
 			expStorage.onEnable();
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ExpStorage!");
+			e.printStackTrace();
+		}
+
+		try {
+			BitsAndBobs bitsandbobs = new BitsAndBobs();
+			bitsandbobs.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module BitsAndBobs!");
 			e.printStackTrace();
 		}
 
