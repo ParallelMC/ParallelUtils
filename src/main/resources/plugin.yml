@@ -4,7 +4,7 @@ main: parallelmc.parallelutils.Parallelutils
 api-version: 1.17
 authors: [Jake, Evelyn]
 description: A plugin containing miscellaneous features and changes for play.parallel.ga
-depend: [PlaceholderAPI]
+depend: [PlaceholderAPI, ProtocolLib]
 softdepend: [Multiverse-Core, FractalForest, WorldGuard, VoteParty, FrozenJoin]
 commands:
   parallelutils:
@@ -33,6 +33,67 @@ commands:
     usage: /fakeleave [player]
     permission: parallelutils.fakelogin
     permission-message: You do not have permission
+  msg:
+    description: Send a private message to a player
+    usage: /msg <player> <message>
+  r:
+    description: Reply to a recently messaged player
+    usage: /r <message>
+  sc:
+    description: Toggle or send a message in staff chat
+    usage: /sc [message]
+    permission: parallelutils.staffchat
+    permission-message: You do not have permission
+  tc:
+    description: Toggle or send a message in team chat
+    usage: /tc [message]
+    permission: parallelutils.teamchat
+    permission-message: You do not have permission
+  broadcast:
+    description: Broadcast a message to the server
+    usage: /broadcast (message)
+    permission: parallelutils.broadcast
+    permission-message: You do not have permission
+  announce:
+    description: Announce a message to the server
+    usage: /announce (message)
+    permission: parallelutils.announce
+    permission-message: You do not have permission
+  clearchat:
+    description: Clears chat
+    usage: /clearchat
+    permission: parallelutils.clearchat
+    permission-message: You do not have permission
+  socialspy:
+    description: Toggles social spy
+    usage: /socialspy
+    permission: parallelutils.socialspy
+    permission-message: You do not have permission
+  commandspy:
+    description: Toggles command spy
+    usage: /commandspy
+    permission: parallelutils.commandspy
+    permission-message: You do not have permission
+  mutechat:
+    description: Mute or unmute the chat
+    usage: /mutechat
+    permission: parallelutils.mutechat
+    permission-message: You do not have permission
+  colors:
+    description: View all chat colors
+    usage: /colors
+  formats:
+    description: View all chat formats
+    usage: /formats
+  starttutorial:
+    description: Starts a tutorial for a player
+    usage: /starttutorial (player) (tutorial)
+  listtutorials:
+    description: Lists all tutorials
+    usage: /listtutorials
+  reloadtutorials:
+    description: Reloads all tutorials
+    usage: /reloadtutorials
 permissions:
   parallelutils.*:
     description: Gives access to all PU commands
@@ -87,3 +148,61 @@ permissions:
   parallelutils.fakelogin:
     description: Gives access to fakejoin and fakeleave commands
     default: false
+  parallelutils.staffchat:
+    description: Gives access to reading and writing to staff chat
+  parallelutils.teamchat:
+    description: Gives access to reading and writing to team chat
+  parallelutils.broadcast:
+    description: Gives access to the broadcast command
+  parallelutils.announce:
+    description: Gives access to the announce command
+  parallelutils.mutechat:
+    description: Gives access to the mutechat command
+  parallelutils.socialspy:
+    description: Gives access to the SocialSpy command
+  parallelutils.commandspy:
+    description: Gives access to the CommandSpy command
+  parallelutils.clearchat:
+    description: Gives access to the clearchat command
+  parallelutils.starttutorial:
+    description: Gives access to starttutorial command
+  parallelutils.listtutorials:
+    description: Gives access to listtutorials command
+  parallelutils.reloadtutorials:
+    description: Gives access to reloadtutorials command
+  parallelutils.chat:
+    description: Gives access to chat elemets
+    children:
+      parallelutils.chat.colors: true
+      parallelutils.chat.formats: true
+  parallelutils.chat.colors:
+    description: Gives access to chat colors
+  parallelutils.chat.formats:
+    description: Gives access to chat formatting
+  parallelutils.bypass:
+    description: Bypasses some ParallelUtils modules
+    children:
+      parallelutils.bypass.anticaps: true
+      parallelutils.bypass.antislur: true
+      parallelutils.bypass.clearchat: true
+      parallelutils.bypass.socialspy: true
+      parallelutils.bypass.commandspy: true
+      parallelutils.bypass.mutechat: true
+  parallelutils.bypass.anticaps:
+    description: Bypasses the Anti-Caps module
+  parallelutils.bypass.antislur:
+    description: Bypasses the Anti-Slur module in chat and on signs
+  parallelutils.bypass.clearchat:
+    description: Bypasses chat being cleared by clearchat
+  parallelutils.bypass.socialspy:
+    description: Bypasses the Social Spy module
+  parallelutils.bypass.commandspy:
+    description: Bypasses the Command Spy module
+  parallelutils.bypass.mutechat:
+    description: Bypasses chat being muted
+  parallelutils.notify:
+    description: Be notified by some ParallelUtils modules
+    children:
+      parallelutils.notify.antislur: true
+  parallelutils.notify.antislur:
+    description: Be notified of swearing
