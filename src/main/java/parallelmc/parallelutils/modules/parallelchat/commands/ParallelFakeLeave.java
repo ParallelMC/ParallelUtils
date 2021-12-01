@@ -22,6 +22,7 @@ public class ParallelFakeLeave implements CommandExecutor {
                 else {
                     if (sender.getServer().getPlayer(args[0]) == null) {
                         ParallelChat.sendParallelMessageTo(sender, String.format("Could not find player %s", args[0]));
+
                         return true;
                     }
                     username = args[0];
