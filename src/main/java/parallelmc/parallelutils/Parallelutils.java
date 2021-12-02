@@ -4,12 +4,12 @@ import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.ParallelHelpCommand;
 import parallelmc.parallelutils.commands.ParallelTestCommand;
+import parallelmc.parallelutils.modules.bitsandbobs.BitsAndBobs;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
 import parallelmc.parallelutils.modules.customtrees.ParallelTrees;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
@@ -246,7 +246,6 @@ public final class Parallelutils extends JavaPlugin {
 			e.printStackTrace();
 		}
 
-
 		try {
 			BitsAndBobs bitsandbobs = new BitsAndBobs();
 			bitsandbobs.onEnable();
@@ -262,7 +261,7 @@ public final class Parallelutils extends JavaPlugin {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelTutorial!");
 			e.printStackTrace();
 		}
-		
+
 		// TODO: Make this not horrible
 		try {
 			ParallelModule flags = getModule("ParallelFlags");
