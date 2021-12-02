@@ -15,12 +15,12 @@ import parallelmc.parallelutils.modules.customtrees.ParallelTrees;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
 import parallelmc.parallelutils.modules.expstorage.ExpStorage;
 import parallelmc.parallelutils.modules.gamemode4.beehiveInspector.BeehiveInspector;
-import parallelmc.parallelutils.modules.parallelchat.ChatOptions;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.parallelflags.ParallelFlags;
 import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
 import parallelmc.parallelutils.modules.effectextender.EffectExtender;
 import parallelmc.parallelutils.modules.gamemode4.sunkenTreasure.SunkenTreasure;
+import parallelmc.parallelutils.modules.paralleltutorial.ParallelTutorial;
 import parallelmc.parallelutils.modules.performanceTools.PerformanceTools;
 import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
@@ -59,7 +59,6 @@ public final class Parallelutils extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		ConfigurationSerialization.registerClass(ChatOptions.class, "ChatOptions");
 		// Plugin startup logic
 
 		config = this.getConfig();
@@ -232,9 +231,7 @@ public final class Parallelutils extends JavaPlugin {
 		}
 
 		try {
-			ChatOptions options = config.getSerializable("chat", ChatOptions.class, ChatOptions.DEFAULT);
-
-			ParallelChat parallelChat = new ParallelChat(options);
+			ParallelChat parallelChat = new ParallelChat();
 			parallelChat.onEnable();
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelChat!");
@@ -249,6 +246,23 @@ public final class Parallelutils extends JavaPlugin {
 			e.printStackTrace();
 		}
 
+
+		try {
+			BitsAndBobs bitsandbobs = new BitsAndBobs();
+			bitsandbobs.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module BitsAndBobs!");
+			e.printStackTrace();
+		}
+
+		try {
+			ParallelTutorial tutorials = new ParallelTutorial();
+			tutorials.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelTutorial!");
+			e.printStackTrace();
+		}
+		
 		// TODO: Make this not horrible
 		try {
 			ParallelModule flags = getModule("ParallelFlags");

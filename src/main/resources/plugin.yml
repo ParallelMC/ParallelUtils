@@ -36,19 +36,27 @@ commands:
   msg:
     description: Send a private message to a player
     usage: /msg <player> <message>
+    aliases:
+      - "message"
   r:
     description: Reply to a recently messaged player
     usage: /r <message>
+    aliases:
+      - "reply"
   sc:
     description: Toggle or send a message in staff chat
     usage: /sc [message]
     permission: parallelutils.staffchat
     permission-message: You do not have permission
+    aliases:
+      - "staffchat"
   tc:
     description: Toggle or send a message in team chat
     usage: /tc [message]
     permission: parallelutils.teamchat
     permission-message: You do not have permission
+    aliases:
+      - "teamchat"
   broadcast:
     description: Broadcast a message to the server
     usage: /broadcast (message)
