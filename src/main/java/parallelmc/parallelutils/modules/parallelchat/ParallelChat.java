@@ -199,9 +199,6 @@ public class ParallelChat implements ParallelModule {
         puPlugin.getCommand("fakeleave").setExecutor(new ParallelFakeLeave());
         puPlugin.getCommand("msg").setExecutor(new ParallelMessage());
         puPlugin.getCommand("r").setExecutor(new ParallelReply());
-        // the way to add aliases is really dumb
-        // feel free to figure out why
-        // todo: add aliases
         puPlugin.getCommand("sc").setExecutor(new ParallelStaffChat());
         puPlugin.getCommand("tc").setExecutor(new ParallelTeamChat());
         puPlugin.getCommand("broadcast").setExecutor(new ParallelBroadcast());
