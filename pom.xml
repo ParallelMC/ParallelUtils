@@ -6,7 +6,7 @@
 
     <groupId>parallelmc</groupId>
     <artifactId>parallelutils</artifactId>
-    <version>1.6.0</version>
+    <version>1.9.0</version>
     <packaging>jar</packaging>
 
     <name>Parallelutils</name>
@@ -50,6 +50,12 @@
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
         </repository>
+
+        <repository> <!-- for development builds -->
+            <id>sonatype-oss-snapshots</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+
         <repository>
             <id>dmulloy2-repo</id>
             <url>https://repo.dmulloy2.net/repository/public/</url>

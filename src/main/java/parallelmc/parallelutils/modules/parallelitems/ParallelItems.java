@@ -4,9 +4,14 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -29,6 +34,8 @@ import java.util.logging.Level;
 public class ParallelItems implements ParallelModule {
 
     private final HashMap<String, ItemStack> itemRegistry = new HashMap<>();
+    private final HashMap<Integer, ItemStack> itemRegistryId = new HashMap<>();
+
     @Override
     public void onEnable() {
         PluginManager manager = Bukkit.getPluginManager();
@@ -56,7 +63,7 @@ public class ParallelItems implements ParallelModule {
     /**
      * Method to register ItemStacks for each type of ParallelItem
      */
-    private void registerItems(){
+    private void registerItems() {
         PluginManager manager = Bukkit.getPluginManager();
         JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
         if (plugin == null) {
@@ -68,7 +75,7 @@ public class ParallelItems implements ParallelModule {
         NamespacedKey key = new NamespacedKey(plugin, "ParallelItem");
 
         ItemStack aoeBonemeal = new ItemStack(Material.BONE_MEAL);
-        try{
+        try {
             ItemMeta boneMeta = aoeBonemeal.getItemMeta();
             TextComponent name = Component.text("Enhanced Fertilizer", NamedTextColor.DARK_GREEN)
                     .decoration(TextDecoration.ITALIC, false);
@@ -83,17 +90,17 @@ public class ParallelItems implements ParallelModule {
             boneMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 1);
 
             aoeBonemeal.setItemMeta(boneMeta);
-        }
-        catch (NullPointerException e){
+
+            itemRegistry.put("enhanced_fertilizer", aoeBonemeal);
+            itemRegistryId.put(1, aoeBonemeal);
+        } catch (NullPointerException e) {
             Parallelutils.log(Level.WARNING,"NullPointerException registering enhanced_fertilizer. " +
                     "Item will not work!");
             e.printStackTrace();
         }
 
-        itemRegistry.put("enhanced_fertilizer", aoeBonemeal);
-
         ItemStack baguette = new ItemStack(Material.BREAD);
-        try{
+        try {
             ItemMeta breada = baguette.getItemMeta();
             TextComponent name = Component.text("Baguette", NamedTextColor.WHITE)
                     .decoration(TextDecoration.ITALIC, false);
@@ -103,14 +110,95 @@ public class ParallelItems implements ParallelModule {
             breada.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 2);
 
             baguette.setItemMeta(breada);
-        }
-        catch (NullPointerException e){
+
+            itemRegistry.put("baguette", baguette);
+            itemRegistryId.put(2, baguette);
+        } catch (NullPointerException e) {
             Parallelutils.log(Level.WARNING,"NullPointerException registering baguette. " +
                     "Item will not work!");
             e.printStackTrace();
         }
 
-        itemRegistry.put("baguette", baguette);
+        ItemStack spaceHelmetRed = new ItemStack(Material.PAPER);
+        try {
+            net.minecraft.world.item.ItemStack nmsStack = CraftItemStack.asNMSCopy(spaceHelmetRed);
+
+            NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
+            NBTTagList modifiers = new NBTTagList();
+
+            NBTTagCompound armor = new NBTTagCompound();
+            armor.set("AttributeName", NBTTagString.a("generic.armor"));
+            armor.set("Name", NBTTagString.a("generic.armor"));
+            armor.set("Amount", NBTTagInt.a(2));
+            armor.set("Operation", NBTTagInt.a(0));
+            armor.set("UUIDLeast", NBTTagInt.a(894654));
+            armor.set("UUIDMost", NBTTagInt.a(2872));
+            armor.set("Slot", NBTTagString.a("head"));
+            modifiers.add(armor);
+
+            NBTTagCompound toughness = new NBTTagCompound();
+            toughness.set("AttributeName", NBTTagString.a("generic.armor_toughness"));
+            toughness.set("Name", NBTTagString.a("generic.armor_toughness"));
+            toughness.set("Amount", NBTTagInt.a(2));
+            toughness.set("Operation", NBTTagInt.a(0));
+            toughness.set("UUIDLeast", NBTTagInt.a(894654));
+            toughness.set("UUIDMost", NBTTagInt.a(2872));
+            toughness.set("Slot", NBTTagString.a("head"));
+            modifiers.add(toughness);
+
+            compound.set("AttributeModifiers", modifiers);
+            nmsStack.setTag(compound);
+
+            spaceHelmetRed = CraftItemStack.asBukkitCopy(nmsStack);
+
+            ItemMeta helmetMeta = spaceHelmetRed.getItemMeta();
+            TextComponent name = Component.text("Red Astronaut Hat", NamedTextColor.DARK_RED)
+                    .decoration(TextDecoration.BOLD, true)
+                    .decoration(TextDecoration.ITALIC, false);
+
+            ArrayList<Component> loreList = new ArrayList<>();
+            TextComponent lore = Component.text("The vast void of space is harsh without this.");
+            loreList.add(lore);
+
+            helmetMeta.displayName(name);
+            helmetMeta.lore(loreList);
+            helmetMeta.setCustomModelData(1500000);
+
+            helmetMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 3);
+
+            spaceHelmetRed.setItemMeta(helmetMeta);
+
+            itemRegistry.put("space_helmet_red", spaceHelmetRed);
+            itemRegistryId.put(3, spaceHelmetRed);
+        } catch (NullPointerException e) {
+            Parallelutils.log(Level.WARNING, "NullPointerException registering space helmet. " +
+                    "Item will not work!");
+        }
+
+        ItemStack candy = new ItemStack(Material.COOKIE);
+        try {
+            ItemMeta candyMeta = candy.getItemMeta();
+            TextComponent name = Component.text("Spooky Candy", NamedTextColor.DARK_PURPLE)
+                    .decoration(TextDecoration.ITALIC, false);
+            candyMeta.displayName(name);
+            candyMeta.setCustomModelData(1000000);
+
+            ArrayList<Component> lore = new ArrayList<>();
+            lore.add(Component.text("Its flavor is unique, and", NamedTextColor.GOLD));
+            lore.add(Component.text("always changing. Quite spooky!", NamedTextColor.GOLD));
+            candyMeta.lore(lore);
+
+            candyMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 4);
+
+            candy.setItemMeta(candyMeta);
+
+            itemRegistry.put("candy", candy);
+            itemRegistryId.put(4, candy);
+        } catch (NullPointerException e) {
+            Parallelutils.log(Level.WARNING,"NullPointerException registering candy. " +
+                    "Item will not work!");
+            e.printStackTrace();
+        }
     }
 
     @Override
