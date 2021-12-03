@@ -5,6 +5,8 @@ import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -40,7 +42,7 @@ import java.util.regex.Pattern;
 public class ParallelChat implements ParallelModule {
 
     // possibly put ParallelChat settings somewhere else
-    public static HashSet<UUID> dndPlayers = new HashSet<>();
+    public static HashMap<Player, Component> dndPlayers = new HashMap<>();
 
     public HashMap<UUID, UUID> playerLastMessaged = new HashMap<>();
 
@@ -210,6 +212,7 @@ public class ParallelChat implements ParallelModule {
         puPlugin.getCommand("mutechat").setExecutor(new ParallelMuteChat());
         puPlugin.getCommand("colors").setExecutor(new ParallelColors());
         puPlugin.getCommand("formats").setExecutor(new ParallelFormats());
+        puPlugin.getCommand("dnd").setExecutor(new ParallelDoNotDisturb());
 
         // makes things safer and easier in other events
         // plus it saves us a .getModule() every time we need this class
@@ -415,4 +418,5 @@ public class ParallelChat implements ParallelModule {
     public HashSet<UUID> getTeamChat() {
         return playersInTeamChat;
     }
+
 }
