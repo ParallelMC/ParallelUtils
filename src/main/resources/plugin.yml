@@ -93,6 +93,11 @@ commands:
   formats:
     description: View all chat formats
     usage: /formats
+  dnd:
+    description: Toggles Do Not Disturb mode
+    usage: /dnd
+    aliases:
+      - "donotdisturb"
   starttutorial:
     description: Starts a tutorial for a player
     usage: /starttutorial (player) (tutorial)

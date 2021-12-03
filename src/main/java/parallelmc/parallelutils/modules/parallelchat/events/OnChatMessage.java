@@ -9,6 +9,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Server;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,12 +17,16 @@ import org.bukkit.event.Listener;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
+import javax.inject.Named;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class OnChatMessage implements Listener {
 
@@ -60,17 +65,20 @@ public class OnChatMessage implements Listener {
             Parallelutils.log(Level.SEVERE, "Failed to log chat message!");
         }
 
-        /* TODO: json magic stuff with components to create colored mentions
         // @ Mention check
         Pattern mention = Pattern.compile("@(\\S+)", Pattern.MULTILINE);
+        // have to use strings to figure out the player names
         Matcher mentionMatcher = mention.matcher(msgStr);
+        ArrayList<Player> mentionedPlayers = new ArrayList<>();
         while (mentionMatcher.find()) {
-            Player match = server.getPlayer(mentionMatcher.group(1));
-            if (match != null) {
-                // if the mention is valid then notify the player they have been mentioned
-                match.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+            String match = mentionMatcher.group();
+            Player matchPlayer = player.getServer().getPlayer(mentionMatcher.group(1));
+            if (matchPlayer != null) {
+                event.message(event.message().replaceText(x -> x.matchLiteral(match).replacement(Component.text(mentionMatcher.group(), NamedTextColor.YELLOW))));
+                matchPlayer.playSound(matchPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f);
+                mentionedPlayers.add(matchPlayer);
             }
-        } */
+        }
 
         // StaffChat + TeamChat
         if (ParallelChat.get().getStaffChat().contains(player.getUniqueId())) {
@@ -122,6 +130,14 @@ public class OnChatMessage implements Listener {
                 }
             }
         }
+
+        // remove dnd players from the recipient list if they have not been mentioned
+        // also show the message to the player if they send it
+        event.viewers().removeAll(ParallelChat.dndPlayers.keySet()
+             .stream()
+             .filter(x -> !mentionedPlayers.contains(x))
+             .filter(x -> x != player)
+             .collect(Collectors.toSet()));
 
         // re-render the formatted message and send it
         event.renderer(ChatRenderer.viewerUnaware((source, sourceDisplayName, message)
