@@ -2,7 +2,7 @@ package parallelmc.parallelutils.modules.bitsandbobs.minimodules;
 
 import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -31,21 +31,21 @@ public class KeepSpecialItems implements Listener {
                 // TODO: Try to change this code to use item.getItemMeta().getPersistentDataContainer()
                 net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
                 // Grabs the NMS items compound and checks if it's null
-                NBTTagCompound compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new NBTTagCompound();
+                NBTTagCompound compound = (nmsItem.r()) ? nmsItem.s() : new NBTTagCompound();
 
                 if (compound == null) continue;
 
-                if (compound.hasKey("CustomHat")) {
+                if (compound.e("CustomHat")) {
                     preventedDrops.add(item);
                 }
             } else if (item.getType() == Material.PLAYER_HEAD) {
                 net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
                 // Grabs the NMS items compound and checks if it's null
-                NBTTagCompound compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new NBTTagCompound();
+                NBTTagCompound compound = (nmsItem.r()) ? nmsItem.s() : new NBTTagCompound();
 
                 if (compound == null) continue;
 
-                if (compound.hasKey("CustomTrophy")) {
+                if (compound.e("CustomTrophy")) {
                     preventedDrops.add(item);
                 }
             }
