@@ -4,8 +4,8 @@ import net.minecraft.world.entity.EntityInsentient;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -112,7 +112,7 @@ public class SpawnTask extends BukkitRunnable {
 							}
 
 							if (setUpEntity != null && data.hasLeash()) {
-								SpawnerRegistry.getInstance().addLeashedEntity(location, setUpEntity.getUniqueID().toString());
+								SpawnerRegistry.getInstance().addLeashedEntity(location, setUpEntity.cm().toString());
 								if (SpawnerRegistry.getInstance().getLeashTaskID(location) == null) {
 									BukkitTask task = new LeashTask(location).runTaskTimer(plugin, 0, 10);
 									SpawnerRegistry.getInstance().addLeashTaskID(location, task.getTaskId());
