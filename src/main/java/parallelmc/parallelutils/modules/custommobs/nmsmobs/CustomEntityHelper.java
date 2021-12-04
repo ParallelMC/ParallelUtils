@@ -19,13 +19,13 @@ public class CustomEntityHelper {
 	 */
 	public static void clearGoals(EntityInsentient entity) {
 
-		Map goalC = (Map) getPrivateField("c", PathfinderGoalSelector.class, entity.bP);
+		Map goalC = (Map) getPrivateField("c", PathfinderGoalSelector.class, entity.bR);
 		goalC.clear();
-		Set goalD = (Set) getPrivateField("d", PathfinderGoalSelector.class, entity.bP);
+		Set goalD = (Set) getPrivateField("d", PathfinderGoalSelector.class, entity.bR);
 		goalD.clear();
-		Map targetC = (Map) getPrivateField("c", PathfinderGoalSelector.class, entity.bQ);
+		Map targetC = (Map) getPrivateField("c", PathfinderGoalSelector.class, entity.bS);
 		targetC.clear();
-		Set targetD = (Set) getPrivateField("d", PathfinderGoalSelector.class, entity.bQ);
+		Set targetD = (Set) getPrivateField("d", PathfinderGoalSelector.class, entity.bS);
 		targetD.clear();
 	}
 
