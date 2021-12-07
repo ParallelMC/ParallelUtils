@@ -8,10 +8,10 @@ import net.minecraft.world.entity.ai.goal.target.PathfinderGoalHurtByTarget;
 import net.minecraft.world.entity.monster.EntityZombie;
 import net.minecraft.world.level.World;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftZombie;
+import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftZombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -26,16 +26,16 @@ import java.util.logging.Level;
 public class EntityWisp extends EntityZombie {
 	public EntityWisp(EntityTypes<? extends EntityZombie> entitytypes, World world) {
 		super(entitytypes, world);
-		initPathfinder();
+		u();
 	}
 
 	public EntityWisp(World world) {
 		super(world);
-		initPathfinder();
+		u();
 	}
 
 	@Override
-	public void initPathfinder() {
+	public void u() {
 		initPathfinder(this);
 	}
 
@@ -43,10 +43,10 @@ public class EntityWisp extends EntityZombie {
 		//clearing Zombie goals
 		CustomEntityHelper.clearGoals(zombie);
 
-		zombie.bP.a(0, new PathfinderGoalMeleeAttack(zombie, 1.0, false));
-		zombie.bP.a(1, new PathfinderGoalRandomStroll(zombie, 1.0));
+		zombie.bR.a(0, new PathfinderGoalMeleeAttack(zombie, 1.0, false));
+		zombie.bR.a(1, new PathfinderGoalRandomStroll(zombie, 1.0));
 
-		zombie.bQ.a(0, new PathfinderGoalHurtByTarget(zombie));
+		zombie.bS.a(0, new PathfinderGoalHurtByTarget(zombie));
 	}
 
 	public static EntityWisp spawn(JavaPlugin plugin, CraftServer server, CraftWorld world, Location l) {
@@ -59,8 +59,8 @@ public class EntityWisp extends EntityZombie {
 		CraftZombie zombie = (CraftZombie) CraftEntity.getEntity(server, wisp);
 
 		setup(plugin, zombie);
-		wisp.setPosition(l.getX(), l.getY(), l.getZ());
-		boolean spawned = world.getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
+		wisp.e(l.getX(), l.getY(), l.getZ());
+		boolean spawned = world.getHandle().addFreshEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
 		if (!spawned) {
 			Parallelutils.log(Level.INFO, "Unable to spawn entity");
@@ -85,5 +85,10 @@ public class EntityWisp extends EntityZombie {
 		}
 
 		return wisp;
+	}
+
+	@Override
+	public boolean d_() {
+		return super.d_();
 	}
 }
