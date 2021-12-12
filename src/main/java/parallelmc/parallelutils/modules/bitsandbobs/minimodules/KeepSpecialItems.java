@@ -1,13 +1,20 @@
 package parallelmc.parallelutils.modules.bitsandbobs.minimodules;
 
 import net.minecraft.nbt.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+import parallelmc.parallelutils.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,6 +22,9 @@ import java.util.UUID;
 
 
 public class KeepSpecialItems implements Listener {
+
+    PluginManager manager = Bukkit.getPluginManager();
+    Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
     private final HashMap<UUID, ArrayList<ItemStack>> specialItemsLogger = new HashMap<>();
 
@@ -29,6 +39,14 @@ public class KeepSpecialItems implements Listener {
             // TODO: This probably doesn't need to be dependent on item type. Just checking the tag is a bit more futureproof
             if (item.getType() == Material.PAPER) {
                 // TODO: Try to change this code to use item.getItemMeta().getPersistentDataContainer()
+                // TODO: Make this 2-part check not jank - hopefully transition entirely to persistentdatacontainer
+                NamespacedKey hatKey = new NamespacedKey(plugin, "CustomHat");
+                PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
+                if (container.has(hatKey, PersistentDataType.INTEGER)) {
+                    preventedDrops.add(item);
+                    continue;
+                }
+
                 net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
                 // Grabs the NMS items compound and checks if it's null
                 NBTTagCompound compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new NBTTagCompound();
