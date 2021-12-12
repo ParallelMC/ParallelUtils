@@ -199,6 +199,67 @@ public class ParallelItems implements ParallelModule {
                     "Item will not work!");
             e.printStackTrace();
         }
+
+        ItemStack earlySupporterGlasses = new ItemStack(Material.PAPER);
+        try {
+            // Create a CustomHat NBT tag that will be applied to the item to prevent it from being lost upon death
+            NamespacedKey hatKey = new NamespacedKey(plugin, "CustomHat");
+
+            net.minecraft.world.item.ItemStack nmsStack = CraftItemStack.asNMSCopy(earlySupporterGlasses);
+
+            NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
+            NBTTagList modifiers = new NBTTagList();
+
+            NBTTagCompound armor = new NBTTagCompound();
+            armor.set("AttributeName", NBTTagString.a("generic.armor"));
+            armor.set("Name", NBTTagString.a("generic.armor"));
+            armor.set("Amount", NBTTagInt.a(2));
+            armor.set("Operation", NBTTagInt.a(0));
+            armor.set("UUIDLeast", NBTTagInt.a(195734));
+            armor.set("UUIDMost", NBTTagInt.a(9237));
+            armor.set("Slot", NBTTagString.a("head"));
+            modifiers.add(armor);
+
+//            NBTTagCompound toughness = new NBTTagCompound();
+//            toughness.set("AttributeName", NBTTagString.a("generic.armor_toughness"));
+//            toughness.set("Name", NBTTagString.a("generic.armor_toughness"));
+//            toughness.set("Amount", NBTTagInt.a(2));
+//            toughness.set("Operation", NBTTagInt.a(0));
+//            toughness.set("UUIDLeast", NBTTagInt.a(894654));
+//            toughness.set("UUIDMost", NBTTagInt.a(2872));
+//            toughness.set("Slot", NBTTagString.a("head"));
+//            modifiers.add(toughness);
+
+            compound.set("AttributeModifiers", modifiers);
+            nmsStack.setTag(compound);
+
+            earlySupporterGlasses = CraftItemStack.asBukkitCopy(nmsStack);
+
+            ItemMeta glassesMeta = earlySupporterGlasses.getItemMeta();
+            TextComponent name = Component.text("Early Supporter Glasses", NamedTextColor.DARK_GREEN)
+                    .decoration(TextDecoration.BOLD, true)
+                    .decoration(TextDecoration.ITALIC, false);
+
+            ArrayList<Component> loreList = new ArrayList<>();
+            TextComponent lore = Component.text("Thanks for supporting the server!");
+            loreList.add(lore);
+
+            glassesMeta.displayName(name);
+            glassesMeta.lore(loreList);
+            glassesMeta.setCustomModelData(9000030);
+
+            glassesMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 5);
+            glassesMeta.getPersistentDataContainer().set(hatKey, PersistentDataType.INTEGER, 1);
+
+            earlySupporterGlasses.setItemMeta(glassesMeta);
+
+            itemRegistry.put("early_supporter_glasses", earlySupporterGlasses);
+            itemRegistryId.put(5, earlySupporterGlasses);
+        } catch (NullPointerException e) {
+            Parallelutils.log(Level.WARNING, "NullPointerException registering early supporter glasses. " +
+                    "Item will not work!");
+        }
+
     }
 
     @Override
