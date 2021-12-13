@@ -6,7 +6,7 @@
 
     <groupId>parallelmc</groupId>
     <artifactId>parallelutils</artifactId>
-    <version>1.9.0</version>
+    <version>1.9.1</version>
     <packaging>jar</packaging>
 
     <name>Parallelutils</name>
