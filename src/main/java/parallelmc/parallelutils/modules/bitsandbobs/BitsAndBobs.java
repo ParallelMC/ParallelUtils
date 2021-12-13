@@ -8,6 +8,7 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.DoorKnocker;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.KeepSpecialItems;
+import parallelmc.parallelutils.modules.bitsandbobs.minimodules.NewMusicDisks;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.SpeedyMinecarts;
 
 import java.util.logging.Level;
