@@ -8,10 +8,10 @@ import net.minecraft.world.entity.ai.goal.target.PathfinderGoalNearestAttackable
 import net.minecraft.world.entity.monster.EntityZombie;
 import net.minecraft.world.level.World;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_17_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_17_R1.entity.CraftZombie;
+import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftZombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
@@ -26,16 +26,16 @@ import java.util.logging.Level;
 public class EntityFireWisp extends EntityZombie {
     public EntityFireWisp(EntityTypes<? extends EntityZombie> entitytypes, World world) {
         super(entitytypes, world);
-        initPathfinder();
+        u();
     }
 
     public EntityFireWisp(World world) {
         super(world);
-        initPathfinder();
+        u();
     }
 
     @Override
-    public void initPathfinder() {
+    public void u() {
         initPathfinder(this);
     }
 
@@ -43,10 +43,10 @@ public class EntityFireWisp extends EntityZombie {
         //clearing Zombie goals
         CustomEntityHelper.clearGoals(zombie);
 
-        zombie.bP.a(0, new PathfinderGoalMeleeAttack(zombie, 1.0, false));
-        zombie.bP.a(1, new PathfinderGoalRandomStroll(zombie, 1.0));
+        zombie.bR.a(0, new PathfinderGoalMeleeAttack(zombie, 1.0, false));
+        zombie.bR.a(1, new PathfinderGoalRandomStroll(zombie, 1.0));
 
-        zombie.bQ.a(0, new PathfinderGoalNearestAttackableTarget<>(zombie,
+        zombie.bS.a(0, new PathfinderGoalNearestAttackableTarget<>(zombie,
                 EntityPlayer.class, true));
     }
 
@@ -55,13 +55,13 @@ public class EntityFireWisp extends EntityZombie {
     }
 
     public static EntityFireWisp spawn(JavaPlugin plugin, CraftServer server, CraftWorld world, Location l,
-                                   SpawnReason reason, Location origin) {
+                                       SpawnReason reason, Location origin) {
         EntityFireWisp wisp = new EntityFireWisp(world.getHandle());
         CraftZombie zombie = (CraftZombie) CraftEntity.getEntity(server, wisp);
 
         setup(plugin, zombie);
-        wisp.setPosition(l.getX(), l.getY(), l.getZ());
-        boolean spawned = world.getHandle().addEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
+        wisp.e(l.getX(), l.getY(), l.getZ());
+        boolean spawned = world.getHandle().addFreshEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
         if (!spawned) {
             Parallelutils.log(Level.INFO, "Unable to spawn entity");
@@ -86,5 +86,10 @@ public class EntityFireWisp extends EntityZombie {
         }
 
         return wisp;
+    }
+
+    @Override
+    public boolean d_() {
+        return super.d_();
     }
 }
