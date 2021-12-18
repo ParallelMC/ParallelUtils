@@ -8,9 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 public class ParallelFormats implements CommandExecutor {
-    @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, String[] args) {
-        Component text = MiniMessage.get().parse("""
+
+    private static final Component text = MiniMessage.get().parse("""
             <red>=========================
               <white>&k = <obfuscated>Obfuscated</obfuscated>
               <white>&l = <bold>Bold</bold>
@@ -21,6 +20,9 @@ public class ParallelFormats implements CommandExecutor {
               
             <gray>Type /colors to view the Chat Colors.
             <red>=========================""");
+
+    @Override
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, String[] args) {
         commandSender.sendMessage(text);
         return true;
     }

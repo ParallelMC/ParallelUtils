@@ -285,6 +285,7 @@ public class ParallelChat implements ParallelModule {
      * @param message The message Component
      */
     public static void sendMessageToStaffChat(Player player, Component message) {
+        // TODO: Make this a config option
         Component text = MiniMessage.get().parse("<yellow>[<aqua>Staff-Chat<yellow>] <green>" + player.getName() + " <gray>> ").append(message.color(NamedTextColor.AQUA));
         // i know this is ugly
         // possible todo: dynamically keep track of staff in a list
