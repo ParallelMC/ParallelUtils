@@ -4,9 +4,7 @@ import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Server;
 import org.bukkit.Sound;
@@ -17,18 +15,19 @@ import org.bukkit.event.Listener;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
-import javax.inject.Named;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class OnChatMessage implements Listener {
+
+    private static final Pattern mention = Pattern.compile("@(\\S+)", Pattern.MULTILINE);
+    private static final Pattern caps = Pattern.compile("[A-Z]", Pattern.MULTILINE);
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onChatMessage(AsyncChatEvent event) {
@@ -66,7 +65,6 @@ public class OnChatMessage implements Listener {
         }
 
         // @ Mention check
-        Pattern mention = Pattern.compile("@(\\S+)", Pattern.MULTILINE);
         // have to use strings to figure out the player names
         Matcher mentionMatcher = mention.matcher(msgStr);
         ArrayList<Player> mentionedPlayers = new ArrayList<>();
@@ -103,7 +101,11 @@ public class OnChatMessage implements Listener {
         // Anti-Slur
         if (!player.hasPermission("parallelutils.bypass.antislur")) {
             String checkSlurs = msgStr.toLowerCase().replace(" ", "");
-            if (ParallelChat.get().bannedWords.stream().anyMatch(checkSlurs::contains)) {
+            // Regex checking
+            // (?s) makes . accept ALL characters
+            // Note, this may do funky things with word boundaries.
+            // Regex can specify \b to look for a word boundary specifically
+            if (ParallelChat.get().bannedWords.stream().anyMatch(x -> checkSlurs.matches("(?s).*" + x + ".*"))) {
                 event.setCancelled(true);
                 ParallelChat.sendParallelMessageTo(player, "Please do not say that in chat.");
                 Component slurMsg = MiniMessage.get().parse("<gray>[Anti-Swear]: ").append(event.message());
@@ -119,7 +121,6 @@ public class OnChatMessage implements Listener {
         // Anti-Caps
         if (ParallelChat.get().capsEnabled && !player.hasPermission("parallelutils.bypass.anticaps")) {
             if (msgStr.length() >= ParallelChat.get().capsMinMsgLength) {
-                Pattern caps = Pattern.compile("[A-Z]", Pattern.MULTILINE);
                 Matcher capsMatcher = caps.matcher(msgStr);
                 double matches = 0D;
                 while (capsMatcher.find()) {
