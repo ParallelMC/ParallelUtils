@@ -27,6 +27,8 @@ github_token: githubApiToken
 # Sunken Treasure
 treasure_loot: sunkenTreasureLootTable
 
+# Parallel Chat
+
 group-formats:
   default: '<tag><gray><displayname> ><reset><message>'
   trusted: '<tag><gray><displayname> ><reset> <message>'
