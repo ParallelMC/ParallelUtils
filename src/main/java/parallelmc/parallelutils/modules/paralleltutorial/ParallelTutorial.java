@@ -117,6 +117,7 @@ public class ParallelTutorial implements ParallelModule {
     public void LoadTutorials() {
         tutorials.clear();
         AtomicInteger line = new AtomicInteger();
+        // TODO: Make this not throw gross warnings when the path doesn't exist. Just create the folder
         try (Stream<Path> paths = Files.walk(Paths.get(puPlugin.getDataFolder() + "/tutorials"))) {
             paths.filter(Files::isRegularFile).forEach((f -> {
                 ArrayList<Instruction> instructions = new ArrayList<>();

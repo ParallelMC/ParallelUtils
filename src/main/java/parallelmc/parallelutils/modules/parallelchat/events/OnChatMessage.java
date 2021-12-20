@@ -105,7 +105,8 @@ public class OnChatMessage implements Listener {
             // (?s) makes . accept ALL characters
             // Note, this may do funky things with word boundaries.
             // Regex can specify \b to look for a word boundary specifically
-            if (ParallelChat.get().bannedWords.stream().anyMatch(x -> checkSlurs.matches("(?s).*" + x + ".*"))) {
+            //if (ParallelChat.get().bannedWords.stream().anyMatch(x -> checkSlurs.matches("(?s).*" + x + ".*"))) {
+            if (ParallelChat.get().bannedWords.stream().anyMatch(checkSlurs::contains)) {
                 event.setCancelled(true);
                 ParallelChat.sendParallelMessageTo(player, "Please do not say that in chat.");
                 Component slurMsg = MiniMessage.get().parse("<gray>[Anti-Swear]: ").append(event.message());

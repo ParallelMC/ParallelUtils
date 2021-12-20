@@ -6,6 +6,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -228,7 +229,9 @@ public class ParallelChat implements ParallelModule {
     @Override
     public void onDisable() {
         try {
-            this.chatLogWriter.close();
+            if (this.chatLogWriter != null) { // PLEASE do null checks or at least make sure that things can't be null
+                this.chatLogWriter.close();
+            }
         }
         catch (IOException e) {
             Parallelutils.log(Level.SEVERE, "Failed to close chat log writer!");
@@ -363,7 +366,8 @@ public class ParallelChat implements ParallelModule {
         };
         if (isUsingDefault) {
             // if default is enabled for whatever reason mimic the default rank
-            return MiniMessage.builder().placeholderResolver(resolver).build().parse("<tag><gray><name> > <reset><message>");
+            Component result = MiniMessage.builder().placeholderResolver(resolver).build().parse("<tag><gray><displayname> > <reset><message>");
+            return result;
         }
         else {
             String group = this.getGroupForPlayer(source);
@@ -373,7 +377,8 @@ public class ParallelChat implements ParallelModule {
                 return Component.empty();
             }
             else {
-                return MiniMessage.builder().placeholderResolver(resolver).build().parse(format);
+                Component result = MiniMessage.builder().placeholderResolver(resolver).build().parse(format);
+                return result;
             }
         }
     }
