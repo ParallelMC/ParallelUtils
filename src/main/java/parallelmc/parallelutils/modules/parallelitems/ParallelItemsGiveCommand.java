@@ -27,7 +27,7 @@ import java.util.logging.Level;
  */
 public class ParallelItemsGiveCommand extends ParallelCommand {
 
-    public static final String[] ITEMS = new String[]{"enhanced_fertilizer", "baguette", "space_helmet_red"};
+    public static final String[] ITEMS = new String[]{"enhanced_fertilizer", "baguette", "space_helmet_red", "candy"};
 
     private final String USAGE = "Usage: /pu give <username> <item> [amount]";
 
@@ -121,6 +121,18 @@ public class ParallelItemsGiveCommand extends ParallelCommand {
                 }
                 case "space_helmet_red" -> {
                     HashMap<Integer, ItemStack> results = inv.addItem(parallelItems.getItem("space_helmet_red")
+                            .asQuantity(amt));
+                    if (!results.isEmpty()) {
+                        World world = player.getWorld();
+                        Location loc = player.getLocation();
+                        Collection<ItemStack> vals = results.values();
+                        for (ItemStack i : vals) {
+                            world.dropItemNaturally(loc, i);
+                        }
+                    }
+                }
+                case "candy" -> {
+                    HashMap<Integer, ItemStack> results = inv.addItem(parallelItems.getItem("candy")
                             .asQuantity(amt));
                     if (!results.isEmpty()) {
                         World world = player.getWorld();
