@@ -93,8 +93,6 @@ public class OnDisplayItem implements Listener {
 		String format = event.getFormat();
 		String playerName = event.getPlayer().getName();
 
-		Parallelutils.log(Level.INFO, format);
-
 		nameformats.put(playerName, format);
 	}
 }

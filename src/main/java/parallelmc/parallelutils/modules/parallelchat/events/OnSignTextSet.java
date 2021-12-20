@@ -11,7 +11,6 @@ public class OnSignTextSet implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onSignTextSet(SignChangeEvent event) {
         if (!event.getPlayer().hasPermission("parallelutils.bypass.antislur")) {
-            Sign sign = (Sign)event.getBlock().getState(); // TODO: Why is this here lol
             // fuck u paper im not iterating through components
             String text = String.join("\n", event.getLines());
             text = text.toLowerCase().replace(" ", "");
