@@ -11,7 +11,7 @@ import net.minecraft.nbt.NBTTagString;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_17_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -123,31 +123,31 @@ public class ParallelItems implements ParallelModule {
         try {
             net.minecraft.world.item.ItemStack nmsStack = CraftItemStack.asNMSCopy(spaceHelmetRed);
 
-            NBTTagCompound compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new NBTTagCompound();
+            NBTTagCompound compound = (nmsStack.r()) ? nmsStack.s() : new NBTTagCompound();
             NBTTagList modifiers = new NBTTagList();
 
             NBTTagCompound armor = new NBTTagCompound();
-            armor.set("AttributeName", NBTTagString.a("generic.armor"));
-            armor.set("Name", NBTTagString.a("generic.armor"));
-            armor.set("Amount", NBTTagInt.a(2));
-            armor.set("Operation", NBTTagInt.a(0));
-            armor.set("UUIDLeast", NBTTagInt.a(894654));
-            armor.set("UUIDMost", NBTTagInt.a(2872));
-            armor.set("Slot", NBTTagString.a("head"));
+            armor.a("AttributeName", NBTTagString.a("generic.armor"));
+            armor.a("Name", NBTTagString.a("generic.armor"));
+            armor.a("Amount", NBTTagInt.a(2));
+            armor.a("Operation", NBTTagInt.a(0));
+            armor.a("UUIDLeast", NBTTagInt.a(894654));
+            armor.a("UUIDMost", NBTTagInt.a(2872));
+            armor.a("Slot", NBTTagString.a("head"));
             modifiers.add(armor);
 
             NBTTagCompound toughness = new NBTTagCompound();
-            toughness.set("AttributeName", NBTTagString.a("generic.armor_toughness"));
-            toughness.set("Name", NBTTagString.a("generic.armor_toughness"));
-            toughness.set("Amount", NBTTagInt.a(2));
-            toughness.set("Operation", NBTTagInt.a(0));
-            toughness.set("UUIDLeast", NBTTagInt.a(894654));
-            toughness.set("UUIDMost", NBTTagInt.a(2872));
-            toughness.set("Slot", NBTTagString.a("head"));
+            toughness.a("AttributeName", NBTTagString.a("generic.armor_toughness"));
+            toughness.a("Name", NBTTagString.a("generic.armor_toughness"));
+            toughness.a("Amount", NBTTagInt.a(2));
+            toughness.a("Operation", NBTTagInt.a(0));
+            toughness.a("UUIDLeast", NBTTagInt.a(894654));
+            toughness.a("UUIDMost", NBTTagInt.a(2872));
+            toughness.a("Slot", NBTTagString.a("head"));
             modifiers.add(toughness);
 
-            compound.set("AttributeModifiers", modifiers);
-            nmsStack.setTag(compound);
+            compound.a("AttributeModifiers", modifiers);
+            nmsStack.c(compound);
 
             spaceHelmetRed = CraftItemStack.asBukkitCopy(nmsStack);
 
@@ -173,6 +173,31 @@ public class ParallelItems implements ParallelModule {
         } catch (NullPointerException e) {
             Parallelutils.log(Level.WARNING, "NullPointerException registering space helmet. " +
                     "Item will not work!");
+        }
+
+        ItemStack candy = new ItemStack(Material.COOKIE);
+        try {
+            ItemMeta candyMeta = candy.getItemMeta();
+            TextComponent name = Component.text("Spooky Candy", NamedTextColor.DARK_PURPLE)
+                    .decoration(TextDecoration.ITALIC, false);
+            candyMeta.displayName(name);
+            candyMeta.setCustomModelData(1000000);
+
+            ArrayList<Component> lore = new ArrayList<>();
+            lore.add(Component.text("Its flavor is unique, and", NamedTextColor.GOLD));
+            lore.add(Component.text("always changing. Quite spooky!", NamedTextColor.GOLD));
+            candyMeta.lore(lore);
+
+            candyMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 4);
+
+            candy.setItemMeta(candyMeta);
+
+            itemRegistry.put("candy", candy);
+            itemRegistryId.put(4, candy);
+        } catch (NullPointerException e) {
+            Parallelutils.log(Level.WARNING,"NullPointerException registering candy. " +
+                    "Item will not work!");
+            e.printStackTrace();
         }
     }
 

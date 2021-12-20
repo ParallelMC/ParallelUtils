@@ -26,6 +26,8 @@ import org.bukkit.material.Mushroom;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
 
@@ -38,6 +40,16 @@ import java.util.logging.Level;
 public class PlayerInteractListener implements Listener {
 
     private final int FERTILIZER_RANGE = 5;
+    private final PotionEffect[] CANDY_EFFECTS = {new PotionEffect(PotionEffectType.BLINDNESS, 100, 0),
+            new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 120, 0),
+            new PotionEffect(PotionEffectType.GLOWING, 200, 0),
+            new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 100, 0),
+            new PotionEffect(PotionEffectType.INVISIBILITY, 200, 0),
+            new PotionEffect(PotionEffectType.JUMP, 200, 0),
+            new PotionEffect(PotionEffectType.LEVITATION, 100, 0),
+            new PotionEffect(PotionEffectType.REGENERATION, 160, 0),
+            new PotionEffect(PotionEffectType.SPEED, 200, 0),
+            new PotionEffect(PotionEffectType.WATER_BREATHING, 120, 0)};
     private JavaPlugin javaPlugin;
     private NamespacedKey customKey;
 
@@ -176,6 +188,11 @@ public class PlayerInteractListener implements Listener {
                     } else {
                         entity.setSaturation((float)(entity.getSaturation()+6.0));
                     }
+                }
+                case 4 -> { //candy! most likely.
+                    //doesn't have a material check so we can make Other Candies with /give
+                    Random random = new Random();
+                    CANDY_EFFECTS[random.nextInt(CANDY_EFFECTS.length)].apply(event.getEntity());
                 }
             }
         }

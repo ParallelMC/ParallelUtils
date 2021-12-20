@@ -10,6 +10,7 @@ import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.ParallelHelpCommand;
 import parallelmc.parallelutils.commands.ParallelTestCommand;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
+import parallelmc.parallelutils.modules.bitsandbobs.BitsAndBobs;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
 import parallelmc.parallelutils.modules.customtrees.ParallelTrees;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
@@ -20,6 +21,7 @@ import parallelmc.parallelutils.modules.parallelflags.ParallelFlags;
 import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
 import parallelmc.parallelutils.modules.effectextender.EffectExtender;
 import parallelmc.parallelutils.modules.gamemode4.sunkenTreasure.SunkenTreasure;
+import parallelmc.parallelutils.modules.paralleltutorial.ParallelTutorial;
 import parallelmc.parallelutils.modules.performanceTools.PerformanceTools;
 import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
@@ -41,7 +43,7 @@ public final class Parallelutils extends JavaPlugin {
 
 	public static Level LOG_LEVEL = Level.INFO;
 
-	FileConfiguration config = this.getConfig();
+	FileConfiguration config;
 
 	private DataSource dataSource;
 
@@ -59,6 +61,8 @@ public final class Parallelutils extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		// Plugin startup logic
+
+		config = this.getConfig();
 
 		config.options().copyDefaults(true);
 		config.options().copyHeader(true);
@@ -248,6 +252,21 @@ public final class Parallelutils extends JavaPlugin {
 			charms.onEnable();
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelCharms!");
+		}
+
+		try {
+			BitsAndBobs bitsandbobs = new BitsAndBobs();
+			bitsandbobs.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module BitsAndBobs!");
+			e.printStackTrace();
+		}
+
+		try {
+			ParallelTutorial tutorials = new ParallelTutorial();
+			tutorials.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelTutorial!");
 			e.printStackTrace();
 		}
 
