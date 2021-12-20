@@ -26,3 +26,39 @@ github_token: githubApiToken
 
 # Sunken Treasure
 treasure_loot: sunkenTreasureLootTable
+
+# Parallel Chat
+
+group-formats:
+  default: '<tag><gray><displayname> ><reset><message>'
+  trusted: '<tag><gray><displayname> ><reset> <message>'
+  recruit: '<tag><gray><displayname> ><reset> <message>'
+  cadet: '<tag><gray><displayname> ><reset> <message>'
+  researcher: '<tag><gray><displayname> ><reset> <message>'
+  adventurer: '<tag><gray><displayname> ><reset> <message>'
+  voyager: '<tag><gray><displayname> ><reset> <message>'
+  rift_master: '<tag><gray><displayname> ><reset> <message>'
+  community_manager: '<dark_aqua><bold>T <reset><tag><displayname><reset><gray> ><color:#FFFFB0> <message>'
+  developer: '<dark_aqua><bold>D <reset><tag><blue><displayname><reset><gray> ><color:#BED7FF> <message>'
+  mod: '<dark_aqua><bold>M <reset><tag><green><displayname><reset><gray> ><color:#BDFFBD> <message>'
+  admin: '<dark_aqua><bold>A <reset><tag><aqua><displayname><reset><gray> ><color:#b3ffff> <message>'
+  owner: '<dark_purple><bold>O <reset><tag><aqua><displayname><reset><gray> ><color:#b3ffff> <message>'
+
+anti-caps:
+  enabled: true
+  min-message-length: 13
+  match-percent: 70
+
+auto-broadcast:
+  messages:
+    - "<aqua>Don't forget to vote for <white><bold>diamonds, <gold>riftcoins, </bold><aqua>and more by typing <green><bold>/vote!"
+    - "<aqua>Lock your chests, item frames, armor stands, player heads, and more with <yellow><bold>/lock!"
+    - "<aqua>Follow us on Twitter <color:#00B6FF>(@ParallelMC)<aqua>, Instagram <color:#00B6FF>(@ParallelServer)<aqua>, and TikTok <color:#00B6FF>(@ParallelServer)<aqua>!"
+    - "<aqua>Want a <red>custom pirate hat <aqua>and <gold>100 riftcoins? <aqua>Fill out the graylist application on our Minecraft Forums post!"
+    - "<aqua>Join our Discord server by typing <green><bold>/discord!"
+    - "<aqua>Be sure to visit <dark_red><bold>Red's Shop</bold> <aqua>in the Shopping District to buy special items with <gold>riftcoins!"
+    - "<aqua>Type <green><bold>/dailybonus</bold> <aqua>every day to receive <gold>10 extra riftcoins!"
+    - "<aqua>Be sure to visit the <yellow><bold>Shopping District</bold> <aqua>to buy and sell goods to other players!"
+    - "<aqua>To catch up on the newest stories of Parallel, type <green><bold>/lore!"
+  interval: 30000
+  prefix: <dark_aqua>[<white><bold>P</bold><dark_aqua>]

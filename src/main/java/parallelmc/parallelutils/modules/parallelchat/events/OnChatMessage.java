@@ -1,100 +1,150 @@
 package parallelmc.parallelutils.modules.parallelchat.events;
 
+import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.Material;
+import org.bukkit.Server;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.inventory.ItemStack;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
-import java.util.HashMap;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import static io.papermc.paper.chat.ChatRenderer.viewerUnaware;
-
-/**
- * This listener handles ItemChat. It's TERRIBLE right now because of mismatched chat APIs.
- * Paper wants everything to use the new API (AsyncChatEvent and Kyori Adventure), while non-paper plugins
- * use the legacy API. The problem is, they aren't compatible, like, at all. Many other plugins such as
- * Essentials X Chat use the legacy API for formatting messages. This means that we cannot get the chat format
- * through the new API. To combat this, we actually handle both the legacy and new events and message between
- * them to handle the format. After getting the legacy format, we have to do some parsing and placeholder replacement
- * then we can create custom TextRenderer and finally send the message.
- */
 public class OnChatMessage implements Listener {
-	
-	private final HashMap<String, String> nameformats = new HashMap<>();
 
-	/**
-	 * This event handler allows players to link their held item in chat if they type [item]
-	 */
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-	public void onChatMessage(AsyncChatEvent event) {
-		Player player = event.getPlayer();
-		ItemStack item = player.getInventory().getItemInMainHand();
+    private static final Pattern mention = Pattern.compile("@(\\S+)", Pattern.MULTILINE);
+    private static final Pattern caps = Pattern.compile("[A-Z]", Pattern.MULTILINE);
 
-		Component name = item.displayName().hoverEvent(item.asHoverEvent());
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onChatMessage(AsyncChatEvent event) {
+        Player player = event.getPlayer();
+        Server server = player.getServer();
 
-		TextComponent component = Component.text()
-				.append(name)
-				.append(Component.text(" x" + item.getAmount(), item.displayName().color()))
-				.build();
+        // convert msg to string for use in multiple modules
+        // minimessage html counts towards the string length which messes up some calculations
+        // so we're forced to use legacy
+        String msgStr = LegacyComponentSerializer.legacyAmpersand().serialize(event.message());
 
-		Component incomingMessage = event.message();
+        // for some reason the component .replace wasn't working with this regex
+        // so I guess I have to use strings
+        // check colors permission
+        if (!player.hasPermission("parallelutils.chat.colors")) {
+            Parallelutils.log(Level.WARNING, "Cancelling colors");
+            event.message(Component.text(msgStr.replaceAll("&[[0-9][a-f]]", "")));
+        }
 
-		String format = nameformats.get(player.getName());
+        // check formats permission
+        if (!player.hasPermission("parallelutils.chat.formats")) {
+            Parallelutils.log(Level.WARNING, "Cancelling formats");
+            event.message(Component.text(msgStr.replaceAll("&[[k-o]r]", "")));
+        }
 
-		if (format == null) {
-			format = player.getName() + " > ";
-			Parallelutils.log(Level.INFO, format);
-		} else {
-			nameformats.remove(player.getName());
-		}
+        // Chat Logger
+        // Log chat no matter what happens below
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        try {
+            ParallelChat.get().chatLogWriter.write("[" + timeFormatter.format(now) + "]: " + player.getName() + "> " + msgStr + "\n");
+        }
+        catch (IOException e) {
+            Parallelutils.log(Level.SEVERE, "Failed to log chat message!");
+        }
 
-		String formatted = PlaceholderAPI.setBracketPlaceholders(player, String.format(format, player.getName(), "")
-				.replace("&r", "").replace("§r", "")); // Clear the reset characters
+        // @ Mention check
+        // have to use strings to figure out the player names
+        Matcher mentionMatcher = mention.matcher(msgStr);
+        ArrayList<Player> mentionedPlayers = new ArrayList<>();
+        while (mentionMatcher.find()) {
+            String match = mentionMatcher.group();
+            Player matchPlayer = player.getServer().getPlayer(mentionMatcher.group(1));
+            if (matchPlayer != null) {
+                event.message(event.message().replaceText(x -> x.matchLiteral(match).replacement(Component.text(mentionMatcher.group(), NamedTextColor.YELLOW))));
+                matchPlayer.playSound(matchPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f);
+                mentionedPlayers.add(matchPlayer);
+            }
+        }
 
-		Component outgoingMessage = incomingMessage.replaceText(x -> x.once().match("\\[item\\]").replacement(component));
+        // StaffChat + TeamChat
+        if (ParallelChat.get().getStaffChat().contains(player.getUniqueId())) {
+            event.setCancelled(true);
+            ParallelChat.sendMessageToStaffChat(player, event.message());
+            return;
+        } else if (ParallelChat.get().getTeamChat().contains(player.getUniqueId())) {
+            event.setCancelled(true);
+            ParallelChat.sendMessageToTeamChat(player, event.message());
+            return;
+        }
 
-		if (incomingMessage.contains(outgoingMessage)) {
-			// [item] was not found. No need to stop the message
-			return;
-		}
+        // Mute Chat
+        if (ParallelChat.get().isChatDisabled) {
+            if (!player.hasPermission("parallelutils.bypass.mutechat")) {
+                ParallelChat.sendParallelMessageTo(player, "Nobody hears you! The chat is currently muted.");
+                event.setCancelled(true);
+                return;
+            }
+        }
 
-		// can't put nothing in chat
-		if (item.getType() == Material.AIR) {
-			player.sendMessage(Component.text("[", NamedTextColor.DARK_AQUA)
-					.append(Component.text("P", NamedTextColor.WHITE, TextDecoration.BOLD))
-					.append(Component.text("]", NamedTextColor.DARK_AQUA))
-					.append(Component.text(" Cannot link Air into chat!", NamedTextColor.WHITE)));
-			event.setCancelled(true);
-		} else {
-			event.renderer(viewerUnaware((source, sourceDisplayName, message) ->
-					LegacyComponentSerializer.legacyAmpersand().deserialize(formatted).append(message)));
+        // Anti-Slur
+        if (!player.hasPermission("parallelutils.bypass.antislur")) {
+            String checkSlurs = msgStr.toLowerCase().replace(" ", "");
+            // Regex checking
+            // (?s) makes . accept ALL characters
+            // Note, this may do funky things with word boundaries.
+            // Regex can specify \b to look for a word boundary specifically
+            //if (ParallelChat.get().bannedWords.stream().anyMatch(x -> checkSlurs.matches("(?s).*" + x + ".*"))) {
+            if (ParallelChat.get().bannedWords.stream().anyMatch(checkSlurs::contains)) {
+                event.setCancelled(true);
+                ParallelChat.sendParallelMessageTo(player, "Please do not say that in chat.");
+                Component slurMsg = MiniMessage.get().parse("<gray>[Anti-Swear]: ").append(event.message());
+                for (Player p : server.getOnlinePlayers()) {
+                    if (p.hasPermission("parallelutils.notify.antislur")) {
+                        p.sendMessage(slurMsg);
+                    }
+                }
+                return;
+            }
+        }
 
-			event.message(outgoingMessage);
-		}
-	}
+        // Anti-Caps
+        if (ParallelChat.get().capsEnabled && !player.hasPermission("parallelutils.bypass.anticaps")) {
+            if (msgStr.length() >= ParallelChat.get().capsMinMsgLength) {
+                Matcher capsMatcher = caps.matcher(msgStr);
+                double matches = 0D;
+                while (capsMatcher.find()) {
+                    matches++;
+                }
+                if ((matches / (double) msgStr.length()) * 100D >= (double) ParallelChat.get().capsPercentage) {
+                    event.message(LegacyComponentSerializer.legacyAmpersand().deserialize(msgStr.toLowerCase()));
+                }
+            }
+        }
 
-	/**
-	 * This event is purely to capture the format
-	 */
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-	public void onDeprecatedChatMessage(AsyncPlayerChatEvent event) {
-		String format = event.getFormat();
-		String playerName = event.getPlayer().getName();
+        // remove dnd players from the recipient list if they have not been mentioned
+        // also show the message to the player if they send it
+        event.viewers().removeAll(ParallelChat.dndPlayers.keySet()
+             .stream()
+             .filter(x -> !mentionedPlayers.contains(x))
+             .filter(x -> x != player)
+             .collect(Collectors.toSet()));
 
-		Parallelutils.log(Level.INFO, format);
-
-		nameformats.put(playerName, format);
-	}
+        // re-render the formatted message and send it
+        event.renderer(ChatRenderer.viewerUnaware((source, sourceDisplayName, message)
+                -> ParallelChat.get().formatForGroup(source, sourceDisplayName, message)));
+        // not sure if this is necessary but I don't want to touch it
+        event.message(event.message());
+    }
 }
