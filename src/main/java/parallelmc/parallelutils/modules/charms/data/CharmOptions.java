@@ -1,6 +1,5 @@
 package parallelmc.parallelutils.modules.charms.data;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
@@ -13,18 +12,21 @@ import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.util.BukkitTools;
 
-import javax.naming.Name;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
 
+/**
+ * This class is used to store charm types and apply them to items
+ */
 public class CharmOptions {
 
-	// This is just used to store in the database
-	private UUID optionsUuid;
+	// This is just used to store in the database. Specifies _type_ of charm, not the specific charm
+	private final UUID optionsUuid;
 
 	// If empty, allowed on everything
-	private Material[] allowedMaterials;
+	private final Material[] allowedMaterials;
 
 	// Settings
 	// Name color scheme? Mini-message?
@@ -32,10 +34,16 @@ public class CharmOptions {
 	// Death message?
 	// Kill counter?
 	// Particles?
-	private HashMap<HandlerType, IEffectSettings> effects;
+	private final HashMap<HandlerType, IEffectSettings> effects;
 
-	private Integer customModelData;
-	private Integer prevCustomModelData;
+	private final Integer customModelData;
+
+	public CharmOptions(UUID uuid, Material[] allowedMaterials, HashMap<HandlerType, IEffectSettings> effects, Integer customModelData) {
+		this.optionsUuid = uuid;
+		this.allowedMaterials = allowedMaterials;
+		this.effects = effects;
+		this.customModelData = customModelData;
+	}
 
 	public ItemStack applyCharm(ItemStack item) {
 		// Setup
@@ -59,41 +67,43 @@ public class CharmOptions {
 		// meta.displayName(Component.text("a"));
 
 		// Store previous custom model data and set new custom model data
-		if (meta.hasCustomModelData()) {
-			prevCustomModelData = meta.getCustomModelData();
+
+		if (customModelData != null) {
+			meta.setCustomModelData(customModelData);
 		}
-		meta.setCustomModelData(customModelData);
 
 		PersistentDataContainer pdc = meta.getPersistentDataContainer();
 
 		// Create a sub container
 		PersistentDataContainer charmsContainer = pdc.getAdapterContext().newPersistentDataContainer();
 
-		charmsContainer.set(new NamespacedKey(plugin, "ParallelCharm.PrevModelData"),
-				PersistentDataType.INTEGER, prevCustomModelData);
 
-		charmsContainer.set(new NamespacedKey(plugin, "ParallelCharm.UUID"),
+		// Apply charm options UUID
+		charmsContainer.set(new NamespacedKey(plugin, "ParallelCharm.OptUUID"),
 				PersistentDataType.STRING, optionsUuid.toString());
 
+		// Apply allowed materials. This doesn't _really_ need to be put on the item, but meh
+		if (allowedMaterials != null) {
+			PersistentDataContainer[] matsArr = new PersistentDataContainer[allowedMaterials.length];
 
-		PersistentDataContainer[] matsArr = new PersistentDataContainer[allowedMaterials.length];
+			NamespacedKey matKey = new NamespacedKey(plugin, "ParallelCharm.AllowedMats.Mat");
+			int index = 0;
+			for (Material m : allowedMaterials) {
+				PersistentDataContainer matContainer = charmsContainer.getAdapterContext().newPersistentDataContainer();
+				matContainer.set(matKey, PersistentDataType.STRING, m.getKey().asString());
+				matsArr[index] = matContainer;
 
-		NamespacedKey matKey = new NamespacedKey(plugin, "ParallelCharm.AllowedMats.Mat");
-		int index = 0;
-		for (Material m : allowedMaterials) {
-			PersistentDataContainer matContainer = charmsContainer.getAdapterContext().newPersistentDataContainer();
-			matContainer.set(matKey, PersistentDataType.STRING, m.getKey().asString());
-			matsArr[index] = matContainer;
+				index++;
+			}
 
-			index++;
+			charmsContainer.set(new NamespacedKey(plugin, "ParallelCharm.AllowedMats"),
+					PersistentDataType.TAG_CONTAINER_ARRAY, matsArr);
 		}
 
-		charmsContainer.set(new NamespacedKey(plugin, "ParallelCharm.AllowedMats"),
-				PersistentDataType.TAG_CONTAINER_ARRAY, matsArr);
-
-
+		// Apply effects. Sorry for anyone who has to read this code...
 		int effectsIndex = 0;
 		PersistentDataContainer[] effectsArr = new PersistentDataContainer[effects.size()];
+
 		// TODO: Make this less of a steaming pile of spaghetti
 		NamespacedKey effectsKey = new NamespacedKey(plugin, "ParallelCharm.Effects");
 		for (HandlerType h : effects.keySet()) {
@@ -145,5 +155,10 @@ public class CharmOptions {
 		item.setItemMeta(meta);
 
 		return item;
+	}
+
+	public boolean isMaterialAllowed(Material mat) {
+		if (allowedMaterials == null) return true;
+		return Arrays.asList(allowedMaterials).contains(mat);
 	}
 }

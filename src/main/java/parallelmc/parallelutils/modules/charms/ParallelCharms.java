@@ -6,7 +6,14 @@ import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.commands.ParallelCommand;
+import parallelmc.parallelutils.modules.charms.commands.ApplyCharm;
+import parallelmc.parallelutils.modules.charms.commands.RemoveCharm;
+import parallelmc.parallelutils.modules.charms.data.Charm;
+import parallelmc.parallelutils.modules.charms.data.CharmOptions;
 
+import java.util.HashMap;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class ParallelCharms implements ParallelModule {
@@ -30,6 +37,13 @@ public class ParallelCharms implements ParallelModule {
 					"Module may already be registered. Quitting...");
 			return;
 		}
+
+		CharmOptions testOptions = new CharmOptions(UUID.randomUUID(), null, new HashMap<>(), 123456);
+
+		Charm testCharm = new Charm(testOptions);
+
+		puPlugin.addCommand("applyCharm", new ApplyCharm(testCharm));
+		puPlugin.addCommand("removeCharm", new RemoveCharm(testCharm));
 	}
 
 	@Override
