@@ -7,7 +7,7 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.DoorKnocker;
-import parallelmc.parallelutils.modules.bitsandbobs.minimodules.KeepSpecialItems;
+import parallelmc.parallelutils.modules.bitsandbobs.minimodules.SpecialItems;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.SpeedyMinecarts;
 
 import java.util.logging.Level;
@@ -31,7 +31,7 @@ public class BitsAndBobs implements ParallelModule {
         }
 
         //manager.registerEvents(new DoorKnocker(), plugin);
-        manager.registerEvents(new KeepSpecialItems(), plugin);
+        manager.registerEvents(new SpecialItems(), plugin);
         //manager.registerEvents(new SpeedyMinecarts(), plugin);
     }
 
