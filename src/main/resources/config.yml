@@ -62,3 +62,7 @@ auto-broadcast:
     - "<aqua>To catch up on the newest stories of Parallel, type <green><bold>/lore!"
   interval: 30000
   prefix: <dark_aqua>[<white><bold>P</bold><dark_aqua>]
+
+# Bits and Bobs
+disable-ender-chests: false
+prevent-spawner-mining: false
