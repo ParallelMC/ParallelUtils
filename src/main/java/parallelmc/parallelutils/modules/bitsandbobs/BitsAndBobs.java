@@ -1,14 +1,13 @@
 package parallelmc.parallelutils.modules.bitsandbobs;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.modules.bitsandbobs.minimodules.DoorKnocker;
-import parallelmc.parallelutils.modules.bitsandbobs.minimodules.KeepSpecialItems;
-import parallelmc.parallelutils.modules.bitsandbobs.minimodules.SpeedyMinecarts;
+import parallelmc.parallelutils.modules.bitsandbobs.minimodules.*;
 
 import java.util.logging.Level;
 
@@ -30,9 +29,19 @@ public class BitsAndBobs implements ParallelModule {
             return;
         }
 
+        FileConfiguration config = puPlugin.getConfig();
+
         //manager.registerEvents(new DoorKnocker(), plugin);
         manager.registerEvents(new KeepSpecialItems(), plugin);
         //manager.registerEvents(new SpeedyMinecarts(), plugin);
+
+        if (config.getBoolean("disable-ender-chests", false)) {
+            manager.registerEvents(new DisableEnderChest(), plugin);
+        }
+
+        if (config.getBoolean("prevent-spawner-mining", false)) {
+            manager.registerEvents(new PreventSpawnerMining(), plugin);
+        }
     }
 
     @Override
