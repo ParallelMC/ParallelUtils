@@ -63,7 +63,12 @@ public class InventoryClearHandler extends Handler {
 			if (state == StateFlag.State.DENY) {
 				PlayerInventory inventory = bukkitPlayer.getPlayer().getInventory();
 
-				return inventory.isEmpty();
+				if (inventory.isEmpty()) {
+					bukkitPlayer.getPlayer().sendMessage("Empty your inventory before entering!");
+					return false;
+				}
+
+				return true;
 			} else {
 				return true;
 			}
