@@ -143,8 +143,6 @@ public class BotManager extends ListenerAdapter {
 	public void onMessageReceived(@NotNull MessageReceivedEvent event) {
 		if (event.isFromType(ChannelType.TEXT)) {
 			// Only look in the correct server
-			Parallelutils.log(Level.INFO, event.getTextChannel().getId().strip());
-			Parallelutils.log(Level.INFO, serverId);
 			if (event.getGuild().getId().strip().toLowerCase().equals(serverId)) {
 				// Is this message a command?
 				String message = event.getMessage().getContentStripped();
