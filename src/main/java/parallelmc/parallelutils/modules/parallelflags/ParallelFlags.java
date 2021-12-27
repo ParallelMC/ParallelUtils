@@ -11,10 +11,7 @@ import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelflags.events.ParallelFlagsDeathListener;
 import parallelmc.parallelutils.modules.parallelflags.events.ParallelFlagsInteractListener;
 import parallelmc.parallelutils.modules.parallelflags.events.ParallelFlagsPlaceListener;
-import parallelmc.parallelutils.modules.parallelflags.session.CustomArmorDeny;
-import parallelmc.parallelutils.modules.parallelflags.session.CustomArmorHealth;
-import parallelmc.parallelutils.modules.parallelflags.session.ElytraFlagHandler;
-import parallelmc.parallelutils.modules.parallelflags.session.FlyFlagHandler;
+import parallelmc.parallelutils.modules.parallelflags.session.*;
 
 import java.util.logging.Level;
 
@@ -127,6 +124,10 @@ public class ParallelFlags implements ParallelModule {
 				Parallelutils.log(Level.WARNING, "Unable to create parallel-glide flag. Will not use");
 			}
 
+			if (!registry.addStateflag("empty-inventory", false)) {
+				Parallelutils.log(Level.WARNING, "Unable to create empty-inventory flag. Will not use");
+			}
+
 		} catch (NoClassDefFoundError e) {
 			Parallelutils.log(Level.SEVERE, "Unable to load WorldGuard! Something is wrong!");
 		}
@@ -156,6 +157,7 @@ public class ParallelFlags implements ParallelModule {
 		sessionManager.registerHandler(CustomArmorHealth.FACTORY, null);
 		sessionManager.registerHandler(FlyFlagHandler.FACTORY, null);
 		sessionManager.registerHandler(ElytraFlagHandler.FACTORY, null);
+		sessionManager.registerHandler(InventoryClearHandler.FACTORY, null);
 
 		manager.registerEvents(new ParallelFlagsInteractListener(), plugin);
 		manager.registerEvents(new ParallelFlagsPlaceListener(), plugin);
