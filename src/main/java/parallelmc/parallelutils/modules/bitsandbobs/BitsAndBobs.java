@@ -32,7 +32,7 @@ public class BitsAndBobs implements ParallelModule {
         FileConfiguration config = puPlugin.getConfig();
 
         //manager.registerEvents(new DoorKnocker(), plugin);
-        manager.registerEvents(new KeepSpecialItems(), plugin);
+        manager.registerEvents(new SpecialItems(), plugin);
         //manager.registerEvents(new SpeedyMinecarts(), plugin);
 
         if (config.getBoolean("disable-ender-chests", false)) {
