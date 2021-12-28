@@ -43,13 +43,11 @@ public class OnChatMessage implements Listener {
         // so I guess I have to use strings
         // check colors permission
         if (!player.hasPermission("parallelutils.chat.colors")) {
-            Parallelutils.log(Level.WARNING, "Cancelling colors");
             event.message(Component.text(msgStr.replaceAll("&[[0-9][a-f]]", "")));
         }
 
         // check formats permission
         if (!player.hasPermission("parallelutils.chat.formats")) {
-            Parallelutils.log(Level.WARNING, "Cancelling formats");
             event.message(Component.text(msgStr.replaceAll("&[[k-o]r]", "")));
         }
 
