@@ -58,6 +58,7 @@ public class ParallelChat implements ParallelModule {
 
     private final FileConfiguration bannedWordsConfig = new YamlConfiguration();
     public List<String> bannedWords = new ArrayList<>();
+    public List<String> allowedWords = new ArrayList<>();
 
     public List<Component> autoMessages = new ArrayList<>();
 
@@ -141,6 +142,7 @@ public class ParallelChat implements ParallelModule {
         }
 
         this.bannedWords = bannedWordsConfig.getStringList("Banned-Words");
+        this.allowedWords = bannedWordsConfig.getStringList("Whitelisted-Words");
         Parallelutils.log(Level.INFO, "ParallelChat: Loaded " + bannedWords.size() + " banned words.");
 
         ConfigurationSection groups = puPlugin.getConfig().getConfigurationSection("group-formats");

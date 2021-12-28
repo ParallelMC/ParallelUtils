@@ -105,15 +105,17 @@ public class OnChatMessage implements Listener {
             // Regex can specify \b to look for a word boundary specifically
             //if (ParallelChat.get().bannedWords.stream().anyMatch(x -> checkSlurs.matches("(?s).*" + x + ".*"))) {
             if (ParallelChat.get().bannedWords.stream().anyMatch(checkSlurs::contains)) {
-                event.setCancelled(true);
-                ParallelChat.sendParallelMessageTo(player, "Please do not say that in chat.");
-                Component slurMsg = MiniMessage.get().parse("<gray>[Anti-Swear]: ").append(event.message());
-                for (Player p : server.getOnlinePlayers()) {
-                    if (p.hasPermission("parallelutils.notify.antislur")) {
-                        p.sendMessage(slurMsg);
+                if (ParallelChat.get().allowedWords.stream().noneMatch(checkSlurs::contains)) {
+                    event.setCancelled(true);
+                    ParallelChat.sendParallelMessageTo(player, "Please do not say that in chat.");
+                    Component slurMsg = MiniMessage.get().parse("<gray>[Anti-Swear]: ").append(event.message());
+                    for (Player p : server.getOnlinePlayers()) {
+                        if (p.hasPermission("parallelutils.notify.antislur")) {
+                            p.sendMessage(slurMsg);
+                        }
                     }
+                    return;
                 }
-                return;
             }
         }
 

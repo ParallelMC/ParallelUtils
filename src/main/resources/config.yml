@@ -68,7 +68,11 @@ announcements:
     prefix: "<dark_gray>[<dark_red>BROADCAST<dark_gray>] "
     chat-color: "<aqua>"
   announce:
-    message: "<dark_gray><strikethrough>--------------------------\n<reset><yellow><bold>ANNOUNCEMENT<reset>{message}\n<dark_gray><strikethrough>--------------------------"
+    message:
+      - "<dark_gray><strikethrough>--------------------------"
+      - "<reset><yellow><bold>ANNOUNCEMENT"
+      - "<reset><message>"
+      - "<dark_gray><strikethrough>--------------------------"
 
 # Bits and Bobs
 disable-ender-chests: false
