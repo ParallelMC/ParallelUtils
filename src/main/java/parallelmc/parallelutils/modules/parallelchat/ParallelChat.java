@@ -182,7 +182,7 @@ public class ParallelChat implements ParallelModule {
         puPlugin.getServer().getScheduler().scheduleSyncRepeatingTask(puPlugin, () -> {
             Component msg = autoMessages.get(rand.nextInt(autoMessages.size()));
             for (Player p : puPlugin.getServer().getOnlinePlayers()) {
-                p.sendMessage(msg);
+                p.sendMessage("\n" + msg + "\n");
             }
         }, 0L, interval);
 
@@ -268,7 +268,7 @@ public class ParallelChat implements ParallelModule {
      * @param message The message to send
      */
     public static void sendParallelMessageTo(Player player, String message) {
-        Component msg = Component.text("§3[§f§lP§3] §a" + message);
+        Component msg = Component.text("\n§3[§f§lP§3] §a " + message + "\n");
         player.sendMessage(msg);
     }
 
