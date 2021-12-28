@@ -3,15 +3,18 @@ package parallelmc.parallelutils.modules.parallelchat.events;
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
@@ -109,8 +112,10 @@ public class OnChatMessage implements Listener {
                     if (ParallelChat.get().allowedWords.stream().noneMatch(checkSlurs::contains)) {
                         event.setCancelled(true);
                         ParallelChat.sendParallelMessageTo(player, "Please do not say that in chat.");
-                        Component slurMsg = MiniMessage.get().parse("<gray>[Anti-Swear]: ").append(event.message())
-                                                                                                 .append(Component.text(" | Match: " + x));
+                        Component slurMsg = MiniMessage.get().parse("<gray>").append(player.displayName())
+                                                                                   .append(Component.text(" [Anti-Swear]: "))
+                                                                                    .append(event.message())
+                                                                                    .append(Component.text(" | Match: " + x));
                         for (Player p : server.getOnlinePlayers()) {
                             if (p.hasPermission("parallelutils.notify.antislur")) {
                                 p.sendMessage(slurMsg);
@@ -135,6 +140,21 @@ public class OnChatMessage implements Listener {
                     event.message(LegacyComponentSerializer.legacyAmpersand().deserialize(msgStr.toLowerCase()));
                 }
             }
+        }
+
+
+        // Item chat
+        ItemStack item = player.getInventory().getItemInMainHand();
+
+        if (item.getType() != Material.AIR) {
+            Component itemName = item.displayName().hoverEvent(item.asHoverEvent());
+
+            TextComponent itemComponent = Component.text()
+                    .append(itemName)
+                    .append(Component.text(" x" + item.getAmount(), item.displayName().color()))
+                    .build();
+
+            event.message(event.message().replaceText(x -> x.once().match("\\[item\\]").replacement(itemComponent)));
         }
 
         // remove dnd players from the recipient list if they have not been mentioned
