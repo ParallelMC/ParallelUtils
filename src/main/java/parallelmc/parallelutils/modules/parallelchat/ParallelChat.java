@@ -195,7 +195,6 @@ public class ParallelChat implements ParallelModule {
         catch (IOException e) {
             Parallelutils.log(Level.SEVERE, "Failed to open writer to loggers!");
         }
-        manager.registerEvents(new OnDisplayItem(), puPlugin);
         manager.registerEvents(new OnChatMessage(), puPlugin);
         manager.registerEvents(new OnJoinLeave(), puPlugin);
         manager.registerEvents(new OnSignTextSet(), puPlugin);
