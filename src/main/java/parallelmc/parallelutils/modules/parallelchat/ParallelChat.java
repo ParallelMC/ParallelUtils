@@ -175,14 +175,13 @@ public class ParallelChat implements ParallelModule {
         String autoPrefix = puPlugin.getConfig().getString("auto-broadcast.prefix");
         for (String s : messages) {
             // pre-parse auto broadcast since there are no placeholders
-            this.autoMessages.add(MiniMessage.get().parse(autoPrefix + s));
+            this.autoMessages.add(MiniMessage.get().parse("\n" + autoPrefix + s + "\n"));
         }
-
         // Auto-Message
         puPlugin.getServer().getScheduler().scheduleSyncRepeatingTask(puPlugin, () -> {
             Component msg = autoMessages.get(rand.nextInt(autoMessages.size()));
             for (Player p : puPlugin.getServer().getOnlinePlayers()) {
-                p.sendMessage("\n" + msg + "\n");
+                p.sendMessage(msg);
             }
         }, 0L, interval);
 
