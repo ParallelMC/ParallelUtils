@@ -61,7 +61,14 @@ auto-broadcast:
     - "<aqua>Be sure to visit the <yellow><bold>Shopping District</bold> <aqua>to buy and sell goods to other players!"
     - "<aqua>To catch up on the newest stories of Parallel, type <green><bold>/lore!"
   interval: 30000
-  prefix: <dark_aqua>[<white><bold>P</bold><dark_aqua>]
+  prefix: "<dark_aqua>[<white><bold>P</bold><dark_aqua>] "
+
+announcements:
+  broadcast:
+    prefix: "<dark_gray>[<dark_red>BROADCAST<dark_gray>] "
+    chat-color: "<aqua>"
+  announce:
+    message: "<dark_gray><strikethrough>--------------------------\n<reset><yellow><bold>ANNOUNCEMENT<reset>{message}\n<dark_gray><strikethrough>--------------------------"
 
 # Bits and Bobs
 disable-ender-chests: false
