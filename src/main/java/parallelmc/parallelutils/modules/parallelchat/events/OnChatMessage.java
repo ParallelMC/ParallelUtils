@@ -109,7 +109,7 @@ public class OnChatMessage implements Listener {
             //if (ParallelChat.get().bannedWords.stream().anyMatch(x -> checkSlurs.matches("(?s).*" + x + ".*"))) {
             for (String x : ParallelChat.get().bannedWords) {
                 if (checkSlurs.contains(x)) {
-                    if (ParallelChat.get().allowedWords.stream().noneMatch(checkSlurs::contains)) {
+                    //if (ParallelChat.get().allowedWords.stream().noneMatch(checkSlurs::contains)) {
                         event.setCancelled(true);
                         ParallelChat.sendParallelMessageTo(player, "Please do not say that in chat.");
                         Component slurMsg = MiniMessage.get().parse("<gray>").append(player.displayName())
@@ -122,7 +122,7 @@ public class OnChatMessage implements Listener {
                             }
                         }
                         return;
-                    }
+                    //}
                 }
             }
         }
