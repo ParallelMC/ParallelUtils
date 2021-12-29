@@ -44,6 +44,9 @@ public class ParallelReply implements CommandExecutor {
                     }
                 }
             });
+
+            ParallelChat.get().playerLastMessaged.put(sender.getUniqueId(), recipient.getUniqueId());
+            ParallelChat.get().playerLastMessaged.put(recipient.getUniqueId(), sender.getUniqueId());
         }
         return true;
     }
