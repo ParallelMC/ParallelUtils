@@ -37,7 +37,7 @@ commands:
     description: Send a private message to a player
     usage: /msg <player> <message>
     aliases:
-      - "message"
+      - [message,w,m,t,pm,tell,whisper]
   r:
     description: Reply to a recently messaged player
     usage: /r <message>
