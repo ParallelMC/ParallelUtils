@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '6.0.0'
     id("io.papermc.paperweight.userdev") version "1.3.3"
+    id 'net.minecrell.plugin-yml.bukkit' version '0.5.1'
 }
 
 group = 'org.parallelmc'
@@ -14,10 +15,11 @@ java {
 
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
+processResources.filteringCharset = "UTF-8"
 
 repositories {
     mavenCentral()
-    maven { url = "https://papermc.io/repo/repository/maven-public/"}
+    maven { url = "https://papermc.io/repo/repository/maven-public/" }
     maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
     maven { url = "https://maven.enginehub.org/repo/" }
     maven { url = 'https://repo.md-5.net/content/groups/public/' }
@@ -34,7 +36,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     implementation 'net.dv8tion:JDA:4.4.0_350'
     compileOnly 'me.clip:placeholderapi:2.10.10'
-    compileOnly fileTree('libs') { include '*.jar'}
+    compileOnly fileTree('libs') { include '*.jar' }
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.6'
     implementation 'mysql:mysql-connector-java:8.0.26'
     implementation 'net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT'
@@ -61,4 +63,266 @@ tasks {
         options.release.set(17)
     }
 
+}
+
+bukkit {
+    name = "ParallelUtils"
+    version = project.version
+    description = "A plugin containing miscellaneous features and changes for play.parallelmc.org"
+    website = 'parallelmc.org'
+    author = 'ParallelMC Team'
+
+    main = 'parallelmc.parallelutils.Parallelutils'
+
+    apiVersion = '1.18'
+
+    depend = ['PlaceholderAPI', 'ProtocolLib']
+    softDepend = ['Multiverse-Core', 'FractalForest', 'WorldGuard', 'VoteParty', 'FrozenJoin']
+
+    commands {
+        parallelutils {
+            description = 'Get information about the plugin'
+            usage = '/parallelutils'
+            permissionMessage = 'You do not have permission'
+            aliases = ['pu',]
+        }
+        depositexp {
+            description = 'Deposit exp into the player\' s ender chest '
+            usage = '/depositexp <amount | all>'
+            permissionMessage = 'You do not have permission'
+        }
+        withdrawexp {
+            description = 'Withdraw exp from the player\' s ender chest '
+            usage = '/withdrawexp <amount | all>'
+            permissionMessage = 'You do not have permission'
+        }
+        fakejoin {
+            description = 'Sends a fake join message in chat'
+            usage = '/fakejoin [player]'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.fakelogin'
+        }
+        fakeleave {
+            description = 'Sends a fake leave message in chat'
+            usage = '/fakeleave [player]'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.fakelogin'
+        }
+        msg {
+            description = 'Send a private message to a player'
+            usage = '/msg <player> <message>'
+            aliases = ['message', 'w', 'm', 't', 'pm', 'tell', 'whisper',]
+        }
+        r {
+            description = 'Reply to a recently messaged player'
+            usage = '/r <message>'
+            aliases = ['reply',]
+        }
+        sc {
+            description = 'Toggle or send a message in staff chat'
+            usage = '/sc [message]'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.staffchat'
+            aliases = ['staffchat',]
+        }
+        tc {
+            description = 'Toggle or send a message in team chat'
+            usage = '/tc [message]'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.teamchat'
+            aliases = ['teamchat',]
+        }
+        broadcast {
+            description = 'Broadcast a message to the server'
+            usage = '/broadcast (message)'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.broadcast'
+        }
+        announce {
+            description = 'Announce a message to the server'
+            usage = '/announce (message)'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.announce'
+        }
+        clearchat {
+            description = 'Clears chat'
+            usage = '/clearchat'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.clearchat'
+        }
+        socialspy {
+            description = 'Toggles social spy'
+            usage = '/socialspy'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.socialspy'
+        }
+        commandspy {
+            description = 'Toggles command spy'
+            usage = '/commandspy'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.commandspy'
+        }
+        mutechat {
+            description = 'Mute or unmute the chat'
+            usage = '/mutechat'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.mutechat'
+        }
+        colors {
+            description = 'View all chat colors'
+            usage = '/colors'
+        }
+        formats {
+            description = 'View all chat formats'
+            usage = '/formats'
+        }
+        dnd {
+            description = 'Toggles Do Not Disturb mode'
+            usage = '/dnd'
+            aliases = ['donotdisturb',]
+        }
+        starttutorial {
+            description = 'Starts a tutorial for a player'
+            usage = '/starttutorial (player) (tutorial)'
+        }
+        listtutorials {
+            description = 'Lists all tutorials'
+            usage = '/listtutorials'
+        }
+        reloadtutorials {
+            description = 'Reloads all tutorials'
+            usage = '/reloadtutorials'
+        }
+    }
+
+    permissions {
+        'parallelutils.*' {
+            description = 'Gives access to all PU commands'
+            childrenMap = ['parallelutils.basic': true, 'parallelutils.test': true, 'parallelutils.spawn': true, 'parallelutils.help': true,]
+            setDefault('FALSE')
+        }
+        'parallelutils.basic' {
+            description = 'Gives access to any PU commands. Required to do anything'
+            childrenMap = ['parallelutils.help': true,]
+            setDefault('FALSE')
+        }
+        'parallelutils.spawn' {
+            description = 'Gives access to spawning commands, such as summoning and monster spawners.'
+            childrenMap = ['parallelutils.spawn.summon': true, 'parallelutils.spawn.spawners': true,]
+            setDefault('FALSE')
+        }
+        'parallelutils.spawn.summon' {
+            description = 'Gives access to spawn summon command.'
+            setDefault('FALSE')
+        }
+        'parallelutils.spawn.spawners' {
+            description = 'Gives access to commands involving spawners.'
+            childrenMap = ['parallelutils.spawn.spawners.create': true, 'parallelutils.spawn.spawners.list': true, 'parallelutils.spawn.spawners.delete': true,]
+            setDefault('FALSE')
+        }
+        'parallelutils.spawn.spawners.create' {
+            description = 'Gives access to creating spawners.'
+            setDefault('FALSE')
+        }
+        'parallelutils.spawn.spawners.list' {
+            description = 'Gives access to listing spawners'
+            setDefault('FALSE')
+        }
+        'parallelutils.spawn.spawners.delete' {
+            description = 'Gives access to deleting spawners.'
+            setDefault('FALSE')
+        }
+        'parallelutils.give' {
+            description = 'Gives access to giving ParallelItems.'
+            setDefault('FALSE')
+        }
+        'parallelutils.test' {
+            description = 'Gives access to the test command'
+            setDefault('FALSE')
+        }
+        'parallelutils.help' {
+            description = 'Gives access to the help command'
+            setDefault('FALSE')
+        }
+        'parallelutils.effects' {
+            description = 'Gives access to effects debug command'
+            setDefault('FALSE')
+        }
+        'parallelutils.fakelogin' {
+            description = 'Gives access to fakejoin and fakeleave commands'
+            setDefault('FALSE')
+        }
+        'parallelutils.staffchat' {
+            description = 'Gives access to reading and writing to staff chat'
+        }
+        'parallelutils.teamchat' {
+            description = 'Gives access to reading and writing to team chat'
+        }
+        'parallelutils.broadcast' {
+            description = 'Gives access to the broadcast command'
+        }
+        'parallelutils.announce' {
+            description = 'Gives access to the announce command'
+        }
+        'parallelutils.mutechat' {
+            description = 'Gives access to the mutechat command'
+        }
+        'parallelutils.socialspy' {
+            description = 'Gives access to the SocialSpy command'
+        }
+        'parallelutils.commandspy' {
+            description = 'Gives access to the CommandSpy command'
+        }
+        'parallelutils.clearchat' {
+            description = 'Gives access to the clearchat command'
+        }
+        'parallelutils.starttutorial' {
+            description = 'Gives access to starttutorial command'
+        }
+        'parallelutils.listtutorials' {
+            description = 'Gives access to listtutorials command'
+        }
+        'parallelutils.reloadtutorials' {
+            description = 'Gives access to reloadtutorials command'
+        }
+        'parallelutils.chat' {
+            description = 'Gives access to chat elemets'
+            childrenMap = ['parallelutils.chat.colors': true, 'parallelutils.chat.formats': true,]
+        }
+        'parallelutils.chat.colors' {
+            description = 'Gives access to chat colors'
+        }
+        'parallelutils.chat.formats' {
+            description = 'Gives access to chat formatting'
+        }
+        'parallelutils.bypass' {
+            description = 'Bypasses some ParallelUtils modules'
+            childrenMap = ['parallelutils.bypass.anticaps': true, 'parallelutils.bypass.antislur': true, 'parallelutils.bypass.clearchat': true, 'parallelutils.bypass.socialspy': true, 'parallelutils.bypass.commandspy': true, 'parallelutils.bypass.mutechat': true,]
+        }
+        'parallelutils.bypass.anticaps' {
+            description = 'Bypasses the Anti-Caps module'
+        }
+        'parallelutils.bypass.antislur' {
+            description = 'Bypasses the Anti-Slur module in chat and on signs'
+        }
+        'parallelutils.bypass.clearchat' {
+            description = 'Bypasses chat being cleared by clearchat'
+        }
+        'parallelutils.bypass.socialspy' {
+            description = 'Bypasses the Social Spy module'
+        }
+        'parallelutils.bypass.commandspy' {
+            description = 'Bypasses the Command Spy module'
+        }
+        'parallelutils.bypass.mutechat' {
+            description = 'Bypasses chat being muted'
+        }
+        'parallelutils.notify' {
+            description = 'Be notified by some ParallelUtils modules'
+            childrenMap = ['parallelutils.notify.antislur': true,]
+        }
+        'parallelutils.notify.antislur' {
+            description = 'Be notified of swearing'
+        }
+    }
 }
