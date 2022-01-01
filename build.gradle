@@ -193,6 +193,10 @@ bukkit {
             description = 'Reloads all tutorials'
             usage = '/reloadtutorials'
         }
+        leavetutorial {
+            description = 'Exit the tutorial you are currently in'
+            usage = '/leavetutorial'
+        }
     }
 
     permissions {
