@@ -24,6 +24,7 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
+import parallelmc.parallelutils.modules.paralleltutorial.commands.ParallelLeaveTutorial;
 import parallelmc.parallelutils.modules.paralleltutorial.commands.ParallelListTutorials;
 import parallelmc.parallelutils.modules.paralleltutorial.commands.ParallelReloadTutorials;
 import parallelmc.parallelutils.modules.paralleltutorial.commands.ParallelStartTutorial;
@@ -88,6 +89,7 @@ public class ParallelTutorial implements ParallelModule {
         puPlugin.getCommand("starttutorial").setExecutor(new ParallelStartTutorial());
         puPlugin.getCommand("listtutorials").setExecutor(new ParallelListTutorials());
         puPlugin.getCommand("reloadtutorials").setExecutor(new ParallelReloadTutorials());
+        puPlugin.getCommand("leavetutorial").setExecutor(new ParallelLeaveTutorial());
 
         Instance = this;
     }
@@ -209,116 +211,112 @@ public class ParallelTutorial implements ParallelModule {
                 loop = new BukkitRunnable() {
                     @Override
                     public void run() {
-                        if (lookAt != null) {
-                            playerLookAt(player, lookAt);
-                            if (doLook) {
-                                if (lookAt != null) {
-                                    playerLookAt(player, lookAt);
-                                } else {
-                                    PacketContainer packet = protManager.createPacket(PacketType.Play.Server.ENTITY_LOOK);
-                                    packet.getIntegers().write(0, player.getEntityId());
-                                    packet.getBytes().write(0, (byte) 0);
-                                    packet.getBytes().write(1, (byte) 0);
-                                    packet.getBooleans().write(0, false);
-                                    try {
-                                        protManager.sendServerPacket(player, packet);
-                                    } catch (InvocationTargetException e) {
-                                        e.printStackTrace();
-                                    }
+                        if (doLook) {
+                            if (lookAt != null) {
+                                playerLookAt(player, lookAt);
+                            } else {
+                                PacketContainer packet = protManager.createPacket(PacketType.Play.Server.ENTITY_LOOK);
+                                packet.getIntegers().write(0, player.getEntityId());
+                                packet.getBytes().write(0, (byte) 0);
+                                packet.getBytes().write(1, (byte) 0);
+                                packet.getBooleans().write(0, false);
+                                try {
+                                    protManager.sendServerPacket(player, packet);
+                                } catch (InvocationTargetException e) {
+                                    e.printStackTrace();
                                 }
                             }
-                            // only run the next instruction if the current one is finished
-                            if (instructionFinished) {
-                                Instruction i = instructions.get(instructionIndex);
-                                Parallelutils.log(Level.WARNING, "Running instruction " + i.name());
-                                instructionFinished = false;
-                                switch (i.name()) {
-                                    case "START" -> {
-                                        Bukkit.getScheduler().runTask(puPlugin, () -> {
-                                            playersInTutorial.put(player, player.getLocation());
-                                            player.setGameMode(GameMode.SPECTATOR);
-                                            player.teleport(new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2])));
-                                            player.setFlySpeed(0F);
-                                            doLook = true;
-                                            instructionFinished = true;
-                                        });
-                                    }
-                                    case "MOVE" -> {
-                                        final Location endPoint = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
-                                        new BukkitRunnable() {
-                                            @Override
-                                            public void run() {
-                                                Location current = player.getLocation();
-                                                double distance = endPoint.distanceSquared(current);
-                                                if (distance <= 1D) {
-                                                    // doesn't abruptly stop unless you wait a tick
-                                                    // causes an overshoot if you don't wait
-                                                    Bukkit.getScheduler().runTaskLater(puPlugin, () -> {
-                                                        player.setVelocity(new Vector().zero());
-                                                    }, 1L);
-                                                    instructionFinished = true;
-                                                    this.cancel();
-                                                }
-                                                Vector vel = endPoint.toVector().subtract(current.toVector()).normalize().multiply(speed);
-                                                player.setVelocity(vel);
+                        }
+                        // only run the next instruction if the current one is finished
+                        if (instructionFinished) {
+                            Instruction i = instructions.get(instructionIndex);
+                            instructionFinished = false;
+                            switch (i.name()) {
+                                case "START" -> {
+                                    Bukkit.getScheduler().runTask(puPlugin, () -> {
+                                        playersInTutorial.put(player, player.getLocation());
+                                        player.setGameMode(GameMode.SPECTATOR);
+                                        player.teleport(new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2])));
+                                        player.setFlySpeed(0F);
+                                        doLook = true;
+                                        instructionFinished = true;
+                                    });
+                                }
+                                case "MOVE" -> {
+                                    final Location endPoint = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
+                                    new BukkitRunnable() {
+                                        @Override
+                                        public void run() {
+                                            Location current = player.getLocation();
+                                            double distance = endPoint.distanceSquared(current);
+                                            if (distance <= 1D || !playersInTutorial.containsKey(player)) {
+                                                // doesn't abruptly stop unless you wait a tick
+                                                // causes an overshoot if you don't wait
+                                                Bukkit.getScheduler().runTaskLater(puPlugin, () -> {
+                                                    player.setVelocity(new Vector().zero());
+                                                }, 1L);
+                                                instructionFinished = true;
+                                                this.cancel();
                                             }
-                                        }.runTaskTimer(puPlugin, 1L, 3L);
-                                    }
-                                    case "TELEPORT" -> {
-                                        final Location newPoint = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
-                                        doLook = false;
-                                        // again, wait two ticks to prevent teleport weirdness
-                                        Bukkit.getScheduler().runTaskLater(puPlugin, () -> {
-                                            player.teleport(newPoint);
-                                            doLook = true;
-                                            instructionFinished = true;
-                                        }, 2L);
-                                    }
-                                    case "LOOKAT" -> {
-                                        lookAt = new Vector(Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
-                                        instructionFinished = true;
-                                    }
-                                    case "WAIT" -> {
-                                        long ticks = Long.parseLong(i.args()[0]);
-                                        Bukkit.getScheduler().runTaskLater(puPlugin, () -> {
-                                            instructionFinished = true;
-                                        }, ticks);
-                                    }
-                                    case "SAY" -> {
-                                        String string = ParallelChat.getStringArg(i.args());
-                                        player.sendMessage(MiniMessage.get().parse(string));
-                                        instructionFinished = true;
-                                    }
-                                    case "SOUND" -> {
-                                        player.stopSound(SoundStop.all());
-                                        player.playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, i.args()[0]), Sound.Source.MASTER, 1f, 1f), Sound.Emitter.self());
-                                        instructionFinished = true;
-                                    }
-                                    case "SPEED" -> {
-                                        speed = Double.parseDouble(i.args()[0]) / 10D;
-                                        instructionFinished = true;
-                                    }
-                                    case "END" -> {
-                                        doLook = false;
-                                        Bukkit.getScheduler().runTask(puPlugin, () -> {
-                                            Location end = playersInTutorial.get(player);
-                                            // waiting two ticks seems to fix teleporting issues
-                                            Bukkit.getScheduler().runTaskLater(puPlugin, () -> {
-                                                player.stopSound(SoundStop.all());
-                                                player.teleport(end, PlayerTeleportEvent.TeleportCause.PLUGIN);
-                                                player.setGameMode(GameMode.SURVIVAL);
-                                                // unnecessary for most players but still needed since we change it above
-                                                player.setFlySpeed(0.1F);
-                                            }, 2L);
-                                            playersInTutorial.remove(player);
-                                            runningTutorials.remove(player);
-                                            instructionFinished = true;
-                                            loop.cancel();
-                                        });
-                                    }
+                                            Vector vel = endPoint.toVector().subtract(current.toVector()).normalize().multiply(speed);
+                                            player.setVelocity(vel);
+                                        }
+                                    }.runTaskTimer(puPlugin, 1L, 3L);
                                 }
-                                instructionIndex++;
+                                case "TELEPORT" -> {
+                                    final Location newPoint = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
+                                    doLook = false;
+                                    // again, wait two ticks to prevent teleport weirdness
+                                    Bukkit.getScheduler().runTaskLater(puPlugin, () -> {
+                                        player.teleport(newPoint);
+                                        doLook = true;
+                                        instructionFinished = true;
+                                    }, 2L);
+                                }
+                                case "LOOKAT" -> {
+                                    lookAt = new Vector(Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
+                                    instructionFinished = true;
+                                }
+                                case "WAIT" -> {
+                                    long ticks = Long.parseLong(i.args()[0]);
+                                    Bukkit.getScheduler().runTaskLater(puPlugin, () -> {
+                                        instructionFinished = true;
+                                    }, ticks);
+                                }
+                                case "SAY" -> {
+                                    String string = ParallelChat.getStringArg(i.args());
+                                    player.sendMessage(MiniMessage.get().parse(string));
+                                    instructionFinished = true;
+                                }
+                                case "SOUND" -> {
+                                    player.stopSound(SoundStop.all());
+                                    player.playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, i.args()[0]), Sound.Source.MASTER, 1f, 1f), Sound.Emitter.self());
+                                    instructionFinished = true;
+                                }
+                                case "SPEED" -> {
+                                    speed = Double.parseDouble(i.args()[0]) / 10D;
+                                    instructionFinished = true;
+                                }
+                                case "END" -> {
+                                    doLook = false;
+                                    Bukkit.getScheduler().runTask(puPlugin, () -> {
+                                        Location end = playersInTutorial.get(player);
+                                        // waiting two ticks seems to fix teleporting issues
+                                        Bukkit.getScheduler().runTaskLater(puPlugin, () -> {
+                                            player.stopSound(SoundStop.all());
+                                            player.teleport(end, PlayerTeleportEvent.TeleportCause.PLUGIN);
+                                            player.setGameMode(GameMode.SURVIVAL);
+                                            // unnecessary for most players but still needed since we change it above
+                                            player.setFlySpeed(0.1F);
+                                        }, 2L);
+                                        playersInTutorial.remove(player);
+                                        runningTutorials.remove(player);
+                                        instructionFinished = true;
+                                        loop.cancel();
+                                    });
+                                }
                             }
+                            instructionIndex++;
                         }
                     }
                 }.runTaskTimer(puPlugin, 0L, 1L);
