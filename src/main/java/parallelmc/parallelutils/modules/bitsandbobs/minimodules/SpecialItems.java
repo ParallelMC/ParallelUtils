@@ -1,6 +1,6 @@
 package parallelmc.parallelutils.modules.bitsandbobs.minimodules;
 
-import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.CompoundTag;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -58,21 +58,21 @@ public class SpecialItems implements Listener {
 
                 net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
                 // Grabs the NMS items compound and checks if it's null
-                NBTTagCompound compound = (nmsItem.r()) ? nmsItem.s() : new NBTTagCompound();
+                CompoundTag compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new CompoundTag();
 
                 if (compound == null) continue;
 
-                if (compound.e("CustomHat")) {
+                if (compound.contains("CustomHat")) {
                     preventedDrops.add(item);
                 }
             } else if (item.getType() == Material.PLAYER_HEAD) {
                 net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
                 // Grabs the NMS items compound and checks if it's null
-                NBTTagCompound compound = (nmsItem.r()) ? nmsItem.s() : new NBTTagCompound();
+                CompoundTag compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new CompoundTag();
 
                 if (compound == null) continue;
 
-                if (compound.e("CustomTrophy")) {
+                if (compound.contains("CustomTrophy")) {
                     preventedDrops.add(item);
                 }
             }
@@ -123,10 +123,10 @@ public class SpecialItems implements Listener {
             // Now we have to use NMS if the item doesn't have a PersistentDataContainer
             net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
             // Grabs the NMS items compound and checks if it's null
-            NBTTagCompound compound = (nmsItem.r()) ? nmsItem.s() : new NBTTagCompound();
+            CompoundTag compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new CompoundTag();
             if (compound == null) continue;
 
-            if (compound.e("CustomHat")) {
+            if (compound.contains("CustomHat")) {
                 ingredients.setResult(null);
                 break;
             }
@@ -154,10 +154,10 @@ public class SpecialItems implements Listener {
                             // Now we have to use NMS if the item doesn't have a PersistentDataContainer
                             net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
                             // Grabs the NMS items compound and checks if it's null
-                            NBTTagCompound compound = (nmsItem.r()) ? nmsItem.s() : new NBTTagCompound();
+                            CompoundTag compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new CompoundTag();
                             if (compound == null) return;
 
-                            if (compound.e("CustomHat")) {
+                            if (compound.contains("CustomHat")) {
                                 event.setCancelled(true);
                             }
                         }

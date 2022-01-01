@@ -1,6 +1,6 @@
 package parallelmc.parallelutils.modules.custommobs;
 
-import net.minecraft.world.entity.EntityInsentient;
+import net.minecraft.world.entity.Mob;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -241,7 +241,7 @@ public class CustomMobs implements ParallelModule {
 			// This may all be useless in 1.17
 			CraftEntity mob = (CraftEntity) Bukkit.getEntity(UUID.fromString(uuid));
 
-			EntityInsentient setupEntity = null;
+			Mob setupEntity = null;
 
 			if (mob != null) {
 				setupEntity = setupEntity(type, mob);
@@ -267,7 +267,7 @@ public class CustomMobs implements ParallelModule {
 		}
 	}
 
-	public static EntityInsentient setupEntity(String type, CraftEntity mob) {
+	public static Mob setupEntity(String type, CraftEntity mob) {
 		switch (type) {
 			case "wisp" -> {
 				return EntityWisp.setup(puPlugin, (CraftZombie) mob);

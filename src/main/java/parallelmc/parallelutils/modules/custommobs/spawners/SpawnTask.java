@@ -1,6 +1,6 @@
 package parallelmc.parallelutils.modules.custommobs.spawners;
 
-import net.minecraft.world.entity.EntityInsentient;
+import net.minecraft.world.entity.Mob;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -92,7 +92,7 @@ public class SpawnTask extends BukkitRunnable {
 						spawnLocation.add(randomX + 0.5, randomY, randomZ + 0.5);
 
 						// Try to spawn entity there
-						EntityInsentient setUpEntity = null;
+						Mob setUpEntity = null;
 
 						Block blockBelow = location.getWorld().getBlockAt(spawnLocation);
 
@@ -112,7 +112,7 @@ public class SpawnTask extends BukkitRunnable {
 							}
 
 							if (setUpEntity != null && data.hasLeash()) {
-								SpawnerRegistry.getInstance().addLeashedEntity(location, setUpEntity.cm().toString());
+								SpawnerRegistry.getInstance().addLeashedEntity(location, setUpEntity.getUUID().toString());
 								if (SpawnerRegistry.getInstance().getLeashTaskID(location) == null) {
 									BukkitTask task = new LeashTask(location).runTaskTimer(plugin, 0, 10);
 									SpawnerRegistry.getInstance().addLeashTaskID(location, task.getTaskId());
