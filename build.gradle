@@ -1,0 +1,64 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '6.0.0'
+    id("io.papermc.paperweight.userdev") version "1.3.3"
+}
+
+group = 'org.parallelmc'
+version = '1.12.9'
+description = 'A set of utilities and features for use on the Parallel Minecraft server'
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+repositories {
+    mavenCentral()
+    maven { url = "https://papermc.io/repo/repository/maven-public/"}
+    maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    maven { url = "https://maven.enginehub.org/repo/" }
+    maven { url = 'https://repo.md-5.net/content/groups/public/' }
+    maven { url = 'https://m2.dv8tion.net/releases' }
+    maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
+    maven { url = 'https://repo.dmulloy2.net/repository/public/' }
+}
+
+dependencies {
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.18.1-R0.1-SNAPSHOT")
+
+    compileOnly "io.papermc.paper:paper-api:1.18-R0.1-SNAPSHOT"
+    implementation 'org.jetbrains:annotations:16.0.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    implementation 'net.dv8tion:JDA:4.4.0_350'
+    compileOnly 'me.clip:placeholderapi:2.10.10'
+    compileOnly fileTree('libs') { include '*.jar'}
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.6'
+    implementation 'mysql:mysql-connector-java:8.0.26'
+    implementation 'net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT'
+    compileOnly 'net.luckperms:api:5.3'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:4.7.0'
+}
+
+artifacts {
+    archives shadowJar
+}
+
+tasks {
+    assemble {
+        dependsOn(reobfJar)
+    }
+
+    build {
+        dependsOn(reobfJar)
+    }
+
+    compileJava {
+        // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
+        // See https://openjdk.java.net/jeps/247 for more information.
+        options.release.set(17)
+    }
+
+}
