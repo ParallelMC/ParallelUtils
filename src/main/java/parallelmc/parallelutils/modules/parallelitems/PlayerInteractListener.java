@@ -1,6 +1,6 @@
 package parallelmc.parallelutils.modules.parallelitems;
 
-import net.minecraft.world.item.ItemShears;
+import net.minecraft.world.item.ShearsItem;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;

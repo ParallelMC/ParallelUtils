@@ -4,10 +4,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagInt;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.IntTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -123,31 +123,31 @@ public class ParallelItems implements ParallelModule {
         try {
             net.minecraft.world.item.ItemStack nmsStack = CraftItemStack.asNMSCopy(spaceHelmetRed);
 
-            NBTTagCompound compound = (nmsStack.r()) ? nmsStack.s() : new NBTTagCompound();
-            NBTTagList modifiers = new NBTTagList();
+            CompoundTag compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new CompoundTag();
+            ListTag modifiers = new ListTag();
 
-            NBTTagCompound armor = new NBTTagCompound();
-            armor.a("AttributeName", NBTTagString.a("generic.armor"));
-            armor.a("Name", NBTTagString.a("generic.armor"));
-            armor.a("Amount", NBTTagInt.a(2));
-            armor.a("Operation", NBTTagInt.a(0));
-            armor.a("UUIDLeast", NBTTagInt.a(894654));
-            armor.a("UUIDMost", NBTTagInt.a(2872));
-            armor.a("Slot", NBTTagString.a("head"));
+            CompoundTag armor = new CompoundTag();
+            armor.put("AttributeName", StringTag.valueOf("generic.armor"));
+            armor.put("Name", StringTag.valueOf("generic.armor"));
+            armor.put("Amount", IntTag.valueOf(2));
+            armor.put("Operation", IntTag.valueOf(0));
+            armor.put("UUIDLeast", IntTag.valueOf(894654));
+            armor.put("UUIDMost", IntTag.valueOf(2872));
+            armor.put("Slot", StringTag.valueOf("head"));
             modifiers.add(armor);
 
-            NBTTagCompound toughness = new NBTTagCompound();
-            toughness.a("AttributeName", NBTTagString.a("generic.armor_toughness"));
-            toughness.a("Name", NBTTagString.a("generic.armor_toughness"));
-            toughness.a("Amount", NBTTagInt.a(2));
-            toughness.a("Operation", NBTTagInt.a(0));
-            toughness.a("UUIDLeast", NBTTagInt.a(894654));
-            toughness.a("UUIDMost", NBTTagInt.a(2872));
-            toughness.a("Slot", NBTTagString.a("head"));
+            CompoundTag toughness = new CompoundTag();
+            toughness.put("AttributeName", StringTag.valueOf("generic.armor_toughness"));
+            toughness.put("Name", StringTag.valueOf("generic.armor_toughness"));
+            toughness.put("Amount", IntTag.valueOf(2));
+            toughness.put("Operation", IntTag.valueOf(0));
+            toughness.put("UUIDLeast", IntTag.valueOf(894654));
+            toughness.put("UUIDMost", IntTag.valueOf(2872));
+            toughness.put("Slot", StringTag.valueOf("head"));
             modifiers.add(toughness);
 
-            compound.a("AttributeModifiers", modifiers);
-            nmsStack.c(compound);
+            compound.put("AttributeModifiers", modifiers);
+            nmsStack.setTag(compound);
 
             spaceHelmetRed = CraftItemStack.asBukkitCopy(nmsStack);
 
@@ -207,31 +207,31 @@ public class ParallelItems implements ParallelModule {
 
             net.minecraft.world.item.ItemStack nmsStack = CraftItemStack.asNMSCopy(earlySupporterGlasses);
 
-            NBTTagCompound compound = (nmsStack.r()) ? nmsStack.s() : new NBTTagCompound();
-            NBTTagList modifiers = new NBTTagList();
+            CompoundTag compound = (nmsStack.hasTag()) ? nmsStack.getTag() : new CompoundTag();
+            ListTag modifiers = new ListTag();
 
-            NBTTagCompound armor = new NBTTagCompound();
-            armor.a("AttributeName", NBTTagString.a("generic.armor"));
-            armor.a("Name", NBTTagString.a("generic.armor"));
-            armor.a("Amount", NBTTagInt.a(2));
-            armor.a("Operation", NBTTagInt.a(0));
-            armor.a("UUIDLeast", NBTTagInt.a(195734));
-            armor.a("UUIDMost", NBTTagInt.a(9237));
-            armor.a("Slot", NBTTagString.a("head"));
+            CompoundTag armor = new CompoundTag();
+            armor.put("AttributeName", StringTag.valueOf("generic.armor"));
+            armor.put("Name", StringTag.valueOf("generic.armor"));
+            armor.put("Amount", IntTag.valueOf(2));
+            armor.put("Operation", IntTag.valueOf(0));
+            armor.put("UUIDLeast", IntTag.valueOf(195734));
+            armor.put("UUIDMost", IntTag.valueOf(9237));
+            armor.put("Slot", StringTag.valueOf("head"));
             modifiers.add(armor);
 
-//            NBTTagCompound toughness = new NBTTagCompound();
-//            toughness.set("AttributeName", NBTTagString.a("generic.armor_toughness"));
-//            toughness.set("Name", NBTTagString.a("generic.armor_toughness"));
-//            toughness.set("Amount", NBTTagInt.a(2));
-//            toughness.set("Operation", NBTTagInt.a(0));
-//            toughness.set("UUIDLeast", NBTTagInt.a(894654));
-//            toughness.set("UUIDMost", NBTTagInt.a(2872));
-//            toughness.set("Slot", NBTTagString.a("head"));
+//            CompoundTag toughness = new CompoundTag();
+//            toughness.set("AttributeName", StringTag.put("generic.armor_toughness"));
+//            toughness.set("Name", StringTag.put("generic.armor_toughness"));
+//            toughness.set("Amount", IntTag.put(2));
+//            toughness.set("Operation", IntTag.put(0));
+//            toughness.set("UUIDLeast", IntTag.put(894654));
+//            toughness.set("UUIDMost", IntTag.put(2872));
+//            toughness.set("Slot", StringTag.put("head"));
 //            modifiers.add(toughness);
 
-            compound.a("AttributeModifiers", modifiers);
-            nmsStack.c(compound);
+            compound.put("AttributeModifiers", modifiers);
+            nmsStack.setTag(compound);
 
             earlySupporterGlasses = CraftItemStack.asBukkitCopy(nmsStack);
 
