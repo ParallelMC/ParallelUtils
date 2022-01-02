@@ -31,15 +31,7 @@ public class DiscordIntegrationEventRegistrar {
 
 			manager.registerEvents(new AdvancementListener(), plugin);
 
-			Plugin frozenJoin = manager.getPlugin("FrozenJoin");
-
-			if (frozenJoin == null) {
-				Parallelutils.log(Level.WARNING, "FrozenJoin not found. Using normal join listener");
-				manager.registerEvents(new JoinQuitSuppressorListener(), plugin);
-			} else {
-				Parallelutils.log(Level.WARNING, "FrozenJoin found. Using FrozenJoin listener");
-				manager.registerEvents(new FrozenJoinQuitSuppressorListener(), plugin);
-			}
+			manager.registerEvents(new JoinQuitSuppressorListener(), plugin);
 
 			Plugin vp = manager.getPlugin("VoteParty");
 
