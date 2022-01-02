@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.paralleltutorial.commands;
 
+import net.kyori.adventure.sound.SoundStop;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -8,11 +9,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltutorial.ParallelTutorial;
-
-import java.util.logging.Level;
 
 public class ParallelLeaveTutorial implements CommandExecutor {
     @Override
@@ -24,6 +22,8 @@ public class ParallelLeaveTutorial implements CommandExecutor {
                     tutorial.cancel();
                     Location start = ParallelTutorial.playersInTutorial.get(player);
                     player.teleport(start);
+                    player.setFlySpeed(0.1f);
+                    player.stopSound(SoundStop.all());
                     player.setGameMode(GameMode.SURVIVAL);
                     ParallelTutorial.playersInTutorial.remove(player);
                     ParallelTutorial.runningTutorials.remove(player);

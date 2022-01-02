@@ -23,6 +23,7 @@ public class OnLeaveDuringTutorial implements Listener {
             tutorial.cancel();
             Location start = ParallelTutorial.playersInTutorial.get(player);
             player.teleport(start);
+            player.setFlySpeed(0.1f);
             player.setGameMode(GameMode.SURVIVAL);
             ParallelTutorial.playersInTutorial.remove(player);
             ParallelTutorial.runningTutorials.remove(player);
