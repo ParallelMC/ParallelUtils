@@ -285,7 +285,7 @@ public class ParallelTutorial implements ParallelModule {
                                 }
                                 case "SAY" -> {
                                     String string = ParallelChat.getStringArg(i.args());
-                                    player.sendMessage(MiniMessage.get().parse(string));
+                                    player.sendMessage("\n" + MiniMessage.get().parse(string) + "\n");
                                     instructionFinished = true;
                                 }
                                 case "SOUND" -> {
@@ -306,6 +306,7 @@ public class ParallelTutorial implements ParallelModule {
                                             player.stopSound(SoundStop.all());
                                             player.teleport(end, PlayerTeleportEvent.TeleportCause.PLUGIN);
                                             player.setGameMode(GameMode.SURVIVAL);
+                                            player.stopSound(SoundStop.all());
                                             // unnecessary for most players but still needed since we change it above
                                             player.setFlySpeed(0.1F);
                                         }, 2L);
