@@ -1,8 +1,8 @@
 package parallelmc.parallelutils.modules.custommobs.nmsmobs;
 
-import net.minecraft.world.entity.EntityInsentient;
-import net.minecraft.world.entity.ai.goal.PathfinderGoalSelector;
-import net.minecraft.world.entity.ai.navigation.NavigationAbstract;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.GoalSelector;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -17,15 +17,15 @@ public class CustomEntityHelper {
 	 * Clears the pathfinding goals for an entity
 	 * @param entity The entity to clear the pathfinding goals of
 	 */
-	public static void clearGoals(EntityInsentient entity) {
+	public static void clearGoals(Mob entity) {
 
-		Map goalC = (Map) getPrivateField("c", PathfinderGoalSelector.class, entity.bR);
+		Map goalC = (Map) getPrivateField("c", GoalSelector.class, entity.goalSelector);
 		goalC.clear();
-		Set goalD = (Set) getPrivateField("d", PathfinderGoalSelector.class, entity.bR);
+		Set goalD = (Set) getPrivateField("d", GoalSelector.class, entity.goalSelector);
 		goalD.clear();
-		Map targetC = (Map) getPrivateField("c", PathfinderGoalSelector.class, entity.bS);
+		Map targetC = (Map) getPrivateField("c", GoalSelector.class, entity.targetSelector);
 		targetC.clear();
-		Set targetD = (Set) getPrivateField("d", PathfinderGoalSelector.class, entity.bS);
+		Set targetD = (Set) getPrivateField("d", GoalSelector.class, entity.targetSelector);
 		targetD.clear();
 	}
 

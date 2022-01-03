@@ -8,6 +8,7 @@ import com.eclipsekingdom.fractalforest.trees.habitat.HabitatType;
 import com.eclipsekingdom.fractalforest.util.Scale;
 import com.eclipsekingdom.fractalforest.util.X.FSapling;
 import com.eclipsekingdom.fractalforest.util.X.XMaterial;
+import parallelmc.parallelutils.modules.customtrees.genomes.ChristmasGenome;
 import parallelmc.parallelutils.modules.customtrees.habitats.MushroomHabitat;
 import parallelmc.parallelutils.modules.customtrees.habitats.NetherExtHabitat;
 import parallelmc.parallelutils.modules.customtrees.themes.*;
@@ -39,5 +40,8 @@ public class TreeInitializer {
 
 		Species.addSpecies(new Species("RANDOM_TREE", Scale.MASSIVE, GenomeType.ELM.value(),
 				FSapling.OAK_SAPLING, new RandomTheme(), new MushroomHabitat(), EffectType.FOREST.getEffects()));
+
+		Species.addSpecies(new Species("CHRISTMAS_TREE", Scale.BIG, new ChristmasGenome(),
+				FSapling.SPRUCE_SAPLING, new ChristmasTheme(), HabitatType.FOREST.getHabitat(), EffectType.FOREST.getEffects()));
 	}
 }

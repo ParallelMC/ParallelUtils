@@ -18,7 +18,7 @@ import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelflags.CustomFlagRegistry;
-import parallelmc.parallelutils.modules.parallelflags.events.ParallelFlagsDeathListener;
+import parallelmc.parallelutils.modules.parallelflags.events.ParallelFlagsDeathMsgListener;
 
 import java.util.logging.Level;
 
@@ -144,7 +144,7 @@ public class CustomArmorHealth extends Handler {
 			String deathMessage = set.queryValue(player, customFlagRegistry.getStringFlag("custom-armor-damage-death"));
 
 			if (deathMessage != null) {
-				ParallelFlagsDeathListener.setPlayerDeathMessage(bukkitPlayer.getName(),
+				ParallelFlagsDeathMsgListener.setPlayerDeathMessage(bukkitPlayer.getName(),
 						bukkitPlayer.getName() + " " + deathMessage);
 			}
 
@@ -166,7 +166,7 @@ public class CustomArmorHealth extends Handler {
 				String deathMessage = set.queryValue(player, customFlagRegistry.getStringFlag("custom-armor-damage-death"));
 
 				if (deathMessage != null) {
-					ParallelFlagsDeathListener.setPlayerDeathMessage(bukkitPlayer.getName(),
+					ParallelFlagsDeathMsgListener.setPlayerDeathMessage(bukkitPlayer.getName(),
 							bukkitPlayer.getName() + " " + deathMessage);
 				}
 

@@ -8,13 +8,8 @@ import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.modules.parallelflags.events.ParallelFlagsDeathListener;
-import parallelmc.parallelutils.modules.parallelflags.events.ParallelFlagsInteractListener;
-import parallelmc.parallelutils.modules.parallelflags.events.ParallelFlagsPlaceListener;
-import parallelmc.parallelutils.modules.parallelflags.session.CustomArmorDeny;
-import parallelmc.parallelutils.modules.parallelflags.session.CustomArmorHealth;
-import parallelmc.parallelutils.modules.parallelflags.session.ElytraFlagHandler;
-import parallelmc.parallelutils.modules.parallelflags.session.FlyFlagHandler;
+import parallelmc.parallelutils.modules.parallelflags.events.*;
+import parallelmc.parallelutils.modules.parallelflags.session.*;
 
 import java.util.logging.Level;
 
@@ -127,6 +122,28 @@ public class ParallelFlags implements ParallelModule {
 				Parallelutils.log(Level.WARNING, "Unable to create parallel-glide flag. Will not use");
 			}
 
+			if (!registry.addStateflag("empty-inventory", false)) {
+				Parallelutils.log(Level.WARNING, "Unable to create empty-inventory flag. Will not use");
+			}
+
+
+			if (!registry.addStateflag("keep-exp", false)) {
+				Parallelutils.log(Level.WARNING, "Unable to create keep-exp flag. Will not use");
+			}
+
+			if (!registry.addStateflag("keep-inventory", false)) {
+				Parallelutils.log(Level.WARNING, "Unable to create keep-inventory flag. Will not use");
+			}
+
+			if (!registry.addLocationFlag("respawn-location")) {
+				Parallelutils.log(Level.WARNING, "Unable to create respawn-location flag. Will not use");
+			}
+
+			if (!registry.addStateflag("prevent-item-damage", false)) {
+				Parallelutils.log(Level.WARNING, "Unable to create prevent-item-damage flag. Will not use");
+			}
+
+
 		} catch (NoClassDefFoundError e) {
 			Parallelutils.log(Level.SEVERE, "Unable to load WorldGuard! Something is wrong!");
 		}
@@ -156,10 +173,13 @@ public class ParallelFlags implements ParallelModule {
 		sessionManager.registerHandler(CustomArmorHealth.FACTORY, null);
 		sessionManager.registerHandler(FlyFlagHandler.FACTORY, null);
 		sessionManager.registerHandler(ElytraFlagHandler.FACTORY, null);
+		sessionManager.registerHandler(InventoryClearHandler.FACTORY, null);
 
 		manager.registerEvents(new ParallelFlagsInteractListener(), plugin);
 		manager.registerEvents(new ParallelFlagsPlaceListener(), plugin);
+		manager.registerEvents(new ParallelFlagsDeathMsgListener(), plugin);
 		manager.registerEvents(new ParallelFlagsDeathListener(), plugin);
+		manager.registerEvents(new ParallelFlagsItemDamageListener(), plugin);
 	}
 
 	@Override

@@ -21,6 +21,11 @@ public class OnCommand implements Listener {
     public void onCommand(PlayerCommandPreprocessEvent event) {
         Player player = event.getPlayer();
 
+        // if the command sender bypasses then do nothing
+        if (player.hasPermission("parallelutils.bypass.commandspy")) {
+            return;
+        }
+
         // Command Spy
         Component cmdSpy = MiniMessage.get().parse("<yellow>[<aqua>Command-Spy:<yellow>] <dark_gray>" + player.getName() + ": <aqua>" + event.getMessage());
         UUID senderUUID = player.getUniqueId();
