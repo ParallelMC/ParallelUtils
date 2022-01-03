@@ -1,12 +1,11 @@
 package parallelmc.parallelutils.modules.custommobs.nmsmobs;
 
-
-import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.ai.goal.PathfinderGoalMeleeAttack;
-import net.minecraft.world.entity.ai.goal.PathfinderGoalRandomStroll;
-import net.minecraft.world.entity.ai.goal.target.PathfinderGoalHurtByTarget;
-import net.minecraft.world.entity.monster.EntityZombie;
-import net.minecraft.world.level.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.monster.Zombie;
+import net.minecraft.world.level.Level;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
@@ -21,32 +20,30 @@ import parallelmc.parallelutils.modules.custommobs.bukkitmobs.CraftWisp;
 import parallelmc.parallelutils.modules.custommobs.registry.EntityRegistry;
 import parallelmc.parallelutils.modules.custommobs.registry.ParticleRegistry;
 
-import java.util.logging.Level;
-
-public class EntityWisp extends EntityZombie {
-	public EntityWisp(EntityTypes<? extends EntityZombie> entitytypes, World world) {
+public class EntityWisp extends Zombie {
+	public EntityWisp(EntityType<? extends Zombie> entitytypes, Level world) {
 		super(entitytypes, world);
-		u();
+		registerGoals();
 	}
 
-	public EntityWisp(World world) {
+	public EntityWisp(Level world) {
 		super(world);
-		u();
+		registerGoals();
 	}
 
 	@Override
-	public void u() {
+	public void registerGoals() {
 		initPathfinder(this);
 	}
 
-	public static void initPathfinder(EntityZombie zombie) {
+	public static void initPathfinder(Zombie zombie) {
 		//clearing Zombie goals
 		CustomEntityHelper.clearGoals(zombie);
 
-		zombie.bR.a(0, new PathfinderGoalMeleeAttack(zombie, 1.0, false));
-		zombie.bR.a(1, new PathfinderGoalRandomStroll(zombie, 1.0));
+		zombie.goalSelector.addGoal(0, new MeleeAttackGoal(zombie, 1.0, false));
+		zombie.goalSelector.addGoal(1, new RandomStrollGoal(zombie, 1.0));
 
-		zombie.bS.a(0, new PathfinderGoalHurtByTarget(zombie));
+		zombie.targetSelector.addGoal(0, new HurtByTargetGoal(zombie));
 	}
 
 	public static EntityWisp spawn(JavaPlugin plugin, CraftServer server, CraftWorld world, Location l) {
@@ -59,11 +56,11 @@ public class EntityWisp extends EntityZombie {
 		CraftZombie zombie = (CraftZombie) CraftEntity.getEntity(server, wisp);
 
 		setup(plugin, zombie);
-		wisp.e(l.getX(), l.getY(), l.getZ());
+		wisp.setPos(l.getX(), l.getY(), l.getZ());
 		boolean spawned = world.getHandle().addFreshEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
 		if (!spawned) {
-			Parallelutils.log(Level.INFO, "Unable to spawn entity");
+			Parallelutils.log(java.util.logging.Level.INFO, "Unable to spawn entity");
 			return null;
 		}
 
@@ -72,10 +69,10 @@ public class EntityWisp extends EntityZombie {
 		return wisp;
 	}
 
-	public static EntityZombie setup(JavaPlugin plugin, CraftZombie mob) {
+	public static Zombie setup(JavaPlugin plugin, CraftZombie mob) {
 		CraftWisp.setupNBT(mob);
 
-		EntityZombie wisp = mob.getHandle();
+		Zombie wisp = mob.getHandle();
 
 		EntityWisp.initPathfinder(wisp);
 
@@ -88,7 +85,7 @@ public class EntityWisp extends EntityZombie {
 	}
 
 	@Override
-	public boolean d_() {
-		return super.d_();
+	public boolean alwaysAccepts() {
+		return super.alwaysAccepts();
 	}
 }

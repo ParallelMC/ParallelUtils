@@ -164,6 +164,7 @@ public final class Parallelutils extends JavaPlugin {
 		getCommand("pu").setTabCompleter(commands);
 
 
+
 		// Setup modules
 
 		// TODO: Eventually break this out into multiple plugins. This is meant to imitate that

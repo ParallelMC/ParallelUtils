@@ -33,17 +33,22 @@ public class ParallelReply implements CommandExecutor {
             recipient.sendMessage(msgFrom);
 
             UUID senderUUID = sender.getUniqueId();
-            // Social Spy
-            ParallelChat.get().socialSpyUsers.forEach((u, o) -> {
-                if (u.equals(senderUUID)) return;
-                if (o.isSocialSpy()) {
-                    // this kinda sucks but not much can be done
-                    Player spyUser = sender.getServer().getPlayer(u);
-                    if (spyUser != null) {
-                        spyUser.sendMessage(socialSpy);
+            if (!sender.hasPermission("parallelutils.bypass.socialspy")) {
+                // Social Spy
+                ParallelChat.get().socialSpyUsers.forEach((u, o) -> {
+                    if (u.equals(senderUUID)) return;
+                    if (o.isSocialSpy()) {
+                        // this kinda sucks but not much can be done
+                        Player spyUser = sender.getServer().getPlayer(u);
+                        if (spyUser != null) {
+                            spyUser.sendMessage(socialSpy);
+                        }
                     }
-                }
-            });
+                });
+            }
+
+            ParallelChat.get().playerLastMessaged.put(senderUUID, recipient.getUniqueId());
+            ParallelChat.get().playerLastMessaged.put(recipient.getUniqueId(), senderUUID);
         }
         return true;
     }

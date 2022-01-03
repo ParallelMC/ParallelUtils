@@ -1,10 +1,7 @@
 package parallelmc.parallelutils.modules.parallelflags;
 
 import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.flags.DoubleFlag;
-import com.sk89q.worldguard.protection.flags.IntegerFlag;
-import com.sk89q.worldguard.protection.flags.StateFlag;
-import com.sk89q.worldguard.protection.flags.StringFlag;
+import com.sk89q.worldguard.protection.flags.*;
 import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
 import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 
@@ -19,12 +16,14 @@ public class CustomFlagRegistry {
 	private final HashMap<String, IntegerFlag> integerFlags;
 	private final HashMap<String, DoubleFlag> doubleFlags;
 	private final HashMap<String, StringFlag> stringFlags;
+	private final HashMap<String, LocationFlag> locationFlags;
 
 	private CustomFlagRegistry() {
 		stateFlags = new HashMap<>();
 		integerFlags = new HashMap<>();
 		doubleFlags = new HashMap<>();
 		stringFlags = new HashMap<>();
+		locationFlags = new HashMap<>();
 	}
 
 	public static CustomFlagRegistry getInstance() {
@@ -99,4 +98,19 @@ public class CustomFlagRegistry {
 
 	@Nullable
 	public StringFlag getStringFlag(String name) {return stringFlags.get(name);}
+
+	public boolean addLocationFlag(String name) {
+		FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
+		try {
+			LocationFlag flag = new LocationFlag(name);
+			registry.register(flag);
+			locationFlags.put(name, flag);
+			return true;
+		} catch (FlagConflictException e) {
+			return false;
+		}
+	}
+
+	@Nullable
+	public LocationFlag getLocationFlag(String name) { return locationFlags.get(name); }
 }

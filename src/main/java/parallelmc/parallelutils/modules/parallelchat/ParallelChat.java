@@ -58,6 +58,7 @@ public class ParallelChat implements ParallelModule {
 
     private final FileConfiguration bannedWordsConfig = new YamlConfiguration();
     public List<String> bannedWords = new ArrayList<>();
+    public List<String> allowedWords = new ArrayList<>();
 
     public List<Component> autoMessages = new ArrayList<>();
 
@@ -141,6 +142,7 @@ public class ParallelChat implements ParallelModule {
         }
 
         this.bannedWords = bannedWordsConfig.getStringList("Banned-Words");
+        this.allowedWords = bannedWordsConfig.getStringList("Whitelisted-Words");
         Parallelutils.log(Level.INFO, "ParallelChat: Loaded " + bannedWords.size() + " banned words.");
 
         ConfigurationSection groups = puPlugin.getConfig().getConfigurationSection("group-formats");
@@ -175,9 +177,8 @@ public class ParallelChat implements ParallelModule {
         String autoPrefix = puPlugin.getConfig().getString("auto-broadcast.prefix");
         for (String s : messages) {
             // pre-parse auto broadcast since there are no placeholders
-            this.autoMessages.add(MiniMessage.get().parse(autoPrefix + s));
+            this.autoMessages.add(MiniMessage.get().parse("\n" + autoPrefix + s + "\n"));
         }
-
         // Auto-Message
         puPlugin.getServer().getScheduler().scheduleSyncRepeatingTask(puPlugin, () -> {
             Component msg = autoMessages.get(rand.nextInt(autoMessages.size()));
@@ -194,7 +195,6 @@ public class ParallelChat implements ParallelModule {
         catch (IOException e) {
             Parallelutils.log(Level.SEVERE, "Failed to open writer to loggers!");
         }
-        manager.registerEvents(new OnDisplayItem(), puPlugin);
         manager.registerEvents(new OnChatMessage(), puPlugin);
         manager.registerEvents(new OnJoinLeave(), puPlugin);
         manager.registerEvents(new OnSignTextSet(), puPlugin);
@@ -268,7 +268,7 @@ public class ParallelChat implements ParallelModule {
      * @param message The message to send
      */
     public static void sendParallelMessageTo(Player player, String message) {
-        Component msg = Component.text("§3[§f§lP§3] §a" + message);
+        Component msg = Component.text("\n§3[§f§lP§3] §a " + message + "\n");
         player.sendMessage(msg);
     }
 

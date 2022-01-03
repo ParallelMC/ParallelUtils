@@ -1,8 +1,8 @@
 name: Parallelutils
-version: ${project.version}
+version: 1.12.9
 main: parallelmc.parallelutils.Parallelutils
-api-version: 1.17
-authors: [Jake, Evelyn]
+api-version: 1.18
+authors: [ParallelMC Team]
 description: A plugin containing miscellaneous features and changes for play.parallel.ga
 depend: [PlaceholderAPI, ProtocolLib]
 softdepend: [Multiverse-Core, FractalForest, WorldGuard, VoteParty, FrozenJoin]
@@ -11,10 +11,8 @@ commands:
     description: Get information about the plugin
     usage: /parallelutils
     permission-message: You do not have permission
-  pu:
-    description: Get information about the plugin
-    usage: /pu
-    permission-message: You do not have permission
+    aliases:
+    - "pu"
   depositexp:
     description: Deposit exp into the player's ender chest
     usage: /depositexp <amount | all>
@@ -36,8 +34,7 @@ commands:
   msg:
     description: Send a private message to a player
     usage: /msg <player> <message>
-    aliases:
-      - "message"
+    aliases: [message,w,m,t,pm,tell,whisper]
   r:
     description: Reply to a recently messaged player
     usage: /r <message>
