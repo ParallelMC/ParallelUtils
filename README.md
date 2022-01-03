@@ -1,7 +1,9 @@
 # ParallelUtils
 ParallelUtils is a plugin that enables a large variety of features, intended to be used for the Parallel SMP server at play.parallel.ga.
 
-# Procedure to Start Development
+# OLD ----- Procedure to Start Development ---- OLD
+
+## NOTE: This isn't used anymore! The gradle plugin handles everything. Just build with `./gradlew reobfJar` and it will work. You do still need to place the libraries in `libs/`
 
 1. Ensure Git, Java and Maven are installed
 2. Download BuildTools from https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
