@@ -5,5 +5,4 @@ public enum HandlerType {
 	MESSAGE_KILL,
 	COUNTER_KILL,
 	STYLE_NAME,
-	ITEM_MODEL
 }
