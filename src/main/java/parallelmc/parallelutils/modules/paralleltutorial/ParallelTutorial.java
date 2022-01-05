@@ -301,7 +301,7 @@ public class ParallelTutorial implements ParallelModule {
                                 }
                                 case "SAY" -> {
                                     String string = ParallelChat.getStringArg(i.args());
-                                    player.sendMessage("\n" + MiniMessage.get().parse(string) + "\n");
+                                    player.sendMessage(MiniMessage.get().parse("\n" + string + "\n"));
                                     instructionFinished = true;
                                 }
                                 case "SOUND" -> {
