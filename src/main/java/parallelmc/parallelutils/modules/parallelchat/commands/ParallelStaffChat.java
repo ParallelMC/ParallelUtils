@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
@@ -28,12 +29,13 @@ public class ParallelStaffChat implements CommandExecutor {
                         ParallelChat.get().addToStaffChat(sender);
                     }
                 }
-                else {
-                    String msg = ParallelChat.getStringArg(args);
-                    ParallelChat.sendMessageToStaffChat(sender, Component.text(msg));
-                }
+            }
+            else {
+                return true;
             }
         }
+        String msg = ParallelChat.getStringArg(args);
+        ParallelChat.sendMessageToStaffChat(commandSender, Component.text(msg));
         return true;
     }
 
