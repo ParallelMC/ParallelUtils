@@ -119,59 +119,65 @@ public class ParallelTutorial implements ParallelModule {
     public void LoadTutorials() {
         tutorials.clear();
         AtomicInteger line = new AtomicInteger();
-        // TODO: Make this not throw gross warnings when the path doesn't exist. Just create the folder
-        try (Stream<Path> paths = Files.walk(Paths.get(puPlugin.getDataFolder() + "/tutorials"))) {
+        Path tutorialFolder = Path.of(puPlugin.getDataFolder() + "/tutorials");
+        if (!Files.exists(tutorialFolder)) {
+            try {
+                Parallelutils.log(Level.WARNING, "Tutorial folder not found, attempting to create one...");
+                Files.createDirectory(tutorialFolder);
+                Parallelutils.log(Level.WARNING, "Created Tutorial folder!");
+            }
+            catch (IOException e) {
+                Parallelutils.log(Level.SEVERE, "Failed to create tutorial folder!");
+            }
+        }
+        try (Stream<Path> paths = Files.walk(tutorialFolder)) {
             paths.filter(Files::isRegularFile).forEach((f -> {
                 ArrayList<Instruction> instructions = new ArrayList<>();
                 try (Stream<String> stream = Files.lines(f)) {
                     stream.forEach(s -> {
                         String[] split = s.split(" ");
                         switch (split[0]) {
-                            case "START":
-                            case "MOVE":
-                            case "TELEPORT":
-                            case "LOOKAT": {
+                            case "START", "MOVE", "TELEPORT", "LOOKAT" -> {
                                 if (split.length != 4) {
                                     Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 3 arguments on line " + line.get());
                                 }
-                                instructions.add(new Instruction(split[0], new String[] { split[1], split[2], split[3] }));
-                                break;
+                                instructions.add(new Instruction(split[0], new String[]{split[1], split[2], split[3]}));
                             }
-                            case "WAIT": {
+                            case "ROTATE" -> {
+                                if (split.length != 3) {
+                                    Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 2 arguments on line " + line.get());
+                                }
+                                instructions.add(new Instruction("ROTATE", new String[]{split[1], split[2]}));
+                            }
+                            case "WAIT" -> {
                                 if (split.length != 2) {
                                     Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 1 argument on line " + line.get());
                                 }
-                                instructions.add(new Instruction("WAIT", new String[] { split[1] }));
-                                break;
+                                instructions.add(new Instruction("WAIT", new String[]{split[1]}));
                             }
-                            case "SAY": {
+                            case "SAY" -> {
                                 if (split.length < 2) {
                                     Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 1 argument on line " + line.get());
                                 }
                                 instructions.add(new Instruction("SAY", Arrays.copyOfRange(split, 1, split.length)));
-                                break;
                             }
-                            case "SOUND": {
+                            case "SOUND" -> {
                                 if (split.length < 2) {
                                     Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 1 argument on line " + line.get());
                                 }
-                                instructions.add(new Instruction("SOUND", new String[] { split[1] }));
-                                break;
+                                instructions.add(new Instruction("SOUND", new String[]{split[1]}));
                             }
-                            case "SPEED": {
+                            case "SPEED" -> {
                                 if (split.length < 2) {
                                     Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 1 argument on line " + line.get());
                                 }
-                                instructions.add(new Instruction("SPEED", new String[] { split[1] }));
-                                break;
+                                instructions.add(new Instruction("SPEED", new String[]{split[1]}));
                             }
-                            case "END": {
+                            case "END" -> {
                                 instructions.add(new Instruction("END", null));
-                                break;
                             }
-                            default: {
+                            default -> {
                                 Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Unknown instruction on line " + line.get());
-                                break;
                             }
                         }
                         line.getAndIncrement();
@@ -200,6 +206,7 @@ public class ParallelTutorial implements ParallelModule {
             final World world = player.getWorld();
             double speed = 0.5;
             Vector lookAt = null;
+            Vector headOverride = null;
             // required to prevent built in anti-cheat from not teleporting
             boolean doLook = false;
             final ArrayList<Instruction> instructions = tutorials.get(tutorial.toLowerCase());
@@ -212,7 +219,10 @@ public class ParallelTutorial implements ParallelModule {
                     @Override
                     public void run() {
                         if (doLook) {
-                            if (lookAt != null) {
+                            if (headOverride != null) {
+                                playerLookAt(player, (float)headOverride.getX(), (float)headOverride.getY());
+                            }
+                            else if (lookAt != null) {
                                 playerLookAt(player, lookAt);
                             } else {
                                 PacketContainer packet = protManager.createPacket(PacketType.Play.Server.ENTITY_LOOK);
@@ -274,7 +284,13 @@ public class ParallelTutorial implements ParallelModule {
                                     }, 2L);
                                 }
                                 case "LOOKAT" -> {
+                                    headOverride = null;
                                     lookAt = new Vector(Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
+                                    instructionFinished = true;
+                                }
+                                case "ROTATE" -> {
+                                    lookAt = null;
+                                    headOverride = new Vector(Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), 0);
                                     instructionFinished = true;
                                 }
                                 case "WAIT" -> {
@@ -352,6 +368,20 @@ public class ParallelTutorial implements ParallelModule {
         yaw = (float)-Math.toDegrees(yaw);
         float pitch = (float)Math.toDegrees(-Math.atan(diffY / diffXZ));
 
+        PacketContainer packet = protManager.createPacket(PacketType.Play.Server.ENTITY_LOOK);
+        packet.getIntegers().write(0, player.getEntityId());
+        packet.getBytes().write(0, (byte)(yaw * 256f / 360f));
+        packet.getBytes().write(1, (byte)((pitch * 360f) / 256f));
+        packet.getBooleans().write(0, false);
+        try {
+            protManager.sendServerPacket(player, packet);
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // override function to skip all the math logic
+    private void playerLookAt(Player player, float yaw, float pitch) {
         PacketContainer packet = protManager.createPacket(PacketType.Play.Server.ENTITY_LOOK);
         packet.getIntegers().write(0, player.getEntityId());
         packet.getBytes().write(0, (byte)(yaw * 256f / 360f));
