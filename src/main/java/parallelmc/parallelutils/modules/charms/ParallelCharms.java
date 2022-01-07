@@ -11,13 +11,23 @@ import parallelmc.parallelutils.modules.charms.commands.ApplyCharm;
 import parallelmc.parallelutils.modules.charms.commands.RemoveCharm;
 import parallelmc.parallelutils.modules.charms.data.Charm;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
+import parallelmc.parallelutils.modules.charms.events.PlayerKillListener;
+import parallelmc.parallelutils.modules.charms.handlers.CharmKillMessageHandler;
+import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
+import parallelmc.parallelutils.modules.charms.handlers.ICharmHandler;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.logging.Level;
 
 public class ParallelCharms implements ParallelModule {
 
+	private final HashMap<HandlerType, ICharmHandler> handlers;
+
+	public ParallelCharms() {
+		handlers = new HashMap<>();
+	}
 
 	@Override
 	public void onEnable() {
@@ -38,6 +48,12 @@ public class ParallelCharms implements ParallelModule {
 			return;
 		}
 
+		// Register handlers
+		if (!registerHandler(new CharmKillMessageHandler())) { Parallelutils.log(Level.WARNING, "Could not register event!"); }
+
+		// Register events
+		manager.registerEvents(new PlayerKillListener(this), puPlugin);
+
 		CharmOptions testOptions = new CharmOptions(UUID.randomUUID(), null, new HashMap<>(), 123456);
 
 		Charm testCharm = new Charm(testOptions);
@@ -48,5 +64,30 @@ public class ParallelCharms implements ParallelModule {
 
 	@Override
 	public void onDisable() {
+	}
+
+	/**
+	 * Registers a charm handler
+	 * @param handler The handler to register
+	 * @return True when the handler type is new, false otherwise
+	 */
+	public boolean registerHandler(ICharmHandler handler) {
+		HandlerType type = handler.getHandlerType();
+
+		if (handlers.containsKey(type)) {
+			return false;
+		}
+
+		handlers.put(type, handler);
+		return true;
+	}
+
+	/**
+	 * Gets the handler associated with the type or null
+	 * @return The handler or null
+	 */
+	@Nullable
+	public ICharmHandler getHandler(HandlerType type) {
+		return handlers.get(type);
 	}
 }
