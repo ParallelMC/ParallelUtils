@@ -28,12 +28,13 @@ public class ParallelTeamChat implements CommandExecutor {
                         ParallelChat.get().addToTeamChat(sender);
                     }
                 }
-                else {
-                    String msg = ParallelChat.getStringArg(args);
-                    ParallelChat.sendMessageToTeamChat(sender, Component.text(msg));
-                }
+            }
+            else {
+                return true;
             }
         }
+        String msg = ParallelChat.getStringArg(args);
+        ParallelChat.sendMessageToTeamChat(commandSender, Component.text(msg));
         return true;
     }
 
