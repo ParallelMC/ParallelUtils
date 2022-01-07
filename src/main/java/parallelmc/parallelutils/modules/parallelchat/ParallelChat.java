@@ -10,6 +10,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -132,6 +133,10 @@ public class ParallelChat implements ParallelModule {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new DNDExpansion(this.puPlugin).register();
         }
 
         try {
@@ -284,15 +289,15 @@ public class ParallelChat implements ParallelModule {
 
     /**
      * Sends a message into the staff chat
-     * @param player The player who sent the messsage
+     * @param sender The CommandSender who sent the messsage
      * @param message The message Component
      */
-    public static void sendMessageToStaffChat(Player player, Component message) {
+    public static void sendMessageToStaffChat(CommandSender sender, Component message) {
         // TODO: Make this a config option
-        Component text = MiniMessage.get().parse("<yellow>[<aqua>Staff-Chat<yellow>] <green>" + player.getName() + " <gray>> ").append(message.color(NamedTextColor.AQUA));
+        Component text = MiniMessage.get().parse("<yellow>[<aqua>Staff-Chat<yellow>] <green>" + sender.getName() + " <gray>> ").append(message.color(NamedTextColor.AQUA));
         // i know this is ugly
         // possible todo: dynamically keep track of staff in a list
-        for (Player p : player.getServer().getOnlinePlayers()) {
+        for (Player p : sender.getServer().getOnlinePlayers()) {
             if (p.hasPermission("parallelutils.staffchat")) {
                 p.sendMessage(text);
             }
@@ -301,14 +306,14 @@ public class ParallelChat implements ParallelModule {
 
     /**
      * Sends a message into the team chat
-     * @param player The player who sent the messsage
+     * @param sender The CommandSender who sent the messsage
      * @param message The message Component
      */
-    public static void sendMessageToTeamChat(Player player, Component message) {
-        Component text = MiniMessage.get().parse("<gold>[<yellow>Team-Chat<gold>] <green>" + player.getName() + " <gray>> ").append(message.color(NamedTextColor.YELLOW));
+    public static void sendMessageToTeamChat(CommandSender sender, Component message) {
+        Component text = MiniMessage.get().parse("<gold>[<yellow>Team-Chat<gold>] <green>" + sender.getName() + " <gray>> ").append(message.color(NamedTextColor.YELLOW));
         // i know this is ugly
         // possible todo: dynamically keep track of team in a list
-        for (Player p : player.getServer().getOnlinePlayers()) {
+        for (Player p : sender.getServer().getOnlinePlayers()) {
             if (p.hasPermission("parallelutils.teamchat")) {
                 p.sendMessage(text);
             }
