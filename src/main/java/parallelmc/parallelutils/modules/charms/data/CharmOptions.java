@@ -10,8 +10,10 @@ import org.bukkit.plugin.Plugin;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
+import parallelmc.parallelutils.modules.charms.helper.Types;
 import parallelmc.parallelutils.util.BukkitTools;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
@@ -63,6 +65,7 @@ public class CharmOptions {
 			return item;
 		}
 
+		// TODO: Figure out how to do name formatting
 		// Set display name. Currently not in use
 		// meta.displayName(Component.text("a"));
 
@@ -128,6 +131,9 @@ public class CharmOptions {
 				EncapsulatedType encapsulatedType = settings.get(sName);
 
 				NamespacedKey valKey = new NamespacedKey(plugin, "ParallelCharm.Effects.settings.value");
+				NamespacedKey typeKey = new NamespacedKey(plugin, "ParallelCharm.Effects.settings.type");
+
+				setting.set(typeKey, PersistentDataType.STRING, encapsulatedType.getType().name());
 				switch (encapsulatedType.getType()) {
 					case BYTE -> setting.set(valKey, PersistentDataType.BYTE, (Byte) encapsulatedType.getVal());
 					case INT -> setting.set(valKey, PersistentDataType.INTEGER, (Integer) encapsulatedType.getVal());
@@ -160,5 +166,111 @@ public class CharmOptions {
 	public boolean isMaterialAllowed(Material mat) {
 		if (allowedMaterials == null) return true;
 		return Arrays.asList(allowedMaterials).contains(mat);
+	}
+
+
+	public HashMap<HandlerType, IEffectSettings> getEffects() {
+		return effects;
+	}
+
+	/**
+	 * Returns a partial CharmOptions (because I'm lazy)
+	 * @param item The item to parse
+	 * @return The partial CharmOptions or null
+	 */
+	@Nullable
+	public static CharmOptions parseOptions(ItemStack item) {
+		// Setup
+		Plugin plugin = BukkitTools.getPlugin();
+
+		if (plugin == null) {
+			Parallelutils.log(Level.WARNING, "Plugin is null! Cannot parse charm");
+			return null;
+		}
+
+		// If meta is null, just return false
+		ItemMeta meta = item.getItemMeta();
+
+		if (meta == null) {
+			return null;
+		}
+
+		PersistentDataContainer pdc = meta.getPersistentDataContainer();
+
+		NamespacedKey key = new NamespacedKey(plugin, "ParallelCharm");
+
+		PersistentDataContainer charmsContainer = pdc.get(key, PersistentDataType.TAG_CONTAINER);
+
+		if (charmsContainer == null) {
+			return null;
+		}
+
+		String uuidStr = charmsContainer.get(new NamespacedKey(plugin, "ParallelCharm.OptUUID"),
+				PersistentDataType.STRING);
+		if (uuidStr == null) {
+			return null;
+		}
+		UUID uuid = UUID.fromString(uuidStr);
+
+		PersistentDataContainer[] effectsContainer = pdc.get(new NamespacedKey(plugin, "ParallelCharm.Effects"),
+				PersistentDataType.TAG_CONTAINER_ARRAY);
+
+		if (effectsContainer == null) {
+			return null;
+		}
+
+		HashMap<HandlerType, IEffectSettings> effects = new HashMap<>();
+
+		for (PersistentDataContainer effect : effectsContainer) {
+			String handlerName = effect.get(new NamespacedKey(plugin, "ParallelCharm.Effects.handler"),
+					PersistentDataType.STRING);
+			if (handlerName == null) {
+				continue;
+			}
+
+			HashMap<String, EncapsulatedType> settings = new HashMap<>();
+
+			PersistentDataContainer[] settingsArr = effect.get(new NamespacedKey(plugin, "ParallelCharm.Effects.settings"),
+					PersistentDataType.TAG_CONTAINER_ARRAY);
+
+			if (settingsArr == null) {
+				continue;
+			}
+
+			for (PersistentDataContainer s : settingsArr) {
+				String sName = s.get(new NamespacedKey(plugin, "ParallelCharm.Effects.settings.name"),
+						PersistentDataType.STRING);
+				if (sName == null) {
+					continue;
+				}
+
+				String typeStr = s.get(new NamespacedKey(plugin, "ParallelCharm.Effects.settings.type"),
+						PersistentDataType.STRING);
+				if (typeStr == null) { continue; }
+
+				Types type = Types.valueOf(typeStr);
+
+				EncapsulatedType eType = null;
+
+				NamespacedKey valKey = new NamespacedKey(plugin, "ParallelCharm.Effects.settings.value");
+
+				switch (type) {
+					case BYTE -> eType = new EncapsulatedType(type, s.get(valKey, PersistentDataType.BYTE));
+					case INT -> eType = new EncapsulatedType(type, s.get(valKey, PersistentDataType.INTEGER));
+					case DOUBLE -> eType = new EncapsulatedType(type, s.get(valKey, PersistentDataType.DOUBLE));
+					case LONG -> eType = new EncapsulatedType(type, s.get(valKey, PersistentDataType.LONG));
+					default -> {
+						Parallelutils.log(Level.WARNING, "Invalid data type!");
+						continue;
+					}
+				}
+
+				settings.put(sName, eType);
+			}
+
+			effects.put(HandlerType.valueOf(handlerName), new GenericEffectSettings(settings));
+		}
+
+		return new CharmOptions(uuid, null, effects, null);
 	}
 }
