@@ -18,7 +18,6 @@ public class ParallelLeaveTutorial implements CommandExecutor {
                 if (tutorial != null) {
                     tutorial.cancel();
                     ParallelTutorial.get().endTutorialFor(player);
-                    ParallelTutorial.runningTutorials.remove(player);
                     ParallelChat.sendParallelMessageTo(player, "Successfully exited the tutorial.");
                 }
             }
