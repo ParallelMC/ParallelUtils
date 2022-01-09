@@ -302,6 +302,7 @@ public class ParallelChat implements ParallelModule {
                 p.sendMessage(text);
             }
         }
+        Parallelutils.log(Level.INFO, LegacyComponentSerializer.legacyAmpersand().serialize(text));
     }
 
     /**
@@ -318,6 +319,7 @@ public class ParallelChat implements ParallelModule {
                 p.sendMessage(text);
             }
         }
+        Parallelutils.log(Level.INFO, LegacyComponentSerializer.legacyAmpersand().serialize(text));
     }
 
     /**
