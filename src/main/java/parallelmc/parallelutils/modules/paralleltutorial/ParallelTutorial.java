@@ -348,8 +348,10 @@ public class ParallelTutorial implements ParallelModule {
         player.stopSound(SoundStop.all());
         // making the player spectate themselves brings them back to the start
         forceSpectate(player, player.getEntityId());
-        armorStands.get(player).remove();
-        armorStands.remove(player);
+        if (armorStands.containsKey(player)) {
+            armorStands.get(player).remove();
+            armorStands.remove(player);
+        }
         player.setGameMode(GameMode.SURVIVAL);
         player.setFlySpeed(0.1F);
     }

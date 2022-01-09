@@ -27,6 +27,7 @@ public class ParallelStaffChat implements CommandExecutor {
                         }
                         ParallelChat.get().addToStaffChat(sender);
                     }
+                    return true;
                 }
             }
             else {
