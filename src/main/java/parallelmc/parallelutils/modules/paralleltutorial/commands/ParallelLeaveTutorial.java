@@ -1,8 +1,5 @@
 package parallelmc.parallelutils.modules.paralleltutorial.commands;
 
-import net.kyori.adventure.sound.SoundStop;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,16 +13,11 @@ public class ParallelLeaveTutorial implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, String[] args) {
         if (commandSender instanceof Player player) {
-            if (ParallelTutorial.playersInTutorial.containsKey(player)) {
+            if (ParallelTutorial.runningTutorials.containsKey(player)) {
                 BukkitTask tutorial = ParallelTutorial.runningTutorials.get(player);
                 if (tutorial != null) {
                     tutorial.cancel();
-                    Location start = ParallelTutorial.playersInTutorial.get(player);
-                    player.teleport(start);
-                    player.setFlySpeed(0.1f);
-                    player.stopSound(SoundStop.all());
-                    player.setGameMode(GameMode.SURVIVAL);
-                    ParallelTutorial.playersInTutorial.remove(player);
+                    ParallelTutorial.get().endTutorialFor(player);
                     ParallelTutorial.runningTutorials.remove(player);
                     ParallelChat.sendParallelMessageTo(player, "Successfully exited the tutorial.");
                 }

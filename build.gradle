@@ -198,6 +198,10 @@ bukkit {
             description = 'Exit the tutorial you are currently in'
             usage = '/leavetutorial'
         }
+        tutorialinfo {
+            description = 'Shows all instructions for a tutorial'
+            usage = '/tutorialinfo (tutorial)'
+        }
     }
 
     permissions {
@@ -289,6 +293,9 @@ bukkit {
         }
         'parallelutils.reloadtutorials' {
             description = 'Gives access to reloadtutorials command'
+        }
+        'parallelutils.tutorialinfo' {
+            description = 'Gives access to tutorialinfo command'
         }
         'parallelutils.chat' {
             description = 'Gives access to chat elemets'

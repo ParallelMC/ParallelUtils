@@ -1,7 +1,5 @@
 package parallelmc.parallelutils.modules.paralleltutorial.handlers;
 
-import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,11 +19,7 @@ public class OnLeaveDuringTutorial implements Listener {
         if (tutorial != null) {
             Parallelutils.log(Level.WARNING, player.getName() + " left during a tutorial! Attempting to fix...");
             tutorial.cancel();
-            Location start = ParallelTutorial.playersInTutorial.get(player);
-            player.teleport(start);
-            player.setFlySpeed(0.1f);
-            player.setGameMode(GameMode.SURVIVAL);
-            ParallelTutorial.playersInTutorial.remove(player);
+            ParallelTutorial.get().endTutorialFor(player);
             ParallelTutorial.runningTutorials.remove(player);
             Parallelutils.log(Level.WARNING, player.getName() + " was successfully taken out of the tutorial.");
         }

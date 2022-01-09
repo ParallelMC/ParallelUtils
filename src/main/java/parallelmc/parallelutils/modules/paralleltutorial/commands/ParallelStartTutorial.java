@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltutorial.ParallelTutorial;
 
 import java.util.logging.Level;
@@ -22,11 +23,11 @@ public class ParallelStartTutorial implements CommandExecutor {
             return false;
         Player player = commandSender.getServer().getPlayer(args[0]);
         if (player == null) {
-            Parallelutils.log(Level.WARNING, "Could not find " + args[0]);
+            commandSender.sendMessage("Could not find player " + args[0]);
             return true;
         }
         if (!ParallelTutorial.get().HasTutorial(args[1])) {
-            Parallelutils.log(Level.WARNING, "No tutorial found for " + args[1]);
+            commandSender.sendMessage("Could not find tutorial " + args[1]);
             return true;
         }
         ParallelTutorial.get().RunTutorialFor(player, args[1]);
