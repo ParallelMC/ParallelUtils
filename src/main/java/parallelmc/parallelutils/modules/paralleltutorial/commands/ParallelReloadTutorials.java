@@ -1,6 +1,5 @@
 package parallelmc.parallelutils.modules.paralleltutorial.commands;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,7 +15,7 @@ public class ParallelReloadTutorials implements CommandExecutor {
                 return true;
             }
         }
-        if (ParallelTutorial.playersInTutorial.size() > 0) {
+        if (ParallelTutorial.runningTutorials.size() > 0) {
             commandSender.sendMessage("Cannot reload tutorials while there are players in a tutorial!");
             return true;
         }

@@ -27,6 +27,7 @@ public class ParallelTeamChat implements CommandExecutor {
                         }
                         ParallelChat.get().addToTeamChat(sender);
                     }
+                    return true;
                 }
             }
             else {
