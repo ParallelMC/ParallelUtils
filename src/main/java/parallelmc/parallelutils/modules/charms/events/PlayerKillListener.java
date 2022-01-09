@@ -1,12 +1,14 @@
 package parallelmc.parallelutils.modules.charms.events;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
+import parallelmc.parallelutils.modules.charms.data.CharmOptions;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.handlers.ICharmHandler;
 
@@ -34,24 +36,29 @@ public class PlayerKillListener implements Listener {
 		PlayerInventory killerInventory = killer.getInventory();
 
 		ItemStack mainHand = killerInventory.getItemInMainHand();
+		CharmOptions mainOptions = CharmOptions.parseOptions(mainHand);
 		ItemStack offHand = killerInventory.getItemInOffHand();
+		CharmOptions offOptions = CharmOptions.parseOptions(offHand);
 		ItemStack helmet = killerInventory.getHelmet();
+		CharmOptions helmOptions = CharmOptions.parseOptions(helmet);
 		ItemStack chestplate = killerInventory.getChestplate();
+		CharmOptions chestOptions = CharmOptions.parseOptions(chestplate);
 		ItemStack leggings = killerInventory.getLeggings();
+		CharmOptions legOptions = CharmOptions.parseOptions(leggings);
 		ItemStack boots = killerInventory.getBoots();
+		CharmOptions bootsOptions = CharmOptions.parseOptions(boots);
 
 
-		ICharmHandler killMessage = pCharms.getHandler(HandlerType.MESSAGE_KILL);
+		ICharmHandler<PlayerDeathEvent> killMessage = pCharms.getHandler(HandlerType.MESSAGE_KILL, PlayerDeathEvent.class);
 
 		if (killMessage != null) {
-			killMessage.handle(killer, mainHand);
-			killMessage.handle(killer, offHand);
-			killMessage.handle(killer, helmet);
-			killMessage.handle(killer, chestplate);
-			killMessage.handle(killer, leggings);
-			killMessage.handle(killer, boots);
+			killMessage.handle(event, killer, mainHand, mainOptions);
+			killMessage.handle(event, killer, offHand, offOptions);
+			killMessage.handle(event, killer, helmet, helmOptions);
+			killMessage.handle(event, killer, chestplate, chestOptions);
+			killMessage.handle(event, killer, leggings, legOptions);
+			killMessage.handle(event, killer, boots, bootsOptions);
 		}
-		// Handle main hand
 
 	}
 }

@@ -1,6 +1,7 @@
 package parallelmc.parallelutils.modules.charms;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
@@ -23,7 +24,7 @@ import java.util.logging.Level;
 
 public class ParallelCharms implements ParallelModule {
 
-	private final HashMap<HandlerType, ICharmHandler> handlers;
+	private final HashMap<HandlerType, ICharmHandler<? extends Event>> handlers;
 
 	public ParallelCharms() {
 		handlers = new HashMap<>();
@@ -54,8 +55,8 @@ public class ParallelCharms implements ParallelModule {
 		// Register events
 		manager.registerEvents(new PlayerKillListener(this), puPlugin);
 
+		// TODO: Remove before release
 		CharmOptions testOptions = new CharmOptions(UUID.randomUUID(), null, new HashMap<>(), 123456);
-
 		Charm testCharm = new Charm(testOptions);
 
 		puPlugin.addCommand("applyCharm", new ApplyCharm(testCharm));
@@ -71,7 +72,7 @@ public class ParallelCharms implements ParallelModule {
 	 * @param handler The handler to register
 	 * @return True when the handler type is new, false otherwise
 	 */
-	public boolean registerHandler(ICharmHandler handler) {
+	public boolean registerHandler(ICharmHandler<?> handler) {
 		HandlerType type = handler.getHandlerType();
 
 		if (handlers.containsKey(type)) {
@@ -87,7 +88,16 @@ public class ParallelCharms implements ParallelModule {
 	 * @return The handler or null
 	 */
 	@Nullable
-	public ICharmHandler getHandler(HandlerType type) {
-		return handlers.get(type);
+	public <T extends Event> ICharmHandler<T> getHandler(HandlerType type, Class<T> event) {
+		ICharmHandler<? extends Event> handler = handlers.get(type);
+		try {
+			if (handler.getEventType().equals(event)) {
+				return (ICharmHandler<T>) handler;
+			}
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "UNABLE TO CAST HANDLER!!!");
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
