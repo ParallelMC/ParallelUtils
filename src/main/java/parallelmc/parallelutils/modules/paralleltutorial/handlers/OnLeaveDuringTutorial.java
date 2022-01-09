@@ -20,7 +20,6 @@ public class OnLeaveDuringTutorial implements Listener {
             Parallelutils.log(Level.WARNING, player.getName() + " left during a tutorial! Attempting to fix...");
             tutorial.cancel();
             ParallelTutorial.get().endTutorialFor(player);
-            ParallelTutorial.runningTutorials.remove(player);
             Parallelutils.log(Level.WARNING, player.getName() + " was successfully taken out of the tutorial.");
         }
     }
