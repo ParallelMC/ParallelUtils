@@ -184,11 +184,14 @@ public class CharmOptions {
 		Plugin plugin = BukkitTools.getPlugin();
 
 		if (plugin == null) {
-			Parallelutils.log(Level.WARNING, "Plugin is null! Cannot parse charm");
 			return null;
 		}
 
-		// If meta is null, just return false
+		if (item == null) {
+			return null;
+		}
+
+		// If meta is null, just return null
 		ItemMeta meta = item.getItemMeta();
 
 		if (meta == null) {
@@ -202,6 +205,7 @@ public class CharmOptions {
 		PersistentDataContainer charmsContainer = pdc.get(key, PersistentDataType.TAG_CONTAINER);
 
 		if (charmsContainer == null) {
+			Parallelutils.log(Level.WARNING, "Charms Container is null!");
 			return null;
 		}
 
@@ -212,7 +216,7 @@ public class CharmOptions {
 		}
 		UUID uuid = UUID.fromString(uuidStr);
 
-		PersistentDataContainer[] effectsContainer = pdc.get(new NamespacedKey(plugin, "ParallelCharm.Effects"),
+		PersistentDataContainer[] effectsContainer = charmsContainer.get(new NamespacedKey(plugin, "ParallelCharm.Effects"),
 				PersistentDataType.TAG_CONTAINER_ARRAY);
 
 		if (effectsContainer == null) {
@@ -246,10 +250,11 @@ public class CharmOptions {
 
 				String typeStr = s.get(new NamespacedKey(plugin, "ParallelCharm.Effects.settings.type"),
 						PersistentDataType.STRING);
-				if (typeStr == null) { continue; }
+				if (typeStr == null) {
+					continue;
+				}
 
 				Types type = Types.valueOf(typeStr);
-
 				EncapsulatedType eType = null;
 
 				NamespacedKey valKey = new NamespacedKey(plugin, "ParallelCharm.Effects.settings.value");
@@ -259,6 +264,7 @@ public class CharmOptions {
 					case INT -> eType = new EncapsulatedType(type, s.get(valKey, PersistentDataType.INTEGER));
 					case DOUBLE -> eType = new EncapsulatedType(type, s.get(valKey, PersistentDataType.DOUBLE));
 					case LONG -> eType = new EncapsulatedType(type, s.get(valKey, PersistentDataType.LONG));
+					case STRING -> eType = new EncapsulatedType(type, s.get(valKey, PersistentDataType.STRING));
 					default -> {
 						Parallelutils.log(Level.WARNING, "Invalid data type!");
 						continue;
