@@ -10,8 +10,10 @@ import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.modules.charms.commands.ApplyCharm;
 import parallelmc.parallelutils.modules.charms.commands.RemoveCharm;
+import parallelmc.parallelutils.modules.charms.data.BasicMessageEffectSettings;
 import parallelmc.parallelutils.modules.charms.data.Charm;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
+import parallelmc.parallelutils.modules.charms.data.IEffectSettings;
 import parallelmc.parallelutils.modules.charms.events.PlayerKillListener;
 import parallelmc.parallelutils.modules.charms.handlers.CharmKillMessageHandler;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
@@ -56,7 +58,11 @@ public class ParallelCharms implements ParallelModule {
 		manager.registerEvents(new PlayerKillListener(this), puPlugin);
 
 		// TODO: Remove before release
-		CharmOptions testOptions = new CharmOptions(UUID.randomUUID(), null, new HashMap<>(), 123456);
+		HashMap<HandlerType, IEffectSettings> effects = new HashMap<>();
+
+		effects.put(HandlerType.MESSAGE_KILL, new BasicMessageEffectSettings("<rainbow>Kill Message Succeeded"));
+
+		CharmOptions testOptions = new CharmOptions(UUID.randomUUID(), null, effects, 123456);
 		Charm testCharm = new Charm(testOptions);
 
 		puPlugin.addCommand("applyCharm", new ApplyCharm(testCharm));

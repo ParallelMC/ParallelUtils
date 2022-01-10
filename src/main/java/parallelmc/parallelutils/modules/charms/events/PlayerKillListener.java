@@ -52,12 +52,13 @@ public class PlayerKillListener implements Listener {
 		ICharmHandler<PlayerDeathEvent> killMessage = pCharms.getHandler(HandlerType.MESSAGE_KILL, PlayerDeathEvent.class);
 
 		if (killMessage != null) {
-			killMessage.handle(event, killer, mainHand, mainOptions);
-			killMessage.handle(event, killer, offHand, offOptions);
-			killMessage.handle(event, killer, helmet, helmOptions);
-			killMessage.handle(event, killer, chestplate, chestOptions);
-			killMessage.handle(event, killer, leggings, legOptions);
-			killMessage.handle(event, killer, boots, bootsOptions);
+			// This order makes it so main hand takes the highest precedence
+			if (helmet != null && helmOptions != null) { killMessage.handle(event, killer, helmet, helmOptions); }
+			if (chestplate != null && chestOptions != null) { killMessage.handle(event, killer, chestplate, chestOptions); }
+			if (leggings != null && legOptions != null) { killMessage.handle(event, killer, leggings, legOptions); }
+			if (boots != null && bootsOptions != null) { killMessage.handle(event, killer, boots, bootsOptions); }
+			if (offOptions != null)  { killMessage.handle(event, killer, offHand, offOptions); }
+			if (mainOptions != null) { killMessage.handle(event, killer, mainHand, mainOptions); }
 		}
 
 	}
