@@ -36,17 +36,17 @@ public class PlayerKillListener implements Listener {
 		PlayerInventory killerInventory = killer.getInventory();
 
 		ItemStack mainHand = killerInventory.getItemInMainHand();
-		CharmOptions mainOptions = CharmOptions.parseOptions(mainHand);
+		CharmOptions mainOptions = CharmOptions.parseOptions(mainHand, killer);
 		ItemStack offHand = killerInventory.getItemInOffHand();
-		CharmOptions offOptions = CharmOptions.parseOptions(offHand);
+		CharmOptions offOptions = CharmOptions.parseOptions(offHand, killer);
 		ItemStack helmet = killerInventory.getHelmet();
-		CharmOptions helmOptions = CharmOptions.parseOptions(helmet);
+		CharmOptions helmOptions = CharmOptions.parseOptions(helmet, killer);
 		ItemStack chestplate = killerInventory.getChestplate();
-		CharmOptions chestOptions = CharmOptions.parseOptions(chestplate);
+		CharmOptions chestOptions = CharmOptions.parseOptions(chestplate, killer);
 		ItemStack leggings = killerInventory.getLeggings();
-		CharmOptions legOptions = CharmOptions.parseOptions(leggings);
+		CharmOptions legOptions = CharmOptions.parseOptions(leggings, killer);
 		ItemStack boots = killerInventory.getBoots();
-		CharmOptions bootsOptions = CharmOptions.parseOptions(boots);
+		CharmOptions bootsOptions = CharmOptions.parseOptions(boots, killer);
 
 
 		ICharmHandler<PlayerDeathEvent> killMessage = pCharms.getHandler(HandlerType.MESSAGE_KILL, PlayerDeathEvent.class);
