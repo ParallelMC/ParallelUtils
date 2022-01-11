@@ -62,7 +62,8 @@ public class ParallelCharms implements ParallelModule {
 
 		effects.put(HandlerType.MESSAGE_KILL, new BasicMessageEffectSettings("<rainbow>Kill Message Succeeded"));
 
-		CharmOptions testOptions = new CharmOptions(UUID.randomUUID(), null, effects, 123456);
+		CharmOptions testOptions = new CharmOptions(UUID.randomUUID(), null, null,
+				null, effects, 123456);
 		Charm testCharm = new Charm(testOptions);
 
 		puPlugin.addCommand("applyCharm", new ApplyCharm(testCharm));
