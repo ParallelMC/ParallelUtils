@@ -1,6 +1,7 @@
 package parallelmc.parallelutils.modules.charms.data;
 
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -45,6 +46,9 @@ public class Charm {
 	}
 
 	public boolean apply(ItemStack item) {
+		return apply(item, null);
+	}
+	public boolean apply(ItemStack item, Player player) {
 		try {
 			if (applied) {
 				return false;
@@ -52,6 +56,10 @@ public class Charm {
 
 			// Check allowed materials
 			if (!options.isMaterialAllowed(item.getType())) {
+				return false;
+			}
+
+			if (!options.isPlayerAllowed(player)) {
 				return false;
 			}
 

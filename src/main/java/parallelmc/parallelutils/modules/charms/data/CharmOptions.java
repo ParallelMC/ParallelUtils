@@ -2,6 +2,7 @@ package parallelmc.parallelutils.modules.charms.data;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -14,6 +15,7 @@ import parallelmc.parallelutils.modules.charms.helper.Types;
 import parallelmc.parallelutils.util.BukkitTools;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.UUID;
@@ -30,6 +32,12 @@ public class CharmOptions {
 	// If empty, allowed on everything
 	private final Material[] allowedMaterials;
 
+	// If empty, allowed on any player
+	private final String[] allowedPlayers;
+
+	// If empty, allowed on any permission
+	private final String[] allowedPermissions;
+
 	// Settings
 	// Name color scheme? Mini-message?
 	// Custom lore?
@@ -40,14 +48,21 @@ public class CharmOptions {
 
 	private final Integer customModelData;
 
-	public CharmOptions(UUID uuid, Material[] allowedMaterials, HashMap<HandlerType, IEffectSettings> effects, Integer customModelData) {
+	public CharmOptions(UUID uuid, Material[] allowedMaterials, String[] allowedPlayers, String[] allowedPermissions,
+	                    HashMap<HandlerType, IEffectSettings> effects, Integer customModelData) {
 		this.optionsUuid = uuid;
 		this.allowedMaterials = allowedMaterials;
+		this.allowedPlayers = allowedPlayers;
+		this.allowedPermissions = allowedPermissions;
 		this.effects = effects;
 		this.customModelData = customModelData;
 	}
 
 	public ItemStack applyCharm(ItemStack item) {
+		return applyCharm(item, null);
+	}
+
+	public ItemStack applyCharm(ItemStack item, Player player) {
 		// Setup
 		Plugin plugin = BukkitTools.getPlugin();
 
@@ -101,6 +116,42 @@ public class CharmOptions {
 
 			charmsContainer.set(new NamespacedKey(plugin, "ParallelCharm.AllowedMats"),
 					PersistentDataType.TAG_CONTAINER_ARRAY, matsArr);
+		}
+
+		// Apply allowed players
+		if (allowedPlayers != null) {
+			PersistentDataContainer[] playersArr = new PersistentDataContainer[allowedPlayers.length];
+
+			NamespacedKey playerKey = new NamespacedKey(plugin, "ParallelCharm.AllowedPlayers.Player");
+			int index = 0;
+			for (String p : allowedPlayers) {
+				PersistentDataContainer playersContainer = charmsContainer.getAdapterContext().newPersistentDataContainer();
+				playersContainer.set(playerKey, PersistentDataType.STRING, p);
+				playersArr[index] = playersContainer;
+
+				index++;
+			}
+
+			charmsContainer.set(new NamespacedKey(plugin, "ParallelCharm.AllowedPlayers"),
+					PersistentDataType.TAG_CONTAINER_ARRAY, playersArr);
+		}
+
+		// Apply allowed permissions
+		if (allowedPermissions != null) {
+			PersistentDataContainer[] permissionsArr = new PersistentDataContainer[allowedPermissions.length];
+
+			NamespacedKey permissionsKey = new NamespacedKey(plugin, "ParallelCharm.AllowedPermissions.Permission");
+			int index = 0;
+			for (String p : allowedPermissions) {
+				PersistentDataContainer permissionsContainer = charmsContainer.getAdapterContext().newPersistentDataContainer();
+				permissionsContainer.set(permissionsKey, PersistentDataType.STRING, p);
+				permissionsArr[index] = permissionsContainer;
+
+				index++;
+			}
+
+			charmsContainer.set(new NamespacedKey(plugin, "ParallelCharm.AllowedPermissions"),
+					PersistentDataType.TAG_CONTAINER_ARRAY, permissionsArr);
 		}
 
 		// Apply effects. Sorry for anyone who has to read this code...
@@ -168,9 +219,45 @@ public class CharmOptions {
 		return Arrays.asList(allowedMaterials).contains(mat);
 	}
 
+	public boolean isPlayerAllowed(Player player) {
+		if (allowedPlayers == null || allowedPlayers.length == 0) {
+			if (allowedPermissions == null || allowedPermissions.length == 0) return true;
+			// If player has any permission in array, return true
+			if (player == null) return false;
+			return Arrays.stream(allowedPermissions).anyMatch(player::hasPermission);
+		}
+
+		if (player == null) return false;
+		boolean players = Arrays.asList(allowedPlayers).contains(player.getUniqueId().toString());
+		if (players) {
+			if (allowedPermissions == null || allowedPermissions.length == 0) return true;
+			// If player has any permission in array, return true
+			return Arrays.stream(allowedPermissions).anyMatch(player::hasPermission);
+		}
+		return false;
+	}
+
 
 	public HashMap<HandlerType, IEffectSettings> getEffects() {
 		return effects;
+	}
+
+	/**
+	 * Returns a partial CharmOptions or null if the player is not allowed to use this charm
+	 * @param item The item to parse
+	 * @param player The player to check permissions against
+	 * @return The CharmOptions or null
+	 */
+	@Nullable
+	public static CharmOptions parseOptions(ItemStack item, Player player) {
+		CharmOptions options = parseOptions(item);
+
+		if (options == null) return null;
+
+		if (options.isPlayerAllowed(player)) {
+			return options;
+		}
+		return null;
 	}
 
 	/**
@@ -215,6 +302,37 @@ public class CharmOptions {
 			return null;
 		}
 		UUID uuid = UUID.fromString(uuidStr);
+
+		// Parse allowed players and permissions
+		ArrayList<String> allowedPlayersList = new ArrayList<>();
+		ArrayList<String> allowedPermissionsList = new ArrayList<>();
+
+		PersistentDataContainer[] playersContainer = charmsContainer.get(
+				new NamespacedKey(plugin, "ParallelCharm.AllowedPlayers"), PersistentDataType.TAG_CONTAINER_ARRAY);
+		if (playersContainer != null) {
+			// Actually parse players
+			NamespacedKey playerKey = new NamespacedKey(plugin, "ParallelCharm.AllowedPlayers.Player");
+			for (PersistentDataContainer p : playersContainer) {
+				String player = p.get(playerKey, PersistentDataType.STRING);
+				if (player != null) {
+					allowedPlayersList.add(player);
+				}
+			}
+		}
+
+		PersistentDataContainer[] permissionsContainer = charmsContainer.get(
+				new NamespacedKey(plugin, "ParallelCharm.AllowedPermissions"), PersistentDataType.TAG_CONTAINER_ARRAY);
+		if (permissionsContainer != null) {
+			// Actually parse players
+			NamespacedKey permissionsKey = new NamespacedKey(plugin, "ParallelCharm.AllowedPermissions.Permission");
+			for (PersistentDataContainer p : permissionsContainer) {
+				String permission = p.get(permissionsKey, PersistentDataType.STRING);
+				if (permission != null) {
+					allowedPermissionsList.add(permission);
+				}
+			}
+		}
+
 
 		PersistentDataContainer[] effectsContainer = charmsContainer.get(new NamespacedKey(plugin, "ParallelCharm.Effects"),
 				PersistentDataType.TAG_CONTAINER_ARRAY);
@@ -277,6 +395,7 @@ public class CharmOptions {
 			effects.put(HandlerType.valueOf(handlerName), new GenericEffectSettings(settings));
 		}
 
-		return new CharmOptions(uuid, null, effects, null);
+		return new CharmOptions(uuid, null, allowedPlayersList.toArray(new String[0]),
+				allowedPermissionsList.toArray(new String[0]), effects, null);
 	}
 }
