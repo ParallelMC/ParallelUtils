@@ -29,6 +29,8 @@ public class CharmOptions {
 	// This is just used to store in the database. Specifies _type_ of charm, not the specific charm
 	private final UUID optionsUuid;
 
+	private final String optionsName;
+
 	// If empty, allowed on everything
 	private final Material[] allowedMaterials;
 
@@ -48,9 +50,10 @@ public class CharmOptions {
 
 	private final Integer customModelData;
 
-	public CharmOptions(UUID uuid, Material[] allowedMaterials, String[] allowedPlayers, String[] allowedPermissions,
+	public CharmOptions(UUID uuid, String optionsName, Material[] allowedMaterials, String[] allowedPlayers, String[] allowedPermissions,
 	                    HashMap<HandlerType, IEffectSettings> effects, Integer customModelData) {
 		this.optionsUuid = uuid;
+		this.optionsName = optionsName;
 		this.allowedMaterials = allowedMaterials;
 		this.allowedPlayers = allowedPlayers;
 		this.allowedPermissions = allowedPermissions;
@@ -99,6 +102,9 @@ public class CharmOptions {
 		// Apply charm options UUID
 		charmsContainer.set(new NamespacedKey(plugin, "ParallelCharm.OptUUID"),
 				PersistentDataType.STRING, optionsUuid.toString());
+
+		charmsContainer.set(new NamespacedKey(plugin, "ParallelCharm.OptName"),
+				PersistentDataType.STRING, optionsName);
 
 		// Apply allowed materials. This doesn't _really_ need to be put on the item, but meh
 		if (allowedMaterials != null) {
@@ -303,6 +309,9 @@ public class CharmOptions {
 		}
 		UUID uuid = UUID.fromString(uuidStr);
 
+		String name = charmsContainer.get(new NamespacedKey(plugin, "ParallelCharm.OptName"),
+				PersistentDataType.STRING);
+
 		// Parse allowed players and permissions
 		ArrayList<String> allowedPlayersList = new ArrayList<>();
 		ArrayList<String> allowedPermissionsList = new ArrayList<>();
@@ -395,7 +404,7 @@ public class CharmOptions {
 			effects.put(HandlerType.valueOf(handlerName), new GenericEffectSettings(settings));
 		}
 
-		return new CharmOptions(uuid, null, allowedPlayersList.toArray(new String[0]),
+		return new CharmOptions(uuid, name,null, allowedPlayersList.toArray(new String[0]),
 				allowedPermissionsList.toArray(new String[0]), effects, null);
 	}
 }

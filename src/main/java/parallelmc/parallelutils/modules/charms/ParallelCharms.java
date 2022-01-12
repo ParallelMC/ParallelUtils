@@ -99,6 +99,8 @@ public class ParallelCharms implements ParallelModule {
 						}
 						UUID uuid = UUID.fromString(uuidStr);
 
+						String name = section.getString("name");
+
 						List<String> matStrList = section.getStringList("allowed-materials");
 						Material[] matsList = matStrList.stream().map(Material::valueOf).toArray(Material[]::new);
 
@@ -149,7 +151,7 @@ public class ParallelCharms implements ParallelModule {
 							}
 						}
 
-						CharmOptions charmOptions = new CharmOptions(uuid, matsList, allowedPlayers, allowedPermissions,
+						CharmOptions charmOptions = new CharmOptions(uuid, name, matsList, allowedPlayers, allowedPermissions,
 								effects, customModelData);
 						this.charmOptions.add(charmOptions);
 
@@ -175,7 +177,7 @@ public class ParallelCharms implements ParallelModule {
 
 		effects.put(HandlerType.MESSAGE_KILL, new BasicMessageEffectSettings("<rainbow>Kill Message Succeeded"));
 
-		CharmOptions testOptions = new CharmOptions(UUID.randomUUID(), null, null,
+		CharmOptions testOptions = new CharmOptions(UUID.randomUUID(), "testCharm", null, null,
 				null, effects, 123456);
 		Charm testCharm = new Charm(testOptions);
 
