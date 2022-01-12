@@ -221,7 +221,7 @@ public class CharmOptions {
 	}
 
 	public boolean isMaterialAllowed(Material mat) {
-		if (allowedMaterials == null) return true;
+		if (allowedMaterials == null || allowedMaterials.length == 0) return true;
 		return Arrays.asList(allowedMaterials).contains(mat);
 	}
 
@@ -406,5 +406,42 @@ public class CharmOptions {
 
 		return new CharmOptions(uuid, name,null, allowedPlayersList.toArray(new String[0]),
 				allowedPermissionsList.toArray(new String[0]), effects, null);
+	}
+
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("Charm: \n");
+		sb.append("UUID: ");
+		sb.append(optionsUuid.toString());
+		sb.append("\nName: ");
+		sb.append(optionsName);
+		sb.append("\nMaterials: [");
+		for (Material m : allowedMaterials) {
+			sb.append(m.name());
+			sb.append(", ");
+		}
+		sb.append("]\nPlayers: [");
+		for (String p : allowedPlayers) {
+			sb.append(p);
+			sb.append(", ");
+		}
+		sb.append("]\nPermissions: [");
+		for (String perm : allowedPermissions) {
+			sb.append(perm);
+			sb.append(", ");
+		}
+		sb.append("]\nCustom Model Data: ");
+		sb.append(customModelData);
+		sb.append("\nEffects: {\n\t");
+		for (HandlerType h : effects.keySet()) {
+			IEffectSettings settings = effects.get(h);
+			sb.append(h.name());
+			sb.append(": ");
+			sb.append(settings.string());
+			sb.append("\n\t");
+		}
+		sb.append("\n}");
+
+		return sb.toString();
 	}
 }

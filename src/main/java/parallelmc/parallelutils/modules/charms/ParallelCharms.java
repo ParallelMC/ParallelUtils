@@ -100,6 +100,11 @@ public class ParallelCharms implements ParallelModule {
 						UUID uuid = UUID.fromString(uuidStr);
 
 						String name = section.getString("name");
+						if (name == null || name.equals("")) {
+							Parallelutils.log(Level.WARNING, "Invalid Charm Option for option: " + s);
+							Parallelutils.log(Level.WARNING, "Must have name");
+							continue;
+						}
 
 						List<String> matStrList = section.getStringList("allowed-materials");
 						Material[] matsList = matStrList.stream().map(Material::valueOf).toArray(Material[]::new);
@@ -173,16 +178,21 @@ public class ParallelCharms implements ParallelModule {
 
 
 		// TODO: Remove before release
+		/*
 		HashMap<HandlerType, IEffectSettings> effects = new HashMap<>();
 
 		effects.put(HandlerType.MESSAGE_KILL, new BasicMessageEffectSettings("<rainbow>Kill Message Succeeded"));
 
 		CharmOptions testOptions = new CharmOptions(UUID.randomUUID(), "testCharm", null, null,
 				null, effects, 123456);
-		Charm testCharm = new Charm(testOptions);
+		Charm testCharm = new Charm(testOptions);*/
 
-		puPlugin.addCommand("applyCharm", new ApplyCharm(testCharm));
-		puPlugin.addCommand("removeCharm", new RemoveCharm(testCharm));
+		if (charmOptions.size() > 0) {
+			Charm testCharm = new Charm(charmOptions.get(0));
+			Parallelutils.log(Level.INFO, charmOptions.get(0).toString());
+			puPlugin.addCommand("applyCharm", new ApplyCharm(testCharm));
+			puPlugin.addCommand("removeCharm", new RemoveCharm(testCharm));
+		}
 	}
 
 	@Override
