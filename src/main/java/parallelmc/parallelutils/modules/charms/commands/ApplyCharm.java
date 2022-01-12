@@ -32,7 +32,7 @@ public class ApplyCharm extends ParallelCommand {
 		if (sender instanceof Player player) {
 			ItemStack heldItem = player.getInventory().getItemInMainHand();
 
-			boolean result = testCharm.apply(heldItem);
+			boolean result = testCharm.apply(heldItem, player);
 
 			sender.sendMessage("Result: " + result);
 		}
