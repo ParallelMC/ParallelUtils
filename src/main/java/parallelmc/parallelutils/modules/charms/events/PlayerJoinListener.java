@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.charms.events;
 
+import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -18,6 +19,8 @@ import parallelmc.parallelutils.modules.charms.handlers.HandlerCategory;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.handlers.ICharmHandler;
 import parallelmc.parallelutils.modules.charms.handlers.ICharmRunnableHandler;
+import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
+import parallelmc.parallelutils.modules.charms.helper.Types;
 
 import java.util.HashMap;
 
@@ -62,7 +65,21 @@ public class PlayerJoinListener implements Listener {
 						if (handler instanceof ICharmRunnableHandler runnableHandler) {
 							BukkitRunnable runnable = runnableHandler.getRunnable(player, item, options);
 
-							runnable.runTask(puPlugin);
+							IEffectSettings settings = effects.get(t);
+
+							HashMap<String, EncapsulatedType> settingsMap = settings.getSettings();
+
+							EncapsulatedType delayObj = settingsMap.get("delay");
+							EncapsulatedType periodObj = settingsMap.get("period");
+
+							if (delayObj == null || delayObj.getType() != Types.LONG) continue;
+							if (periodObj == null || periodObj.getType() != Types.LONG) continue;
+
+							Long delay = (Long) delayObj.getVal();
+							Long period = (Long) periodObj.getVal();
+
+							// Get options and get delay and period
+							runnable.runTaskTimer(puPlugin, delay, period);
 
 							charm.addRunnable(runnable);
 						}
