@@ -1,14 +1,17 @@
 package parallelmc.parallelutils.modules.charms;
 
+import it.unimi.dsi.fastutil.Hash;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
@@ -16,7 +19,9 @@ import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.modules.charms.commands.ApplyCharm;
 import parallelmc.parallelutils.modules.charms.commands.RemoveCharm;
 import parallelmc.parallelutils.modules.charms.data.*;
+import parallelmc.parallelutils.modules.charms.events.PlayerJoinListener;
 import parallelmc.parallelutils.modules.charms.events.PlayerKillListener;
+import parallelmc.parallelutils.modules.charms.events.PlayerLeaveListener;
 import parallelmc.parallelutils.modules.charms.handlers.CharmKillMessageHandler;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.handlers.ICharmHandler;
@@ -37,9 +42,13 @@ public class ParallelCharms implements ParallelModule {
 
 	private final ArrayList<CharmOptions> charmOptions;
 
+	// Key is player UUID, value is list of Charms associated with the player
+	private final HashMap<UUID, ArrayList<Charm>> appliedCharms;
+
 	public ParallelCharms() {
 		handlers = new HashMap<>();
 		charmOptions = new ArrayList<>();
+		appliedCharms = new HashMap<>();
 	}
 
 	@Override
@@ -66,6 +75,8 @@ public class ParallelCharms implements ParallelModule {
 
 		// Register events
 		manager.registerEvents(new PlayerKillListener(this), puPlugin);
+		manager.registerEvents(new PlayerJoinListener(puPlugin, this), puPlugin);
+		manager.registerEvents(new PlayerLeaveListener(puPlugin, this), puPlugin);
 
 
 		// Read Options files
@@ -176,19 +187,9 @@ public class ParallelCharms implements ParallelModule {
 			e.printStackTrace();
 		}
 
-
 		// TODO: Remove before release
-		/*
-		HashMap<HandlerType, IEffectSettings> effects = new HashMap<>();
-
-		effects.put(HandlerType.MESSAGE_KILL, new BasicMessageEffectSettings("<rainbow>Kill Message Succeeded"));
-
-		CharmOptions testOptions = new CharmOptions(UUID.randomUUID(), "testCharm", null, null,
-				null, effects, 123456);
-		Charm testCharm = new Charm(testOptions);*/
-
 		if (charmOptions.size() > 0) {
-			Charm testCharm = new Charm(charmOptions.get(0));
+			Charm testCharm = new Charm(this, charmOptions.get(0));
 			Parallelutils.log(Level.INFO, charmOptions.get(0).toString());
 			puPlugin.addCommand("applyCharm", new ApplyCharm(testCharm));
 			puPlugin.addCommand("removeCharm", new RemoveCharm(testCharm));
@@ -231,5 +232,43 @@ public class ParallelCharms implements ParallelModule {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+
+	public void applyCharm(Player player, Charm charm) {
+		UUID uuid = player.getUniqueId();
+
+		ArrayList<Charm> charms = appliedCharms.get(uuid);
+
+		if (charms == null) {
+			charms = new ArrayList<>();
+			charms.add(charm);
+			appliedCharms.put(uuid, charms);
+		} else {
+			charms.add(charm);
+		}
+
+	}
+
+	public void removeCharm(@NotNull Player player, @NotNull Charm charm) {
+		ArrayList<Charm> charms = appliedCharms.get(player.getUniqueId());
+
+		if (charms != null) {
+			Charm removeCharm = null;
+			for (Charm c : charms) {
+				if (c.getUUID() == charm.getUUID()) {
+					removeCharm = c;
+					break;
+				}
+			}
+
+			if (removeCharm != null) {
+				charms.remove(removeCharm);
+			}
+		}
+	}
+
+	public ArrayList<Charm> removeAllCharms(@NotNull Player player) {
+		return appliedCharms.remove(player.getUniqueId());
 	}
 }
