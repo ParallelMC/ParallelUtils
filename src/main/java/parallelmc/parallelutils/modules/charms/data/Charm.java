@@ -1,20 +1,34 @@
 package parallelmc.parallelutils.modules.charms.data;
 
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitRunnable;
+import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.charms.ParallelCharms;
+import parallelmc.parallelutils.modules.charms.handlers.*;
 import parallelmc.parallelutils.util.BukkitTools;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
 public class Charm {
+
+	private final Parallelutils puPlugin;
+
+	private final ParallelCharms pCharms;
 
 	// Each charm is unique, mostly to track things for counters
 	// but can also be used for player-specific text
@@ -26,21 +40,38 @@ public class Charm {
 
 	private CharmOptions options;
 
-	public Charm(CharmOptions options) {
+	private final ArrayList<BukkitRunnable> runnables;
+
+	public Charm(ParallelCharms pCharms, CharmOptions options) {
+		this.pCharms = pCharms;
+		this.runnables = new ArrayList<>();
+
+		PluginManager manager = Bukkit.getPluginManager();
+		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
+
+		if (plugin == null) {
+			Parallelutils.log(Level.SEVERE, "Unable to construct charm. Plugin " + Constants.PLUGIN_NAME
+					+ " does not exist!");
+			puPlugin = null;
+			return;
+		}
+
+		puPlugin = (Parallelutils) plugin;
+
 		charmId = UUID.randomUUID();
 
 		this.options = options;
 		applied = false;
 	}
 
-	public Charm(CharmOptions options, boolean applied) {
-		this(options);
+	public Charm(ParallelCharms pCharms, CharmOptions options, boolean applied) {
+		this(pCharms, options);
 
 		this.applied = applied;
 	}
 
-	public Charm(CharmOptions options, boolean applied, UUID uuid) {
-		this(options, applied);
+	public Charm(ParallelCharms pCharms, CharmOptions options, boolean applied, UUID uuid) {
+		this(pCharms, options, applied);
 
 		this.charmId = uuid;
 	}
@@ -101,9 +132,29 @@ public class Charm {
 				return false;
 			}
 
-			// TODO: Do we want runnables for each charm or overall runnables?
 			// Start runnables as needed
+			HashMap<HandlerType, IEffectSettings> effects = options.getEffects();
+			for (HandlerType t : effects.keySet()) {
+				if (t.getCategory() == HandlerCategory.RUNNABLE) {
+					ICharmHandler<Event> handler = pCharms.getHandler(t, Event.class);
 
+					if (handler instanceof ICharmRunnableHandler runnableHandler) {
+						BukkitRunnable runnable = runnableHandler.getRunnable(player, item, this.options);
+
+						runnable.runTask(puPlugin);
+
+						runnables.add(runnable);
+					}
+				} else if (t.getCategory() == HandlerCategory.APPLY) {
+					ICharmHandler<Event> handler = pCharms.getHandler(t, Event.class);
+
+					if (handler instanceof ICharmApplyHandler applyHandler) {
+						applyHandler.apply(player, item, this.options);
+					}
+				}
+			}
+
+			pCharms.applyCharm(player, this);
 			applied = true;
 			return true;
 		} catch (Exception e) {
@@ -113,7 +164,7 @@ public class Charm {
 		}
 	}
 
-	public boolean takeOff(ItemStack item) {
+	public boolean takeOff(ItemStack item, Player player) {
 		try {
 			if (!applied) {
 				return false;
@@ -148,8 +199,25 @@ public class Charm {
 
 			// Cancel runnables if needed
 
+			for (BukkitRunnable runnable : runnables) {
+				runnable.cancel();
+			}
+
+			HashMap<HandlerType, IEffectSettings> effects = options.getEffects();
+			for (HandlerType t : effects.keySet()) {
+				if (t.getCategory() == HandlerCategory.APPLY) {
+					ICharmHandler<Event> handler = pCharms.getHandler(t, Event.class);
+
+					if (handler instanceof ICharmApplyHandler applyHandler) {
+						applyHandler.remove(player, item, this.options);
+					}
+				}
+			}
+
 			item.setItemMeta(meta);
 
+
+			pCharms.removeCharm(player, this);
 			applied = false;
 			return true;
 		} catch (Exception e) {
@@ -157,5 +225,60 @@ public class Charm {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+	@Nullable
+	public static Charm parseCharm(ParallelCharms pCharms, ItemStack item, Player player) {
+		CharmOptions options = CharmOptions.parseOptions(item, player);
+
+		if (options == null) {
+			return null;
+		}
+
+		Plugin plugin = BukkitTools.getPlugin();
+
+		if (plugin == null) {
+			Parallelutils.log(Level.WARNING, "Plugin is null! Cannot apply charm");
+			return null;
+		}
+
+		// If meta is null, just return the original item
+		ItemMeta meta = item.getItemMeta();
+
+		if (meta == null) {
+			return null;
+		}
+
+		String uuidStr = meta.getPersistentDataContainer().get(
+				new NamespacedKey(plugin, "ParallelCharm.CharmUUID"), PersistentDataType.STRING);
+
+		if (uuidStr == null) {
+			return null;
+		}
+
+		UUID uuid = UUID.fromString(uuidStr);
+
+		return new Charm(pCharms, options, true, uuid);
+	}
+
+	@Nullable
+	public static Charm parseCharm(ParallelCharms pCharms,ItemStack item) {
+		return parseCharm(pCharms, item, null);
+	}
+
+	public CharmOptions getOptions() {
+		return options;
+	}
+
+	public void addRunnable(BukkitRunnable runnable) {
+		this.runnables.add(runnable);
+	}
+
+	public UUID getUUID() {
+		return charmId;
+	}
+
+	public List<BukkitRunnable> getRunnables() {
+		return runnables;
 	}
 }

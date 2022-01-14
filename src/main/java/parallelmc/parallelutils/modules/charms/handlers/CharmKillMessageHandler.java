@@ -22,8 +22,6 @@ public class CharmKillMessageHandler extends ICharmHandler<PlayerDeathEvent> {
 
 	public CharmKillMessageHandler() {
 		super(PlayerDeathEvent.class);
-
-
 	}
 
 	@Override

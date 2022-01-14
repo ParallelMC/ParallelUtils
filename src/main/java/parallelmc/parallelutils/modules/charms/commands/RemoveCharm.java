@@ -29,7 +29,7 @@ public class RemoveCharm extends ParallelCommand {
 		if (sender instanceof Player player) {
 			ItemStack heldItem = player.getInventory().getItemInMainHand();
 
-			boolean result = testCharm.takeOff(heldItem);
+			boolean result = testCharm.takeOff(heldItem, player);
 
 			sender.sendMessage("Result: " + result);
 		}
