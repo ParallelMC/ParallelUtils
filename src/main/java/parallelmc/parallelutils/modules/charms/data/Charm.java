@@ -15,6 +15,8 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.charms.handlers.*;
+import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
+import parallelmc.parallelutils.modules.charms.helper.Types;
 import parallelmc.parallelutils.util.BukkitTools;
 
 import javax.annotation.Nullable;
@@ -141,7 +143,20 @@ public class Charm {
 					if (handler instanceof ICharmRunnableHandler runnableHandler) {
 						BukkitRunnable runnable = runnableHandler.getRunnable(player, item, this.options);
 
-						runnable.runTask(puPlugin);
+						IEffectSettings settings = effects.get(t);
+
+						HashMap<String, EncapsulatedType> settingsMap = settings.getSettings();
+
+						EncapsulatedType delayObj = settingsMap.get("delay");
+						EncapsulatedType periodObj = settingsMap.get("period");
+
+						if (delayObj == null || delayObj.getType() != Types.LONG) continue;
+						if (periodObj == null || periodObj.getType() != Types.LONG) continue;
+
+						Long delay = (Long) delayObj.getVal();
+						Long period = (Long) periodObj.getVal();
+
+						runnable.runTaskTimer(puPlugin, delay, period);
 
 						runnables.add(runnable);
 					}
