@@ -10,7 +10,7 @@ import parallelmc.parallelutils.modules.charms.data.CharmOptions;
 public abstract class ICharmRunnableHandler extends ICharmHandler<Event> {
 
 	public ICharmRunnableHandler() {
-		super(null);
+		super(Event.class);
 	}
 
 	@Override

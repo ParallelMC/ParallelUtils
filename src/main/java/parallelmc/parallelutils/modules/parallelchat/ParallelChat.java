@@ -6,6 +6,8 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
+import net.kyori.adventure.text.minimessage.placeholder.Replacement;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
@@ -182,7 +184,7 @@ public class ParallelChat implements ParallelModule {
         String autoPrefix = puPlugin.getConfig().getString("auto-broadcast.prefix");
         for (String s : messages) {
             // pre-parse auto broadcast since there are no placeholders
-            this.autoMessages.add(MiniMessage.get().parse("\n" + autoPrefix + s + "\n"));
+            this.autoMessages.add(MiniMessage.miniMessage().deserialize("\n" + autoPrefix + s + "\n"));
         }
         // Auto-Message
         puPlugin.getServer().getScheduler().scheduleSyncRepeatingTask(puPlugin, () -> {
@@ -294,7 +296,7 @@ public class ParallelChat implements ParallelModule {
      */
     public static void sendMessageToStaffChat(CommandSender sender, Component message) {
         // TODO: Make this a config option
-        Component text = MiniMessage.get().parse("<yellow>[<aqua>Staff-Chat<yellow>] <green>" + sender.getName() + " <gray>> ").append(message.color(NamedTextColor.AQUA));
+        Component text = MiniMessage.miniMessage().deserialize("<yellow>[<aqua>Staff-Chat<yellow>] <green>" + sender.getName() + " <gray>> ").append(message.color(NamedTextColor.AQUA));
         // i know this is ugly
         // possible todo: dynamically keep track of staff in a list
         for (Player p : sender.getServer().getOnlinePlayers()) {
@@ -311,7 +313,7 @@ public class ParallelChat implements ParallelModule {
      * @param message The message Component
      */
     public static void sendMessageToTeamChat(CommandSender sender, Component message) {
-        Component text = MiniMessage.get().parse("<gold>[<yellow>Team-Chat<gold>] <green>" + sender.getName() + " <gray>> ").append(message.color(NamedTextColor.YELLOW));
+        Component text = MiniMessage.miniMessage().deserialize("<gold>[<yellow>Team-Chat<gold>] <green>" + sender.getName() + " <gray>> ").append(message.color(NamedTextColor.YELLOW));
         // i know this is ugly
         // possible todo: dynamically keep track of team in a list
         for (Player p : sender.getServer().getOnlinePlayers()) {
@@ -348,10 +350,10 @@ public class ParallelChat implements ParallelModule {
      */
     public Component formatForGroup(@NotNull Player source, @NotNull Component displayName, @NotNull Component message) {
         StringBuilder sb = new StringBuilder();
-        Function<String, ComponentLike> resolver = (placeholder) -> {
+        Function<String, Replacement<?>> resolver = (placeholder) -> {
             switch (placeholder.toLowerCase()) {
                 case "displayname" -> {
-                    return displayName;
+                    return Replacement.component(displayName);
                 }
                 case "tag" -> {
                     String formatted = PlaceholderAPI.setPlaceholders(source, "%deluxetags_tag%");
@@ -361,10 +363,10 @@ public class ParallelChat implements ParallelModule {
                         matcher.appendReplacement(sb, "<color:#" + matcher.group(1) + ">");
                     }
                     matcher.appendTail(sb);
-                    return MiniMessage.get().parse(sb.toString());
+                    return Replacement.miniMessage(sb.toString());
                 }
                 case "message" -> {
-                    return message;
+                    return Replacement.component(message);
                 }
                 default -> {
                     return null;
@@ -373,7 +375,7 @@ public class ParallelChat implements ParallelModule {
         };
         if (isUsingDefault) {
             // if default is enabled for whatever reason mimic the default rank
-            Component result = MiniMessage.builder().placeholderResolver(resolver).build().parse("<tag><gray><displayname> > <reset><message>");
+            Component result = MiniMessage.builder().placeholderResolver(PlaceholderResolver.dynamic(resolver)).build().deserialize("<tag><gray><displayname> > <reset><message>");
             return result;
         }
         else {
@@ -384,7 +386,7 @@ public class ParallelChat implements ParallelModule {
                 return Component.empty();
             }
             else {
-                Component result = MiniMessage.builder().placeholderResolver(resolver).build().parse(format);
+                Component result = MiniMessage.builder().placeholderResolver(PlaceholderResolver.dynamic(resolver)).build().deserialize(format);
                 return result;
             }
         }

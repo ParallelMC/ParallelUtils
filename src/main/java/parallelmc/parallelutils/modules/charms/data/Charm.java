@@ -159,12 +159,16 @@ public class Charm {
 						runnable.runTaskTimer(puPlugin, delay, period);
 
 						runnables.add(runnable);
+					} else {
+						Parallelutils.log(Level.WARNING, "Non-runnable handler on Runnable effect! " + t.name());
 					}
 				} else if (t.getCategory() == HandlerCategory.APPLY) {
 					ICharmHandler<Event> handler = pCharms.getHandler(t, Event.class);
 
 					if (handler instanceof ICharmApplyHandler applyHandler) {
 						applyHandler.apply(player, item, this.options);
+					} else {
+						Parallelutils.log(Level.WARNING, "Non-apply handler on Apply effect! " + t.name());
 					}
 				}
 			}
@@ -212,6 +216,8 @@ public class Charm {
 
 			pdc.remove(new NamespacedKey(plugin, "ParallelCharm"));
 
+			item.setItemMeta(meta);
+
 			// Cancel runnables if needed
 
 			for (BukkitRunnable runnable : runnables) {
@@ -228,9 +234,6 @@ public class Charm {
 					}
 				}
 			}
-
-			item.setItemMeta(meta);
-
 
 			pCharms.removeCharm(player, this);
 			applied = false;

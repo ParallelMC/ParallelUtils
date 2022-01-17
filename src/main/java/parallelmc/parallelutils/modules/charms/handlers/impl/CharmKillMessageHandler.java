@@ -1,15 +1,19 @@
-package parallelmc.parallelutils.modules.charms.handlers;
+package parallelmc.parallelutils.modules.charms.handlers.impl;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
+import net.kyori.adventure.text.minimessage.placeholder.Replacement;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
 import parallelmc.parallelutils.modules.charms.data.IEffectSettings;
+import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
+import parallelmc.parallelutils.modules.charms.handlers.ICharmHandler;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.modules.charms.helper.Types;
 
@@ -52,13 +56,13 @@ public class CharmKillMessageHandler extends ICharmHandler<PlayerDeathEvent> {
 			return;
 		}
 
-		Function<String, ComponentLike> resolver = (placeholder) -> {
+		Function<String, Replacement<?>> resolver = (placeholder) -> {
 			switch (placeholder.toLowerCase()) {
 				case "killer" -> {
-					return player.displayName();
+					return Replacement.component(player.displayName());
 				}
 				case "dead" -> {
-					return event.getPlayer().displayName();
+					return Replacement.component(event.getPlayer().displayName());
 				}
 				default -> {
 					return null;
@@ -68,7 +72,7 @@ public class CharmKillMessageHandler extends ICharmHandler<PlayerDeathEvent> {
 
 		String miniMsg = (String) message.getVal();
 
-		Component cmp = MiniMessage.builder().placeholderResolver(resolver).build().parse(miniMsg);
+		Component cmp = MiniMessage.builder().placeholderResolver(PlaceholderResolver.dynamic(resolver)).build().deserialize(miniMsg);
 
 		event.deathMessage(cmp);
 	}

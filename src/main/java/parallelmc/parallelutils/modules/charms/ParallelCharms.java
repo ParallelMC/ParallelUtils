@@ -1,6 +1,5 @@
 package parallelmc.parallelutils.modules.charms;
 
-import it.unimi.dsi.fastutil.Hash;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -15,16 +14,17 @@ import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.modules.charms.commands.ApplyCharm;
 import parallelmc.parallelutils.modules.charms.commands.RemoveCharm;
 import parallelmc.parallelutils.modules.charms.data.*;
+import parallelmc.parallelutils.modules.charms.data.impl.GenericEffectSettings;
 import parallelmc.parallelutils.modules.charms.events.PlayerJoinListener;
 import parallelmc.parallelutils.modules.charms.events.PlayerKillListener;
 import parallelmc.parallelutils.modules.charms.events.PlayerLeaveListener;
-import parallelmc.parallelutils.modules.charms.handlers.CharmKillMessageHandler;
+import parallelmc.parallelutils.modules.charms.handlers.impl.CharmKillMessageHandler;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.handlers.ICharmHandler;
+import parallelmc.parallelutils.modules.charms.handlers.impl.CharmStyleNameHandler;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.modules.charms.helper.Types;
 
@@ -34,7 +34,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Stream;
 
 public class ParallelCharms implements ParallelModule {
 
@@ -72,6 +71,7 @@ public class ParallelCharms implements ParallelModule {
 
 		// Register handlers
 		if (!registerHandler(new CharmKillMessageHandler())) { Parallelutils.log(Level.WARNING, "Could not register event!"); }
+		if (!registerHandler(new CharmStyleNameHandler()))
 
 		// Register events
 		manager.registerEvents(new PlayerKillListener(this), puPlugin);
@@ -221,7 +221,7 @@ public class ParallelCharms implements ParallelModule {
 	 * @return The handler or null
 	 */
 	@Nullable
-	public <T extends Event> ICharmHandler<T> getHandler(HandlerType type, Class<T> event) {
+	public <T extends Event> ICharmHandler<T> getHandler(HandlerType type, @NotNull Class<T> event) {
 		ICharmHandler<? extends Event> handler = handlers.get(type);
 		try {
 			if (handler.getEventType().equals(event)) {
