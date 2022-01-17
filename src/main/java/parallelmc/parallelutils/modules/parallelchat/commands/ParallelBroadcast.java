@@ -21,7 +21,7 @@ public class ParallelBroadcast implements CommandExecutor {
             }
         }
         // allow console to run command
-        Component msg = MiniMessage.get().parse(ParallelChat.get().broadcastMsg + ParallelChat.getStringArg(args));
+        Component msg = MiniMessage.miniMessage().deserialize(ParallelChat.get().broadcastMsg + ParallelChat.getStringArg(args));
         for (Player p : commandSender.getServer().getOnlinePlayers()) {
             p.sendMessage(msg);
         }

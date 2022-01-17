@@ -2,7 +2,8 @@ package parallelmc.parallelutils.modules.parallelchat.commands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
+import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,15 +20,15 @@ public class ParallelClearChat implements CommandExecutor {
             + "<white>*<red><strikethrough>--------------------------------------------<reset><white>*";
 
     @Override
-    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (commandSender instanceof Player sender) {
             if (!sender.hasPermission("parallelutils.clearchat")) {
                 return true;
             }
         }
-        Component message = MiniMessage.get().parse(clearChatMsg, Template.of("player", commandSender.getName()));
+        Component message = MiniMessage.miniMessage().deserialize(clearChatMsg, PlaceholderResolver.placeholders(Placeholder.miniMessage("player", commandSender.getName())));
         String clearChatBypassMsg = "<yellow>The chat has been cleared by <player>, but it wasn't for you. :)";
-        Component bypassMessage = MiniMessage.get().parse(clearChatBypassMsg, Template.of("player", commandSender.getName()));
+        Component bypassMessage = MiniMessage.miniMessage().deserialize(clearChatBypassMsg, PlaceholderResolver.placeholders(Placeholder.miniMessage("player", commandSender.getName())));
         for (Player p : commandSender.getServer().getOnlinePlayers()) {
             if (p.hasPermission("parallelutils.bypass.clearchat"))
                 p.sendMessage(bypassMessage);

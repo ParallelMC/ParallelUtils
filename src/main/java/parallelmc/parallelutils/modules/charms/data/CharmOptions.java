@@ -9,6 +9,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.charms.data.impl.GenericEffectSettings;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.modules.charms.helper.Types;
@@ -82,10 +83,6 @@ public class CharmOptions {
 		if (meta == null) {
 			return item;
 		}
-
-		// TODO: Figure out how to do name formatting
-		// Set display name. Currently not in use
-		// meta.displayName(Component.text("a"));
 
 		// Store previous custom model data and set new custom model data
 
@@ -298,7 +295,7 @@ public class CharmOptions {
 		PersistentDataContainer charmsContainer = pdc.get(key, PersistentDataType.TAG_CONTAINER);
 
 		if (charmsContainer == null) {
-			Parallelutils.log(Level.WARNING, "Charms Container is null!");
+			// Parallelutils.log(Level.WARNING, "Charms Container is null!"); // This is going to warn frequently lol
 			return null;
 		}
 
