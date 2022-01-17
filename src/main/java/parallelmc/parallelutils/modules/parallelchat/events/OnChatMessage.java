@@ -112,7 +112,7 @@ public class OnChatMessage implements Listener {
                     //if (ParallelChat.get().allowedWords.stream().noneMatch(checkSlurs::contains)) {
                         event.setCancelled(true);
                         ParallelChat.sendParallelMessageTo(player, "Please do not say that in chat.");
-                        Component slurMsg = MiniMessage.get().parse("<gray>").append(player.displayName())
+                        Component slurMsg = MiniMessage.miniMessage().deserialize("<gray>").append(player.displayName())
                                                                                    .append(Component.text(" [Anti-Swear]: "))
                                                                                     .append(event.message())
                                                                                     .append(Component.text(" | Match: " + x));

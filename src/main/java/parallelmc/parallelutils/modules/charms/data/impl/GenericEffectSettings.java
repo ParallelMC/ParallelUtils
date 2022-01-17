@@ -1,10 +1,11 @@
-package parallelmc.parallelutils.modules.charms.data;
+package parallelmc.parallelutils.modules.charms.data.impl;
 
+import parallelmc.parallelutils.modules.charms.data.IEffectSettings;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 
 import java.util.HashMap;
 
-public class GenericEffectSettings implements IEffectSettings{
+public class GenericEffectSettings implements IEffectSettings {
 
 	private final HashMap<String, EncapsulatedType> settings;
 

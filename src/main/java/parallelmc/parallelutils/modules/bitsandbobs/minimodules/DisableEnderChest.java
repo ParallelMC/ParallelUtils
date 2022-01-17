@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class DisableEnderChest implements Listener {
 
-	private static final Component msgFrom = MiniMessage.get().parse("<white><bold>[</bold><yellow> Niall <dark_aqua> -> <yellow><bold>You<white>]</bold><aqua> Enderchests are too unstable to use right now!");
+	private static final Component msgFrom = MiniMessage.miniMessage().deserialize("<white><bold>[</bold><yellow> Niall <dark_aqua> -> <yellow><bold>You<white>]</bold><aqua> Enderchests are too unstable to use right now!");
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onUseEnderchest(PlayerInteractEvent event) {
