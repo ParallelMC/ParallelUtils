@@ -78,7 +78,7 @@ public class ParallelCharms implements ParallelModule {
 		manager.registerEvents(new PlayerKillListener(this), puPlugin);
 		manager.registerEvents(new PlayerJoinListener(puPlugin, this), puPlugin);
 		manager.registerEvents(new PlayerLeaveListener(puPlugin, this), puPlugin);
-		manager.registerEvents(new PlayerSlotChangedListener(), puPlugin);
+		manager.registerEvents(new PlayerSlotChangedListener(puPlugin, this), puPlugin);
 
 
 		// Read Options files
@@ -240,7 +240,7 @@ public class ParallelCharms implements ParallelModule {
 	}
 
 
-	public void applyCharm(Player player, Charm charm) {
+	public void addCharm(Player player, Charm charm) {
 		UUID uuid = player.getUniqueId();
 
 		ArrayList<Charm> charms = appliedCharms.get(uuid);
@@ -252,20 +252,15 @@ public class ParallelCharms implements ParallelModule {
 		} else {
 			charms.add(charm);
 		}
-
-
-		for (Charm c : charms) {
-			Parallelutils.log(Level.INFO, c.getOptions().toString());
-		}
 	}
 
-	public void removeCharm(@NotNull Player player, @NotNull Charm charm) {
+	public Charm removeCharm(@NotNull Player player, @NotNull Charm charm) {
 		ArrayList<Charm> charms = appliedCharms.get(player.getUniqueId());
 
 		if (charms != null) {
 			Charm removeCharm = null;
 			for (Charm c : charms) {
-				if (c.getUUID() == charm.getUUID()) {
+				if (c.getUUID().equals(charm.getUUID())) {
 					removeCharm = c;
 					break;
 				}
@@ -273,13 +268,10 @@ public class ParallelCharms implements ParallelModule {
 
 			if (removeCharm != null) {
 				charms.remove(removeCharm);
-				Parallelutils.log(Level.INFO, "Removed charm");
-			}
-
-			for (Charm c : charms) {
-				Parallelutils.log(Level.INFO, c.getOptions().toString());
+				return removeCharm;
 			}
 		}
+		return null;
 	}
 
 	// NOTE: Yes, this looks weird. Yes, it's correct

@@ -175,7 +175,7 @@ public class Charm {
 				}
 			}
 
-			pCharms.applyCharm(player, this);
+			pCharms.addCharm(player, this);
 			applied = true;
 			return true;
 		} catch (Exception e) {
@@ -222,10 +222,7 @@ public class Charm {
 
 			// Cancel runnables if needed
 
-			for (BukkitRunnable runnable : runnables) {
-				Parallelutils.log(Level.INFO, "Cancelling runnable");
-				runnable.cancel();
-			}
+			cancelRunnables();
 
 			HashMap<HandlerType, IEffectSettings> effects = options.getEffects();
 			for (HandlerType t : effects.keySet()) {
@@ -301,5 +298,13 @@ public class Charm {
 
 	public List<BukkitRunnable> getRunnables() {
 		return runnables;
+	}
+
+	public void cancelRunnables() {
+		for (BukkitRunnable r : runnables) {
+			Parallelutils.log(Level.INFO, "Cancelled Runnable");
+			r.cancel();
+		}
+		runnables.clear();
 	}
 }
