@@ -158,6 +158,8 @@ public class Charm {
 
 						runnable.runTaskTimer(puPlugin, delay, period);
 
+						Parallelutils.log(Level.INFO, "Started runnable");
+
 						runnables.add(runnable);
 					} else {
 						Parallelutils.log(Level.WARNING, "Non-runnable handler on Runnable effect! " + t.name());
@@ -221,6 +223,7 @@ public class Charm {
 			// Cancel runnables if needed
 
 			for (BukkitRunnable runnable : runnables) {
+				Parallelutils.log(Level.INFO, "Cancelling runnable");
 				runnable.cancel();
 			}
 

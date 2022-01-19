@@ -1,4 +1,4 @@
-package parallelmc.parallelutils.modules.charms.events;
+package parallelmc.parallelutils.modules.charms.listeners;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +12,7 @@ import parallelmc.parallelutils.modules.charms.data.Charm;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class PlayerLeaveListener implements Listener {
 
@@ -39,6 +40,7 @@ public class PlayerLeaveListener implements Listener {
 
 			for (BukkitRunnable r : runnables) {
 				r.cancel();
+				Parallelutils.log(Level.INFO, "Cancelled runnable");
 			}
 		}
 	}
