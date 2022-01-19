@@ -1,6 +1,5 @@
-package parallelmc.parallelutils.modules.charms.events;
+package parallelmc.parallelutils.modules.charms.listeners;
 
-import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -23,6 +22,7 @@ import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.modules.charms.helper.Types;
 
 import java.util.HashMap;
+import java.util.logging.Level;
 
 public class PlayerJoinListener implements Listener {
 
@@ -80,6 +80,8 @@ public class PlayerJoinListener implements Listener {
 
 							// Get options and get delay and period
 							runnable.runTaskTimer(puPlugin, delay, period);
+
+							Parallelutils.log(Level.INFO, "Started runnable");
 
 							charm.addRunnable(runnable);
 						}

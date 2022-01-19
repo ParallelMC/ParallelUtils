@@ -18,12 +18,11 @@ import parallelmc.parallelutils.modules.charms.commands.ApplyCharm;
 import parallelmc.parallelutils.modules.charms.commands.RemoveCharm;
 import parallelmc.parallelutils.modules.charms.data.*;
 import parallelmc.parallelutils.modules.charms.data.impl.GenericEffectSettings;
-import parallelmc.parallelutils.modules.charms.events.PlayerJoinListener;
-import parallelmc.parallelutils.modules.charms.events.PlayerKillListener;
-import parallelmc.parallelutils.modules.charms.events.PlayerLeaveListener;
+import parallelmc.parallelutils.modules.charms.listeners.*;
 import parallelmc.parallelutils.modules.charms.handlers.impl.CharmKillMessageHandler;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.handlers.ICharmHandler;
+import parallelmc.parallelutils.modules.charms.handlers.impl.CharmParticleHandler;
 import parallelmc.parallelutils.modules.charms.handlers.impl.CharmStyleNameHandler;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.modules.charms.helper.Types;
@@ -70,13 +69,16 @@ public class ParallelCharms implements ParallelModule {
 		}
 
 		// Register handlers
-		if (!registerHandler(new CharmKillMessageHandler())) { Parallelutils.log(Level.WARNING, "Could not register event!"); }
-		if (!registerHandler(new CharmStyleNameHandler()))
+		if (!registerHandler(new CharmKillMessageHandler())) { Parallelutils.log(Level.WARNING, "Could not register MESSAGE_KILL"); }
+		if (!registerHandler(new CharmStyleNameHandler())) { Parallelutils.log(Level.WARNING, "Could not register STYLE_NAME"); }
+		if (!registerHandler(new CharmParticleHandler())) { Parallelutils.log(Level.WARNING, "Could not register PARTICLE"); }
 
 		// Register events
+		manager.registerEvents(new PlayerJoinContainerListenerOverwrite(), puPlugin);
 		manager.registerEvents(new PlayerKillListener(this), puPlugin);
 		manager.registerEvents(new PlayerJoinListener(puPlugin, this), puPlugin);
 		manager.registerEvents(new PlayerLeaveListener(puPlugin, this), puPlugin);
+		manager.registerEvents(new PlayerSlotChangedListener(), puPlugin);
 
 
 		// Read Options files
@@ -188,9 +190,9 @@ public class ParallelCharms implements ParallelModule {
 		}
 
 		// TODO: Remove before release
-		if (charmOptions.size() > 0) {
-			Charm testCharm = new Charm(this, charmOptions.get(0));
-			Parallelutils.log(Level.INFO, charmOptions.get(0).toString());
+		if (charmOptions.size() > 1) {
+			Charm testCharm = new Charm(this, charmOptions.get(1));
+			Parallelutils.log(Level.INFO, charmOptions.get(1).toString());
 			puPlugin.addCommand("applyCharm", new ApplyCharm(testCharm));
 			puPlugin.addCommand("removeCharm", new RemoveCharm(testCharm));
 		}
@@ -223,6 +225,9 @@ public class ParallelCharms implements ParallelModule {
 	@Nullable
 	public <T extends Event> ICharmHandler<T> getHandler(HandlerType type, @NotNull Class<T> event) {
 		ICharmHandler<? extends Event> handler = handlers.get(type);
+		if (handler == null) {
+			Parallelutils.log(Level.WARNING, "Handler of type " + type.name() + " does not exist!!!");
+		}
 		try {
 			if (handler.getEventType().equals(event)) {
 				return (ICharmHandler<T>) handler;
@@ -248,6 +253,10 @@ public class ParallelCharms implements ParallelModule {
 			charms.add(charm);
 		}
 
+
+		for (Charm c : charms) {
+			Parallelutils.log(Level.INFO, c.getOptions().toString());
+		}
 	}
 
 	public void removeCharm(@NotNull Player player, @NotNull Charm charm) {
@@ -264,10 +273,17 @@ public class ParallelCharms implements ParallelModule {
 
 			if (removeCharm != null) {
 				charms.remove(removeCharm);
+				Parallelutils.log(Level.INFO, "Removed charm");
+			}
+
+			for (Charm c : charms) {
+				Parallelutils.log(Level.INFO, c.getOptions().toString());
 			}
 		}
 	}
 
+	// NOTE: Yes, this looks weird. Yes, it's correct
+	// No idea why I programmed it like this but the implementation should work so whatever
 	public ArrayList<Charm> removeAllCharms(@NotNull Player player) {
 		return appliedCharms.remove(player.getUniqueId());
 	}
