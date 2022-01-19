@@ -81,13 +81,12 @@ public class PlayerJoinListener implements Listener {
 							// Get options and get delay and period
 							runnable.runTaskTimer(puPlugin, delay, period);
 
-							Parallelutils.log(Level.INFO, "Started runnable");
-
 							charm.addRunnable(runnable);
 						}
 					}
 				}
 			}
+			pCharms.addCharm(player, charm);
 		}
 	}
 }

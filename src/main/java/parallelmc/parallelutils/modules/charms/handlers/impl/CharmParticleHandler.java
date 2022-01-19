@@ -26,6 +26,7 @@ public class CharmParticleHandler extends ICharmRunnableHandler {
 			public void run() {
 				Parallelutils.log(Level.INFO, "Ran runnable!");
 				Parallelutils.log(Level.INFO, "Player: " + player.getUniqueId());
+				Parallelutils.log(Level.INFO, "" + this.getTaskId());
 			}
 		};
 		return runnable;
