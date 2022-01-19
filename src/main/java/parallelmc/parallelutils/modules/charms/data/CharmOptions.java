@@ -412,20 +412,26 @@ public class CharmOptions {
 		sb.append(optionsUuid.toString());
 		sb.append("\nName: ");
 		sb.append(optionsName);
-		sb.append("\nMaterials: [");
-		for (Material m : allowedMaterials) {
-			sb.append(m.name());
-			sb.append(", ");
+		if (allowedMaterials != null) {
+			sb.append("\nMaterials: [");
+			for (Material m : allowedMaterials) {
+				sb.append(m.name());
+				sb.append(", ");
+			}
 		}
-		sb.append("]\nPlayers: [");
-		for (String p : allowedPlayers) {
-			sb.append(p);
-			sb.append(", ");
+		if (allowedPlayers != null) {
+			sb.append("]\nPlayers: [");
+			for (String p : allowedPlayers) {
+				sb.append(p);
+				sb.append(", ");
+			}
 		}
-		sb.append("]\nPermissions: [");
-		for (String perm : allowedPermissions) {
-			sb.append(perm);
-			sb.append(", ");
+		if (allowedPermissions != null) {
+			sb.append("]\nPermissions: [");
+			for (String perm : allowedPermissions) {
+				sb.append(perm);
+				sb.append(", ");
+			}
 		}
 		sb.append("]\nCustom Model Data: ");
 		sb.append(customModelData);
