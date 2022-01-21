@@ -79,9 +79,9 @@ public class Charm {
 	}
 
 	public boolean apply(ItemStack item) {
-		return apply(item, null);
+		return apply(item, null, true);
 	}
-	public boolean apply(ItemStack item, Player player) {
+	public boolean apply(ItemStack item, Player player, boolean startRunnables) {
 		try {
 			if (applied) {
 				return false;
@@ -138,31 +138,35 @@ public class Charm {
 			HashMap<HandlerType, IEffectSettings> effects = options.getEffects();
 			for (HandlerType t : effects.keySet()) {
 				if (t.getCategory() == HandlerCategory.RUNNABLE) {
-					ICharmHandler<Event> handler = pCharms.getHandler(t, Event.class);
+					if (startRunnables) {
+						ICharmHandler<Event> handler = pCharms.getHandler(t, Event.class);
 
-					if (handler instanceof ICharmRunnableHandler runnableHandler) {
-						BukkitRunnable runnable = runnableHandler.getRunnable(player, item, this.options);
+						if (handler instanceof ICharmRunnableHandler runnableHandler) {
+							BukkitRunnable runnable = runnableHandler.getRunnable(player, item, this.options);
 
-						IEffectSettings settings = effects.get(t);
+							if (runnable == null) continue;
 
-						HashMap<String, EncapsulatedType> settingsMap = settings.getSettings();
+							IEffectSettings settings = effects.get(t);
 
-						EncapsulatedType delayObj = settingsMap.get("delay");
-						EncapsulatedType periodObj = settingsMap.get("period");
+							HashMap<String, EncapsulatedType> settingsMap = settings.getSettings();
 
-						if (delayObj == null || delayObj.getType() != Types.LONG) continue;
-						if (periodObj == null || periodObj.getType() != Types.LONG) continue;
+							EncapsulatedType delayObj = settingsMap.get("delay");
+							EncapsulatedType periodObj = settingsMap.get("period");
 
-						Long delay = (Long) delayObj.getVal();
-						Long period = (Long) periodObj.getVal();
+							if (delayObj == null || delayObj.getType() != Types.LONG) continue;
+							if (periodObj == null || periodObj.getType() != Types.LONG) continue;
 
-						runnable.runTaskTimer(puPlugin, delay, period);
+							Long delay = (Long) delayObj.getVal();
+							Long period = (Long) periodObj.getVal();
 
-						Parallelutils.log(Level.INFO, "Started runnable");
+							runnable.runTaskTimer(puPlugin, delay, period);
 
-						runnables.add(runnable);
-					} else {
-						Parallelutils.log(Level.WARNING, "Non-runnable handler on Runnable effect! " + t.name());
+							Parallelutils.log(Level.INFO, "Started runnable");
+
+							runnables.add(runnable);
+						} else {
+							Parallelutils.log(Level.WARNING, "Non-runnable handler on Runnable effect! " + t.name());
+						}
 					}
 				} else if (t.getCategory() == HandlerCategory.APPLY) {
 					ICharmHandler<Event> handler = pCharms.getHandler(t, Event.class);

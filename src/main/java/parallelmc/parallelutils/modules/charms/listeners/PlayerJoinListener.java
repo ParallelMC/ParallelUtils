@@ -65,6 +65,10 @@ public class PlayerJoinListener implements Listener {
 						if (handler instanceof ICharmRunnableHandler runnableHandler) {
 							BukkitRunnable runnable = runnableHandler.getRunnable(player, item, options);
 
+							if (runnable == null) {
+								continue;
+							}
+
 							IEffectSettings settings = effects.get(t);
 
 							HashMap<String, EncapsulatedType> settingsMap = settings.getSettings();
