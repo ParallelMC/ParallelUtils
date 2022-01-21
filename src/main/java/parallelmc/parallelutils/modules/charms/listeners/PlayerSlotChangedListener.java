@@ -41,10 +41,21 @@ public class PlayerSlotChangedListener implements Listener {
 
 		Player player = event.getPlayer();
 
+
 		if (remainingItem.getType() != Material.AIR) {
 			Charm remainingCharm = Charm.parseCharm(pCharms, remainingItem, player);
 
 			if (remainingCharm != null) {
+
+				if (removedItem.getType() != Material.AIR) {
+
+					Charm removedCharm = Charm.parseCharm(pCharms, removedItem, player);
+
+					if (removedCharm != null) {
+						if (remainingCharm.getUUID().equals(removedCharm.getUUID())) return; // Item taking durability or something
+					}
+				}
+
 				CharmOptions options = remainingCharm.getOptions();
 
 				if (options != null) {
@@ -55,7 +66,10 @@ public class PlayerSlotChangedListener implements Listener {
 							ICharmHandler<Event> handler = pCharms.getHandler(t, Event.class);
 
 							if (handler instanceof ICharmRunnableHandler runnableHandler) {
+
 								BukkitRunnable runnable = runnableHandler.getRunnable(player, remainingItem, options);
+
+								if (runnable == null) continue;
 
 								IEffectSettings settings = effects.get(t);
 
@@ -72,6 +86,8 @@ public class PlayerSlotChangedListener implements Listener {
 
 								// Get options and get delay and period
 								runnable.runTaskTimer(puPlugin, delay, period);
+
+								Parallelutils.log(Level.INFO, "Started runnable on change");
 
 								remainingCharm.addRunnable(runnable);
 							}
