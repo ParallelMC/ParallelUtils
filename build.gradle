@@ -202,6 +202,10 @@ bukkit {
             description = 'Shows all instructions for a tutorial'
             usage = '/tutorialinfo (tutorial)'
         }
+        togglepvp {
+            description = 'Toggles PVP on or off'
+            usage = '/togglepvp'
+        }
     }
 
     permissions {
