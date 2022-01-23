@@ -25,9 +25,9 @@ public class ParallelReply implements CommandExecutor {
             }
             Player recipient = sender.getServer().getPlayer(lastMessaged);
             String msg = ParallelChat.getStringArg(args);
-            Component msgTo = MiniMessage.get().parse("<white><bold>[<yellow>You</bold><dark_aqua> -> <yellow>" + recipient.getName() + "<white><bold>]</bold> <aqua>" + msg);
-            Component msgFrom = MiniMessage.get().parse("<white><bold>[</bold><yellow>" + sender.getName() + "<dark_aqua> -> <yellow><bold>You<white>]</bold> <aqua>" + msg);
-            Component socialSpy = MiniMessage.get().parse("<yellow>[<aqua>Social-Spy<yellow>] <dark_gray>" + sender.getName() + " -> " + recipient.getName() + ": <aqua>" + msg);
+            Component msgTo = MiniMessage.miniMessage().deserialize("<white><bold>[<yellow>You</bold><dark_aqua> -> <yellow>" + recipient.getName() + "<white><bold>]</bold> <aqua>" + msg);
+            Component msgFrom = MiniMessage.miniMessage().deserialize("<white><bold>[</bold><yellow>" + sender.getName() + "<dark_aqua> -> <yellow><bold>You<white>]</bold> <aqua>" + msg);
+            Component socialSpy = MiniMessage.miniMessage().deserialize("<yellow>[<aqua>Social-Spy<yellow>] <dark_gray>" + sender.getName() + " -> " + recipient.getName() + ": <aqua>" + msg);
 
             sender.sendMessage(msgTo);
             recipient.sendMessage(msgFrom);

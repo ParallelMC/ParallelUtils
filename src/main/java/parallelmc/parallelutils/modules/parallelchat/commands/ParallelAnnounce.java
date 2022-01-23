@@ -2,7 +2,8 @@ package parallelmc.parallelutils.modules.parallelchat.commands;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.Template;
+import net.kyori.adventure.text.minimessage.placeholder.Placeholder;
+import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -23,7 +24,11 @@ public class ParallelAnnounce implements CommandExecutor {
         }
         String announce = ParallelChat.get().announceMsg;
         // allow console to run command
-        Component msg = MiniMessage.get().parse(announce, Template.of("message", ParallelChat.getStringArg(args)));
+        Component msg = MiniMessage.miniMessage().deserialize(announce, PlaceholderResolver.placeholders(Placeholder.miniMessage("message", ParallelChat.getStringArg(args))));
+        for (Player p : commandSender.getServer().getOnlinePlayers()) {
+            p.sendMessage(msg);
+        }
+
         for (Player p : commandSender.getServer().getOnlinePlayers()) {
             p.sendMessage(msg);
         }

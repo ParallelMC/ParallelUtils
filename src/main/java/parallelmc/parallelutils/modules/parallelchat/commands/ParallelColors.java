@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ParallelColors implements CommandExecutor {
 
-    private static final Component text = MiniMessage.get().parse("""
+    private static final Component text = MiniMessage.miniMessage().deserialize("""
                 <red>=========================
                   <white>&0 = <black>Black
                   <white>&1 = <dark_blue>Dark Blue
