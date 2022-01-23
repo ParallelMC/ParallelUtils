@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class ParallelFormats implements CommandExecutor {
 
-    private static final Component text = MiniMessage.get().parse("""
+    private static final Component text = MiniMessage.miniMessage().deserialize("""
             <red>=========================
               <white>&k = <obfuscated>Obfuscated</obfuscated>
               <white>&l = <bold>Bold</bold>
