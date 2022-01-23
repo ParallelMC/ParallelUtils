@@ -27,7 +27,7 @@ public class OnCommand implements Listener {
         }
 
         // Command Spy
-        Component cmdSpy = MiniMessage.get().parse("<yellow>[<aqua>Command-Spy:<yellow>] <dark_gray>" + player.getName() + ": <aqua>" + event.getMessage());
+        Component cmdSpy = MiniMessage.miniMessage().deserialize("<yellow>[<aqua>Command-Spy:<yellow>] <dark_gray>" + player.getName() + ": <aqua>" + event.getMessage());
         UUID senderUUID = player.getUniqueId();
         ParallelChat.get().socialSpyUsers.forEach((u, o) -> {
             if (u.equals(senderUUID)) return;

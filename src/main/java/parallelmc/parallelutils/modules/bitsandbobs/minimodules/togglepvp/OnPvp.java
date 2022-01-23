@@ -1,5 +1,7 @@
 package parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,27 +11,35 @@ import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import java.util.UUID;
 
 public class OnPvp implements Listener {
-    /* TODO:
-       Possibly convert messages to minimessages
-       I didn't have the updated version so I used this for now
-       Also I used sendMessageTo to prevent the extra newlines from sendParallelMessageTo
-     */
+
     @EventHandler
     public void onPVP(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Player victim) {
             UUID aid = attacker.getUniqueId();
             UUID vid = victim.getUniqueId();
+            Component cantAttack = MiniMessage.miniMessage().deserialize("<red>You cannot attack players with PVP disabled!");
+            Component hasDisabled = MiniMessage.miniMessage().deserialize("<red>" + victim.getName() + " has PVP disabled!");
             if (TogglePvpManager.pvpToggles.containsKey(aid)) {
-                if (TogglePvpManager.pvpToggles.get(aid)) {
-                    ParallelChat.sendMessageTo(attacker, "§cYou cannot attack players with PVP disabled!");
+                if (!TogglePvpManager.pvpToggles.get(aid)) {
+                    attacker.sendMessage(cantAttack);
                     event.setCancelled(true);
                 }
             }
+            // PVP is off by default
+            else {
+                attacker.sendMessage(cantAttack);
+                event.setCancelled(true);
+            }
             if (TogglePvpManager.pvpToggles.containsKey(vid)) {
-                if (TogglePvpManager.pvpToggles.get(vid)) {
-                    ParallelChat.sendMessageTo(attacker, "§c" + victim.getName() + " has PVP disabled!");
+                if (!TogglePvpManager.pvpToggles.get(vid)) {
+                    attacker.sendMessage(hasDisabled);
                     event.setCancelled(true);
                 }
+            }
+            // PVP is off by default
+            else {
+                attacker.sendMessage(hasDisabled);
+                event.setCancelled(true);
             }
         }
     }
