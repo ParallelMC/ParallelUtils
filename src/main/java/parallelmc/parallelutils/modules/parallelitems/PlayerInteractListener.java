@@ -1,6 +1,7 @@
 package parallelmc.parallelutils.modules.parallelitems;
 
-import net.minecraft.world.item.ShearsItem;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -16,13 +17,15 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Mushroom;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -30,7 +33,9 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.parallelitems.pocketteleporter.PlayerPositionManager;
 
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -148,6 +153,20 @@ public class PlayerInteractListener implements Listener {
                             }
                         }
                     }
+                }
+                case 6 -> {
+                    if(event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+                        return;
+                    }
+
+                    if(item.getType() != Material.PAPER) {
+                        Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:6' are " +
+                                "pocket_teleporter, but this is not the correct material. Something isn't right.");
+                        return;
+                    }
+
+                    event.setCancelled(true);
+                    ParallelItems.posManager.attemptTeleport(event.getPlayer(), event.getItem());
                 }
             }
         }
@@ -278,5 +297,19 @@ public class PlayerInteractListener implements Listener {
                 }
             }
         }
+    }
+
+    // Pocket Teleporter checks
+
+    @EventHandler
+    public void onPlayerTakeDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player player) {
+            ParallelItems.posManager.cancelTeleport(player, "damage");
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDisconnect(PlayerQuitEvent event) {
+        ParallelItems.posManager.cancelTeleport(event.getPlayer(), "disconnect");
     }
 }
