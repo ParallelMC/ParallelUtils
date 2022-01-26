@@ -275,8 +275,8 @@ public class ParallelChat implements ParallelModule {
      * @param message The message to send
      */
     public static void sendParallelMessageTo(Player player, String message) {
-        Component msg = Component.text("\n§3[§f§lP§3] §a " + message + "\n");
-        player.sendMessage(msg);
+        Component text = MiniMessage.miniMessage().deserialize("<dark_aqua>[<white><bold>P<reset><dark_aqua>] <green>" + message);
+        player.sendMessage(text);
     }
 
     /**
