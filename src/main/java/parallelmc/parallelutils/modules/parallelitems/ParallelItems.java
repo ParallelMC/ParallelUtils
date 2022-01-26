@@ -23,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.parallelitems.pocketteleporter.PlayerPositionManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +36,8 @@ public class ParallelItems implements ParallelModule {
 
     private final HashMap<String, ItemStack> itemRegistry = new HashMap<>();
     private final HashMap<Integer, ItemStack> itemRegistryId = new HashMap<>();
+
+    public static PlayerPositionManager posManager;
 
     @Override
     public void onEnable() {
@@ -58,6 +61,9 @@ public class ParallelItems implements ParallelModule {
         registerItems();
         ParallelItemsEventRegistrar.registerEvents();
         puPlugin.addCommand("give", new ParallelItemsGiveCommand());
+
+        posManager = new PlayerPositionManager(puPlugin);
+        posManager.init();
     }
 
     /**
@@ -260,11 +266,39 @@ public class ParallelItems implements ParallelModule {
                     "Item will not work!");
         }
 
+        ItemStack teleporter = new ItemStack(Material.PAPER);
+        try {
+            ItemMeta teleMeta = teleporter.getItemMeta();
+            TextComponent name = Component.text("Pocket Teleporter", NamedTextColor.LIGHT_PURPLE)
+                    .decoration(TextDecoration.ITALIC, false);
+            teleMeta.displayName(name);
+            // teleMeta.setCustomModelData(0);
+
+            ArrayList<Component> lore = new ArrayList<>();
+            lore.add(Component.text("Right-click ", NamedTextColor.YELLOW)
+                    .append(Component.text("to teleport between spawn", NamedTextColor.GRAY)).decoration(TextDecoration.ITALIC, false));
+            lore.add(Component.text("and your last location.", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+            lore.add(Component.text("Shift + right-click ", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)
+                    .append(Component.text("to reset your last location.", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
+            teleMeta.lore(lore);
+
+            teleMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 6);
+
+            teleporter.setItemMeta(teleMeta);
+
+            itemRegistry.put("pocket_teleporter", teleporter);
+            itemRegistryId.put(6, teleporter);
+        } catch (NullPointerException e) {
+            Parallelutils.log(Level.WARNING,"NullPointerException registering pocket_teleporter. " +
+                    "Item will not work!");
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     public void onDisable() {
-
+        posManager.unload();
     }
 
     /**
