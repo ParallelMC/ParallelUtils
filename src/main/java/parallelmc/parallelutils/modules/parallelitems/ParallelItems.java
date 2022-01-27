@@ -282,7 +282,10 @@ public class ParallelItems implements ParallelModule {
                     .append(Component.text("to reset your last location.", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
             teleMeta.lore(lore);
 
+            NamespacedKey modifyKey = new NamespacedKey(plugin, "NoModify");
+
             teleMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 6);
+            teleMeta.getPersistentDataContainer().set(modifyKey, PersistentDataType.INTEGER, 1);
 
             teleporter.setItemMeta(teleMeta);
 
