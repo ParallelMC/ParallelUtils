@@ -15,6 +15,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
@@ -175,8 +176,7 @@ public class PlayerPositionManager {
                     @Override
                     public void run() {
                         setSavedPosition(player, teleporter);
-                        // TODO: REPLACE WITH WORLD2
-                        if (player.teleport(new Location(puPlugin.getServer().getWorld("world"), spawn.getX(), spawn.getY(), spawn.getZ()))) {
+                        if (player.teleport(new Location(puPlugin.getServer().getWorld(Constants.DEFAULT_WORLD), spawn.getX(), spawn.getY(), spawn.getZ()))) {
                             ParallelChat.sendParallelMessageTo(player, "Teleported to spawn! Your previous position has been saved.");
                             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
                             attemptedTeleports.remove(uuid);
