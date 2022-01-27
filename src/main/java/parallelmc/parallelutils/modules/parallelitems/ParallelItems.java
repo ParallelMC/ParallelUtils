@@ -266,13 +266,13 @@ public class ParallelItems implements ParallelModule {
                     "Item will not work!");
         }
 
-        ItemStack teleporter = new ItemStack(Material.PAPER);
+        ItemStack teleporter = new ItemStack(Material.LEATHER_HORSE_ARMOR);
         try {
             ItemMeta teleMeta = teleporter.getItemMeta();
             TextComponent name = Component.text("Pocket Teleporter", NamedTextColor.LIGHT_PURPLE)
                     .decoration(TextDecoration.ITALIC, false);
             teleMeta.displayName(name);
-            // teleMeta.setCustomModelData(0);
+            teleMeta.setCustomModelData(1000001);
 
             ArrayList<Component> lore = new ArrayList<>();
             lore.add(Component.text("Right-click ", NamedTextColor.YELLOW)

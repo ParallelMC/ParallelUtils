@@ -159,7 +159,7 @@ public class PlayerInteractListener implements Listener {
                         return;
                     }
 
-                    if(item.getType() != Material.PAPER) {
+                    if(item.getType() != Material.LEATHER_HORSE_ARMOR) {
                         Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:6' are " +
                                 "pocket_teleporter, but this is not the correct material. Something isn't right.");
                         return;
