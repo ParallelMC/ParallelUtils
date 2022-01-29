@@ -27,7 +27,7 @@ import java.util.UUID;
 import java.util.logging.Level;
 
 public class PlayerPositionManager {
-    private final Vector spawn = new Vector(-255.5, 140.5, -255.5);
+    private final Vector spawn = new Vector(-255.5, 140.5, -225.5);
     private final HashMap<UUID, PlayerPosition> savedPositions = new HashMap<>();
     private final HashSet<UUID> teleportCooldowns = new HashSet<>();
     private final HashMap<UUID, BukkitTask> attemptedTeleports = new HashMap<>();
