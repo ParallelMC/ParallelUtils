@@ -46,6 +46,7 @@ public class BitsAndBobs implements ParallelModule {
         manager.registerEvents(new SpecialItems(), plugin);
         //manager.registerEvents(new SpeedyMinecarts(), plugin);
         manager.registerEvents(new OnPvp(), plugin);
+        manager.registerEvents(new ShardLotto(), plugin);
 
         if (config.getBoolean("disable-ender-chests", false)) {
             manager.registerEvents(new DisableEnderChest(), plugin);
