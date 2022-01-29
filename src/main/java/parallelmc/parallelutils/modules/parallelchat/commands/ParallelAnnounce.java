@@ -28,10 +28,6 @@ public class ParallelAnnounce implements CommandExecutor {
         for (Player p : commandSender.getServer().getOnlinePlayers()) {
             p.sendMessage(msg);
         }
-
-        for (Player p : commandSender.getServer().getOnlinePlayers()) {
-            p.sendMessage(msg);
-        }
         return true;
     }
 }
