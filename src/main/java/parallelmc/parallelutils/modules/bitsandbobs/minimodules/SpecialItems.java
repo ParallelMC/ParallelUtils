@@ -7,6 +7,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.CauldronLevelChangeEvent;
@@ -38,7 +39,7 @@ public class SpecialItems implements Listener {
 
     private final String[] SPECIAL_ITEMS = {"CustomHat", "CustomTrophy"};
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         // Creates an empty list for all items to be prevented from dropping
         ArrayList<ItemStack> preventedDrops = new ArrayList<>();
