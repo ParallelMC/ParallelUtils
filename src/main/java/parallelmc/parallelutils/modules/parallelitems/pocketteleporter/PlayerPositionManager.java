@@ -52,7 +52,10 @@ public class PlayerPositionManager {
                         x             int         not null,
                         y             int         not null,
                         z             int         not null,
-                        beenToSpawn   tinyint     not null
+                        beenToSpawn   tinyint     not null,
+                        constraint SavedPositions_UUID_index
+                            unique(UUID),
+                        PRIMARY KEY(UUID)
                     );""");
             conn.commit();
             statement.close();
@@ -76,11 +79,11 @@ public class PlayerPositionManager {
                 savedPositions.put(uuid, new PlayerPosition(new Location(
                         puPlugin.getServer().getWorld(world),
                         x, y, z), beenToSpawn));
-                Parallelutils.log(Level.INFO, String.format("Loaded saved position for %s: [%s %d %d %d %b]", uuid, world, x, y, z, beenToSpawn));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
     }
 
     public void unload() {
