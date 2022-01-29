@@ -9,6 +9,7 @@ import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
@@ -16,6 +17,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -273,6 +275,11 @@ public class ParallelItems implements ParallelModule {
                     .decoration(TextDecoration.ITALIC, false);
             teleMeta.displayName(name);
             teleMeta.setCustomModelData(1000001);
+
+            if (teleMeta instanceof LeatherArmorMeta armorMeta) {
+                armorMeta.setColor(Color.WHITE);
+                armorMeta.addItemFlags(ItemFlag.HIDE_DYE);
+            }
 
             ArrayList<Component> lore = new ArrayList<>();
             lore.add(Component.text("Right-click ", NamedTextColor.YELLOW)
