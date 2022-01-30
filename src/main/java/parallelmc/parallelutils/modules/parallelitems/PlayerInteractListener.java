@@ -96,6 +96,10 @@ public class PlayerInteractListener implements Listener {
 
             ItemMeta meta = item.getItemMeta();
 
+            if (meta == null) {
+                return;
+            }
+
             Integer val = meta.getPersistentDataContainer().get(customKey, PersistentDataType.INTEGER);
             if (val == null) {
                 return;
