@@ -1,6 +1,7 @@
 package parallelmc.parallelutils.modules.parallelitems.pocketteleporter;
 
 
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -157,9 +158,8 @@ public class PlayerPositionManager {
                         new BukkitRunnable() {
                             @Override
                             public void run() {
-
                                 if (player.getWorld().getName().equals("world2")) {
-                                    RegionManager wgWorld = WorldGuard.getInstance().getPlatform().getRegionContainer().get((World)player.getWorld());
+                                    RegionManager wgWorld = WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()));
                                     if (wgWorld != null) {
                                         Location pPos = player.getLocation();
                                         ProtectedRegion spawn = wgWorld.getRegion("spawn-world2");
