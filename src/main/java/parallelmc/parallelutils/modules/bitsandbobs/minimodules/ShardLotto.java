@@ -13,9 +13,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
+import java.util.UUID;
 
 public class ShardLotto implements Listener {
-    private final HashMap<Player, Integer> playerRolls = new HashMap<>();
+    private final HashMap<UUID, Integer> playerRolls = new HashMap<>();
     private final Vector lantern = new Vector(-342, 24, -454);
     private final static String lootTable = "parallel_loot:events/ralnthar_treasure";
     private final static Component failureMsg = MiniMessage.miniMessage().deserialize("<gold><bold>Ralnthar </bold><gray>> <white>I don't have a need for more of your shards at the moment, but if you return at a later date, I may make it worth your while.");
@@ -25,6 +26,7 @@ public class ShardLotto implements Listener {
     public void onPlayerUseShard(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
             Player player = event.getPlayer();
+            UUID uuid = player.getUniqueId();
             Location loc = event.getClickedBlock().getLocation();
             if (loc.getBlockX() == lantern.getX() &&
                 loc.getBlockY() == lantern.getY() &&
@@ -36,11 +38,11 @@ public class ShardLotto implements Listener {
                     held.getType() == Material.PRISMARINE_SHARD &&
                     held.getItemMeta().getCustomModelData() == 1000001) {
                     int rollsLeft;
-                    if (playerRolls.containsKey(player)) {
-                        rollsLeft = playerRolls.get(player);
+                    if (playerRolls.containsKey(uuid)) {
+                        rollsLeft = playerRolls.get(uuid);
                     }
                     else {
-                        playerRolls.put(player, 3);
+                        playerRolls.put(uuid, 3);
                         rollsLeft = 3;
                     }
                     if (rollsLeft > 0) {
@@ -55,7 +57,7 @@ public class ShardLotto implements Listener {
                         else {
                             player.getServer().dispatchCommand(player.getServer().getConsoleSender(), "loot give " + player.getName() + " loot " + lootTable);
                         }
-                        playerRolls.put(player, rollsLeft - 1);
+                        playerRolls.put(uuid, rollsLeft - 1);
                         event.getItem().subtract();
                     }
                     else {
