@@ -1,5 +1,10 @@
 package parallelmc.parallelutils.modules.parallelitems.pocketteleporter;
 
+
+import com.sk89q.worldedit.world.World;
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -152,6 +157,28 @@ public class PlayerPositionManager {
                         new BukkitRunnable() {
                             @Override
                             public void run() {
+
+                                if (player.getWorld().getName().equals("world2")) {
+                                    RegionManager wgWorld = WorldGuard.getInstance().getPlatform().getRegionContainer().get((World)player.getWorld());
+                                    if (wgWorld != null) {
+                                        Location pPos = player.getLocation();
+                                        ProtectedRegion spawn = wgWorld.getRegion("spawn-world2");
+                                        ProtectedRegion spawnTown = wgWorld.getRegion("world2-shopping");
+                                        // if player isn't in either region
+                                        if (spawn != null &&
+                                                spawnTown != null &&
+                                                !spawn.contains(pPos.getBlockX(), pPos.getBlockY(), pPos.getBlockZ()) &&
+                                                !spawnTown.contains(pPos.getBlockX(), pPos.getBlockY(), pPos.getBlockZ())) {
+                                            ParallelChat.sendParallelMessageTo(player, "You must be in the main spawn or shopping region to teleport back!");
+                                            return;
+                                        }
+                                    }
+                                }
+                                // they have to be in world2 in the first place
+                                else {
+                                    ParallelChat.sendParallelMessageTo(player, "You must be in the main spawn or shopping region to teleport back!");
+                                    return;
+                                }
                                 Location loc = getNextSafeBlock(pos.location());
                                 if (loc == null) {
                                     ParallelChat.sendParallelMessageTo(player, "Unable to teleport!");
