@@ -54,23 +54,27 @@ public class OnPvp implements Listener {
             if (TogglePvpManager.pvpToggles.containsKey(aid)) {
                 if (!TogglePvpManager.pvpToggles.get(aid)) {
                     attacker.sendMessage(cantAttack);
+                    event.getEntity().remove();
                     event.setCancelled(true);
                 }
             }
             // PVP is off by default
             else {
                 attacker.sendMessage(cantAttack);
+                event.getEntity().remove();
                 event.setCancelled(true);
             }
             if (TogglePvpManager.pvpToggles.containsKey(vid)) {
                 if (!TogglePvpManager.pvpToggles.get(vid)) {
                     attacker.sendMessage(hasDisabled);
+                    event.getEntity().remove();
                     event.setCancelled(true);
                 }
             }
             // PVP is off by default
             else {
                 attacker.sendMessage(hasDisabled);
+                event.getEntity().remove();
                 event.setCancelled(true);
             }
         }
