@@ -170,6 +170,7 @@ public class PlayerPositionManager {
                                                 !spawn.contains(pPos.getBlockX(), pPos.getBlockY(), pPos.getBlockZ()) &&
                                                 !spawnTown.contains(pPos.getBlockX(), pPos.getBlockY(), pPos.getBlockZ())) {
                                             ParallelChat.sendParallelMessageTo(player, "You must be in the main spawn or shopping region to teleport back!");
+                                            attemptedTeleports.remove(uuid);
                                             this.cancel();
                                             return;
                                         }
@@ -178,6 +179,7 @@ public class PlayerPositionManager {
                                 // they have to be in world2 in the first place
                                 else {
                                     ParallelChat.sendParallelMessageTo(player, "You must be in the main spawn or shopping region to teleport back!");
+                                    attemptedTeleports.remove(uuid);
                                     this.cancel();
                                     return;
                                 }
