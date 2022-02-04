@@ -205,7 +205,6 @@ public class ParallelTutorial implements ParallelModule {
     public void RunTutorialFor(@NotNull Player player, @NotNull String tutorial) {
         final World world = player.getWorld();
         // TIL entities can't be spawned in async runnables
-        ArmorStand stand = (ArmorStand)world.spawnEntity(player.getLocation(), EntityType.ARMOR_STAND, CreatureSpawnEvent.SpawnReason.COMMAND);
         Bukkit.getScheduler().runTaskAsynchronously(puPlugin, new Runnable() {
             Vector lookAt = null;
             final ArrayList<Instruction> instructions = tutorials.get(tutorial.toLowerCase());
@@ -215,15 +214,11 @@ public class ParallelTutorial implements ParallelModule {
             @Override
             public void run() {
                 startPoints.put(player, player.getLocation());
-                stand.setGravity(false);
-                stand.setVisible(false);
-                stand.setBasePlate(false);
-                stand.setInvulnerable(true);
-                stand.setHeadPose(EulerAngle.ZERO);
                 loop = new BukkitRunnable() {
+                    ArmorStand stand;
                     @Override
                     public void run() {
-                        if (player.getLocation().distanceSquared(stand.getLocation()) > 1024) {
+                        if (stand != null && player.getLocation().distanceSquared(stand.getLocation()) > 1024) {
                             Bukkit.getScheduler().runTask(puPlugin, () -> {
                                 player.teleport(stand.getLocation());
                             });
@@ -235,13 +230,19 @@ public class ParallelTutorial implements ParallelModule {
                             switch (i.name()) {
                                 case "START" -> {
                                     Bukkit.getScheduler().runTask(puPlugin, () -> {
+                                        Location start = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
+                                        stand = (ArmorStand)world.spawnEntity(start, EntityType.ARMOR_STAND, CreatureSpawnEvent.SpawnReason.COMMAND);
+                                        stand.setGravity(false);
+                                        stand.setVisible(false);
+                                        stand.setBasePlate(false);
+                                        stand.setInvulnerable(true);
+                                        stand.setHeadPose(EulerAngle.ZERO);
                                         player.setGameMode(GameMode.SPECTATOR);
                                         player.setFlySpeed(0F);
-                                        Location start = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
-                                        stand.teleport(start);
                                         // force player to spectate the armor stand
                                         // the player's actual model will be stuck back at the start
                                         forceSpectate(player, stand.getEntityId());
+                                        armorStands.put(player, stand);
                                         instructionFinished = true;
                                     });
                                 }
@@ -332,7 +333,6 @@ public class ParallelTutorial implements ParallelModule {
                 }.runTaskTimer(puPlugin, 0L, 1L);
 
                 runningTutorials.put(player, loop);
-                armorStands.put(player, stand);
             }
         });
     }
