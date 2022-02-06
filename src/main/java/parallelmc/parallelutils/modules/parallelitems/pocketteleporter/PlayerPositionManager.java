@@ -320,7 +320,7 @@ public class PlayerPositionManager {
         return switch(worldId) {
             case "world2" -> "Overworld";
             case "world2_nether" -> "Nether";
-            case "world2_the_end" -> "The End";
+            case "world2_the_end", "world_the_end" -> "The End";
             case "world" -> "Overworld (Parallel Prime)";
             case "world_nether" -> "Nether (Parallel Prime)";
             case "world_skyteaser" -> "Sky Dimension";
