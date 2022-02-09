@@ -218,7 +218,7 @@ public class ParallelTutorial implements ParallelModule {
                     ArmorStand stand;
                     @Override
                     public void run() {
-                        if (stand != null && player.getLocation().distanceSquared(stand.getLocation()) > 1024) {
+                        if (stand != null && player.getLocation().distanceSquared(stand.getLocation()) > 256) {
                             Bukkit.getScheduler().runTask(puPlugin, () -> {
                                 player.teleport(stand.getLocation());
                             });
@@ -277,7 +277,7 @@ public class ParallelTutorial implements ParallelModule {
                                                     point.setYaw((float)lookAt.getX());
                                                     point.setPitch((float)lookAt.getY());
                                                 }
-                                                stand.teleport(point);
+                                                while (!stand.teleport(point));
                                                 steps++;
                                             }
                                         }
@@ -294,9 +294,10 @@ public class ParallelTutorial implements ParallelModule {
                                                     newPoint.setYaw((float)lookAt.getX());
                                                     newPoint.setPitch((float)lookAt.getY());
                                                 }
-                                                stand.teleport(newPoint);
-                                                instructionFinished = true;
-                                                this.cancel();
+                                                if (stand.teleport(newPoint)) {
+                                                    instructionFinished = true;
+                                                    this.cancel();
+                                                }
                                             }
                                         }
                                     }.runTaskTimer(puPlugin, 0L, 2L);
@@ -313,7 +314,10 @@ public class ParallelTutorial implements ParallelModule {
                                 }
                                 case "SAY" -> {
                                     String string = ParallelChat.getStringArg(i.args());
-                                    player.sendMessage(MiniMessage.miniMessage().deserialize("\n" + string + "\n"));
+                                    player.sendMessage(MiniMessage.miniMessage().deserialize(
+                                            "<dark_aqua><bold>\n---------------------------------------------\n"
+                                                    + string +
+                                                    "<dark_aqua><bold>\n---------------------------------------------\n"));
                                     instructionFinished = true;
                                 }
                                 /*case "SOUND" -> {
