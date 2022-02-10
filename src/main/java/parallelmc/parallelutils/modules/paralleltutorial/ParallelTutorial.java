@@ -277,7 +277,7 @@ public class ParallelTutorial implements ParallelModule {
                                                     point.setYaw((float)lookAt.getX());
                                                     point.setPitch((float)lookAt.getY());
                                                 }
-                                                while (!stand.teleport(point));
+                                                stand.teleport(point);
                                                 steps++;
                                             }
                                         }
@@ -315,7 +315,7 @@ public class ParallelTutorial implements ParallelModule {
                                 case "SAY" -> {
                                     String string = ParallelChat.getStringArg(i.args());
                                     player.sendMessage(MiniMessage.miniMessage().deserialize(
-                                            "<dark_aqua><bold>\n---------------------------------------------\n"
+                                            "<dark_aqua><bold>\n---------------------------------------------\n\n<reset>"
                                                     + string +
                                                     "<dark_aqua><bold>\n---------------------------------------------\n"));
                                     instructionFinished = true;
