@@ -10,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.projectiles.ProjectileSource;
 
 import java.util.UUID;
 
@@ -50,7 +49,7 @@ public class OnPvp implements Listener {
 
     @EventHandler
     public void onHitByProjectile(ProjectileHitEvent event) {
-        if (event.getEntity().getShooter() instanceof Player attacker && event.getHitEntity() instanceof Player victim && event.getEntity() instanceof Arrow) {
+        if (event.getEntity().getShooter() instanceof Player attacker && event.getHitEntity() instanceof Player victim) {
             if (attacker == victim)
                  return;
             UUID aid = attacker.getUniqueId();
@@ -60,27 +59,35 @@ public class OnPvp implements Listener {
             if (TogglePvpManager.pvpToggles.containsKey(aid)) {
                 if (!TogglePvpManager.pvpToggles.get(aid)) {
                     attacker.sendMessage(cantAttack);
-                    event.getEntity().remove();
+                    if (event.getEntity() instanceof Arrow) {
+                        event.getEntity().remove();
+                    }
                     event.setCancelled(true);
                 }
             }
             // PVP is off by default
             else {
                 attacker.sendMessage(cantAttack);
-                event.getEntity().remove();
+                if (event.getEntity() instanceof Arrow) {
+                    event.getEntity().remove();
+                }
                 event.setCancelled(true);
             }
             if (TogglePvpManager.pvpToggles.containsKey(vid)) {
                 if (!TogglePvpManager.pvpToggles.get(vid)) {
                     attacker.sendMessage(hasDisabled);
-                    event.getEntity().remove();
+                    if (event.getEntity() instanceof Arrow) {
+                        event.getEntity().remove();
+                    }
                     event.setCancelled(true);
                 }
             }
             // PVP is off by default
             else {
                 attacker.sendMessage(hasDisabled);
-                event.getEntity().remove();
+                if (event.getEntity() instanceof Arrow) {
+                    event.getEntity().remove();
+                }
                 event.setCancelled(true);
             }
         }
@@ -92,7 +99,7 @@ public class OnPvp implements Listener {
         if (event.getEntity().getShooter() instanceof Player thrower) {
             for (LivingEntity e : event.getAffectedEntities()) {
                 if (e instanceof Player victim) {
-                    if (e == thrower)
+                    if (victim == thrower)
                         continue;
                     UUID uuid = victim.getUniqueId();
                     Component attackerDisabled = MiniMessage.miniMessage().deserialize("<red>The potion did not effect " + victim.getName() + ", they have PVP disabled!");
