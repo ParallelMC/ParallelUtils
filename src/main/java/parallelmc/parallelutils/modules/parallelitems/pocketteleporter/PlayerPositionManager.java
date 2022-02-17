@@ -142,8 +142,8 @@ public class PlayerPositionManager {
             ParallelChat.sendParallelMessageTo(player, "Cannot teleport while not on the ground!");
             return;
         }
-        if (isPositionSafe(player.getLocation().getBlock().getRelative(BlockFace.UP))) {
-            ParallelChat.sendParallelMessageTo(player, "The block above you must be clear to teleport!");
+        if (!isPositionSafe(player.getLocation().getBlock())) {
+            ParallelChat.sendParallelMessageTo(player, "You must be standing in a clear area to teleport!");
             return;
         }
         if (player.isSneaking()) {
