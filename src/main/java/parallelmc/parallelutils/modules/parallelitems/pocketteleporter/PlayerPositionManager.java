@@ -142,6 +142,10 @@ public class PlayerPositionManager {
             ParallelChat.sendParallelMessageTo(player, "Cannot teleport while not on the ground!");
             return;
         }
+        if (isPositionSafe(player.getLocation().getBlock().getRelative(BlockFace.UP))) {
+            ParallelChat.sendParallelMessageTo(player, "The block above you must be clear to teleport!");
+            return;
+        }
         if (player.isSneaking()) {
             removeSavedPosition(player, teleporter);
             ParallelChat.sendParallelMessageTo(player, "Your saved position has been cleared.");
@@ -336,6 +340,7 @@ public class PlayerPositionManager {
             switch (reason) {
                 case "move" -> ParallelChat.sendParallelMessageTo(player, "You moved! Teleportation cancelled.");
                 case "damage" -> ParallelChat.sendParallelMessageTo(player, "You took damage! Teleportation cancelled.");
+                case "drop" -> ParallelChat.sendParallelMessageTo(player, "You dropped your teleporter! Teleportation cancelled.");
                 case "disconnect" -> Parallelutils.log(Level.INFO, player.getName() + " left while teleporting! Cancelled teleportation.");
                 default -> ParallelChat.sendParallelMessageTo(player, "Teleportation cancelled for an unknown reason.");
             }

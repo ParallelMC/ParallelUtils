@@ -19,10 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -304,6 +301,23 @@ public class PlayerInteractListener implements Listener {
     }
 
     // Pocket Teleporter checks
+
+    @EventHandler
+    public void onDropItem(PlayerDropItemEvent event) {
+        ItemStack item = event.getItemDrop().getItemStack();
+        Integer val = item.getItemMeta().getPersistentDataContainer().get(customKey, PersistentDataType.INTEGER);
+        if (val == null) {
+            return;
+        }
+        if (val == 6) {
+            if(item.getType() != Material.LEATHER_HORSE_ARMOR) {
+                Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:6' are " +
+                        "pocket_teleporter, but this is not the correct material. Something isn't right.");
+                return;
+            }
+            ParallelItems.posManager.cancelTeleport(event.getPlayer(), "drop");
+        }
+    }
 
     @EventHandler
     public void onPlayerTakeDamage(EntityDamageEvent event) {
