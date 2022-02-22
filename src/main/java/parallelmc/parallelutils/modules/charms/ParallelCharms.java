@@ -79,7 +79,7 @@ public class ParallelCharms implements ParallelModule {
 		manager.registerEvents(new PlayerJoinListener(puPlugin, this), puPlugin);
 		manager.registerEvents(new PlayerLeaveListener(puPlugin, this), puPlugin);
 		manager.registerEvents(new PlayerSlotChangedListener(puPlugin, this), puPlugin);
-		manager.registerEvents(new AnvilApplyCharmListener(), puPlugin);
+		manager.registerEvents(new AnvilApplyCharmListener(puPlugin, this), puPlugin);
 
 
 		// Read Options files
