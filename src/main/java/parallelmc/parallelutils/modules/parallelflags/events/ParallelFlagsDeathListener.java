@@ -25,7 +25,7 @@ public class ParallelFlagsDeathListener implements Listener {
 
 	private RegionContainer container;
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
 

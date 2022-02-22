@@ -9,6 +9,7 @@ import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.StringTag;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
@@ -16,6 +17,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -23,6 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.parallelitems.pocketteleporter.PlayerPositionManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,6 +38,8 @@ public class ParallelItems implements ParallelModule {
 
     private final HashMap<String, ItemStack> itemRegistry = new HashMap<>();
     private final HashMap<Integer, ItemStack> itemRegistryId = new HashMap<>();
+
+    public static PlayerPositionManager posManager;
 
     @Override
     public void onEnable() {
@@ -58,6 +63,9 @@ public class ParallelItems implements ParallelModule {
         registerItems();
         ParallelItemsEventRegistrar.registerEvents();
         puPlugin.addCommand("give", new ParallelItemsGiveCommand());
+
+        posManager = new PlayerPositionManager(puPlugin);
+        posManager.init();
     }
 
     /**
@@ -260,11 +268,47 @@ public class ParallelItems implements ParallelModule {
                     "Item will not work!");
         }
 
+        ItemStack teleporter = new ItemStack(Material.LEATHER_HORSE_ARMOR);
+        try {
+            ItemMeta teleMeta = teleporter.getItemMeta();
+            TextComponent name = Component.text("Pocket Teleporter", NamedTextColor.LIGHT_PURPLE)
+                    .decoration(TextDecoration.ITALIC, false);
+            teleMeta.displayName(name);
+            teleMeta.setCustomModelData(1000001);
+
+            if (teleMeta instanceof LeatherArmorMeta armorMeta) {
+                armorMeta.setColor(Color.WHITE);
+                armorMeta.addItemFlags(ItemFlag.HIDE_DYE);
+            }
+
+            ArrayList<Component> lore = new ArrayList<>();
+            lore.add(Component.text("Right-click ", NamedTextColor.YELLOW)
+                    .append(Component.text("to teleport between spawn", NamedTextColor.GRAY)).decoration(TextDecoration.ITALIC, false));
+            lore.add(Component.text("and your last location.", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+            lore.add(Component.text("Shift + right-click ", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)
+                    .append(Component.text("to reset your last location.", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
+            teleMeta.lore(lore);
+
+            NamespacedKey modifyKey = new NamespacedKey(plugin, "NoModify");
+
+            teleMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 6);
+            teleMeta.getPersistentDataContainer().set(modifyKey, PersistentDataType.INTEGER, 1);
+
+            teleporter.setItemMeta(teleMeta);
+
+            itemRegistry.put("pocket_teleporter", teleporter);
+            itemRegistryId.put(6, teleporter);
+        } catch (NullPointerException e) {
+            Parallelutils.log(Level.WARNING,"NullPointerException registering pocket_teleporter. " +
+                    "Item will not work!");
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     public void onDisable() {
-
+        posManager.unload();
     }
 
     /**
