@@ -5,10 +5,13 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class ParallelMessage implements CommandExecutor {

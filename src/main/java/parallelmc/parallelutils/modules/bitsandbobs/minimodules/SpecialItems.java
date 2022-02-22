@@ -7,6 +7,7 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.CauldronLevelChangeEvent;
@@ -38,7 +39,7 @@ public class SpecialItems implements Listener {
 
     private final String[] SPECIAL_ITEMS = {"CustomHat", "CustomTrophy"};
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         // Creates an empty list for all items to be prevented from dropping
         ArrayList<ItemStack> preventedDrops = new ArrayList<>();
@@ -105,7 +106,7 @@ public class SpecialItems implements Listener {
         }
     }
 
-    // Prevents any item with a CustomHat tag from being used in a crafting recipe
+    // Prevents any item with a CustomHat or NoEdit tag from being used in a crafting recipe
     @EventHandler
     public void onPlayerCraft(PrepareItemCraftEvent event) {
         CraftingInventory ingredients = event.getInventory();
@@ -115,8 +116,9 @@ public class SpecialItems implements Listener {
                 continue;
             }
             NamespacedKey hatKey = new NamespacedKey(plugin, "CustomHat");
+            NamespacedKey modifyKey = new NamespacedKey(plugin, "NoModify");
             PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-            if (container.has(hatKey, PersistentDataType.INTEGER)) {
+            if (container.has(hatKey, PersistentDataType.INTEGER) || container.has(modifyKey, PersistentDataType.INTEGER)) {
                 ingredients.setResult(null); // Sets the crafting output to null if a CustomHat tag is found
                 break;
             }
@@ -134,7 +136,7 @@ public class SpecialItems implements Listener {
         }
     }
 
-    // Prevents players from dyeing any horse armor that has a CustomHat tag - probably could make a helper class in the future
+    // Prevents players from dyeing any horse armor that has a CustomHat or NoEdit tag - probably could make a helper class in the future
     @EventHandler
     public void onArmorCauldronDye(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
@@ -145,8 +147,9 @@ public class SpecialItems implements Listener {
                         ItemMeta itemMeta = item.getItemMeta();
                         if (itemMeta != null) {  // itemMeta could be null, so we have to check this
                             NamespacedKey hatKey = new NamespacedKey(plugin, "CustomHat");
+                            NamespacedKey modifyKey = new NamespacedKey(plugin, "NoModify");
                             PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-                            if (container.has(hatKey, PersistentDataType.INTEGER)) {
+                            if (container.has(hatKey, PersistentDataType.INTEGER) || container.has(modifyKey, PersistentDataType.INTEGER)) {
                                 event.setCancelled(true);
                                 return;
                             }
