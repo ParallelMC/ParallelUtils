@@ -8,10 +8,16 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.*;
+import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.OnPvp;
+import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpCommand;
+import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpManager;
 
 import java.util.logging.Level;
 
 public class BitsAndBobs implements ParallelModule {
+
+    private TogglePvpManager pvpManager;
+
     @Override
     public void onEnable() {
         PluginManager manager = Bukkit.getPluginManager();
@@ -29,11 +35,18 @@ public class BitsAndBobs implements ParallelModule {
             return;
         }
 
+        this.pvpManager = new TogglePvpManager(puPlugin);
+        pvpManager.init();
+
         FileConfiguration config = puPlugin.getConfig();
+
+        puPlugin.getCommand("togglepvp").setExecutor(new TogglePvpCommand());
 
         //manager.registerEvents(new DoorKnocker(), plugin);
         manager.registerEvents(new SpecialItems(), plugin);
         //manager.registerEvents(new SpeedyMinecarts(), plugin);
+        manager.registerEvents(new OnPvp(), plugin);
+        manager.registerEvents(new ShardLotto(), plugin);
 
         if (config.getBoolean("disable-ender-chests", false)) {
             manager.registerEvents(new DisableEnderChest(), plugin);
@@ -46,6 +59,6 @@ public class BitsAndBobs implements ParallelModule {
 
     @Override
     public void onDisable() {
-
+        this.pvpManager.unload();
     }
 }

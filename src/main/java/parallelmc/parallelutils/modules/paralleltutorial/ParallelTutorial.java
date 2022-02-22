@@ -50,6 +50,8 @@ public class ParallelTutorial implements ParallelModule {
 
     public static HashMap<Player, ArmorStand> armorStands = new HashMap<>();
 
+    public static HashMap<Player, Location> startPoints = new HashMap<>();
+
     private final HashMap<String, ArrayList<Instruction>> tutorials = new HashMap<>();
 
     // doing this again cuz lazy
@@ -133,35 +135,35 @@ public class ParallelTutorial implements ParallelModule {
                             case "START", "TELEPORT" -> {
                                 if (split.length != 4) {
                                     Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 3 arguments on line " + line.get());
-                                    break;
+                                    return;
                                 }
                                 instructions.add(new Instruction(split[0], new String[]{split[1], split[2], split[3]}));
                             }
                             case "MOVE" -> {
                                 if (split.length != 5) {
                                     Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 4 arguments on line " + line.get());
-                                    break;
+                                    return;
                                 }
                                 instructions.add(new Instruction("MOVE", new String[]{split[1], split[2], split[3], split[4]}));
                             }
                             case "ROTATE" -> {
                                 if (split.length != 3) {
                                     Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 2 arguments on line " + line.get());
-                                    break;
+                                    return;
                                 }
                                 instructions.add(new Instruction("ROTATE", new String[]{split[1], split[2]}));
                             }
                             case "WAIT" -> {
                                 if (split.length != 2) {
                                     Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 1 argument on line " + line.get());
-                                    break;
+                                    return;
                                 }
                                 instructions.add(new Instruction("WAIT", new String[]{split[1]}));
                             }
                             case "SAY" -> {
                                 if (split.length < 2) {
                                     Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 1 argument on line " + line.get());
-                                    break;
+                                    return;
                                 }
                                 instructions.add(new Instruction("SAY", Arrays.copyOfRange(split, 1, split.length)));
                             }
@@ -203,25 +205,20 @@ public class ParallelTutorial implements ParallelModule {
     public void RunTutorialFor(@NotNull Player player, @NotNull String tutorial) {
         final World world = player.getWorld();
         // TIL entities can't be spawned in async runnables
-        ArmorStand stand = (ArmorStand)world.spawnEntity(player.getLocation(), EntityType.ARMOR_STAND, CreatureSpawnEvent.SpawnReason.COMMAND);
         Bukkit.getScheduler().runTaskAsynchronously(puPlugin, new Runnable() {
             Vector lookAt = null;
             final ArrayList<Instruction> instructions = tutorials.get(tutorial.toLowerCase());
             boolean instructionFinished = true;
             int instructionIndex = 0;
-            final Location endPoint = player.getLocation();
             BukkitTask loop;
             @Override
             public void run() {
-                stand.setGravity(false);
-                stand.setVisible(false);
-                stand.setBasePlate(false);
-                stand.setInvulnerable(true);
-                stand.setHeadPose(EulerAngle.ZERO);
+                startPoints.put(player, player.getLocation());
                 loop = new BukkitRunnable() {
+                    ArmorStand stand;
                     @Override
                     public void run() {
-                        if (player.getLocation().distanceSquared(stand.getLocation()) > 1024) {
+                        if (stand != null && player.getLocation().distanceSquared(stand.getLocation()) > 256) {
                             Bukkit.getScheduler().runTask(puPlugin, () -> {
                                 player.teleport(stand.getLocation());
                             });
@@ -233,13 +230,19 @@ public class ParallelTutorial implements ParallelModule {
                             switch (i.name()) {
                                 case "START" -> {
                                     Bukkit.getScheduler().runTask(puPlugin, () -> {
+                                        Location start = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
+                                        stand = (ArmorStand)world.spawnEntity(start, EntityType.ARMOR_STAND, CreatureSpawnEvent.SpawnReason.COMMAND);
+                                        stand.setGravity(false);
+                                        stand.setVisible(false);
+                                        stand.setBasePlate(false);
+                                        stand.setInvulnerable(true);
+                                        stand.setHeadPose(EulerAngle.ZERO);
                                         player.setGameMode(GameMode.SPECTATOR);
+                                        player.setFlySpeed(0F);
                                         // force player to spectate the armor stand
                                         // the player's actual model will be stuck back at the start
                                         forceSpectate(player, stand.getEntityId());
-                                        player.setFlySpeed(0F);
-                                        Location start = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
-                                        stand.teleport(start);
+                                        armorStands.put(player, stand);
                                         instructionFinished = true;
                                     });
                                 }
@@ -291,9 +294,10 @@ public class ParallelTutorial implements ParallelModule {
                                                     newPoint.setYaw((float)lookAt.getX());
                                                     newPoint.setPitch((float)lookAt.getY());
                                                 }
-                                                stand.teleport(newPoint);
-                                                instructionFinished = true;
-                                                this.cancel();
+                                                if (stand.teleport(newPoint)) {
+                                                    instructionFinished = true;
+                                                    this.cancel();
+                                                }
                                             }
                                         }
                                     }.runTaskTimer(puPlugin, 0L, 2L);
@@ -310,7 +314,12 @@ public class ParallelTutorial implements ParallelModule {
                                 }
                                 case "SAY" -> {
                                     String string = ParallelChat.getStringArg(i.args());
-                                    player.sendMessage(MiniMessage.miniMessage().deserialize("\n" + string + "\n"));
+
+                                    player.sendMessage(MiniMessage.miniMessage().deserialize(
+                                            "<dark_aqua><bold>\n---------------------------------------------\n\n<reset>"
+                                                    + string +
+                                                    "<dark_aqua><bold>\n---------------------------------------------\n"));
+
                                     instructionFinished = true;
                                 }
                                 /*case "SOUND" -> {
@@ -319,18 +328,9 @@ public class ParallelTutorial implements ParallelModule {
                                     instructionFinished = true;
                                 }*/
                                 case "END" -> {
-                                    new BukkitRunnable() {
-                                        @Override
-                                        public void run() {
-                                            // wait for the player to be successfully teleported
-                                            if(player.teleport(endPoint)) {
-                                                endTutorialFor(player);
-                                                instructionFinished = true;
-                                                loop.cancel();
-                                                this.cancel();
-                                            }
-                                        }
-                                    }.runTaskTimer(puPlugin, 0L, 2L);
+                                    endTutorialFor(player);
+                                    instructionFinished = true;
+                                    loop.cancel();
                                 }
                             }
                             instructionIndex++;
@@ -339,21 +339,32 @@ public class ParallelTutorial implements ParallelModule {
                 }.runTaskTimer(puPlugin, 0L, 1L);
 
                 runningTutorials.put(player, loop);
-                armorStands.put(player, stand);
             }
         });
     }
 
     public void endTutorialFor(Player player) {
-        player.stopSound(SoundStop.all());
-        // making the player spectate themselves brings them back to the start
-        forceSpectate(player, player.getEntityId());
-        if (armorStands.containsKey(player)) {
-            armorStands.get(player).remove();
-            armorStands.remove(player);
-        }
-        player.setGameMode(GameMode.SURVIVAL);
-        player.setFlySpeed(0.1F);
+        Location endPoint = startPoints.get(player);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                // wait for player to be successfully teleported
+                if (player.teleport(endPoint)) {
+                    player.stopSound(SoundStop.all());
+                    // making the player spectate themselves brings them back to the start
+                    forceSpectate(player, player.getEntityId());
+                    if (armorStands.containsKey(player)) {
+                        armorStands.get(player).remove();
+                        armorStands.remove(player);
+                    }
+                    player.setGameMode(GameMode.SURVIVAL);
+                    player.setFlySpeed(0.1F);
+                    startPoints.remove(player);
+                    runningTutorials.remove(player);
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(puPlugin, 0L, 2L);
     }
 
     private void forceSpectate(Player player, int entityId) {

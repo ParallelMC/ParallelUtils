@@ -3,11 +3,10 @@ package parallelmc.parallelutils.modules.parallelchat;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
-import net.kyori.adventure.text.minimessage.placeholder.Replacement;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.luckperms.api.LuckPermsProvider;
 import org.bukkit.Bukkit;
@@ -38,7 +37,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.sql.*;
 import java.util.*;
-import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -275,8 +273,8 @@ public class ParallelChat implements ParallelModule {
      * @param message The message to send
      */
     public static void sendParallelMessageTo(Player player, String message) {
-        Component msg = Component.text("\n§3[§f§lP§3] §a " + message + "\n");
-        player.sendMessage(msg);
+        Component text = MiniMessage.miniMessage().deserialize("<dark_aqua>[<white><bold>P<reset><dark_aqua>] <green>" + message);
+        player.sendMessage(text);
     }
 
     /**
@@ -349,33 +347,17 @@ public class ParallelChat implements ParallelModule {
      * @return A Component ready to be sent
      */
     public Component formatForGroup(@NotNull Player source, @NotNull Component displayName, @NotNull Component message) {
-        StringBuilder sb = new StringBuilder();
-        Function<String, Replacement<?>> resolver = (placeholder) -> {
-            switch (placeholder.toLowerCase()) {
-                case "displayname" -> {
-                    return Replacement.component(displayName);
-                }
-                case "tag" -> {
-                    String formatted = PlaceholderAPI.setPlaceholders(source, "%deluxetags_tag%");
-                    Matcher matcher = Pattern.compile("&#(.{6})").matcher(formatted);
-                    while (matcher.find()) {
-                        // fix ampersands to be parsable by minimessage
-                        matcher.appendReplacement(sb, "<color:#" + matcher.group(1) + ">");
-                    }
-                    matcher.appendTail(sb);
-                    return Replacement.miniMessage(sb.toString());
-                }
-                case "message" -> {
-                    return Replacement.component(message);
-                }
-                default -> {
-                    return null;
-                }
-            }
-        };
+
+        TagResolver placeholders = TagResolver.resolver(
+                Placeholder.component("displayname", displayName),
+                Placeholder.parsed("tag", getTagForPlayer(source)),
+                Placeholder.component("message", message)
+        );
+
         if (isUsingDefault) {
             // if default is enabled for whatever reason mimic the default rank
-            Component result = MiniMessage.builder().placeholderResolver(PlaceholderResolver.dynamic(resolver)).build().deserialize("<tag><gray><displayname> > <reset><message>");
+
+            Component result = MiniMessage.builder().build().deserialize("<tag><gray><displayname> > <reset><message>", placeholders);
             return result;
         }
         else {
@@ -386,10 +368,22 @@ public class ParallelChat implements ParallelModule {
                 return Component.empty();
             }
             else {
-                Component result = MiniMessage.builder().placeholderResolver(PlaceholderResolver.dynamic(resolver)).build().deserialize(format);
+                Component result = MiniMessage.builder().build().deserialize(format, placeholders);
                 return result;
             }
         }
+    }
+
+    private String getTagForPlayer(Player player) {
+        StringBuilder sb = new StringBuilder();
+        String formatted = PlaceholderAPI.setPlaceholders(player, "%deluxetags_tag%");
+        Matcher matcher = Pattern.compile("&#(.{6})").matcher(formatted);
+        while (matcher.find()) {
+            // fix ampersands to be parsable by minimessage
+            matcher.appendReplacement(sb, "<color:#" + matcher.group(1) + ">");
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     private String getGroupForPlayer(Player player) {
