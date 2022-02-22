@@ -37,8 +37,6 @@ public class Charm {
 	// This is also needed to bind a charm to an item. UUID will be in NBT
 	private UUID charmId;
 
-	// Has this charm been applied to an item?
-	private boolean applied;
 
 	private CharmOptions options;
 
@@ -63,17 +61,10 @@ public class Charm {
 		charmId = UUID.randomUUID();
 
 		this.options = options;
-		applied = false;
 	}
 
-	public Charm(ParallelCharms pCharms, CharmOptions options, boolean applied) {
+	public Charm(ParallelCharms pCharms, CharmOptions options, UUID uuid) {
 		this(pCharms, options);
-
-		this.applied = applied;
-	}
-
-	public Charm(ParallelCharms pCharms, CharmOptions options, boolean applied, UUID uuid) {
-		this(pCharms, options, applied);
 
 		this.charmId = uuid;
 	}
@@ -83,10 +74,6 @@ public class Charm {
 	}
 	public boolean apply(ItemStack item, Player player, boolean startRunnables) {
 		try {
-			if (applied) {
-				return false;
-			}
-
 			// Check allowed materials
 			if (!options.isMaterialAllowed(item.getType())) {
 				Parallelutils.log(Level.INFO, "Material not allowed!");
@@ -180,7 +167,6 @@ public class Charm {
 			}
 
 			pCharms.addCharm(player, this);
-			applied = true;
 			return true;
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Unable to apply charm!");
@@ -191,9 +177,6 @@ public class Charm {
 
 	public boolean takeOff(ItemStack item, Player player) {
 		try {
-			if (!applied) {
-				return false;
-			}
 
 			// Setup
 			Plugin plugin = BukkitTools.getPlugin();
@@ -240,7 +223,6 @@ public class Charm {
 			}
 
 			pCharms.removeCharm(player, this);
-			applied = false;
 			return true;
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Unable to take off charm!");
@@ -280,12 +262,80 @@ public class Charm {
 
 		UUID uuid = UUID.fromString(uuidStr);
 
-		return new Charm(pCharms, options, true, uuid);
+		return new Charm(pCharms, options, uuid);
 	}
 
 	@Nullable
 	public static Charm parseCharm(ParallelCharms pCharms,ItemStack item) {
 		return parseCharm(pCharms, item, null);
+	}
+
+	public static boolean hasCharm(ItemStack item) {
+		Plugin plugin = BukkitTools.getPlugin();
+
+		if (plugin == null) {
+			Parallelutils.log(Level.WARNING, "Plugin is null! Cannot check charm");
+			return false;
+		}
+
+		// If meta is null, just return the original item
+		ItemMeta meta = item.getItemMeta();
+
+		if (meta == null) {
+			return false;
+		}
+
+		String uuidStr = meta.getPersistentDataContainer().get(
+				new NamespacedKey(plugin, "ParallelCharm.CharmUUID"), PersistentDataType.STRING);
+
+		if (uuidStr == null) {
+			return false;
+		}
+
+		try {
+			UUID uuid = UUID.fromString(uuidStr);
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+
+		return true;
+	}
+
+	public boolean setCharmAppl(ItemStack item) {
+		ItemMeta meta = item.getItemMeta();
+
+		if (meta == null) return false;
+
+		options.applyCharm(item);
+
+		meta = item.getItemMeta();
+
+		PersistentDataContainer pdc = meta.getPersistentDataContainer();
+
+		// Mark this as a charm applicator
+		pdc.set(new NamespacedKey(puPlugin, "ParallelCharm.CharmAppl"), PersistentDataType.INTEGER, 1);
+
+		item.setItemMeta(meta);
+
+		return true;
+	}
+
+	public static Charm getCharmAppl(Parallelutils puPlugin, ParallelCharms pCharms, ItemStack item) {
+		ItemMeta meta = item.getItemMeta();
+
+		if (meta == null) return null;
+
+		PersistentDataContainer pdc = meta.getPersistentDataContainer();
+
+		Integer val = pdc.get(new NamespacedKey(puPlugin, "ParallelCharm.CharmAppl"), PersistentDataType.INTEGER);
+
+		if (val == null || val != 1) {
+			return null;
+		}
+
+		CharmOptions options = CharmOptions.parseOptions(item);
+
+		return new Charm(pCharms, options);
 	}
 
 	public CharmOptions getOptions() {
