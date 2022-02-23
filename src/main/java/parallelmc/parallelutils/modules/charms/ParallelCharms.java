@@ -15,6 +15,7 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.charms.commands.ApplyCharm;
+import parallelmc.parallelutils.modules.charms.commands.GiveCharm;
 import parallelmc.parallelutils.modules.charms.commands.RemoveCharm;
 import parallelmc.parallelutils.modules.charms.data.*;
 import parallelmc.parallelutils.modules.charms.data.impl.GenericEffectSettings;
@@ -38,14 +39,14 @@ public class ParallelCharms implements ParallelModule {
 
 	private final HashMap<HandlerType, ICharmHandler<? extends Event>> handlers;
 
-	private final ArrayList<CharmOptions> charmOptions;
+	private final HashMap<String, CharmOptions> charmOptions;
 
 	// Key is player UUID, value is list of Charms associated with the player
 	private final HashMap<UUID, ArrayList<Charm>> appliedCharms;
 
 	public ParallelCharms() {
 		handlers = new HashMap<>();
-		charmOptions = new ArrayList<>();
+		charmOptions = new HashMap<>();
 		appliedCharms = new HashMap<>();
 	}
 
@@ -172,7 +173,7 @@ public class ParallelCharms implements ParallelModule {
 
 						CharmOptions charmOptions = new CharmOptions(uuid, name, matsList, allowedPlayers, allowedPermissions,
 								effects, customModelData);
-						this.charmOptions.add(charmOptions);
+						this.charmOptions.put(name, charmOptions);
 
 					} catch (IllegalArgumentException e) {
 						Parallelutils.log(Level.WARNING, "Cannot parse charm settings!");
@@ -190,13 +191,17 @@ public class ParallelCharms implements ParallelModule {
 			e.printStackTrace();
 		}
 
-		// TODO: Remove before release
+		puPlugin.addCommand("giveCharm", new GiveCharm(this, charmOptions));
+
+
+		/* Stuff from testing
 		if (charmOptions.size() > 1) {
 			Charm testCharm = new Charm(this, charmOptions.get(1));
 			Parallelutils.log(Level.INFO, charmOptions.get(1).toString());
 			puPlugin.addCommand("applyCharm", new ApplyCharm(testCharm));
 			puPlugin.addCommand("removeCharm", new RemoveCharm(testCharm));
 		}
+		 */
 	}
 
 	@Override

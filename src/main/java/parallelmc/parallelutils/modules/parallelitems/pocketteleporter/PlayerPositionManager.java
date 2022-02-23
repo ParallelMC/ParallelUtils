@@ -111,7 +111,7 @@ public class PlayerPositionManager {
                     statement.setInt(10, p.location().getBlockZ());
                     statement.setBoolean(11, p.hasBeenToSpawn());
                     statement.addBatch();
-                } catch (SQLException e) {
+                } catch (NullPointerException | SQLException e) {
                     e.printStackTrace();
                 }
             });

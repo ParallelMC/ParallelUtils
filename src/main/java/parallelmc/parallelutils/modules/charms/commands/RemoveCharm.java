@@ -11,6 +11,7 @@ import parallelmc.parallelutils.modules.charms.data.Charm;
 
 import java.util.List;
 
+@Deprecated
 public class RemoveCharm extends ParallelCommand {
 
 	private final String USAGE = "Usage: /pu removeCharm";

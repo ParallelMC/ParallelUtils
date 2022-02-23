@@ -1,11 +1,9 @@
 package parallelmc.parallelutils.modules.charms.handlers.impl;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.placeholder.PlaceholderResolver;
-import net.kyori.adventure.text.minimessage.placeholder.Replacement;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -18,9 +16,6 @@ import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.modules.charms.helper.Types;
 
 import java.util.HashMap;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class CharmKillMessageHandler extends ICharmHandler<PlayerDeathEvent> {
 
@@ -56,23 +51,14 @@ public class CharmKillMessageHandler extends ICharmHandler<PlayerDeathEvent> {
 			return;
 		}
 
-		Function<String, Replacement<?>> resolver = (placeholder) -> {
-			switch (placeholder.toLowerCase()) {
-				case "killer" -> {
-					return Replacement.component(player.displayName());
-				}
-				case "dead" -> {
-					return Replacement.component(event.getPlayer().displayName());
-				}
-				default -> {
-					return null;
-				}
-			}
-		};
+		TagResolver placeholders = TagResolver.resolver(
+				Placeholder.component("killer", player.displayName()),
+				Placeholder.component("dead", event.getPlayer().displayName())
+		);
 
 		String miniMsg = (String) message.getVal();
 
-		Component cmp = MiniMessage.builder().placeholderResolver(PlaceholderResolver.dynamic(resolver)).build().deserialize(miniMsg);
+		Component cmp = MiniMessage.builder().build().deserialize(miniMsg, placeholders);
 
 		event.deathMessage(cmp);
 	}
