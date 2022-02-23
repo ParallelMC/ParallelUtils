@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+@Deprecated
 public class ApplyCharm extends ParallelCommand {
 
 	private final String USAGE = "Usage: /pu applyCharm";
