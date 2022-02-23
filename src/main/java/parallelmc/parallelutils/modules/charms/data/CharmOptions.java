@@ -405,6 +405,10 @@ public class CharmOptions {
 				allowedPermissionsList.toArray(new String[0]), effects, null);
 	}
 
+	public String getName() {
+		return optionsName;
+	}
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Charm: \n");
