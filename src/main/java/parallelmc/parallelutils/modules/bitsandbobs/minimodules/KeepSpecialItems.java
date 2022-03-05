@@ -2,7 +2,7 @@ package parallelmc.parallelutils.modules.bitsandbobs.minimodules;
 
 import net.minecraft.nbt.CompoundTag;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftItemStack;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
