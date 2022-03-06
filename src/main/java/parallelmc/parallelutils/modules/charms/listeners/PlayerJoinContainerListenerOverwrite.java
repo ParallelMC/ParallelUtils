@@ -5,7 +5,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -28,9 +28,9 @@ public class PlayerJoinContainerListenerOverwrite implements Listener {
 		Field field;
 		Field field1;
 		try {
-			field = ServerPlayer.class.getDeclaredField("da");
+			field = ServerPlayer.class.getDeclaredField("cZ");
 			field.setAccessible(true);
-			field1 = ServerPlayer.class.getDeclaredField("db");
+			field1 = ServerPlayer.class.getDeclaredField("da");
 			field1.setAccessible(true);
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();

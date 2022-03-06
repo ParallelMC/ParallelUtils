@@ -13,6 +13,7 @@ import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.charms.data.Charm;
 
 import java.util.List;
+import java.util.logging.Level;
 
 public class AnvilApplyCharmListener implements Listener {
 
@@ -32,7 +33,7 @@ public class AnvilApplyCharmListener implements Listener {
 		ItemStack item2 = inventory.getSecondItem();
 
 		if (item1 == null || item2 == null) {
-			event.setResult(null);
+			//event.setResult(null);
 			return;
 		}
 
@@ -69,10 +70,15 @@ public class AnvilApplyCharmListener implements Listener {
 			return;
 		}
 
+		// Check that item2 only has one item
+		if (item2.getAmount() > 1) {
+			return;
+		}
+
 		// If both item1 does not have a charm and item2 is a charm, copy item1 and apply charm as result
 		ItemStack result = new ItemStack(item1);
 
-		charm.apply(result, player, true);
+		charm.apply(result, null, false);
 		event.setResult(result);
 	}
 }

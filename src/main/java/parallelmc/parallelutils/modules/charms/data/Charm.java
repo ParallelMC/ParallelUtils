@@ -166,7 +166,9 @@ public class Charm {
 				}
 			}
 
-			pCharms.addCharm(player, this);
+			if (player != null) {
+				pCharms.addCharm(player, this);
+			}
 			return true;
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Unable to apply charm!");
