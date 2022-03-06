@@ -318,8 +318,7 @@ public class ParallelTutorial implements ParallelModule {
                                     player.sendMessage(MiniMessage.miniMessage().deserialize(
                                             "<dark_aqua><bold>\n---------------------------------------------\n\n<reset>"
                                                     + string +
-                                                    "<dark_aqua><bold>\n---------------------------------------------\n"));
-
+                                                    "<dark_aqua><bold>\n\n---------------------------------------------\n"));
                                     instructionFinished = true;
                                 }
                                 /*case "SOUND" -> {
