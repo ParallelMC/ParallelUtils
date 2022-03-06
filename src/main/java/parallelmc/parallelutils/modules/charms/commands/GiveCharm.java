@@ -18,7 +18,7 @@ import java.util.List;
 
 public class GiveCharm extends ParallelCommand {
 
-	private final String USAGE = "Usage: /pu giveCharm options-name";
+	private final String USAGE = "Usage: /pu giveCharm <player-name> options-name";
 
 	private final ParallelCharms pCharms;
 	private final HashMap<String, CharmOptions> options;
@@ -31,17 +31,35 @@ public class GiveCharm extends ParallelCommand {
 
 	@Override
 	public boolean execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String[] args) {
-		if (sender instanceof Player player) {
 			if (args.length < 2) {
-				ParallelChat.sendParallelMessageTo(player, USAGE);
+				sender.sendMessage(USAGE);
 				return false;
 			}
 
-			String name = args[1];
+			String name = "";
+
+			Player target = null;
+
+			if (args.length == 2) {
+				if (sender instanceof Player p) {
+					target = p;
+				} else {
+					sender.sendMessage("Command must be run by a player!");
+					return false;
+				}
+				name = args[1];
+			} else {
+				target = sender.getServer().getPlayer(args[1]);
+				if (target == null) {
+					sender.sendMessage("Unknown Player!");
+					return false;
+				}
+				name = args[2];
+			}
 
 			if (!options.containsKey(name)) {
-				ParallelChat.sendParallelMessageTo(player, "Unknown charm option");
-				ParallelChat.sendParallelMessageTo(player, USAGE);
+				sender.sendMessage("Unknown charm option");
+				sender.sendMessage(USAGE);
 				return false;
 			}
 
@@ -52,22 +70,18 @@ public class GiveCharm extends ParallelCommand {
 			ItemStack item = new ItemStack(Material.NAME_TAG);
 			charm.setCharmAppl(item);
 
-			if (player.getInventory().firstEmpty() == -1) {
-				player.getWorld().dropItem(player.getLocation(), item);
+			if (target.getInventory().firstEmpty() == -1) {
+				target.getWorld().dropItem(target.getLocation(), item);
 			} else {
-				if (player.getInventory().addItem(item).size() == 0) {
+				if (target.getInventory().addItem(item).size() == 0) {
 					return true;
 				} else {
-					ParallelChat.sendParallelMessageTo(player, "Unable to give item");
+					sender.sendMessage("Unable to give item");
 					return false;
 				}
 			}
 
 			return true;
-		} else {
-			sender.sendMessage("Command must be run by a player!");
-			return false;
-		}
 	}
 
 	@Override
