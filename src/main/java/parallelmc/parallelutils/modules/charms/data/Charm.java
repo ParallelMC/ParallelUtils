@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.charms.data;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -311,6 +312,8 @@ public class Charm {
 		options.applyCharm(item);
 
 		meta = item.getItemMeta();
+
+		meta.displayName(Component.text("Charm"));
 
 		PersistentDataContainer pdc = meta.getPersistentDataContainer();
 
