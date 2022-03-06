@@ -230,7 +230,7 @@ public class CharmOptions {
 			return Arrays.stream(allowedPermissions).anyMatch(player::hasPermission);
 		}
 
-		if (player == null) return false;
+		if (player == null) return true;
 		boolean players = Arrays.asList(allowedPlayers).contains(player.getUniqueId().toString());
 		if (players) {
 			if (allowedPermissions == null || allowedPermissions.length == 0) return true;
