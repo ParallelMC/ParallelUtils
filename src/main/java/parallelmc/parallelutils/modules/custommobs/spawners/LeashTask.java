@@ -2,8 +2,8 @@ package parallelmc.parallelutils.modules.custommobs.spawners;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftMob;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_18_R2.entity.CraftMob;
 import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
