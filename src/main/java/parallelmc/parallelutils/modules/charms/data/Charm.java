@@ -71,9 +71,9 @@ public class Charm {
 	}
 
 	public boolean apply(ItemStack item) {
-		return apply(item, null, true);
+		return apply(item, null, true, true);
 	}
-	public boolean apply(ItemStack item, Player player, boolean startRunnables) {
+	public boolean apply(ItemStack item, Player player, boolean startRunnables, boolean addCharms) {
 		try {
 			// Check allowed materials
 			if (!options.isMaterialAllowed(item.getType())) {
@@ -164,7 +164,7 @@ public class Charm {
 				}
 			}
 
-			if (player != null) {
+			if (addCharms) {
 				pCharms.addCharm(player, this);
 			}
 			return true;
