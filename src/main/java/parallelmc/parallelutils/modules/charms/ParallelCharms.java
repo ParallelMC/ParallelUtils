@@ -19,6 +19,7 @@ import parallelmc.parallelutils.modules.charms.commands.GiveCharm;
 import parallelmc.parallelutils.modules.charms.commands.RemoveCharm;
 import parallelmc.parallelutils.modules.charms.data.*;
 import parallelmc.parallelutils.modules.charms.data.impl.GenericEffectSettings;
+import parallelmc.parallelutils.modules.charms.handlers.impl.CharmLoreHandler;
 import parallelmc.parallelutils.modules.charms.listeners.*;
 import parallelmc.parallelutils.modules.charms.handlers.impl.CharmKillMessageHandler;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
@@ -73,6 +74,7 @@ public class ParallelCharms implements ParallelModule {
 		if (!registerHandler(new CharmKillMessageHandler())) { Parallelutils.log(Level.WARNING, "Could not register MESSAGE_KILL"); }
 		if (!registerHandler(new CharmStyleNameHandler())) { Parallelutils.log(Level.WARNING, "Could not register STYLE_NAME"); }
 		if (!registerHandler(new CharmParticleHandler())) { Parallelutils.log(Level.WARNING, "Could not register PARTICLE"); }
+		if (!registerHandler(new CharmLoreHandler())) { Parallelutils.log(Level.WARNING, "Could not register LORE"); }
 
 		// Register events
 		manager.registerEvents(new PlayerJoinContainerListenerOverwrite(), puPlugin);
