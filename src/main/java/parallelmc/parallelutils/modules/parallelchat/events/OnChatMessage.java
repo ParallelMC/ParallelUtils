@@ -101,7 +101,7 @@ public class OnChatMessage implements Listener {
 
         // Anti-Slur
         if (!player.hasPermission("parallelutils.bypass.antislur")) {
-            String checkSlurs = msgStr.toLowerCase().replace(" ", "");
+            String checkSlurs = msgStr.toLowerCase();
             // Regex checking
             // (?s) makes . accept ALL characters
             // Note, this may do funky things with word boundaries.
