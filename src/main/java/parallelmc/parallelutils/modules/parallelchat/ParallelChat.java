@@ -349,7 +349,7 @@ public class ParallelChat implements ParallelModule {
     public Component formatForGroup(@NotNull Player source, @NotNull Component displayName, @NotNull Component message) {
         TagResolver placeholders = TagResolver.resolver(
                 Placeholder.component("displayname", displayName),
-                Placeholder.parsed("tag", getTagForPlayer(source)),
+                Placeholder.component("tag", getTagForPlayer(source)),
                 Placeholder.component("message", message)
         );
 
@@ -373,16 +373,18 @@ public class ParallelChat implements ParallelModule {
         }
     }
 
-    private String getTagForPlayer(Player player) {
+    private Component getTagForPlayer(Player player) {
         StringBuilder sb = new StringBuilder();
         String formatted = PlaceholderAPI.setPlaceholders(player, "%deluxetags_tag%");
+        /*
         Matcher matcher = Pattern.compile("&#(.{6})").matcher(formatted);
         while (matcher.find()) {
             // fix ampersands to be parsable by minimessage
             matcher.appendReplacement(sb, "<color:#" + matcher.group(1) + ">");
         }
-        matcher.appendTail(sb);
-        return sb.toString();
+        matcher.appendTail(sb);*/
+        formatted = formatted.replaceAll("§", "&");
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(formatted);
     }
 
     private String getGroupForPlayer(Player player) {
