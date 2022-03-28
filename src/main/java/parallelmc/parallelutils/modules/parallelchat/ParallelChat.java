@@ -276,7 +276,7 @@ public class ParallelChat implements ParallelModule {
         Component text = MiniMessage.miniMessage().deserialize("<dark_aqua>[<white><bold>P<reset><dark_aqua>] <green>" + message);
         player.sendMessage(text);
     }
-
+    
     /**
      * Sends a chat message to a player
      * @param player The player to send the message to
