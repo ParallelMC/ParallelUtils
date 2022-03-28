@@ -1,7 +1,6 @@
 package parallelmc.parallelutils.modules.parallelitems;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.key.Key;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -9,10 +8,7 @@ import org.bukkit.block.data.Ageable;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Sapling;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.MushroomCow;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Sheep;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,11 +24,14 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.modules.parallelitems.pocketteleporter.PlayerPositionManager;
+import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -55,6 +54,10 @@ public class PlayerInteractListener implements Listener {
     private JavaPlugin javaPlugin;
     private NamespacedKey customKey;
 
+    public final HashMap<Player, Location> lastSafePosition = new HashMap<>();
+    private BukkitTask positionSaver;
+    private final HashSet<Player> attemptingToSave = new HashSet<>();
+
     public PlayerInteractListener(){
         PluginManager manager = Bukkit.getPluginManager();
         JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
@@ -65,6 +68,48 @@ public class PlayerInteractListener implements Listener {
 
         javaPlugin = plugin;
         customKey = new NamespacedKey(javaPlugin, "ParallelItem");
+        positionSaver = new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player p : javaPlugin.getServer().getOnlinePlayers()) {
+                    boolean itemFound = false;
+                    ItemStack offhand = p.getInventory().getItemInOffHand();
+                    if (offhand.getType() == Material.GOLDEN_HORSE_ARMOR) {
+                        Integer val = offhand.getItemMeta().getPersistentDataContainer().get(customKey, PersistentDataType.INTEGER);
+                        if (val != null) {
+                            if (val == 7) {
+                                itemFound = true;
+                                Location current = p.getLocation();
+                                if (ParallelItems.posManager.isPositionSafe(current.getBlock())) {
+                                    lastSafePosition.put(p, current);
+                                }
+                            }
+                        }
+                    }
+                    // if it isn't in their offhand check the rest of their inventory (includes mainhand)
+                    if (!itemFound) {
+                        for (ItemStack i : p.getInventory().all(Material.GOLDEN_HORSE_ARMOR).values()) {
+                            Integer val = i.getItemMeta().getPersistentDataContainer().get(customKey, PersistentDataType.INTEGER);
+                            if (val == null) continue;
+                            // if they have at least one totem
+                            if (val == 7) {
+                                itemFound = true;
+                                Location current = p.getLocation();
+                                if (ParallelItems.posManager.isPositionSafe(current.getBlock())) {
+                                    lastSafePosition.put(p, current);
+                                }
+                                // even if the player's current position is not safe still break out of the inner loop
+                                break;
+                            }
+                        }
+                        // if they still don't have a totem then remove their position
+                        if (!itemFound) {
+                            lastSafePosition.remove(p);
+                        }
+                    }
+                }
+            }
+        }.runTaskTimerAsynchronously(javaPlugin, 0, 10);
     }
 
     @EventHandler(priority = EventPriority.HIGH)
@@ -172,6 +217,29 @@ public class PlayerInteractListener implements Listener {
             }
         }
     }
+
+    @EventHandler
+    public void onPlayerInteractWithEntity(PlayerInteractEntityEvent event) {
+        if (event.getRightClicked() instanceof Horse) {
+            Player player = event.getPlayer();
+            ItemStack item = player.getInventory().getItemInMainHand();
+            ItemMeta meta = item.getItemMeta();
+            Integer val;
+            if (meta == null) {
+                item = player.getInventory().getItemInOffHand();
+                meta = item.getItemMeta();
+                if (meta == null)
+                    return;
+            }
+            val = meta.getPersistentDataContainer().get(customKey, PersistentDataType.INTEGER);
+            if (val == null)
+                return;
+            if (val == 6 || val == 7) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onHumanEat(FoodLevelChangeEvent event) {
@@ -323,8 +391,72 @@ public class PlayerInteractListener implements Listener {
     public void onPlayerTakeDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player player) {
             ParallelItems.posManager.cancelTeleport(player, "damage");
+            if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
+                if (positionSaver == null || positionSaver.isCancelled()) {
+                    Parallelutils.log(Level.SEVERE, "Position saver is not running! Chorus totem is dysfunctional!");
+                    return;
+                }
+                // sanity check in case the below code takes a while to run for whatever reason
+                // and they get damaged again
+                if (attemptingToSave.contains(player)) {
+                    event.setCancelled(true);
+                    return;
+                }
+                // only run if they have a saved position
+                if (!lastSafePosition.containsKey(player)) {
+                    return;
+                }
+                // only run if the player is about to die from the void
+                if (player.getHealth() - event.getDamage() <= 0) {
+                    ItemStack item = player.getInventory().getItemInMainHand();
+                    ItemMeta meta = item.getItemMeta();
+                    Integer val;
+                    if (meta == null) {
+                        item = player.getInventory().getItemInOffHand();
+                        meta = item.getItemMeta();
+                        if (meta == null)
+                            return;
+                    }
+                    val = meta.getPersistentDataContainer().get(customKey, PersistentDataType.INTEGER);
+                    if (val == null)
+                        return;
+                    if (val == 7) {
+                        if (item.getType() != Material.GOLDEN_HORSE_ARMOR) {
+                            Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:7' are " +
+                                    "chorus_totem, but this is not the correct material. Something isn't right.");
+                            return;
+                        }
+                        item.subtract();
+                        event.setCancelled(true);
+                        player.setHealth(20);
+                        // give player temporary invulnerability to prevent further void damage
+                        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40, 4));
+                        // ugly line but sound has to follow the player
+                        player.playSound(net.kyori.adventure.sound.Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "item.totem.use"), net.kyori.adventure.sound.Sound.Source.MASTER, 1f, 1f), net.kyori.adventure.sound.Sound.Emitter.self());
+                        // close player elytra so the teleport works correctly
+                        player.setGliding(false);
+                        attemptingToSave.add(player);
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                if (player.teleport(lastSafePosition.get(player))) {
+                                    // cancel leftover fall damage
+                                    player.setFallDistance(0);
+                                    ParallelChat.sendParallelMessageTo(player, "Your <light_purple>Chorus Totem<green> saved you from the void!");
+                                    attemptingToSave.remove(player);
+                                    this.cancel();
+                                }
+                                // refresh every tick just in case
+                                player.setHealth(20);
+                                player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40, 4));
+                            }
+                        }.runTaskTimer(javaPlugin, 0, 1);
+                    }
+                }
+            }
         }
     }
+
 
     @EventHandler
     public void onPlayerDisconnect(PlayerQuitEvent event) {
