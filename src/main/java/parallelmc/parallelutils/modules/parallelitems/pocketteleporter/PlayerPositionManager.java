@@ -308,7 +308,7 @@ public class PlayerPositionManager {
         return old.clone().add(x, y ,z);
     }
 
-    private boolean isPositionSafe(Block check) {
+    public boolean isPositionSafe(Block check) {
         return !check.isSolid() &&
                 !check.getRelative(BlockFace.UP).isSolid() &&
                 check.getType() != Material.FIRE &&
