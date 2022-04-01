@@ -167,8 +167,8 @@ public class ParallelItemsGiveCommand extends ParallelCommand {
                         }
                     }
                 }
-                case "chorus_totem" -> {
-                    HashMap<Integer, ItemStack> results = inv.addItem(parallelItems.getItem("chorus_totem")
+                case "totem_of_the_void" -> {
+                    HashMap<Integer, ItemStack> results = inv.addItem(parallelItems.getItem("totem_of_the_void")
                             .asQuantity(amt));
                     if (!results.isEmpty()) {
                         World world = player.getWorld();

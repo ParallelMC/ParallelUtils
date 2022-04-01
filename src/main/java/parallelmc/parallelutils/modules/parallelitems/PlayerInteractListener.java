@@ -387,13 +387,13 @@ public class PlayerInteractListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerTakeDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player player) {
             ParallelItems.posManager.cancelTeleport(player, "damage");
             if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
                 if (positionSaver == null || positionSaver.isCancelled()) {
-                    Parallelutils.log(Level.SEVERE, "Position saver is not running! Chorus totem is dysfunctional!");
+                    Parallelutils.log(Level.SEVERE, "Position saver is not running! Totem of the Void is dysfunctional!");
                     return;
                 }
                 // sanity check in case the below code takes a while to run for whatever reason
@@ -423,7 +423,7 @@ public class PlayerInteractListener implements Listener {
                     if (val == 7) {
                         if (item.getType() != Material.GOLDEN_HORSE_ARMOR) {
                             Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:7' are " +
-                                    "chorus_totem, but this is not the correct material. Something isn't right.");
+                                    "totem_of_the_void, but this is not the correct material. Something isn't right.");
                             return;
                         }
                         item.subtract();
@@ -442,7 +442,7 @@ public class PlayerInteractListener implements Listener {
                                 if (player.teleport(lastSafePosition.get(player))) {
                                     // cancel leftover fall damage
                                     player.setFallDistance(0);
-                                    ParallelChat.sendParallelMessageTo(player, "Your <light_purple>Chorus Totem<green> saved you from the void!");
+                                    ParallelChat.sendParallelMessageTo(player, "Your <light_purple>Totem of the Void<green> saved you from the void!");
                                     attemptingToSave.remove(player);
                                     this.cancel();
                                 }
