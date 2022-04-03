@@ -313,7 +313,7 @@ public class ParallelItems implements ParallelModule {
             totemMeta.setCustomModelData(1000000);
 
             ArrayList<Component> lore = new ArrayList<>();
-            lore.add(Component.text("Protects you from dying in the void", NamedTextColor.DARK_PURPLE).decoration(TextDecoration.ITALIC, true));
+            lore.add(Component.text("Protects you from dying in the void", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
             lore.add(Component.text("Incompatible with Totem of Undying!", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
             totemMeta.lore(lore);
 
