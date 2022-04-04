@@ -416,46 +416,56 @@ public class PlayerInteractListener implements Listener {
                         meta = item.getItemMeta();
                         if (meta == null)
                             return;
-                    }
-                    val = meta.getPersistentDataContainer().get(customKey, PersistentDataType.INTEGER);
-                    if (val == null)
-                        return;
-                    if (val == 7) {
-                        if (item.getType() != Material.GOLDEN_HORSE_ARMOR) {
-                            Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:7' are " +
-                                    "totem_of_the_void, but this is not the correct material. Something isn't right.");
-                            return;
-                        }
-                        item.subtract();
-                        event.setCancelled(true);
-                        player.setHealth(20);
-                        // give player temporary invulnerability to prevent further void damage
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40, 4));
-                        // ugly line but sound has to follow the player
-                        player.playSound(net.kyori.adventure.sound.Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "item.totem.use"), net.kyori.adventure.sound.Sound.Source.MASTER, 1f, 1f), net.kyori.adventure.sound.Sound.Emitter.self());
-                        // close player elytra so the teleport works correctly
-                        player.setGliding(false);
-                        attemptingToSave.add(player);
-                        new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                if (player.teleport(lastSafePosition.get(player))) {
-                                    // cancel leftover fall damage
-                                    player.setFallDistance(0);
-                                    ParallelChat.sendParallelMessageTo(player, "Your <light_purple>Totem of the Void<green> saved you from the void!");
-                                    attemptingToSave.remove(player);
-                                    this.cancel();
-                                }
-                                // refresh every tick just in case
-                                player.setHealth(20);
-                                player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40, 4));
+                    } else {
+                        val = meta.getPersistentDataContainer().get(customKey, PersistentDataType.INTEGER);
+                        if (val == null || val != 7) {
+                            item = player.getInventory().getItemInOffHand();
+                            meta = item.getItemMeta();
+                            if (meta == null)
+                                return;
+                            else {
+                                val = meta.getPersistentDataContainer().get(customKey, PersistentDataType.INTEGER);
+                                if (val == null || val != 7)
+                                    return;
                             }
-                        }.runTaskTimer(javaPlugin, 0, 1);
+                        }
                     }
+                    if (item.getType() != Material.GOLDEN_HORSE_ARMOR) {
+                        Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:7' are " +
+                                "totem_of_the_void, but this is not the correct material. Something isn't right.");
+                        return;
+                    }
+                    item.subtract();
+                    event.setCancelled(true);
+                    player.setHealth(20);
+                    // give player temporary invulnerability to prevent further void damage
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40, 4));
+                    // ugly line but sound has to follow the player
+                    player.playSound(net.kyori.adventure.sound.Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "item.totem.use"), net.kyori.adventure.sound.Sound.Source.MASTER, 1f, 1f), net.kyori.adventure.sound.Sound.Emitter.self());
+                    // close player elytra so the teleport works correctly
+                    player.setGliding(false);
+                    attemptingToSave.add(player);
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            if (player.teleport(lastSafePosition.get(player))) {
+                                // cancel leftover fall damage
+                                player.setFallDistance(0);
+                                ParallelChat.sendParallelMessageTo(player, "Your <light_purple>Totem of the Void<green> saved you from the void!");
+                                attemptingToSave.remove(player);
+                                this.cancel();
+                            }
+                            // refresh every tick just in case
+                            player.setHealth(20);
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.DAMAGE_RESISTANCE, 40, 4));
+                        }
+                    }.runTaskTimer(javaPlugin, 0, 1);
+
                 }
             }
         }
     }
+
 
 
     @EventHandler
