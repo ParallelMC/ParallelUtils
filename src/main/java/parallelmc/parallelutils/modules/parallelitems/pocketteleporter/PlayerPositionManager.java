@@ -2,17 +2,13 @@ package parallelmc.parallelutils.modules.parallelitems.pocketteleporter;
 
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.world.World;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -99,13 +95,14 @@ public class PlayerPositionManager {
             statement.setQueryTimeout(60);
             this.savedPositions.forEach((u, p) -> {
                 try {
+                    World world = p.location().getWorld();
                     statement.setString(1, u.toString());
-                    statement.setString(2, p.location().getWorld().getName());
+                    statement.setString(2, world.getName());
                     statement.setInt(3, p.location().getBlockX());
                     statement.setInt(4, p.location().getBlockY());
                     statement.setInt(5, p.location().getBlockZ());
                     statement.setBoolean(6, p.hasBeenToSpawn());
-                    statement.setString(7, p.location().getWorld().getName());
+                    statement.setString(7, world.getName());
                     statement.setInt(8, p.location().getBlockX());
                     statement.setInt(9, p.location().getBlockY());
                     statement.setInt(10, p.location().getBlockZ());
@@ -311,7 +308,7 @@ public class PlayerPositionManager {
         return old.clone().add(x, y ,z);
     }
 
-    private boolean isPositionSafe(Block check) {
+    public boolean isPositionSafe(Block check) {
         return !check.isSolid() &&
                 !check.getRelative(BlockFace.UP).isSolid() &&
                 check.getType() != Material.FIRE &&
