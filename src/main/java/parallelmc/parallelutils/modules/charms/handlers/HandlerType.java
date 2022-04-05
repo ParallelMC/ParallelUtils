@@ -6,7 +6,10 @@ public enum HandlerType {
 	MESSAGE_KILL(HandlerCategory.EVENT), // Listen for kill event
 	COUNTER_KILL(HandlerCategory.EVENT), // Listen for kill event
 	STYLE_NAME(HandlerCategory.APPLY), // Handle on charm application
-	LORE(HandlerCategory.APPLY);
+	LORE(HandlerCategory.APPLY), // Add lore to item
+	TEST_RUNNABLE(HandlerCategory.RUNNABLE), // Test runnables
+	TEST_EVENT(HandlerCategory.EVENT), // Test events
+	TEST_APPLY(HandlerCategory.APPLY); // Test apply
 
 	private final HandlerCategory category;
 
