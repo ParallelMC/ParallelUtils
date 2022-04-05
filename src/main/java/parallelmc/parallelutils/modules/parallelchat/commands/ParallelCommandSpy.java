@@ -21,7 +21,7 @@ public class ParallelCommandSpy implements CommandExecutor {
                     if (options.isCmdSpy()) {
                         options.setCmdSpy(false);
                         ParallelChat.get().socialSpyUsers.put(uuid, options);
-                        ParallelChat.sendParallelMessageTo(sender, "§cDisabled Command Spy");
+                        ParallelChat.sendParallelMessageTo(sender, "<red>Disabled Command Spy");
                     }
                     else {
                         options.setCmdSpy(true);

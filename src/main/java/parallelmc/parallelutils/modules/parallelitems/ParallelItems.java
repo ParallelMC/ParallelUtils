@@ -304,6 +304,29 @@ public class ParallelItems implements ParallelModule {
             e.printStackTrace();
         }
 
+        ItemStack totem = new ItemStack(Material.GOLDEN_HORSE_ARMOR);
+        try {
+            ItemMeta totemMeta = totem.getItemMeta();
+            TextComponent name = Component.text("Totem of the Void", NamedTextColor.LIGHT_PURPLE)
+                    .decoration(TextDecoration.ITALIC, false);
+            totemMeta.displayName(name);
+            totemMeta.setCustomModelData(1000000);
+
+            ArrayList<Component> lore = new ArrayList<>();
+            lore.add(Component.text("Protects you from dying in the void", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+            totemMeta.lore(lore);
+
+            totemMeta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 7);
+
+            totem.setItemMeta(totemMeta);
+
+            itemRegistry.put("totem_of_the_void", totem);
+            itemRegistryId.put(7, totem);
+        } catch (NullPointerException e) {
+            Parallelutils.log(Level.WARNING,"NullPointerException registering totem_of_the_void. " +
+                    "Item will not work!");
+            e.printStackTrace();
+        }
     }
 
     @Override

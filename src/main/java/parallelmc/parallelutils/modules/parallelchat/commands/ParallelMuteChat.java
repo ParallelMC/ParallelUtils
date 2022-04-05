@@ -27,7 +27,7 @@ public class ParallelMuteChat implements CommandExecutor {
         }
         else {
             for (Player p : commandSender.getServer().getOnlinePlayers()) {
-                ParallelChat.sendParallelMessageTo(p, "§cChat has been disabled by " + commandSender.getName());
+                ParallelChat.sendParallelMessageTo(p, "<red>Chat has been disabled by " + commandSender.getName());
             }
             Parallelutils.log(Level.WARNING, "Chat muted by " + commandSender.getName());
             ParallelChat.get().setChatDisabled(true);
