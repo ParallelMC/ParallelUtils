@@ -253,6 +253,7 @@ public final class Parallelutils extends JavaPlugin {
 			charms.onEnable();
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelCharms!");
+			e.printStackTrace();
 		}
 
 		try {

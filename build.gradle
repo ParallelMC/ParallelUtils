@@ -28,6 +28,7 @@ repositories {
     maven { url = 'https://m2.dv8tion.net/releases' }
     maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
     maven { url = 'https://repo.dmulloy2.net/repository/public/' }
+    maven { url = 'https://repo.codemc.org/repository/maven-public/' }
 }
 
 dependencies {
@@ -43,6 +44,7 @@ dependencies {
     implementation 'mysql:mysql-connector-java:8.0.26'
     compileOnly 'net.luckperms:api:5.3'
     compileOnly 'com.comphenix.protocol:ProtocolLib:4.7.0'
+    compileOnly 'dev.esophose:playerparticles:7.25'
 }
 
 artifacts {
@@ -81,7 +83,7 @@ bukkit {
 
     apiVersion = '1.18'
 
-    depend = ['PlaceholderAPI', 'ProtocolLib']
+    depend = ['PlaceholderAPI', 'ProtocolLib', 'PlayerParticles']
     softDepend = ['Multiverse-Core', 'FractalForest', 'WorldGuard', 'VoteParty']
 
     commands {

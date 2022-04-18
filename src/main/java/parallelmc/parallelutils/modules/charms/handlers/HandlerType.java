@@ -9,7 +9,8 @@ public enum HandlerType {
 	LORE(HandlerCategory.APPLY), // Add lore to item
 	TEST_RUNNABLE(HandlerCategory.RUNNABLE), // Test runnables
 	TEST_EVENT(HandlerCategory.EVENT), // Test events
-	TEST_APPLY(HandlerCategory.APPLY); // Test apply
+	TEST_APPLY(HandlerCategory.APPLY), // Test apply
+	PLAYER_PARTICLE(HandlerCategory.APPLY); // PlayerParticle handler
 
 	private final HandlerCategory category;
 
