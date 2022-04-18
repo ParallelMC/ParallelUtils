@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.charms;
 
+import dev.esophose.playerparticles.api.PlayerParticlesAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -16,6 +17,7 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.charms.commands.ApplyCharm;
 import parallelmc.parallelutils.modules.charms.commands.GiveCharm;
+import parallelmc.parallelutils.modules.charms.commands.ParticleTest;
 import parallelmc.parallelutils.modules.charms.commands.RemoveCharm;
 import parallelmc.parallelutils.modules.charms.data.*;
 import parallelmc.parallelutils.modules.charms.data.impl.GenericEffectSettings;
@@ -67,6 +69,14 @@ public class ParallelCharms implements ParallelModule {
 			return;
 		}
 
+		PlayerParticlesAPI ppAPI = null;
+
+		if (Bukkit.getPluginManager().isPluginEnabled("PlayerParticles")) {
+			//PlayerParticles pp = (PlayerParticles) Bukkit.getPluginManager().getPlugin("PlayerParticles");
+
+			ppAPI = PlayerParticlesAPI.getInstance();
+		}
+
 		// Register handlers
 		if (!registerHandler(new CharmKillMessageHandler())) { Parallelutils.log(Level.WARNING, "Could not register MESSAGE_KILL"); }
 		if (!registerHandler(new CharmStyleNameHandler())) { Parallelutils.log(Level.WARNING, "Could not register STYLE_NAME"); }
@@ -75,6 +85,7 @@ public class ParallelCharms implements ParallelModule {
 		if (!registerHandler(new CharmTestRunnableHandler())) { Parallelutils.log(Level.WARNING, "Could not register TEST_RUNNABLE"); }
 		if (!registerHandler(new CharmTestEventHandler())) { Parallelutils.log(Level.WARNING, "Could not register TEST_EVENT");}
 		if (!registerHandler(new CharmTestApplyHandler())) { Parallelutils.log(Level.WARNING, "Could not register TEST_APPLY"); }
+		if (ppAPI == null || !registerHandler(new CharmPlayerParticleHandler(puPlugin, ppAPI))) { Parallelutils.log(Level.WARNING, "Could not register PLAYER_PARTICLE");}
 
 		// Register events
 		manager.registerEvents(new PlayerJoinContainerListenerOverwrite(), puPlugin);
