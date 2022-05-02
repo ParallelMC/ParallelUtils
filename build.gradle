@@ -83,8 +83,8 @@ bukkit {
 
     apiVersion = '1.18'
 
-    depend = ['PlaceholderAPI', 'ProtocolLib', 'PlayerParticles']
-    softDepend = ['Multiverse-Core', 'FractalForest', 'WorldGuard', 'VoteParty']
+    depend = ['PlaceholderAPI', 'ProtocolLib']
+    softDepend = ['Multiverse-Core', 'FractalForest', 'WorldGuard', 'VoteParty', 'PlayerParticles']
 
     commands {
         parallelutils {
