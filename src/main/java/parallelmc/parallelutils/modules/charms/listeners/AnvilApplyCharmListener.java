@@ -80,5 +80,6 @@ public class AnvilApplyCharmListener implements Listener {
 
 		charm.apply(result, player, false, false);
 		event.setResult(result);
+		inventory.setRepairCost(0);
 	}
 }
