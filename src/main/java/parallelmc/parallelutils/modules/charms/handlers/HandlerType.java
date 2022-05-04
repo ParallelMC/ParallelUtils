@@ -10,7 +10,7 @@ public enum HandlerType {
 	TEST_RUNNABLE(HandlerCategory.RUNNABLE), // Test runnables
 	TEST_EVENT(HandlerCategory.EVENT), // Test events
 	TEST_APPLY(HandlerCategory.APPLY), // Test apply
-	PLAYER_PARTICLE(HandlerCategory.APPLY); // PlayerParticle handler
+	PLAYER_PARTICLE(HandlerCategory.EVENT); // PlayerParticle handler
 
 	private final HandlerCategory category;
 
