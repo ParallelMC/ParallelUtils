@@ -1,6 +1,5 @@
 package parallelmc.parallelutils.modules.charms.listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -41,6 +40,13 @@ public class PlayerSlotChangedListener implements Listener {
 
 		Player player = event.getPlayer();
 
+
+		ICharmHandler<PlayerSlotChangedEvent> changedEvent = pCharms.getHandler(HandlerType.PLAYER_PARTICLE, PlayerSlotChangedEvent.class);
+
+		if (changedEvent != null) {
+			// TODO: Check to see if this is a reasonable spot
+			changedEvent.handle(event, player, remainingItem, null);
+		}
 
 		if (remainingItem.getType() != Material.AIR) {
 			Charm remainingCharm = Charm.parseCharm(pCharms, remainingItem, player);
