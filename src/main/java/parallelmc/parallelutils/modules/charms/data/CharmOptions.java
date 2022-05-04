@@ -8,6 +8,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.charms.data.impl.GenericEffectSettings;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
@@ -240,7 +241,7 @@ public class CharmOptions {
 		return false;
 	}
 
-
+	@NotNull
 	public HashMap<HandlerType, IEffectSettings> getEffects() {
 		return effects;
 	}

@@ -85,7 +85,7 @@ public class ParallelCharms implements ParallelModule {
 		if (!registerHandler(new CharmTestRunnableHandler())) { Parallelutils.log(Level.WARNING, "Could not register TEST_RUNNABLE"); }
 		if (!registerHandler(new CharmTestEventHandler())) { Parallelutils.log(Level.WARNING, "Could not register TEST_EVENT");}
 		if (!registerHandler(new CharmTestApplyHandler())) { Parallelutils.log(Level.WARNING, "Could not register TEST_APPLY"); }
-		if (ppAPI == null || !registerHandler(new CharmPlayerParticleHandler(puPlugin, ppAPI))) { Parallelutils.log(Level.WARNING, "Could not register PLAYER_PARTICLE");}
+		if (ppAPI == null || !registerHandler(new CharmPlayerParticleHandler(puPlugin, this, ppAPI))) { Parallelutils.log(Level.WARNING, "Could not register PLAYER_PARTICLE");}
 
 		// Register events
 		manager.registerEvents(new PlayerJoinContainerListenerOverwrite(), puPlugin);
