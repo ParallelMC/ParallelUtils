@@ -103,7 +103,7 @@ public class PlayerJoinContainerListenerOverwrite implements Listener {
 									}
 
 									// stack is the item left in the slot (either item added or whatever was left)
-									PlayerSlotChangedEvent slotChangedEvent = new PlayerSlotChangedEvent(craftPlayer, oldBukkit, slot.getItem().getBukkitStack());
+									PlayerSlotChangedEvent slotChangedEvent = new PlayerSlotChangedEvent(craftPlayer, oldBukkit, slot.getItem().getBukkitStack(), slotId);
 									Bukkit.getPluginManager().callEvent(slotChangedEvent);
 								}
 							}
