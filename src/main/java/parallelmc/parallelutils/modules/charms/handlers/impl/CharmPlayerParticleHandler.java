@@ -6,8 +6,10 @@ import dev.esophose.playerparticles.particles.ParticlePair;
 import dev.esophose.playerparticles.styles.DefaultStyles;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -54,45 +56,58 @@ public class CharmPlayerParticleHandler extends ICharmHandler<PlayerSlotChangedE
 
 		if (remainingItem.getType() != Material.AIR) {
 			// Check here for specific inventory slot if desired
-			Charm remainingCharm = Charm.parseCharm(pCharms, remainingItem, player);
+			PlayerInventory inventory = player.getInventory();
 
-			if (remainingCharm != null) {
+			// If in armor, off-hand, or held item
 
-				if (removedItem.getType() != Material.AIR) {
+			int rawHeld = inventory.getHeldItemSlot() + 36; // Crude way to "convert" an inventory slot to a raw slot
 
-					Charm removedCharm = Charm.parseCharm(pCharms, removedItem, player);
+			// Can only get raw slots from event :/
+			if ((event.getRawSlot() >= 5 && event.getRawSlot() <= 8) || event.getRawSlot() == 45 ||
+					event.getRawSlot() == rawHeld) {
 
-					if (removedCharm != null) {
-						if (remainingCharm.getUUID().equals(removedCharm.getUUID())) return; // Item taking durability or something
-					}
-				}
+				Charm remainingCharm = Charm.parseCharm(pCharms, remainingItem, player);
 
-				CharmOptions remainingOptions = remainingCharm.getOptions();
+				if (remainingCharm != null) {
 
-				if (remainingOptions != null) {
-					final HashMap<HandlerType, IEffectSettings> effects = remainingOptions.getEffects();
+					if (removedItem.getType() != Material.AIR) {
 
-					IEffectSettings settings = effects.get(HandlerType.PLAYER_PARTICLE);
+						Charm removedCharm = Charm.parseCharm(pCharms, removedItem, player);
 
-					if (settings != null) {
-						ItemMeta meta = remainingItem.getItemMeta();
-						if (meta != null) {
-							ParticlePair pair = ppAPI.addActivePlayerParticle(player, ParticleEffect.CLOUD, DefaultStyles.CUBE);
-
-							if (pair == null) {
-								Parallelutils.log(Level.WARNING, "Could not add active player particle for player " + player.getName());
-								return;
+						if (removedCharm != null) {
+							if (remainingCharm.getUUID().equals(removedCharm.getUUID())) {
+								return; // Item taking durability or something
 							}
+						}
+					}
 
-							int id = pair.getId();
+					CharmOptions remainingOptions = remainingCharm.getOptions();
 
-							PersistentDataContainer pdc = meta.getPersistentDataContainer();
+					if (remainingOptions != null) {
+						final HashMap<HandlerType, IEffectSettings> effects = remainingOptions.getEffects();
 
-							NamespacedKey key = new NamespacedKey(puPlugin, "ParallelCharm.ppId");
+						IEffectSettings settings = effects.get(HandlerType.PLAYER_PARTICLE);
 
-							pdc.set(key, PersistentDataType.INTEGER, id);
+						if (settings != null) {
+							ItemMeta meta = remainingItem.getItemMeta();
+							if (meta != null) {
+								ParticlePair pair = ppAPI.addActivePlayerParticle(player, ParticleEffect.CLOUD, DefaultStyles.CUBE);
 
-							item.setItemMeta(meta);
+								if (pair == null) {
+									Parallelutils.log(Level.WARNING, "Could not add active player particle for player " + player.getName());
+									return;
+								}
+
+								int id = pair.getId();
+
+								PersistentDataContainer pdc = meta.getPersistentDataContainer();
+
+								NamespacedKey key = new NamespacedKey(puPlugin, "ParallelCharm.ppId");
+
+								pdc.set(key, PersistentDataType.INTEGER, id);
+
+								item.setItemMeta(meta);
+							}
 						}
 					}
 				}
@@ -127,13 +142,15 @@ public class CharmPlayerParticleHandler extends ICharmHandler<PlayerSlotChangedE
 								return;
 							}
 
+							pdc.remove(key);
+
+							removedItem.setItemMeta(meta);
+
 							try {
 								ppAPI.removeActivePlayerParticle(player, id);
 							} catch (IllegalArgumentException e) {
-								e.printStackTrace();
+								//Parallelutils.log(Level.INFO, "Particle does not exist!");
 							}
-
-							pdc.remove(key);
 						}
 					}
 				}
