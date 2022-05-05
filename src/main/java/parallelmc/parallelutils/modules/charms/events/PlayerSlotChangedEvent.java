@@ -13,11 +13,13 @@ public class PlayerSlotChangedEvent extends Event {
 	private final Player player;
 	private final ItemStack removedItem;
 	private final ItemStack remainingItem;
+	private final int rawSlot;
 
-	public PlayerSlotChangedEvent(@NotNull final Player player, ItemStack removedItem, ItemStack remainingItem) {
+	public PlayerSlotChangedEvent(@NotNull final Player player, ItemStack removedItem, ItemStack remainingItem, int rawSlot) {
 		this.player = player;
 		this.removedItem = removedItem;
 		this.remainingItem = remainingItem;
+		this.rawSlot = rawSlot;
 	}
 
 	public Player getPlayer() {
@@ -34,6 +36,10 @@ public class PlayerSlotChangedEvent extends Event {
 
 	public ItemStack getRemainingItem() {
 		return remainingItem;
+	}
+
+	public int getRawSlot() {
+		return rawSlot;
 	}
 
 	@NotNull
