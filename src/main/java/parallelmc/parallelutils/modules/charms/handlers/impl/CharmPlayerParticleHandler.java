@@ -62,7 +62,7 @@ public class CharmPlayerParticleHandler extends ICharmHandler<PlayerSlotChangedE
 			// If in armor, off-hand, or held item
 
 			int rawHeld = inventory.getHeldItemSlot() + 36; // Crude way to "convert" an inventory slot to a raw slot
-			
+
 			// Can only get raw slots from event :/
 			if ((event.getRawSlot() >= 5 && event.getRawSlot() <= 8) || event.getRawSlot() == 45 ||
 					event.getRawSlot() == rawHeld) {
