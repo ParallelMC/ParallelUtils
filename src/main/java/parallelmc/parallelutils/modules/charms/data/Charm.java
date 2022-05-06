@@ -1,6 +1,9 @@
 package parallelmc.parallelutils.modules.charms.data;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -308,9 +311,34 @@ public class Charm {
 
 		options.applyCharm(item);
 
+		HashMap<HandlerType, IEffectSettings> effects = options.getEffects();
+
+		IEffectSettings loreSettings = effects.get(HandlerType.LORE);
+
 		meta = item.getItemMeta();
 
 		meta.displayName(Component.text("Charm"));
+
+		if (loreSettings != null) {
+			HashMap<String, EncapsulatedType> settingMap = loreSettings.getSettings();
+
+			EncapsulatedType loreSetting = settingMap.get("lore");
+
+			if (loreSetting.getType() == Types.STRING) {
+
+				String loreTotal = (String) loreSetting.getVal();
+
+				String[] parts = loreTotal.split("\n");
+
+				List<Component> lore = new ArrayList<>();
+
+				for (String s : parts) {
+					lore.add(MiniMessage.miniMessage().deserialize(s));
+				}
+
+				meta.lore(lore);
+			}
+		}
 
 		PersistentDataContainer pdc = meta.getPersistentDataContainer();
 
