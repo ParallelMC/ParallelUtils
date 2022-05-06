@@ -54,14 +54,15 @@ public class CharmPlayerParticleHandler extends ICharmHandler<PlayerSlotChangedE
 		ItemStack remainingItem = event.getRemainingItem();
 		ItemStack removedItem = event.getRemovedItem();
 
-		if (remainingItem.getType() != Material.AIR) {
+		if (remainingItem != null && remainingItem.getType() != Material.AIR) {
+
 			// Check here for specific inventory slot if desired
 			PlayerInventory inventory = player.getInventory();
 
 			// If in armor, off-hand, or held item
 
 			int rawHeld = inventory.getHeldItemSlot() + 36; // Crude way to "convert" an inventory slot to a raw slot
-
+			
 			// Can only get raw slots from event :/
 			if ((event.getRawSlot() >= 5 && event.getRawSlot() <= 8) || event.getRawSlot() == 45 ||
 					event.getRawSlot() == rawHeld) {
@@ -70,7 +71,7 @@ public class CharmPlayerParticleHandler extends ICharmHandler<PlayerSlotChangedE
 
 				if (remainingCharm != null) {
 
-					if (removedItem.getType() != Material.AIR) {
+					if (removedItem != null && removedItem.getType() != Material.AIR) {
 
 						Charm removedCharm = Charm.parseCharm(pCharms, removedItem, player);
 
@@ -114,7 +115,7 @@ public class CharmPlayerParticleHandler extends ICharmHandler<PlayerSlotChangedE
 			}
 		}
 
-		if (removedItem.getType() != Material.AIR) {
+		if (removedItem != null && removedItem.getType() != Material.AIR) {
 			Charm removedCharm = Charm.parseCharm(pCharms, removedItem, player);
 
 			if (removedCharm != null) {
