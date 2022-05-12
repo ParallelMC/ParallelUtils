@@ -349,7 +349,8 @@ public class ParallelChat implements ParallelModule {
     public Component formatForGroup(@NotNull Player source, @NotNull Component displayName, @NotNull Component message) {
 
         TagResolver placeholders = TagResolver.resolver(
-                Placeholder.component("displayname", displayName),
+                Placeholder.component("displayname", displayName.hoverEvent(Component.text(
+                        PlaceholderAPI.setPlaceholders(source, "%pronouns_pronouns%")).asHoverEvent())),
                 Placeholder.component("tag", getTagForPlayer(source)),
                 Placeholder.component("message", message)
         );
