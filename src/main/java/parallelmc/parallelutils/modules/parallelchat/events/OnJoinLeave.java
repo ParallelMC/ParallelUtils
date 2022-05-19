@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,10 +12,21 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.discordintegration.JoinQuitSuppressorListener;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
+import java.util.logging.Level;
+
 public class OnJoinLeave implements Listener {
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+
+    private final Parallelutils puPlugin;
+
+    public OnJoinLeave(Parallelutils puPlugin) {
+        this.puPlugin = puPlugin;
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         ParallelChat.get().removeFromTeamChat(player);
@@ -23,11 +35,20 @@ public class OnJoinLeave implements Listener {
 
         Component leave = MiniMessage.miniMessage().deserialize("<yellow><player> left the game", TagResolver.resolver(Placeholder.parsed("player", player.getName())));
 
-        // if you find a better way of doing this feel free to replace
-        for (Player p : player.getServer().getOnlinePlayers()) {
-            if (!p.canSee(player)) {
-                // if ANYONE can't see the player, don't show the message
-                return;
+        if (puPlugin.getModule("DiscordIntegration") != null) {
+            synchronized (JoinQuitSuppressorListener.hiddenUsersLock) { // NOTE: This MIGHT cause lag problems. It shouldn't, but beware
+                if (JoinQuitSuppressorListener.hiddenUsers.contains(player.getName().strip())) {
+                    event.quitMessage(Component.text((""))); // This might need to change, but it needs to be tested
+                    return;
+                }
+            }
+        } else {
+            // if you find a better way of doing this feel free to replace
+            for (Player p : player.getServer().getOnlinePlayers()) {
+                if (!p.canSee(player)) {
+                    // if ANYONE can't see the player, don't show the message
+                    return;
+                }
             }
         }
 
@@ -36,7 +57,7 @@ public class OnJoinLeave implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         Server server = player.getServer();
@@ -59,10 +80,23 @@ public class OnJoinLeave implements Listener {
             player.getServer().dispatchCommand(server.getConsoleSender(), "ibooks give rules " + player.getName());
         }
         else {
-            for (Player p : player.getServer().getOnlinePlayers()) {
-                if (!p.canSee(player)) {
-                    // if ANYONE can't see the player, don't show the message
-                    return;
+
+            if (puPlugin.getModule("DiscordIntegration") != null) {
+                synchronized (JoinQuitSuppressorListener.hiddenUsersLock) { // NOTE: This MIGHT cause lag problems. It shouldn't, but beware
+                    if (JoinQuitSuppressorListener.hiddenUsers.contains(player.getName().strip())) {
+                        event.joinMessage(Component.text("")); // This might need to change, but it needs to be tested
+
+                        if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+                            return;
+                        }
+                    }
+                }
+            } else {
+                for (Player p : player.getServer().getOnlinePlayers()) {
+                    if (!p.canSee(player)) {
+                        // if ANYONE can't see the player, don't show the message
+                        return;
+                    }
                 }
             }
 
