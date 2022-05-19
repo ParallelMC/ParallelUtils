@@ -201,7 +201,7 @@ public class ParallelChat implements ParallelModule {
             Parallelutils.log(Level.SEVERE, "Failed to open writer to loggers!");
         }
         manager.registerEvents(new OnChatMessage(), puPlugin);
-        manager.registerEvents(new OnJoinLeave(), puPlugin);
+        manager.registerEvents(new OnJoinLeave(puPlugin), puPlugin);
         manager.registerEvents(new OnSignTextSet(), puPlugin);
         manager.registerEvents(new OnCommand(), puPlugin);
         puPlugin.getCommand("fakejoin").setExecutor(new ParallelFakeJoin());
