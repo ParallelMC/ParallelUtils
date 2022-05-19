@@ -50,7 +50,7 @@ public class JoinQuitSuppressorListener implements Listener {
 		}
 	}
 
-	@EventHandler (priority = EventPriority.HIGHEST)
+	@EventHandler (ignoreCancelled = true, priority = EventPriority.HIGHEST)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 
