@@ -80,10 +80,12 @@ public class Charm {
 		try {
 			// Check allowed materials
 			if (!options.isMaterialAllowed(item.getType())) {
-				if (!options.isPlayerAllowed(player)) {
-					Parallelutils.log(Level.INFO, "Material or Player/Permission not allowed!");
-					return false;
-				}
+				Parallelutils.log(Level.INFO, "Material not allowed!");
+				return false;
+			}
+			if (!options.isPlayerAllowed(player)) {
+				Parallelutils.log(Level.INFO, "Player/Permission not allowed!");
+				return false;
 			}
 
 			// Setup

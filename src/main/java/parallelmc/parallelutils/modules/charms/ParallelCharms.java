@@ -136,7 +136,7 @@ public class ParallelCharms implements ParallelModule {
 						}
 
 						List<String> matStrList = section.getStringList("allowed-materials");
-						Material[] matsList = matStrList.stream().map(Material::valueOf).toArray(Material[]::new);
+						Material[] matsList = matStrList.stream().map(Material::getMaterial).toArray(Material[]::new);
 
 						String[] allowedPlayers = section.getStringList("allowed-players").toArray(String[]::new);
 						String[] allowedPermissions = section.getStringList("allowed-permissions").toArray(String[]::new);
@@ -178,8 +178,9 @@ public class ParallelCharms implements ParallelModule {
 										}
 									}
 
-									GenericEffectSettings effectSettings = new GenericEffectSettings(settings);
 									HandlerType handlerType = HandlerType.valueOf(handlerStr);
+
+									IEffectSettings effectSettings = new SettingsFactory(handlerType).getSettings(settings);
 									effects.put(handlerType, effectSettings);
 								}
 							}
