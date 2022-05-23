@@ -104,7 +104,7 @@ public class CharmOptions {
 		charmsContainer.set(new NamespacedKey(plugin, "ParallelCharm.OptName"),
 				PersistentDataType.STRING, optionsName);
 
-		// Apply allowed materials. This doesn't _really_ need to be put on the item, but meh
+		// Apply allowed materials
 		if (allowedMaterials != null) {
 			PersistentDataContainer[] matsArr = new PersistentDataContainer[allowedMaterials.length];
 
@@ -112,7 +112,7 @@ public class CharmOptions {
 			int index = 0;
 			for (Material m : allowedMaterials) {
 				PersistentDataContainer matContainer = charmsContainer.getAdapterContext().newPersistentDataContainer();
-				matContainer.set(matKey, PersistentDataType.STRING, m.getKey().asString());
+				matContainer.set(matKey, PersistentDataType.STRING, m.name());
 				matsArr[index] = matContainer;
 
 				index++;
@@ -313,6 +313,7 @@ public class CharmOptions {
 		// Parse allowed players and permissions
 		ArrayList<String> allowedPlayersList = new ArrayList<>();
 		ArrayList<String> allowedPermissionsList = new ArrayList<>();
+		ArrayList<Material> allowedMaterialsList = new ArrayList<>();
 
 		PersistentDataContainer[] playersContainer = charmsContainer.get(
 				new NamespacedKey(plugin, "ParallelCharm.AllowedPlayers"), PersistentDataType.TAG_CONTAINER_ARRAY);
@@ -340,6 +341,24 @@ public class CharmOptions {
 			}
 		}
 
+		PersistentDataContainer[] materialsContainer = charmsContainer.get(
+				new NamespacedKey(plugin, "ParallelCharm.AllowedMats"), PersistentDataType.TAG_CONTAINER_ARRAY
+		);
+
+		if (materialsContainer != null) {
+			NamespacedKey materialsKey = new NamespacedKey(plugin, "ParallelCharm.AllowedMats.Mat");
+			for (PersistentDataContainer p : materialsContainer) {
+				String material = p.get(materialsKey, PersistentDataType.STRING);
+				if (material != null) {
+					Material mat = Material.getMaterial(material);
+					if (mat != null) {
+						allowedMaterialsList.add(mat);
+					} else {
+						//Parallelutils.log(Level.WARNING, "Unknown material");
+					}
+				}
+			}
+		}
 
 		PersistentDataContainer[] effectsContainer = charmsContainer.get(new NamespacedKey(plugin, "ParallelCharm.Effects"),
 				PersistentDataType.TAG_CONTAINER_ARRAY);
@@ -399,11 +418,15 @@ public class CharmOptions {
 				settings.put(sName, eType);
 			}
 
-			effects.put(HandlerType.valueOf(handlerName), new GenericEffectSettings(settings));
+			HandlerType handlerType = HandlerType.valueOf(handlerName);
+
+			IEffectSettings effectSettings = new SettingsFactory(handlerType).getSettings(settings);
+			effects.put(handlerType, effectSettings);
 		}
 
-		return new CharmOptions(uuid, name,null, allowedPlayersList.toArray(new String[0]),
-				allowedPermissionsList.toArray(new String[0]), effects, null);
+		return new CharmOptions(uuid, name,allowedMaterialsList.toArray(new Material[0]),
+				allowedPlayersList.toArray(new String[0]), allowedPermissionsList.toArray(new String[0]),
+				effects, null);
 	}
 
 	public String getName() {
