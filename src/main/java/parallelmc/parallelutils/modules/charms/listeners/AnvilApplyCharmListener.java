@@ -78,7 +78,13 @@ public class AnvilApplyCharmListener implements Listener {
 		// If both item1 does not have a charm and item2 is a charm, copy item1 and apply charm as result
 		ItemStack result = new ItemStack(item1);
 
-		charm.apply(result, player, false, false);
+
+		boolean applyResult = charm.apply(result, player, false, false);
+		if (!applyResult) {
+			event.setResult(null);
+			return;
+		}
+
 		event.setResult(result);
 		inventory.setRepairCost(0);
 	}

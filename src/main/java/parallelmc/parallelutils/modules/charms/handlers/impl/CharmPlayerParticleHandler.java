@@ -4,6 +4,7 @@ import dev.esophose.playerparticles.api.PlayerParticlesAPI;
 import dev.esophose.playerparticles.particles.ParticleEffect;
 import dev.esophose.playerparticles.particles.ParticlePair;
 import dev.esophose.playerparticles.styles.DefaultStyles;
+import dev.esophose.playerparticles.styles.ParticleStyle;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_18_R2.inventory.CraftInventoryPlayer;
@@ -19,6 +20,7 @@ import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.charms.data.Charm;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
 import parallelmc.parallelutils.modules.charms.data.IEffectSettings;
+import parallelmc.parallelutils.modules.charms.data.impl.PlayerParticleEffectSettings;
 import parallelmc.parallelutils.modules.charms.events.PlayerSlotChangedEvent;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.handlers.ICharmApplyHandler;
@@ -92,22 +94,35 @@ public class CharmPlayerParticleHandler extends ICharmHandler<PlayerSlotChangedE
 						if (settings != null) {
 							ItemMeta meta = remainingItem.getItemMeta();
 							if (meta != null) {
-								ParticlePair pair = ppAPI.addActivePlayerParticle(player, ParticleEffect.CLOUD, DefaultStyles.CUBE);
+								// Parse settings
 
-								if (pair == null) {
-									Parallelutils.log(Level.WARNING, "Could not add active player particle for player " + player.getName());
-									return;
+								if (settings.getType() == HandlerType.PLAYER_PARTICLE && settings instanceof PlayerParticleEffectSettings ppSettings) {
+
+									ParticleEffect effect = ppSettings.getEffect();
+									ParticleStyle style = ppSettings.getStyle();
+
+									if (effect == null || style == null) {
+										Parallelutils.log(Level.WARNING, "Unknown effect or style!");
+										return;
+									}
+
+									ParticlePair pair = ppAPI.addActivePlayerParticle(player, effect, style);
+
+									if (pair == null) {
+										Parallelutils.log(Level.WARNING, "Could not add active player particle for player " + player.getName());
+										return;
+									}
+
+									int id = pair.getId();
+
+									PersistentDataContainer pdc = meta.getPersistentDataContainer();
+
+									NamespacedKey key = new NamespacedKey(puPlugin, "ParallelCharm.ppId");
+
+									pdc.set(key, PersistentDataType.INTEGER, id);
+
+									item.setItemMeta(meta);
 								}
-
-								int id = pair.getId();
-
-								PersistentDataContainer pdc = meta.getPersistentDataContainer();
-
-								NamespacedKey key = new NamespacedKey(puPlugin, "ParallelCharm.ppId");
-
-								pdc.set(key, PersistentDataType.INTEGER, id);
-
-								item.setItemMeta(meta);
 							}
 						}
 					}
