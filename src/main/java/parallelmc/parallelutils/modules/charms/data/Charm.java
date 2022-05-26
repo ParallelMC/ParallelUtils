@@ -347,6 +347,8 @@ public class Charm {
 		// Mark this as a charm applicator
 		pdc.set(new NamespacedKey(puPlugin, "ParallelCharm.CharmAppl"), PersistentDataType.INTEGER, 1);
 
+		meta.setCustomModelData(options.getApplicatorModelData());
+
 		item.setItemMeta(meta);
 
 		return true;

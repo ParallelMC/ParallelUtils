@@ -30,7 +30,8 @@ testcharm:
     - "e957b180-7ae2-42c0-98df-093be9044223"
   allowed-permissions:
     - "group.admin"
-  custom-model-data: 1234
+  applicator-model-data: 1234
+  custom-model-data: 5678
   effects:
     MESSAGE_KILL:
       message:
@@ -67,6 +68,8 @@ of the defined permission nodes.
 
 If both `allowed-players` and `allowed-permissions` are defined, a player must BOTH be in the list of players 
 and must have one of the permissions listed.
+
+`applicator-model-data:` [Optional] A number that specifies the custom model data of the charm applicator
 
 `custom-model-data:` [Optional] A number that specifies the custom model data of this charm to be applied.
 
