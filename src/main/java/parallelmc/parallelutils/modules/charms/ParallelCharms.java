@@ -146,6 +146,11 @@ public class ParallelCharms implements ParallelModule {
 							customModelData = null;
 						}
 
+						Integer applicatorModelData = section.getInt("applicator-model-data");
+						if (applicatorModelData == 0) {
+							applicatorModelData = null;
+						}
+
 						HashMap<HandlerType, IEffectSettings> effects = new HashMap<>();
 						ConfigurationSection effectsSection = section.getConfigurationSection("effects");
 						if (effectsSection != null) {
@@ -187,7 +192,7 @@ public class ParallelCharms implements ParallelModule {
 						}
 
 						CharmOptions charmOptions = new CharmOptions(uuid, name, matsList, allowedPlayers, allowedPermissions,
-								effects, customModelData);
+								effects, customModelData, applicatorModelData);
 						this.charmOptions.put(name, charmOptions);
 
 					} catch (IllegalArgumentException e) {

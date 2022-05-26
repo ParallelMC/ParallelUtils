@@ -28,6 +28,8 @@ import java.util.logging.Level;
  */
 public class CharmOptions {
 
+	private static final Integer DEFAULT_APPLICATOR_MODEL = 1234;
+
 	// This is just used to store in the database. Specifies _type_ of charm, not the specific charm
 	private final UUID optionsUuid;
 
@@ -51,9 +53,10 @@ public class CharmOptions {
 	private final HashMap<HandlerType, IEffectSettings> effects;
 
 	private final Integer customModelData;
+	private final int applicatorModelData;
 
 	public CharmOptions(UUID uuid, String optionsName, Material[] allowedMaterials, String[] allowedPlayers, String[] allowedPermissions,
-	                    HashMap<HandlerType, IEffectSettings> effects, Integer customModelData) {
+	                    HashMap<HandlerType, IEffectSettings> effects, Integer customModelData, Integer applicatorModelData) {
 		this.optionsUuid = uuid;
 		this.optionsName = optionsName;
 		this.allowedMaterials = allowedMaterials;
@@ -61,6 +64,16 @@ public class CharmOptions {
 		this.allowedPermissions = allowedPermissions;
 		this.effects = effects;
 		this.customModelData = customModelData;
+		if (applicatorModelData == null) {
+			this.applicatorModelData = DEFAULT_APPLICATOR_MODEL;
+		} else {
+			this.applicatorModelData = applicatorModelData;
+		}
+	}
+
+	public CharmOptions(UUID uuid, String optionsName, Material[] allowedMaterials, String[] allowedPlayers, String[] allowedPermissions,
+	                    HashMap<HandlerType, IEffectSettings> effects, Integer customModelData) {
+		this(uuid, optionsName, allowedMaterials, allowedPlayers, allowedPermissions, effects, customModelData, DEFAULT_APPLICATOR_MODEL);
 	}
 
 	public ItemStack applyCharm(ItemStack item) {
@@ -431,6 +444,10 @@ public class CharmOptions {
 
 	public String getName() {
 		return optionsName;
+	}
+
+	public int getApplicatorModelData() {
+		return applicatorModelData;
 	}
 
 	public String toString() {
