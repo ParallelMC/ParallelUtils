@@ -27,6 +27,7 @@ import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.handlers.ICharmHandler;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.modules.charms.helper.Types;
+import parallelmc.parallelutils.modules.charms.playerparticles.styles.ParallelStyles;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
@@ -75,6 +76,7 @@ public class ParallelCharms implements ParallelModule {
 			//PlayerParticles pp = (PlayerParticles) Bukkit.getPluginManager().getPlugin("PlayerParticles");
 
 			ppAPI = PlayerParticlesAPI.getInstance();
+			ParallelStyles.initStyles(puPlugin);
 		}
 
 		// Register handlers
