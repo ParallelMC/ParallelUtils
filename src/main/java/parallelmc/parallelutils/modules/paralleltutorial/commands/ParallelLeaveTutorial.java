@@ -17,7 +17,7 @@ public class ParallelLeaveTutorial implements CommandExecutor {
                 BukkitTask tutorial = ParallelTutorial.runningTutorials.get(player);
                 if (tutorial != null) {
                     tutorial.cancel();
-                    ParallelTutorial.get().endTutorialFor(player);
+                    ParallelTutorial.get().endTutorialFor(player, true);
                     ParallelChat.sendParallelMessageTo(player, "Successfully exited the tutorial.");
                 }
             }
