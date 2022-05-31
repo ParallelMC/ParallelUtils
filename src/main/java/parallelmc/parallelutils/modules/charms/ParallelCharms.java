@@ -255,6 +255,7 @@ public class ParallelCharms implements ParallelModule {
 		ICharmHandler<? extends Event> handler = handlers.get(type);
 		if (handler == null) {
 			Parallelutils.log(Level.WARNING, "Handler of type " + type.name() + " does not exist!!!");
+			return null;
 		}
 		try {
 			if (handler.getEventType().equals(event)) {
