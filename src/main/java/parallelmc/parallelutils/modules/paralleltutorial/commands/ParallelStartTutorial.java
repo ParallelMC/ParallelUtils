@@ -30,7 +30,7 @@ public class ParallelStartTutorial implements CommandExecutor {
             commandSender.sendMessage("Could not find tutorial " + args[1]);
             return true;
         }
-        ParallelTutorial.get().RunTutorialFor(player, args[1]);
+        ParallelTutorial.get().RunTutorialFor(player, args[1], args[2].equals("-d"));
         return true;
     }
 }
