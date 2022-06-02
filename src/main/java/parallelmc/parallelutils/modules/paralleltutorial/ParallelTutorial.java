@@ -46,11 +46,11 @@ public class ParallelTutorial implements ParallelModule {
     private ProtocolManager protManager;
 
     // mostly for use in server crashes/shutdown
-    public static HashMap<Player, BukkitTask> runningTutorials = new HashMap<>();
+    public HashMap<Player, BukkitTask> runningTutorials = new HashMap<>();
 
-    public static HashMap<Player, ArmorStand> armorStands = new HashMap<>();
+    public HashMap<Player, ArmorStand> armorStands = new HashMap<>();
 
-    public static HashMap<Player, Location> startPoints = new HashMap<>();
+    public HashMap<Player, Location> startPoints = new HashMap<>();
 
     private final HashMap<String, ArrayList<Instruction>> tutorials = new HashMap<>();
 
@@ -381,6 +381,46 @@ public class ParallelTutorial implements ParallelModule {
                 }
             }.runTaskLater(puPlugin, 10L);
         }
+    }
+
+    public void handleDisconnectedPlayer(Player player, boolean debug) {
+        if (debug) Parallelutils.log(Level.WARNING, "Ending tutorial...");
+        ArmorStand stand = armorStands.get(player);
+        if (debug) Parallelutils.log(Level.WARNING, "armorStands HashMap " + (stand != null ? "DOES" : "DOES NOT") + " contain the player before deletion.");
+        if (stand != null) {
+            if (debug) Parallelutils.log(Level.WARNING, "Armor stand marked for removal");
+            stand.remove();
+            armorStands.remove(player);
+        }
+        runningTutorials.remove(player);
+        if (debug) {
+            Parallelutils.log(Level.WARNING, "Checking status of armor stand in a few ticks...");
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (stand.isDead() && !stand.isValid())
+                        Parallelutils.log(Level.WARNING, "Armor Stand removed successfully!");
+                    else
+                        Parallelutils.log(Level.WARNING, "Armor Stand was NOT removed!");
+                }
+            }.runTaskLater(puPlugin, 10L);
+        }
+    }
+
+    public void handleReconnectedPlayer(Player player) {
+        new BukkitRunnable() {
+            final Location startPoint = ParallelTutorial.get().startPoints.get(player);
+            @Override
+            public void run() {
+                // wait for player to be successfully teleported
+                if (player.teleport(startPoint)) {
+                    player.setGameMode(GameMode.SURVIVAL);
+                    player.setFlySpeed(0.1F);
+                    ParallelTutorial.get().startPoints.remove(player);
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(puPlugin, 0L, 2L);
     }
 
     private void forceSpectate(Player player, int entityId) {
