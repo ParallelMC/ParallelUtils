@@ -8,7 +8,7 @@ plugins {
 
 group = 'org.parallelmc'
 
-version = '2.0.3'
+version = '2.0.4'
 description = 'A set of utilities and features for use on the Parallel Minecraft server'
 
 java {

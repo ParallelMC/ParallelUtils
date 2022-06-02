@@ -24,6 +24,7 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltutorial.commands.*;
+import parallelmc.parallelutils.modules.paralleltutorial.handlers.OnJoinAfterOnLeave;
 import parallelmc.parallelutils.modules.paralleltutorial.handlers.OnLeaveDuringTutorial;
 import parallelmc.parallelutils.modules.paralleltutorial.handlers.OnSpectatorTeleport;
 import parallelmc.parallelutils.modules.paralleltutorial.scripting.Instruction;
@@ -82,6 +83,7 @@ public class ParallelTutorial implements ParallelModule {
 
         manager.registerEvents(new OnSpectatorTeleport(), puPlugin);
         manager.registerEvents(new OnLeaveDuringTutorial(), puPlugin);
+        manager.registerEvents(new OnJoinAfterOnLeave(), puPlugin);
 
         puPlugin.getCommand("starttutorial").setExecutor(new ParallelStartTutorial());
         puPlugin.getCommand("listtutorials").setExecutor(new ParallelListTutorials());
