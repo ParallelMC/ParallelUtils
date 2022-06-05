@@ -66,8 +66,17 @@ public class CharmPlayerParticleHandler extends ICharmHandler<PlayerSlotChangedE
 			int rawHeld = inventory.getHeldItemSlot() + 36; // Crude way to "convert" an inventory slot to a raw slot
 
 			// Can only get raw slots from event :/
-			if ((event.getRawSlot() >= 5 && event.getRawSlot() <= 8) || event.getRawSlot() == 45 ||
-					event.getRawSlot() == rawHeld) {
+			Material type = remainingItem.getType();
+
+			boolean isArmor = (type == Material.LEATHER_HELMET || type == Material.LEATHER_CHESTPLATE || type == Material.LEATHER_LEGGINGS || type == Material.LEATHER_BOOTS ||
+					type == Material.IRON_HELMET || type == Material.IRON_CHESTPLATE || type == Material.IRON_LEGGINGS || type == Material.IRON_BOOTS ||
+					type == Material.GOLDEN_HELMET || type == Material.GOLDEN_CHESTPLATE || type == Material.GOLDEN_LEGGINGS || type == Material.GOLDEN_BOOTS ||
+					type == Material.DIAMOND_HELMET || type == Material.DIAMOND_CHESTPLATE || type == Material.DIAMOND_LEGGINGS || type == Material.DIAMOND_BOOTS ||
+					type == Material.NETHERITE_HELMET || type == Material.NETHERITE_CHESTPLATE || type == Material.NETHERITE_LEGGINGS || type == Material.NETHERITE_BOOTS ||
+					type == Material.CHAINMAIL_HELMET || type == Material.CHAINMAIL_CHESTPLATE || type == Material.CHAINMAIL_LEGGINGS || type == Material.CHAINMAIL_BOOTS ||
+					type == Material.TURTLE_HELMET || type == Material.ELYTRA);
+			if ((isArmor && (event.getRawSlot() >= 5 && event.getRawSlot() <= 8)) || (!isArmor && (event.getRawSlot() == 45 ||
+					event.getRawSlot() == rawHeld))) {
 
 				Charm remainingCharm = Charm.parseCharm(pCharms, remainingItem, player);
 
