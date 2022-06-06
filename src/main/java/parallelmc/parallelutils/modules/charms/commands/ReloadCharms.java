@@ -11,6 +11,8 @@ import java.util.List;
 
 public class ReloadCharms extends ParallelCommand {
 
+	private final String USAGE = "Usage: /pu reloadCharms";
+
 	private final ParallelCharms charms;
 
 	public ReloadCharms(ParallelCharms charms) {
