@@ -170,7 +170,8 @@ PLAYER_PARTICLE:
     - Val: The particle type. Follows standard Minecraft particle names.
   - `style`
     - Type: `STRING`
-    - Val: The style of the particle. Options include: Arrows, Batman, Beam, BlockBreak, BlockPlace, Celebration, Chains, Companion, Cube, Feet, Halo, Hurt, Invocation, Move, Normal, Orbit, Overhead, Point, Popper, Pulse, Quadhelix, Rings, Sphere, Spin, Spiral, Swords, Thick, Twins, Vortex, Whirl, Whirlwind, Wings
+    - Val: The style of the particle. Options include: Arrows, Batman, Beam, BlockBreak, BlockPlace, Celebration, Chains, Companion, Cube, Feet, Halo, Hurt, Invocation, Kill*, Move, Normal, Orbit, Overhead, Point, Popper, Pulse, Quadhelix, Rings, Sphere, Spin, Spiral, Swords, Thick, Twins, Vortex, Whirl, Whirlwind, Wings
+    - Note: Styles with * are custom and not part of PlayerParticles
 
 ### `PARTICLE` : `RUNNABLE`
 
