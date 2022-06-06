@@ -31,61 +31,65 @@ public class GiveCharm extends ParallelCommand {
 
 	@Override
 	public boolean execute(@NotNull CommandSender sender, @NotNull Command command, @NotNull String[] args) {
-			if (args.length < 2) {
-				sender.sendMessage(USAGE);
+		if (args.length < 2) {
+			sender.sendMessage(USAGE);
+			return false;
+		}
+
+		String name = "";
+
+		Player target = null;
+
+		if (args.length == 2) {
+			if (sender instanceof Player p) {
+				target = p;
+			} else {
+				sender.sendMessage("Command must be run by a player!");
 				return false;
 			}
-
-			String name = "";
-
-			Player target = null;
-
-			if (args.length == 2) {
-				if (sender instanceof Player p) {
-					target = p;
-				} else {
-					sender.sendMessage("Command must be run by a player!");
-					return false;
-				}
-				name = args[1];
-			} else {
-				target = sender.getServer().getPlayer(args[1]);
-				if (target == null) {
-					sender.sendMessage("Unknown Player!");
-					return false;
-				}
-				name = args[2];
-			}
-
-			if (!options.containsKey(name)) {
-				sender.sendMessage("Unknown charm option");
-				sender.sendMessage(USAGE);
+			name = args[1];
+		} else {
+			target = sender.getServer().getPlayer(args[1]);
+			if (target == null) {
+				sender.sendMessage("Unknown Player!");
 				return false;
 			}
-
-			CharmOptions option = options.get(name);
-
-			Charm charm = new Charm(pCharms, option);
-
-			ItemStack item = new ItemStack(Material.NAME_TAG);
-			charm.setCharmAppl(item);
-
-			if (target.getInventory().firstEmpty() == -1) {
-				target.getWorld().dropItem(target.getLocation(), item);
-			} else {
-				if (target.getInventory().addItem(item).size() == 0) {
-					return true;
-				} else {
-					sender.sendMessage("Unable to give item");
-					return false;
-				}
+			for (int i=2; i<args.length; i++) {
+				name += args[i] + " ";
 			}
+			name = name.trim();
+		}
 
-			return true;
+		if (!options.containsKey(name)) {
+			sender.sendMessage("Unknown charm option");
+			sender.sendMessage(USAGE);
+			return false;
+		}
+
+		CharmOptions option = options.get(name);
+
+		Charm charm = new Charm(pCharms, option);
+
+		ItemStack item = new ItemStack(Material.NAME_TAG);
+		charm.setCharmAppl(item);
+
+		if (target.getInventory().firstEmpty() == -1) {
+			target.getWorld().dropItem(target.getLocation(), item);
+		} else {
+			if (target.getInventory().addItem(item).size() == 0) {
+				return true;
+			} else {
+				sender.sendMessage("Unable to give item");
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	@Override
 	public List<String> getTabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
+		// TODO: Implement this
 		return null;
 	}
 }
