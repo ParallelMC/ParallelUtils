@@ -130,7 +130,7 @@ LORE:
 - Settings
   - `lore`
     - Type: `STRING`
-    - Val: The lore to add to the item. Will also show on the charm applicator. Insert `<displayname>` to include the name of the player that applied the charm. Supports MiniMessage.
+    - Val: The lore to add to the item. Will also show on the charm applicator. Insert `<displayname>` to include the name of the player that applied the charm. Supports MiniMessage and PlaceholderAPI.
 
 ### `MESSAGE_KILL` : `EVENT<PlayerDeathEvent>`
 
@@ -144,7 +144,7 @@ MESSAGE_KILL:
 - Settings
   - `message`
     - Type: `STRING`
-    - Val: The message that will be displayed when a player is killed with this charm. `<killer>` is replaced with the name of the killer and `<dead>` is replaced with the name of the killed player. Supports MiniMessage.
+    - Val: The message that will be displayed when a player is killed with this charm. `<killer>` is replaced with the name of the killer and `<dead>` is replaced with the name of the killed player. Supports MiniMessage and PlaceholderAPI.
 
 ### `COUNTER_KILL` : `EVENT<NotYetImplemented>`
 
