@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.charms.handlers.impl;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -60,7 +61,8 @@ public class CharmLoreHandler extends ICharmApplyHandler {
 		);
 
 		for (String s : parts) {
-			lore.add(MiniMessage.miniMessage().deserialize(s, resolver));
+			String part = PlaceholderAPI.setPlaceholders(player, s);
+			lore.add(MiniMessage.miniMessage().deserialize(part, resolver));
 		}
 
 		meta.lore(lore);

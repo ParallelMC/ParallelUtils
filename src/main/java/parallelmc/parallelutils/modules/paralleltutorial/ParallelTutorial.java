@@ -24,6 +24,7 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltutorial.commands.*;
+import parallelmc.parallelutils.modules.paralleltutorial.handlers.OnJoinAfterOnLeave;
 import parallelmc.parallelutils.modules.paralleltutorial.handlers.OnLeaveDuringTutorial;
 import parallelmc.parallelutils.modules.paralleltutorial.handlers.OnSpectatorTeleport;
 import parallelmc.parallelutils.modules.paralleltutorial.scripting.Instruction;
@@ -46,11 +47,11 @@ public class ParallelTutorial implements ParallelModule {
     private ProtocolManager protManager;
 
     // mostly for use in server crashes/shutdown
-    public static HashMap<Player, BukkitTask> runningTutorials = new HashMap<>();
+    public HashMap<Player, BukkitTask> runningTutorials = new HashMap<>();
 
-    public static HashMap<Player, ArmorStand> armorStands = new HashMap<>();
+    public HashMap<Player, ArmorStand> armorStands = new HashMap<>();
 
-    public static HashMap<Player, Location> startPoints = new HashMap<>();
+    public HashMap<Player, Location> startPoints = new HashMap<>();
 
     private final HashMap<String, ArrayList<Instruction>> tutorials = new HashMap<>();
 
@@ -82,6 +83,7 @@ public class ParallelTutorial implements ParallelModule {
 
         manager.registerEvents(new OnSpectatorTeleport(), puPlugin);
         manager.registerEvents(new OnLeaveDuringTutorial(), puPlugin);
+        manager.registerEvents(new OnJoinAfterOnLeave(), puPlugin);
 
         puPlugin.getCommand("starttutorial").setExecutor(new ParallelStartTutorial());
         puPlugin.getCommand("listtutorials").setExecutor(new ParallelListTutorials());
@@ -97,7 +99,7 @@ public class ParallelTutorial implements ParallelModule {
         // if anyone is in a tutorial take them out of it
         runningTutorials.forEach((p, t) -> {
             t.cancel();
-            endTutorialFor(p);
+            endTutorialFor(p, false);
         });
         runningTutorials.clear();
     }
@@ -202,7 +204,7 @@ public class ParallelTutorial implements ParallelModule {
         return tutorials.containsKey(tutorial.toLowerCase());
     }
 
-    public void RunTutorialFor(@NotNull Player player, @NotNull String tutorial) {
+    public void RunTutorialFor(@NotNull Player player, @NotNull String tutorial, boolean debug) {
         final World world = player.getWorld();
         // TIL entities can't be spawned in async runnables
         Bukkit.getScheduler().runTaskAsynchronously(puPlugin, new Runnable() {
@@ -213,15 +215,14 @@ public class ParallelTutorial implements ParallelModule {
             BukkitTask loop;
             @Override
             public void run() {
+                if (debug) ParallelChat.sendParallelMessageTo(player, "Debug mode enabled! Please open console to view debug output.");
                 startPoints.put(player, player.getLocation());
                 loop = new BukkitRunnable() {
                     ArmorStand stand;
                     @Override
                     public void run() {
                         if (stand != null && player.getLocation().distanceSquared(stand.getLocation()) > 256) {
-                            Bukkit.getScheduler().runTask(puPlugin, () -> {
-                                player.teleport(stand.getLocation());
-                            });
+                            Bukkit.getScheduler().runTask(puPlugin, () -> player.teleport(stand.getLocation()));
                         }
                         // only run the next instruction if the current one is finished
                         if (instructionFinished) {
@@ -295,6 +296,11 @@ public class ParallelTutorial implements ParallelModule {
                                                     newPoint.setPitch((float)lookAt.getY());
                                                 }
                                                 if (stand.teleport(newPoint)) {
+                                                    if (debug) {
+                                                        Parallelutils.log(Level.WARNING, "Armor Stand teleported!");
+                                                        Parallelutils.log(Level.WARNING, "Armor Stand looking at: " + stand.getLocation().getYaw() + " " + stand.getLocation().getPitch());
+                                                        Parallelutils.log(Level.WARNING, "Should be looking at: " + lookAt.getX() + " " + lookAt.getY());
+                                                    }
                                                     instructionFinished = true;
                                                     this.cancel();
                                                 }
@@ -304,6 +310,7 @@ public class ParallelTutorial implements ParallelModule {
                                 }
                                 case "ROTATE" -> {
                                     lookAt = new Vector(Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), 0);
+                                    if (debug) Parallelutils.log(Level.WARNING, "Updated look vector to " + lookAt.getX() + " " + lookAt.getY());
                                     instructionFinished = true;
                                 }
                                 case "WAIT" -> {
@@ -321,13 +328,8 @@ public class ParallelTutorial implements ParallelModule {
                                                     "<dark_aqua><bold>\n\n---------------------------------------------\n"));
                                     instructionFinished = true;
                                 }
-                                /*case "SOUND" -> {
-                                    //player.stopSound(SoundStop.all());
-                                    //player.playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, i.args()[0]), Sound.Source.MASTER, 1f, 1f), Sound.Emitter.self());
-                                    instructionFinished = true;
-                                }*/
                                 case "END" -> {
-                                    endTutorialFor(player);
+                                    endTutorialFor(player, debug);
                                     instructionFinished = true;
                                     loop.cancel();
                                 }
@@ -342,24 +344,81 @@ public class ParallelTutorial implements ParallelModule {
         });
     }
 
-    public void endTutorialFor(Player player) {
+    public void endTutorialFor(Player player, boolean debug) {
         Location endPoint = startPoints.get(player);
+        ArmorStand stand = armorStands.get(player);
+        if (debug) Parallelutils.log(Level.WARNING, "Ending tutorial...");
         new BukkitRunnable() {
             @Override
             public void run() {
+                if (debug) Parallelutils.log(Level.WARNING, "Waiting for player to be teleported back.");
                 // wait for player to be successfully teleported
                 if (player.teleport(endPoint)) {
-                    player.stopSound(SoundStop.all());
+                    if (debug) Parallelutils.log(Level.WARNING, "Player teleported!");
                     // making the player spectate themselves brings them back to the start
                     forceSpectate(player, player.getEntityId());
-                    if (armorStands.containsKey(player)) {
-                        armorStands.get(player).remove();
+                    if (debug) Parallelutils.log(Level.WARNING, "armorStands HashMap " + (stand != null ? "DOES" : "DOES NOT") + " contain the player before deletion.");
+                    if (stand != null) {
+                        if (debug) Parallelutils.log(Level.WARNING, "Armor stand marked for removal");
+                        stand.remove();
                         armorStands.remove(player);
                     }
                     player.setGameMode(GameMode.SURVIVAL);
                     player.setFlySpeed(0.1F);
                     startPoints.remove(player);
                     runningTutorials.remove(player);
+                    this.cancel();
+                }
+            }
+        }.runTaskTimer(puPlugin, 0L, 2L);
+        if (debug) {
+            Parallelutils.log(Level.WARNING, "Checking status of armor stand in a few ticks...");
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (stand.isDead() && !stand.isValid())
+                        Parallelutils.log(Level.WARNING, "Armor Stand removed successfully!");
+                    else
+                        Parallelutils.log(Level.WARNING, "Armor Stand was NOT removed!");
+                }
+            }.runTaskLater(puPlugin, 10L);
+        }
+    }
+
+    public void handleDisconnectedPlayer(Player player, boolean debug) {
+        if (debug) Parallelutils.log(Level.WARNING, "Ending tutorial...");
+        ArmorStand stand = armorStands.get(player);
+        if (debug) Parallelutils.log(Level.WARNING, "armorStands HashMap " + (stand != null ? "DOES" : "DOES NOT") + " contain the player before deletion.");
+        if (stand != null) {
+            if (debug) Parallelutils.log(Level.WARNING, "Armor stand marked for removal");
+            stand.remove();
+            armorStands.remove(player);
+        }
+        runningTutorials.remove(player);
+        if (debug) {
+            Parallelutils.log(Level.WARNING, "Checking status of armor stand in a few ticks...");
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (stand.isDead() && !stand.isValid())
+                        Parallelutils.log(Level.WARNING, "Armor Stand removed successfully!");
+                    else
+                        Parallelutils.log(Level.WARNING, "Armor Stand was NOT removed!");
+                }
+            }.runTaskLater(puPlugin, 10L);
+        }
+    }
+
+    public void handleReconnectedPlayer(Player player) {
+        new BukkitRunnable() {
+            final Location startPoint = ParallelTutorial.get().startPoints.get(player);
+            @Override
+            public void run() {
+                // wait for player to be successfully teleported
+                if (player.teleport(startPoint)) {
+                    player.setGameMode(GameMode.SURVIVAL);
+                    player.setFlySpeed(0.1F);
+                    ParallelTutorial.get().startPoints.remove(player);
                     this.cancel();
                 }
             }

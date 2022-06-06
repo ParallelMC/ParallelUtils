@@ -15,7 +15,7 @@ public class ParallelReloadTutorials implements CommandExecutor {
                 return true;
             }
         }
-        if (ParallelTutorial.runningTutorials.size() > 0) {
+        if (ParallelTutorial.get().runningTutorials.size() > 0) {
             commandSender.sendMessage("Cannot reload tutorials while there are players in a tutorial!");
             return true;
         }

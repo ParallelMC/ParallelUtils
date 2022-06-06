@@ -15,11 +15,11 @@ public class OnLeaveDuringTutorial implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPlayerLeaveDuringTutorial(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        BukkitTask tutorial = ParallelTutorial.runningTutorials.get(player);
+        BukkitTask tutorial = ParallelTutorial.get().runningTutorials.get(player);
         if (tutorial != null) {
             Parallelutils.log(Level.WARNING, player.getName() + " left during a tutorial! Attempting to fix...");
             tutorial.cancel();
-            ParallelTutorial.get().endTutorialFor(player);
+            ParallelTutorial.get().handleDisconnectedPlayer(player, true);
             Parallelutils.log(Level.WARNING, player.getName() + " was successfully taken out of the tutorial.");
         }
     }
