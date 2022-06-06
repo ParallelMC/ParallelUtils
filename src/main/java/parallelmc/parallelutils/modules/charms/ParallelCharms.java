@@ -15,10 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.modules.charms.commands.ApplyCharm;
-import parallelmc.parallelutils.modules.charms.commands.GiveCharm;
-import parallelmc.parallelutils.modules.charms.commands.ParticleTest;
-import parallelmc.parallelutils.modules.charms.commands.RemoveCharm;
+import parallelmc.parallelutils.modules.charms.commands.*;
 import parallelmc.parallelutils.modules.charms.data.*;
 import parallelmc.parallelutils.modules.charms.data.impl.GenericEffectSettings;
 import parallelmc.parallelutils.modules.charms.handlers.impl.*;
@@ -100,6 +97,44 @@ public class ParallelCharms implements ParallelModule {
 
 
 		// Read Options files
+		setupCharms(puPlugin);
+
+
+		puPlugin.addCommand("giveCharm", new GiveCharm(this, charmOptions));
+		puPlugin.addCommand("reloadCharms", new ReloadCharms(this));
+
+
+		/* Stuff from testing
+		if (charmOptions.size() > 1) {
+			Charm testCharm = new Charm(this, charmOptions.get(1));
+			Parallelutils.log(Level.INFO, charmOptions.get(1).toString());
+			puPlugin.addCommand("applyCharm", new ApplyCharm(testCharm));
+			puPlugin.addCommand("removeCharm", new RemoveCharm(testCharm));
+		}
+		 */
+	}
+
+	@Override
+	public void onDisable() {
+	}
+
+	public void resetCharms() {
+		PluginManager manager = Bukkit.getPluginManager();
+		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
+
+		if (plugin == null) {
+			Parallelutils.log(Level.SEVERE, "Unable to reset ParallelCharms. Plugin " + Constants.PLUGIN_NAME
+					+ " does not exist!");
+			return;
+		}
+
+		Parallelutils puPlugin = (Parallelutils) plugin;
+
+		charmOptions.clear();
+		setupCharms(puPlugin);
+	}
+
+	private void setupCharms(Parallelutils puPlugin) {
 		try {
 			Path charmsFolder = Path.of(puPlugin.getDataFolder() + "/charms");
 			if (!Files.exists(charmsFolder)) {
@@ -212,22 +247,6 @@ public class ParallelCharms implements ParallelModule {
 			Parallelutils.log(Level.WARNING, "Invalid charm options configuration!");
 			e.printStackTrace();
 		}
-
-		puPlugin.addCommand("giveCharm", new GiveCharm(this, charmOptions));
-
-
-		/* Stuff from testing
-		if (charmOptions.size() > 1) {
-			Charm testCharm = new Charm(this, charmOptions.get(1));
-			Parallelutils.log(Level.INFO, charmOptions.get(1).toString());
-			puPlugin.addCommand("applyCharm", new ApplyCharm(testCharm));
-			puPlugin.addCommand("removeCharm", new RemoveCharm(testCharm));
-		}
-		 */
-	}
-
-	@Override
-	public void onDisable() {
 	}
 
 	/**
