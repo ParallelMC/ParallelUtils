@@ -13,11 +13,11 @@ public class ParallelLeaveTutorial implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, String[] args) {
         if (commandSender instanceof Player player) {
-            if (ParallelTutorial.runningTutorials.containsKey(player)) {
-                BukkitTask tutorial = ParallelTutorial.runningTutorials.get(player);
+            if (ParallelTutorial.get().runningTutorials.containsKey(player)) {
+                BukkitTask tutorial = ParallelTutorial.get().runningTutorials.get(player);
                 if (tutorial != null) {
                     tutorial.cancel();
-                    ParallelTutorial.get().endTutorialFor(player);
+                    ParallelTutorial.get().endTutorialFor(player, true);
                     ParallelChat.sendParallelMessageTo(player, "Successfully exited the tutorial.");
                 }
             }

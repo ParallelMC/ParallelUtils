@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.charms.handlers.impl;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -59,7 +60,9 @@ public class CharmKillMessageHandler extends ICharmHandler<PlayerDeathEvent> {
 
 		String miniMsg = (String) message.getVal();
 
-		Component cmp = MiniMessage.builder().build().deserialize(miniMsg, placeholders);
+		String replaced = PlaceholderAPI.setPlaceholders(player, miniMsg);
+
+		Component cmp = MiniMessage.builder().build().deserialize(replaced, placeholders);
 
 		event.deathMessage(cmp);
 	}
