@@ -13,6 +13,8 @@ import parallelmc.parallelutils.modules.charms.data.Charm;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -89,7 +91,23 @@ public class GiveCharm extends ParallelCommand {
 
 	@Override
 	public List<String> getTabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
-		// TODO: Implement this
+		if (args.length == 2) {
+			List<String> charmsNoSpaces = new ArrayList<>();
+			// First all names that are online, then charms noSpaces
+
+			for (Player p : sender.getServer().getOnlinePlayers()) {
+				charmsNoSpaces.add(p.getName());
+			}
+
+			for (String s : options.keySet()) {
+				if (s.contains(" ")) continue;
+				charmsNoSpaces.add(s);
+			}
+			return charmsNoSpaces;
+		} else if (args.length == 3) {
+			return List.copyOf(options.keySet());
+		}
+
 		return null;
 	}
 }
