@@ -28,7 +28,7 @@ import java.util.logging.Level;
  */
 public class CharmOptions {
 
-	private static final Integer DEFAULT_APPLICATOR_MODEL = 1234;
+	private static final Integer[] DEFAULT_APPLICATOR_MODELS = new Integer[]{1000000, 1000001, 1000002, 1000003};
 
 	// This is just used to store in the database. Specifies _type_ of charm, not the specific charm
 	private final UUID optionsUuid;
@@ -65,7 +65,14 @@ public class CharmOptions {
 		this.effects = effects;
 		this.customModelData = customModelData;
 		if (applicatorModelData == null) {
-			this.applicatorModelData = DEFAULT_APPLICATOR_MODEL;
+			int effectsNum = 0;
+			for (HandlerType t : effects.keySet()) {
+				if (t == HandlerType.LORE) continue;
+				effectsNum++;
+			}
+			if (effectsNum == 0) effectsNum = 1;
+			if (effectsNum > 4) effectsNum = 4;
+			this.applicatorModelData = DEFAULT_APPLICATOR_MODELS[effectsNum-1];
 		} else {
 			this.applicatorModelData = applicatorModelData;
 		}
@@ -73,7 +80,7 @@ public class CharmOptions {
 
 	public CharmOptions(UUID uuid, String optionsName, Material[] allowedMaterials, String[] allowedPlayers, String[] allowedPermissions,
 	                    HashMap<HandlerType, IEffectSettings> effects, Integer customModelData) {
-		this(uuid, optionsName, allowedMaterials, allowedPlayers, allowedPermissions, effects, customModelData, DEFAULT_APPLICATOR_MODEL);
+		this(uuid, optionsName, allowedMaterials, allowedPlayers, allowedPermissions, effects, customModelData, null);
 	}
 
 	public ItemStack applyCharm(ItemStack item) {
