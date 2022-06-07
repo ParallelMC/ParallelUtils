@@ -317,6 +317,8 @@ public class Charm {
 
 		meta.displayName(MiniMessage.miniMessage().deserialize("<yellow>Charm Applicator"));
 
+		item.setItemMeta(meta);
+
 		options.applyCharm(item);
 
 		HashMap<HandlerType, IEffectSettings> effects = options.getEffects();
@@ -325,14 +327,14 @@ public class Charm {
 
 		meta = item.getItemMeta();
 
+		List<Component> lore = new ArrayList<>();
+
+		lore.add(MiniMessage.miniMessage().deserialize("<gray>" + this.options.getName()));
+
 		if (loreSettings != null) {
 			HashMap<String, EncapsulatedType> settingMap = loreSettings.getSettings();
 
 			EncapsulatedType loreSetting = settingMap.get("lore");
-
-			List<Component> lore = new ArrayList<>();
-
-			lore.add(MiniMessage.miniMessage().deserialize("<reset>" + this.options.getName()));
 
 			if (loreSetting.getType() == Types.STRING) {
 
@@ -345,9 +347,9 @@ public class Charm {
 					lore.add(MiniMessage.miniMessage().deserialize(part));
 				}
 			}
-
-			meta.lore(lore);
 		}
+
+		meta.lore(lore);
 
 		PersistentDataContainer pdc = meta.getPersistentDataContainer();
 
