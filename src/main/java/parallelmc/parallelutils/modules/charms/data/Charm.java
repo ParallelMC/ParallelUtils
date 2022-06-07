@@ -24,10 +24,7 @@ import parallelmc.parallelutils.modules.charms.helper.Types;
 import parallelmc.parallelutils.util.BukkitTools;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 public class Charm {
@@ -102,6 +99,12 @@ public class Charm {
 			if (meta == null) {
 				return false;
 			}
+
+			List<Component> lore = meta.lore();
+			if (lore == null) lore = new ArrayList<>();
+
+			lore.add(MiniMessage.miniMessage().deserialize("<aqua>: " + options.getName()));
+			meta.lore(lore);
 
 			PersistentDataContainer pdc = meta.getPersistentDataContainer();
 
@@ -311,6 +314,8 @@ public class Charm {
 
 		if (meta == null) return false;
 
+		meta.displayName(MiniMessage.miniMessage().deserialize("<yellow>Charm Applicator"));
+
 		options.applyCharm(item);
 
 		HashMap<HandlerType, IEffectSettings> effects = options.getEffects();
@@ -326,20 +331,22 @@ public class Charm {
 
 			EncapsulatedType loreSetting = settingMap.get("lore");
 
+			List<Component> lore = new ArrayList<>();
+
+			lore.add(Component.text(this.options.getName()));
+
 			if (loreSetting.getType() == Types.STRING) {
 
 				String loreTotal = (String) loreSetting.getVal();
 
 				String[] parts = loreTotal.split("\n");
 
-				List<Component> lore = new ArrayList<>();
-
 				for (String s : parts) {
 					lore.add(MiniMessage.miniMessage().deserialize(s));
 				}
-
-				meta.lore(lore);
 			}
+
+			meta.lore(lore);
 		}
 
 		PersistentDataContainer pdc = meta.getPersistentDataContainer();
