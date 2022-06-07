@@ -46,7 +46,8 @@ public class CharmLoreHandler extends ICharmApplyHandler {
 
 		String[] parts = loreTotal.split("\n");
 
-		List<Component> lore = new ArrayList<>();
+		List<Component> lore = item.lore();
+		if (lore == null) lore = new ArrayList<>();
 
 		Component displayName;
 
