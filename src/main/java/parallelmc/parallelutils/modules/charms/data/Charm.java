@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.charms.data;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
@@ -103,7 +104,7 @@ public class Charm {
 			List<Component> lore = meta.lore();
 			if (lore == null) lore = new ArrayList<>();
 
-			lore.add(MiniMessage.miniMessage().deserialize("<aqua>: " + options.getName()));
+			lore.add(MiniMessage.miniMessage().deserialize("<aqua>Charm: " + options.getName()));
 			meta.lore(lore);
 
 			PersistentDataContainer pdc = meta.getPersistentDataContainer();
@@ -324,8 +325,6 @@ public class Charm {
 
 		meta = item.getItemMeta();
 
-		meta.displayName(Component.text("Charm"));
-
 		if (loreSettings != null) {
 			HashMap<String, EncapsulatedType> settingMap = loreSettings.getSettings();
 
@@ -333,7 +332,7 @@ public class Charm {
 
 			List<Component> lore = new ArrayList<>();
 
-			lore.add(Component.text(this.options.getName()));
+			lore.add(MiniMessage.miniMessage().deserialize("<reset>" + this.options.getName()));
 
 			if (loreSetting.getType() == Types.STRING) {
 
@@ -342,7 +341,8 @@ public class Charm {
 				String[] parts = loreTotal.split("\n");
 
 				for (String s : parts) {
-					lore.add(MiniMessage.miniMessage().deserialize(s));
+					String part = PlaceholderAPI.setPlaceholders(null, s);
+					lore.add(MiniMessage.miniMessage().deserialize(part));
 				}
 			}
 
