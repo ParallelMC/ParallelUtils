@@ -1,0 +1,3 @@
+[submodule "docs/Parallel-Documentation"]
+	path = docs/Parallel-Documentation
+	url = git@github.com:ParallelMC/Parallel-Documentation.git
