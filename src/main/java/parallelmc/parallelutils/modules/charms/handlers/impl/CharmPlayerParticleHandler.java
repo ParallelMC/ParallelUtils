@@ -3,6 +3,9 @@ package parallelmc.parallelutils.modules.charms.handlers.impl;
 import dev.esophose.playerparticles.api.PlayerParticlesAPI;
 import dev.esophose.playerparticles.particles.ParticleEffect;
 import dev.esophose.playerparticles.particles.ParticlePair;
+import dev.esophose.playerparticles.particles.data.ColorTransition;
+import dev.esophose.playerparticles.particles.data.OrdinaryColor;
+import dev.esophose.playerparticles.particles.data.Vibration;
 import dev.esophose.playerparticles.styles.DefaultStyles;
 import dev.esophose.playerparticles.styles.ParticleStyle;
 import org.bukkit.Material;
@@ -115,7 +118,32 @@ public class CharmPlayerParticleHandler extends ICharmHandler<PlayerSlotChangedE
 										return;
 									}
 
-									ParticlePair pair = ppAPI.addActivePlayerParticle(player, effect, style);
+									ParticlePair pair = null;
+
+									if (effect.hasProperty(ParticleEffect.ParticleProperty.COLORABLE)) {
+										OrdinaryColor color = ppSettings.getColor();
+										if (color != null) {
+											pair = ppAPI.addActivePlayerParticle(player, effect, style, color);
+										}
+									} else if (effect.hasProperty(ParticleEffect.ParticleProperty.COLORABLE_TRANSITION)) {
+										ColorTransition colorTransition = ppSettings.getColorTransition();
+										if (colorTransition != null) {
+											pair = ppAPI.addActivePlayerParticle(player, effect, style, colorTransition);
+										}
+									} else if (effect.hasProperty(ParticleEffect.ParticleProperty.VIBRATION)) {
+										Vibration vibration = ppSettings.getVibration();
+										if (vibration != null) {
+											pair = ppAPI.addActivePlayerParticle(player, effect, style, vibration);
+										}
+									} else if (effect.hasProperty(ParticleEffect.ParticleProperty.REQUIRES_MATERIAL_DATA)) {
+										 Material material = ppSettings.getMaterial();
+										 if (material != null) {
+											 pair = ppAPI.addActivePlayerParticle(player, effect, style, material);
+										 }
+									}
+									if (pair == null) {
+										pair = ppAPI.addActivePlayerParticle(player, effect, style);
+									}
 
 									if (pair == null) {
 										Parallelutils.log(Level.WARNING, "Could not add active player particle for player " + player.getName());
