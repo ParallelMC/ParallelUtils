@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -50,7 +51,7 @@ public class CharmStyleNameHandler extends ICharmApplyHandler {
 		Component currName = meta.displayName();
 
 		if (currName == null) {
-			String dispName = PaperComponents.plainTextSerializer().serialize(Component.translatable(item.translationKey()));;
+			String dispName = PlainTextComponentSerializer.plainText().serialize(Component.translatable(item.translationKey()));;
 			currName = Component.text(dispName);
 		}
 
