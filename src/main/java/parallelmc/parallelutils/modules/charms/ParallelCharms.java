@@ -77,14 +77,30 @@ public class ParallelCharms implements ParallelModule {
 		}
 
 		// Register handlers
-		if (!registerHandler(new CharmKillMessageHandler())) { Parallelutils.log(Level.WARNING, "Could not register MESSAGE_KILL"); }
-		if (!registerHandler(new CharmStyleNameHandler())) { Parallelutils.log(Level.WARNING, "Could not register STYLE_NAME"); }
-		if (!registerHandler(new CharmParticleHandler())) { Parallelutils.log(Level.WARNING, "Could not register PARTICLE"); }
-		if (!registerHandler(new CharmLoreHandler())) { Parallelutils.log(Level.WARNING, "Could not register LORE"); }
-		if (!registerHandler(new CharmTestRunnableHandler())) { Parallelutils.log(Level.WARNING, "Could not register TEST_RUNNABLE"); }
-		if (!registerHandler(new CharmTestEventHandler())) { Parallelutils.log(Level.WARNING, "Could not register TEST_EVENT");}
-		if (!registerHandler(new CharmTestApplyHandler())) { Parallelutils.log(Level.WARNING, "Could not register TEST_APPLY"); }
-		if (ppAPI == null || !registerHandler(new CharmPlayerParticleHandler(puPlugin, this, ppAPI))) { Parallelutils.log(Level.WARNING, "Could not register PLAYER_PARTICLE");}
+		if (!registerHandler(new CharmKillMessageHandler())) {
+			Parallelutils.log(Level.WARNING, "Could not register MESSAGE_KILL");
+		}
+		if (!registerHandler(new CharmStyleNameHandler())) {
+			Parallelutils.log(Level.WARNING, "Could not register STYLE_NAME");
+		}
+		if (!registerHandler(new CharmParticleHandler())) {
+			Parallelutils.log(Level.WARNING, "Could not register PARTICLE");
+		}
+		if (!registerHandler(new CharmLoreHandler())) {
+			Parallelutils.log(Level.WARNING, "Could not register LORE");
+		}
+		if (!registerHandler(new CharmTestRunnableHandler())) {
+			Parallelutils.log(Level.WARNING, "Could not register TEST_RUNNABLE");
+		}
+		if (!registerHandler(new CharmTestEventHandler())) {
+			Parallelutils.log(Level.WARNING, "Could not register TEST_EVENT");
+		}
+		if (!registerHandler(new CharmTestApplyHandler())) {
+			Parallelutils.log(Level.WARNING, "Could not register TEST_APPLY");
+		}
+		if (ppAPI == null || !registerHandler(new CharmPlayerParticleHandler(puPlugin, this, ppAPI))) {
+			Parallelutils.log(Level.WARNING, "Could not register PLAYER_PARTICLE");
+		}
 
 		// Register events
 		manager.registerEvents(new PlayerJoinContainerListenerOverwrite(), puPlugin);
@@ -142,115 +158,118 @@ public class ParallelCharms implements ParallelModule {
 				Files.createDirectory(charmsFolder);
 			}
 
-			Path optionsFile = Path.of(puPlugin.getDataFolder() + "/charms/options.yml");
-			if (!Files.exists(optionsFile)) {
-				Parallelutils.log(Level.WARNING, "Charms Options file does not exist. Creating...");
-				Files.createFile(optionsFile);
-			}
+			Files.walk(charmsFolder).filter(Files::isRegularFile).forEach(optionsFile -> {
+				try {
+					FileConfiguration optionsConfig = new YamlConfiguration();
+					optionsConfig.load(optionsFile.toFile());
 
-			FileConfiguration optionsConfig = new YamlConfiguration();
-			optionsConfig.load(optionsFile.toFile());
+					Map<String, Object> vals = optionsConfig.getValues(false);
 
-			Map<String, Object> vals = optionsConfig.getValues(false);
+					for (String s : vals.keySet()) {
+						Object o = vals.get(s);
+						if (o instanceof ConfigurationSection section) {
+							try {
+								// This is a single charm option
+								String uuidStr = section.getString("uuid");
+								if (uuidStr == null) {
+									Parallelutils.log(Level.WARNING, "Invalid Charm Option for option: " + s);
+									continue;
+								}
+								UUID uuid = UUID.fromString(uuidStr);
 
-			for (String s : vals.keySet()) {
-				Object o = vals.get(s);
-				if (o instanceof ConfigurationSection section) {
-					try {
-						// This is a single charm option
-						String uuidStr = section.getString("uuid");
-						if (uuidStr == null) {
-							Parallelutils.log(Level.WARNING, "Invalid Charm Option for option: " + s);
-							continue;
-						}
-						UUID uuid = UUID.fromString(uuidStr);
+								String name = section.getString("name");
+								if (name == null || name.equals("")) {
+									Parallelutils.log(Level.WARNING, "Invalid Charm Option for option: " + s);
+									Parallelutils.log(Level.WARNING, "Must have name");
+									continue;
+								}
 
-						String name = section.getString("name");
-						if (name == null || name.equals("")) {
-							Parallelutils.log(Level.WARNING, "Invalid Charm Option for option: " + s);
-							Parallelutils.log(Level.WARNING, "Must have name");
-							continue;
-						}
+								List<String> matStrList = section.getStringList("allowed-materials");
+								Material[] matsList = matStrList.stream().map(Material::getMaterial).toArray(Material[]::new);
 
-						List<String> matStrList = section.getStringList("allowed-materials");
-						Material[] matsList = matStrList.stream().map(Material::getMaterial).toArray(Material[]::new);
+								String[] allowedPlayers = section.getStringList("allowed-players").toArray(String[]::new);
+								String[] allowedPermissions = section.getStringList("allowed-permissions").toArray(String[]::new);
 
-						String[] allowedPlayers = section.getStringList("allowed-players").toArray(String[]::new);
-						String[] allowedPermissions = section.getStringList("allowed-permissions").toArray(String[]::new);
+								Integer customModelData = section.getInt("custom-model-data");
+								if (customModelData == 0) {
+									customModelData = null;
+								}
 
-						Integer customModelData = section.getInt("custom-model-data");
-						if (customModelData == 0) {
-							customModelData = null;
-						}
+								Integer applicatorModelData = section.getInt("applicator-model-data");
+								if (applicatorModelData == 0) {
+									applicatorModelData = null;
+								}
 
-						Integer applicatorModelData = section.getInt("applicator-model-data");
-						if (applicatorModelData == 0) {
-							applicatorModelData = null;
-						}
+								HashMap<HandlerType, IEffectSettings> effects = new HashMap<>();
+								ConfigurationSection effectsSection = section.getConfigurationSection("effects");
+								if (effectsSection != null) {
+									Map<String, Object> effectPairs = effectsSection.getValues(false);
 
-						HashMap<HandlerType, IEffectSettings> effects = new HashMap<>();
-						ConfigurationSection effectsSection = section.getConfigurationSection("effects");
-						if (effectsSection != null) {
-							Map<String, Object> effectPairs = effectsSection.getValues(false);
+									for (String handlerStr : effectPairs.keySet()) {
+										Object effectSettingsObj = effectPairs.get(handlerStr);
+										if (effectSettingsObj instanceof ConfigurationSection settingsSection) {
+											Map<String, Object> settingPairs = settingsSection.getValues(false);
 
-							for (String handlerStr : effectPairs.keySet()) {
-								Object effectSettingsObj = effectPairs.get(handlerStr);
-								if (effectSettingsObj instanceof ConfigurationSection settingsSection) {
-									Map<String, Object> settingPairs = settingsSection.getValues(false);
+											HashMap<String, EncapsulatedType> settings = new HashMap<>();
 
-									HashMap<String, EncapsulatedType> settings = new HashMap<>();
-
-									for (String settingName : settingPairs.keySet()) {
-										Object settingVal = settingPairs.get(settingName);
-										if (settingVal instanceof ConfigurationSection settingValSec) {
-											String typeStr = settingValSec.getString("type");
-											if (typeStr != null) {
-												Types type = Types.valueOf(typeStr);
-												switch (type) {
-													case BYTE, INT -> settings.put(settingName,
-															new EncapsulatedType(type, settingValSec.getInt("val")));
-													case LONG -> settings.put(settingName,
-															new EncapsulatedType(type, settingValSec.getLong("val")));
-													case DOUBLE -> settings.put(settingName,
-															new EncapsulatedType(type, settingValSec.getDouble("val")));
-													case STRING -> settings.put(settingName,
-															new EncapsulatedType(type, settingValSec.getString("val")));
+											for (String settingName : settingPairs.keySet()) {
+												Object settingVal = settingPairs.get(settingName);
+												if (settingVal instanceof ConfigurationSection settingValSec) {
+													String typeStr = settingValSec.getString("type");
+													if (typeStr != null) {
+														Types type = Types.valueOf(typeStr);
+														switch (type) {
+															case BYTE, INT -> settings.put(settingName,
+																	new EncapsulatedType(type, settingValSec.getInt("val")));
+															case LONG -> settings.put(settingName,
+																	new EncapsulatedType(type, settingValSec.getLong("val")));
+															case DOUBLE -> settings.put(settingName,
+																	new EncapsulatedType(type, settingValSec.getDouble("val")));
+															case STRING -> settings.put(settingName,
+																	new EncapsulatedType(type, settingValSec.getString("val")));
+														}
+													}
 												}
 											}
+
+											HandlerType handlerType = HandlerType.valueOf(handlerStr);
+
+											IEffectSettings effectSettings = new SettingsFactory(handlerType).getSettings(settings);
+											effects.put(handlerType, effectSettings);
 										}
 									}
-
-									HandlerType handlerType = HandlerType.valueOf(handlerStr);
-
-									IEffectSettings effectSettings = new SettingsFactory(handlerType).getSettings(settings);
-									effects.put(handlerType, effectSettings);
 								}
+
+								CharmOptions charmOptions = new CharmOptions(uuid, name, matsList, allowedPlayers, allowedPermissions,
+										effects, customModelData, applicatorModelData);
+								this.charmOptions.put(name, charmOptions);
+
+							} catch (IllegalArgumentException e) {
+								Parallelutils.log(Level.WARNING, "Cannot parse charm settings!");
+								e.printStackTrace();
 							}
 						}
-
-						CharmOptions charmOptions = new CharmOptions(uuid, name, matsList, allowedPlayers, allowedPermissions,
-								effects, customModelData, applicatorModelData);
-						this.charmOptions.put(name, charmOptions);
-
-					} catch (IllegalArgumentException e) {
-						Parallelutils.log(Level.WARNING, "Cannot parse charm settings!");
-						e.printStackTrace();
 					}
+
+				} catch (IOException e) {
+					Parallelutils.log(Level.WARNING, "Unable to load charm options!");
+					e.printStackTrace();
+				} catch (InvalidConfigurationException e) {
+					Parallelutils.log(Level.WARNING, "Invalid charm options configuration!");
+					e.printStackTrace();
 				}
-			}
+			});
 
 
 		} catch (IOException e) {
 			Parallelutils.log(Level.WARNING, "Unable to load charm options!");
-			e.printStackTrace();
-		} catch (InvalidConfigurationException e) {
-			Parallelutils.log(Level.WARNING, "Invalid charm options configuration!");
 			e.printStackTrace();
 		}
 	}
 
 	/**
 	 * Registers a charm handler
+	 *
 	 * @param handler The handler to register
 	 * @return True when the handler type is new, false otherwise
 	 */
@@ -267,6 +286,7 @@ public class ParallelCharms implements ParallelModule {
 
 	/**
 	 * Gets the handler associated with the type or null
+	 *
 	 * @return The handler or null
 	 */
 	@Nullable
