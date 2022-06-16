@@ -49,16 +49,21 @@ public class PlayerKillListener implements Listener {
 
 
 		ICharmHandler<PlayerDeathEvent> killMessage = pCharms.getHandler(HandlerType.MESSAGE_KILL, PlayerDeathEvent.class);
+		ICharmHandler<PlayerDeathEvent> commandKiller = pCharms.getHandler(HandlerType.COMMAND_KILL, PlayerDeathEvent.class);
 
-		if (killMessage != null) {
+		runHandler(event, killer, mainHand, mainOptions, offHand, offOptions, helmet, helmOptions, chestplate, chestOptions, leggings, legOptions, boots, bootsOptions, killMessage);
+		runHandler(event, killer, mainHand, mainOptions, offHand, offOptions, helmet, helmOptions, chestplate, chestOptions, leggings, legOptions, boots, bootsOptions, commandKiller);
+	}
+
+	private void runHandler(PlayerDeathEvent event, Player player, ItemStack mainHand, CharmOptions mainOptions, ItemStack offHand, CharmOptions offOptions, ItemStack helmet, CharmOptions helmOptions, ItemStack chestplate, CharmOptions chestOptions, ItemStack leggings, CharmOptions legOptions, ItemStack boots, CharmOptions bootsOptions, ICharmHandler<PlayerDeathEvent> handler) {
+		if (handler != null) {
 			// This order makes it so main hand takes the highest precedence
-			if (helmet != null && helmOptions != null) { killMessage.handle(event, killer, helmet, helmOptions); }
-			if (chestplate != null && chestOptions != null) { killMessage.handle(event, killer, chestplate, chestOptions); }
-			if (leggings != null && legOptions != null) { killMessage.handle(event, killer, leggings, legOptions); }
-			if (boots != null && bootsOptions != null) { killMessage.handle(event, killer, boots, bootsOptions); }
-			if (offOptions != null)  { killMessage.handle(event, killer, offHand, offOptions); }
-			if (mainOptions != null) { killMessage.handle(event, killer, mainHand, mainOptions); }
+			if (helmet != null && helmOptions != null) { handler.handle(event, player, helmet, helmOptions); }
+			if (chestplate != null && chestOptions != null) { handler.handle(event, player, chestplate, chestOptions); }
+			if (leggings != null && legOptions != null) { handler.handle(event, player, leggings, legOptions); }
+			if (boots != null && bootsOptions != null) { handler.handle(event, player, boots, bootsOptions); }
+			if (offOptions != null)  { handler.handle(event, player, offHand, offOptions); }
+			if (mainOptions != null) { handler.handle(event, player, mainHand, mainOptions); }
 		}
-
 	}
 }

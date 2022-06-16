@@ -1,8 +1,10 @@
 package parallelmc.parallelutils.modules.charms.data;
 
 import org.bukkit.Bukkit;
+import parallelmc.parallelutils.modules.charms.data.impl.CommandEffectSettings;
 import parallelmc.parallelutils.modules.charms.data.impl.GenericEffectSettings;
 import parallelmc.parallelutils.modules.charms.data.impl.PlayerParticleEffectSettings;
+import parallelmc.parallelutils.modules.charms.data.impl.RunnableCommandSettings;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 
@@ -24,6 +26,12 @@ public class SettingsFactory {
 				} else {
 					return new GenericEffectSettings(settings);
 				}
+			}
+			case COMMAND_KILL, COMMAND_HIT -> {
+				return new CommandEffectSettings(settings);
+			}
+			case COMMAND_RUNNABLE -> {
+				return new RunnableCommandSettings(settings);
 			}
 			default -> {
 				return new GenericEffectSettings(settings);

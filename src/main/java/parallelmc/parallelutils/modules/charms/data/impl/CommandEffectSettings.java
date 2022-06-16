@@ -5,7 +5,9 @@ import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.modules.charms.helper.Types;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class CommandEffectSettings extends IEffectSettings {
 	public CommandEffectSettings(HashMap<String, EncapsulatedType> settings) {
@@ -22,15 +24,32 @@ public class CommandEffectSettings extends IEffectSettings {
 		return null;
 	}
 
-	public String getCommand() {
+	public List<String> getCommands() {
 		EncapsulatedType type = settings.get("command");
 
 		if (type == null) return null;
 
 		if (type.getType() != Types.STRING) return null;
 
-		String command = (String) type.getVal();
+		String base = (String) type.getVal();
 
-		return command;
+		List<String> commands = new ArrayList<>();
+		commands.add(base);
+
+		int index = 1;
+		while (true) {
+			EncapsulatedType iType = settings.get("command" + index);
+
+			if (iType == null) break;
+
+			if (iType.getType() != Types.STRING) break;
+
+			String val = (String) iType.getVal();
+
+			commands.add(val);
+			index++;
+		}
+
+		return commands;
 	}
 }
