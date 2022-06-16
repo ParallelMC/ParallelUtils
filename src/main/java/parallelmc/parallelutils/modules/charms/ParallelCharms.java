@@ -70,8 +70,6 @@ public class ParallelCharms implements ParallelModule {
 		PlayerParticlesAPI ppAPI = null;
 
 		if (Bukkit.getPluginManager().isPluginEnabled("PlayerParticles")) {
-			//PlayerParticles pp = (PlayerParticles) Bukkit.getPluginManager().getPlugin("PlayerParticles");
-
 			ppAPI = PlayerParticlesAPI.getInstance();
 			ParallelStyles.initStyles(puPlugin);
 		}
@@ -101,6 +99,9 @@ public class ParallelCharms implements ParallelModule {
 		if (ppAPI == null || !registerHandler(new CharmPlayerParticleHandler(puPlugin, this, ppAPI))) {
 			Parallelutils.log(Level.WARNING, "Could not register PLAYER_PARTICLE");
 		}
+		if (!registerHandler(new CharmCommandKillHandler())) {
+			Parallelutils.log(Level.WARNING, "Could not register COMMAND_KILL");
+		}
 
 		// Register events
 		manager.registerEvents(new PlayerJoinContainerListenerOverwrite(), puPlugin);
@@ -118,16 +119,6 @@ public class ParallelCharms implements ParallelModule {
 
 		puPlugin.addCommand("giveCharm", new GiveCharm(this, charmOptions));
 		puPlugin.addCommand("reloadCharms", new ReloadCharms(this));
-
-
-		/* Stuff from testing
-		if (charmOptions.size() > 1) {
-			Charm testCharm = new Charm(this, charmOptions.get(1));
-			Parallelutils.log(Level.INFO, charmOptions.get(1).toString());
-			puPlugin.addCommand("applyCharm", new ApplyCharm(testCharm));
-			puPlugin.addCommand("removeCharm", new RemoveCharm(testCharm));
-		}
-		 */
 	}
 
 	@Override
