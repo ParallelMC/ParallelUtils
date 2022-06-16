@@ -250,8 +250,8 @@ public class ParallelTutorial implements ParallelModule {
                                 case "MOVE" -> {
                                     final Location a = stand.getLocation();
                                     final Location b = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
+                                    final float duration = Float.parseFloat(i.args()[3]) * 20f;
                                     new BukkitRunnable() {
-                                        final float duration = Float.parseFloat(i.args()[3]) * 20f;
                                         float steps = 0f;
                                         @Override
                                         public void run() {
@@ -294,8 +294,11 @@ public class ParallelTutorial implements ParallelModule {
                                                 if (lookAt != null) {
                                                     newPoint.setYaw((float)lookAt.getX());
                                                     newPoint.setPitch((float)lookAt.getY());
+
                                                 }
+                                                stand.setRotation((float)lookAt.getX(), (float)lookAt.getY());
                                                 if (stand.teleport(newPoint)) {
+                                                    forceSpectate(player, stand.getEntityId());
                                                     if (debug) {
                                                         Parallelutils.log(Level.WARNING, "Armor Stand teleported!");
                                                         Parallelutils.log(Level.WARNING, "Armor Stand looking at: " + stand.getLocation().getYaw() + " " + stand.getLocation().getPitch());
