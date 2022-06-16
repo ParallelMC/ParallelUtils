@@ -102,6 +102,9 @@ public class ParallelCharms implements ParallelModule {
 		if (!registerHandler(new CharmCommandKillHandler())) {
 			Parallelutils.log(Level.WARNING, "Could not register COMMAND_KILL");
 		}
+		if (!registerHandler(new CharmCommandHitHandler())) {
+			Parallelutils.log(Level.WARNING, "Could not register COMMAND_HIT");
+		}
 
 		// Register events
 		manager.registerEvents(new PlayerJoinContainerListenerOverwrite(), puPlugin);
@@ -111,6 +114,7 @@ public class ParallelCharms implements ParallelModule {
 		manager.registerEvents(new PlayerSlotChangedListener(puPlugin, this), puPlugin);
 		manager.registerEvents(new AnvilApplyCharmListener(puPlugin, this), puPlugin);
 		manager.registerEvents(new PlayerHeldItemListener(puPlugin, this), puPlugin);
+		manager.registerEvents(new EntityDamageListener(this), puPlugin);
 
 
 		// Read Options files
