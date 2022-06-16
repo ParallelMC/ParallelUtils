@@ -10,6 +10,9 @@ public enum HandlerType {
 	TEST_EVENT(HandlerCategory.EVENT), // Test events
 	TEST_APPLY(HandlerCategory.APPLY), // Test apply
 	PLAYER_PARTICLE(HandlerCategory.EVENT), // PlayerParticle handler
+	COMMAND_KILL(HandlerCategory.EVENT), // On killing an entity, run command
+	COMMAND_HIT(HandlerCategory.EVENT), // On entity hit, run command
+	COMMAND_RUNNABLE(HandlerCategory.RUNNABLE), // Run a command at specified intervals
 	NONE(HandlerCategory.APPLY); // Do not put on charms. Does nothing
 
 	private final HandlerCategory category;
