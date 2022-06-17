@@ -2,6 +2,7 @@ package parallelmc.parallelutils.modules.charms.handlers.impl;
 
 import io.papermc.paper.text.PaperComponents;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -51,8 +52,8 @@ public class CharmStyleNameHandler extends ICharmApplyHandler {
 		Component currName = meta.displayName();
 
 		if (currName == null) {
-			String dispName = PlainTextComponentSerializer.plainText().serialize(Component.translatable(item.translationKey()));;
-			currName = Component.text(dispName);
+			currName = Component.translatable(item.translationKey());
+			val = "<italic:false>" + val;
 		}
 
 		Component finalCurrName = currName;
