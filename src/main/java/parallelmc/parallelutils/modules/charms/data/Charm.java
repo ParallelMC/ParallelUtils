@@ -323,13 +323,36 @@ public class Charm {
 
 		HashMap<HandlerType, IEffectSettings> effects = options.getEffects();
 
-		IEffectSettings loreSettings = effects.get(HandlerType.LORE);
-
 		meta = item.getItemMeta();
 
 		List<Component> lore = new ArrayList<>();
+		lore.add(MiniMessage.miniMessage().deserialize("<reset><gray>" + this.options.getName()));
 
-		lore.add(MiniMessage.miniMessage().deserialize("<gray>" + this.options.getName()));
+		IEffectSettings appLoreSettings = effects.get(HandlerType.APP_LORE);
+
+		IEffectSettings loreSettings = effects.get(HandlerType.LORE);
+
+		if (appLoreSettings != null) {
+			HashMap<String, EncapsulatedType> settingMap = appLoreSettings.getSettings();
+
+			EncapsulatedType loreSetting = settingMap.get("lore");
+
+			if (loreSetting.getType() == Types.STRING) {
+
+				String loreTotal = (String) loreSetting.getVal();
+
+				String[] parts = loreTotal.split("\n");
+
+				for (String s : parts) {
+					String part = PlaceholderAPI.setPlaceholders(null, s);
+					lore.add(MiniMessage.miniMessage().deserialize(part));
+				}
+			}
+
+			if (loreSettings != null) {
+				lore.add(Component.text("------------------"));
+			}
+		}
 
 		if (loreSettings != null) {
 			HashMap<String, EncapsulatedType> settingMap = loreSettings.getSettings();
