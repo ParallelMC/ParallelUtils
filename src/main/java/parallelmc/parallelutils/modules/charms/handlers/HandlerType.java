@@ -6,6 +6,7 @@ public enum HandlerType {
 	COUNTER_KILL(HandlerCategory.EVENT), // Listen for kill event
 	STYLE_NAME(HandlerCategory.APPLY), // Handle on charm application
 	LORE(HandlerCategory.APPLY), // Add lore to item
+	APP_LORE(HandlerCategory.NONE), // Adds lore ONLY to the item applicator
 	TEST_RUNNABLE(HandlerCategory.RUNNABLE), // Test runnables
 	TEST_EVENT(HandlerCategory.EVENT), // Test events
 	TEST_APPLY(HandlerCategory.APPLY), // Test apply
