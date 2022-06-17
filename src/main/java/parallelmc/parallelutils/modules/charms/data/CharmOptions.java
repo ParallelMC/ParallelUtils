@@ -67,7 +67,7 @@ public class CharmOptions {
 		if (applicatorModelData == null) {
 			int effectsNum = 0;
 			for (HandlerType t : effects.keySet()) {
-				if (t == HandlerType.LORE) continue;
+				if (t == HandlerType.LORE || t == HandlerType.APP_LORE) continue;
 				effectsNum++;
 			}
 			if (effectsNum == 0) effectsNum = 1;

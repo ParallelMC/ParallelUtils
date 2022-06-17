@@ -315,7 +315,7 @@ public class Charm {
 
 		if (meta == null) return false;
 
-		meta.displayName(MiniMessage.miniMessage().deserialize("<reset><yellow>Charm Applicator"));
+		meta.displayName(MiniMessage.miniMessage().deserialize("<italic:false><yellow>Charm Applicator"));
 
 		item.setItemMeta(meta);
 
@@ -326,7 +326,7 @@ public class Charm {
 		meta = item.getItemMeta();
 
 		List<Component> lore = new ArrayList<>();
-		lore.add(MiniMessage.miniMessage().deserialize("<reset><gray>" + this.options.getName()));
+		lore.add(MiniMessage.miniMessage().deserialize("<italic:false><gray>" + this.options.getName()));
 
 		IEffectSettings appLoreSettings = effects.get(HandlerType.APP_LORE);
 
