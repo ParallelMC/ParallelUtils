@@ -315,7 +315,7 @@ public class Charm {
 
 		if (meta == null) return false;
 
-		meta.displayName(MiniMessage.miniMessage().deserialize("<yellow>Charm Applicator"));
+		meta.displayName(MiniMessage.miniMessage().deserialize("<reset><yellow>Charm Applicator"));
 
 		item.setItemMeta(meta);
 
