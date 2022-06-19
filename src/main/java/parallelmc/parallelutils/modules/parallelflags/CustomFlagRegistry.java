@@ -18,12 +18,18 @@ public class CustomFlagRegistry {
 	private final HashMap<String, StringFlag> stringFlags;
 	private final HashMap<String, LocationFlag> locationFlags;
 
+	private final HashMap<String, Object> miscFlags;
+
+	//private final HashMap<String, MapFlag<Object, Object>> mapFlags;
+
 	private CustomFlagRegistry() {
 		stateFlags = new HashMap<>();
 		integerFlags = new HashMap<>();
 		doubleFlags = new HashMap<>();
 		stringFlags = new HashMap<>();
 		locationFlags = new HashMap<>();
+		//mapFlags = new HashMap<>();
+		miscFlags = new HashMap<>();
 	}
 
 	public static CustomFlagRegistry getInstance() {
@@ -113,4 +119,45 @@ public class CustomFlagRegistry {
 
 	@Nullable
 	public LocationFlag getLocationFlag(String name) { return locationFlags.get(name); }
+
+	/*
+	// Screw this. If you want map flags, register them yourself.
+	public <T, V> boolean addMapFlag(String name, Flag<T> key, Flag<V> val) {
+		FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
+		try {
+			MapFlag<T, V> flag = new MapFlag<T, V>(name, key, val);
+			registry.register(flag);
+			mapFlags.put(name, flag);
+			return true;
+		} catch (FlagConflictException e) {
+			return false;
+		}
+	}
+
+	public <T, V> MapFlag<T, V> getMapFlag(String name) {
+		MapFlag<?, ?> mapFlag = mapFlags.get(name);
+
+		if (mapFlag.getKeyFlag() instanceof Flag<T>)
+
+		if (mapFlag instanceof MapFlag<T, V>) return mapFlag;
+		return ;
+	}*/
+
+
+	public <V, T extends Flag<V>> boolean addMiscFlag(String name, T flag) {
+		FlagRegistry registry = WorldGuard.getInstance().getFlagRegistry();
+		try {
+			registry.register(flag);
+			miscFlags.put(name, flag);
+			return true;
+		} catch (FlagConflictException e) {
+			return false;
+		}
+	}
+
+	@Nullable
+	public Object getMiscFlag(String name) {
+		return miscFlags.get(name);
+	}
+
 }
