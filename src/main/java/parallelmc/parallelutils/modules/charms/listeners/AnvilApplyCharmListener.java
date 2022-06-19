@@ -64,7 +64,7 @@ public class AnvilApplyCharmListener implements Listener {
 			return;
 		}
 
-		// Check if item2 is a charm. If it is not, clear result and do nothing
+		// Check if item2 is a charm applicator. If it is not, clear result and do nothing
 		Charm charm = Charm.getCharmAppl(puPlugin, pCharms, item2);
 		if (charm == null) {
 			return;

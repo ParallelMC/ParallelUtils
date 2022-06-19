@@ -116,6 +116,7 @@ public class ParallelCharms implements ParallelModule {
 		manager.registerEvents(new PlayerLeaveListener(puPlugin, this), puPlugin);
 		manager.registerEvents(new PlayerSlotChangedListener(puPlugin, this), puPlugin);
 		manager.registerEvents(new AnvilApplyCharmListener(puPlugin, this), puPlugin);
+		//manager.registerEvents(new GrindstoneRemoveCharmListener(puPlugin, this), puPlugin);
 		manager.registerEvents(new PlayerHeldItemListener(puPlugin, this), puPlugin);
 		manager.registerEvents(new EntityDamageListener(this), puPlugin);
 
@@ -126,6 +127,7 @@ public class ParallelCharms implements ParallelModule {
 
 		puPlugin.addCommand("giveCharm", new GiveCharm(this, charmOptions));
 		puPlugin.addCommand("reloadCharms", new ReloadCharms(this));
+		puPlugin.addCommand("giveRemover", new GiveRemover(puPlugin));
 	}
 
 	@Override
