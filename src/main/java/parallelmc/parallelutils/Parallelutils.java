@@ -5,10 +5,7 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import parallelmc.parallelutils.commands.Commands;
-import parallelmc.parallelutils.commands.ParallelCommand;
-import parallelmc.parallelutils.commands.ParallelHelpCommand;
-import parallelmc.parallelutils.commands.ParallelTestCommand;
+import parallelmc.parallelutils.commands.*;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.bitsandbobs.BitsAndBobs;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
@@ -157,6 +154,7 @@ public final class Parallelutils extends JavaPlugin {
 
 		addCommand("help", new ParallelHelpCommand());
 		addCommand("test", new ParallelTestCommand());
+		addCommand("wait", new ParallelWaitCommand(this));
 
 		getCommand("parallelutils").setExecutor(commands);
 		getCommand("parallelutils").setTabCompleter(commands);
