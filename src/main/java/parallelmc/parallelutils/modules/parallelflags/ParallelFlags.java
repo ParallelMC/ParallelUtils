@@ -1,10 +1,19 @@
 package parallelmc.parallelutils.modules.parallelflags;
 
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.protection.flags.EnumFlag;
+import com.sk89q.worldguard.protection.flags.IntegerFlag;
+import com.sk89q.worldguard.protection.flags.MapFlag;
+import com.sk89q.worldguard.protection.flags.StringFlag;
+import com.sk89q.worldguard.protection.flags.registry.FlagConflictException;
+import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.session.SessionManager;
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
@@ -143,6 +152,15 @@ public class ParallelFlags implements ParallelModule {
 				Parallelutils.log(Level.WARNING, "Unable to create prevent-item-damage flag. Will not use");
 			}
 
+			// These are flags that are too annoying to add to the custom flag registry
+
+
+
+
+			if (!registry.addMiscFlag("effect", new MapFlag<>("effect", new StringFlag("type"), new IntegerFlag("strength")))) {
+				Parallelutils.log(Level.WARNING, "Unable to create effect flag. Will not use");
+			}
+
 
 		} catch (NoClassDefFoundError e) {
 			Parallelutils.log(Level.SEVERE, "Unable to load WorldGuard! Something is wrong!");
@@ -167,6 +185,8 @@ public class ParallelFlags implements ParallelModule {
 			return;
 		}
 
+		FlagRegistry flagRegistry = WorldGuard.getInstance().getFlagRegistry();
+
 		SessionManager sessionManager = WorldGuard.getInstance().getPlatform().getSessionManager();
 
 		sessionManager.registerHandler(CustomArmorDeny.FACTORY, null);
@@ -174,6 +194,8 @@ public class ParallelFlags implements ParallelModule {
 		sessionManager.registerHandler(FlyFlagHandler.FACTORY, null);
 		sessionManager.registerHandler(ElytraFlagHandler.FACTORY, null);
 		sessionManager.registerHandler(InventoryClearHandler.FACTORY, null);
+
+		if (flagRegistry.get("effect") != null) sessionManager.registerHandler(EffectFlagSession.FACTORY, null);
 
 		manager.registerEvents(new ParallelFlagsInteractListener(), plugin);
 		manager.registerEvents(new ParallelFlagsPlaceListener(), plugin);
