@@ -5,7 +5,9 @@ import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.modules.charms.helper.Types;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class RunnableCommandSettings extends RunnableSettings {
 
@@ -23,13 +25,32 @@ public class RunnableCommandSettings extends RunnableSettings {
 		return HandlerType.COMMAND_RUNNABLE;
 	}
 
-	public String getCommand() {
+	public List<String> getCommands() {
 		EncapsulatedType type = settings.get("command");
 
 		if (type == null) return null;
 
 		if (type.getType() != Types.STRING) return null;
 
-		return (String) type.getVal();
+		String base = (String) type.getVal();
+
+		List<String> commands = new ArrayList<>();
+		commands.add(base);
+
+		int index = 1;
+		while (true) {
+			EncapsulatedType iType = settings.get("command" + index);
+
+			if (iType == null) break;
+
+			if (iType.getType() != Types.STRING) break;
+
+			String val = (String) iType.getVal();
+
+			commands.add(val);
+			index++;
+		}
+
+		return commands;
 	}
 }
