@@ -27,7 +27,7 @@ public class SettingsFactory {
 					return new GenericEffectSettings(settings);
 				}
 			}
-			case COMMAND_KILL, COMMAND_HIT -> {
+			case COMMAND_KILL, COMMAND_HIT, COMMAND_APPLY -> {
 				return new CommandEffectSettings(settings);
 			}
 			case COMMAND_RUNNABLE -> {
