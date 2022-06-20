@@ -170,13 +170,6 @@ public class ParallelCharms implements ParallelModule {
 						if (o instanceof ConfigurationSection section) {
 							try {
 								// This is a single charm option
-								String uuidStr = section.getString("uuid");
-								if (uuidStr == null) {
-									Parallelutils.log(Level.WARNING, "Invalid Charm Option for option: " + s);
-									continue;
-								}
-								UUID uuid = UUID.fromString(uuidStr);
-
 								String name = section.getString("name");
 								if (name == null || name.equals("")) {
 									Parallelutils.log(Level.WARNING, "Invalid Charm Option for option: " + s);
@@ -240,7 +233,7 @@ public class ParallelCharms implements ParallelModule {
 									}
 								}
 
-								CharmOptions charmOptions = new CharmOptions(uuid, name, matsList, allowedPlayers, allowedPermissions,
+								CharmOptions charmOptions = new CharmOptions(name, matsList, allowedPlayers, allowedPermissions,
 										effects, customModelData, applicatorModelData);
 								this.charmOptions.put(name, charmOptions);
 

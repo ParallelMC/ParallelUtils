@@ -66,7 +66,7 @@ public class CharmStyleNameHandler extends ICharmApplyHandler {
 		TagResolver placeholders = TagResolver.resolver(Placeholder.component("name", currName));
 
 		Component result = MiniMessage.builder().build().deserialize(val, placeholders);
-		
+
 		meta.displayName(result);
 
 		meta.displayName();
