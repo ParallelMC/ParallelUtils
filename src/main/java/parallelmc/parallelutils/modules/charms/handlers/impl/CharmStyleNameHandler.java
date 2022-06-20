@@ -7,6 +7,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
+import net.kyori.adventure.translation.GlobalTranslator;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -20,6 +21,8 @@ import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.modules.charms.helper.Types;
 
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.Objects;
 import java.util.logging.Level;
 
 public class CharmStyleNameHandler extends ICharmApplyHandler {
@@ -54,18 +57,16 @@ public class CharmStyleNameHandler extends ICharmApplyHandler {
 		Component currName = meta.displayName();
 
 		if (currName == null) {
-			currName = Component.translatable(item.translationKey());
+			//currName = GlobalTranslator.render(Component.translatable(item), Locale.ENGLISH); // This almost works...
+			String name = item.getI18NDisplayName(); // I tried so hard to not use deprecated stuff. Formats + translatables are hard...
+			currName = Component.text(Objects.requireNonNullElseGet(name, item::translationKey));
 			val = "<italic:false>" + val;
 		}
 
-		Component finalCurrName = currName;
-
-		TagResolver placeholders = TagResolver.resolver(Placeholder.component("name", finalCurrName));
+		TagResolver placeholders = TagResolver.resolver(Placeholder.component("name", currName));
 
 		Component result = MiniMessage.builder().build().deserialize(val, placeholders);
-
-		Parallelutils.log(Level.INFO, result.toString());
-
+		
 		meta.displayName(result);
 
 		meta.displayName();
