@@ -113,7 +113,9 @@ public class PlayerSlotChangedListener implements Listener {
 
 				Charm removedC = pCharms.removeCharm(player, removedCharm);
 
-				removedC.cancelRunnables();
+				if (removedC != null) {
+					removedC.cancelRunnables();
+				}
 			}
 		}
 	}
