@@ -139,6 +139,13 @@ bukkit {
             permission = 'parallelutils.teamchat'
             aliases = ['teamchat',]
         }
+        lc {
+            description = 'Toggle or send a message in lore chat'
+            usage = '/lc [message]'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.lorechat'
+            aliases = ['lorechat',]
+        }
         broadcast {
             description = 'Broadcast a message to the server'
             usage = '/broadcast (message)'
@@ -276,6 +283,9 @@ bukkit {
         }
         'parallelutils.teamchat' {
             description = 'Gives access to reading and writing to team chat'
+        }
+        'parallelutils.lorechat' {
+            description = 'Gives access to reading and writing to lore chat'
         }
         'parallelutils.broadcast' {
             description = 'Gives access to the broadcast command'
