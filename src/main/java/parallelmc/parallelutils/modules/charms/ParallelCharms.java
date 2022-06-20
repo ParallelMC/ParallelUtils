@@ -105,7 +105,7 @@ public class ParallelCharms implements ParallelModule {
 		if (!registerHandler(new CharmCommandHitHandler())) {
 			Parallelutils.log(Level.WARNING, "Could not register COMMAND_HIT");
 		}
-		if (!registerHandler(new CharmCommandRunnableHandler())) {
+		if (!registerHandler(new CharmCommandRunnableHandler(this))) {
 			Parallelutils.log(Level.WARNING, "Could not register COMMAND_RUNNABLE");
 		}
 
