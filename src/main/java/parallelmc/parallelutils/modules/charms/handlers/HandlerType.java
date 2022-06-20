@@ -14,6 +14,7 @@ public enum HandlerType {
 	COMMAND_KILL(HandlerCategory.EVENT), // On killing a player, run commands
 	COMMAND_HIT(HandlerCategory.EVENT), // On entity hit, run command
 	COMMAND_RUNNABLE(HandlerCategory.RUNNABLE), // Run a command at specified intervals
+	COMMAND_APPLY(HandlerCategory.APPLY),
 	NONE(HandlerCategory.APPLY); // Do not put on charms. Does nothing
 
 	private final HandlerCategory category;
