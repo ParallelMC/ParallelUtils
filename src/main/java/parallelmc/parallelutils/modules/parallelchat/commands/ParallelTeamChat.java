@@ -25,6 +25,9 @@ public class ParallelTeamChat implements CommandExecutor {
                         if (ParallelChat.get().getStaffChat().contains(uuid)) {
                             ParallelChat.get().removeFromStaffChat(sender);
                         }
+                        if (ParallelChat.get().getLoreChat().contains(uuid)) {
+                            ParallelChat.get().removeFromLoreChat(sender);
+                        }
                         ParallelChat.get().addToTeamChat(sender);
                     }
                     return true;
