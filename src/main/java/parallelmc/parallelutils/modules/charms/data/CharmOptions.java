@@ -30,9 +30,6 @@ public class CharmOptions {
 
 	private static final Integer[] DEFAULT_APPLICATOR_MODELS = new Integer[]{1000000, 1000001, 1000002, 1000003};
 
-	// This is just used to store in the database. Specifies _type_ of charm, not the specific charm
-	private final UUID optionsUuid;
-
 	private final String optionsName;
 
 	// If empty, allowed on everything
@@ -55,9 +52,8 @@ public class CharmOptions {
 	private final Integer customModelData;
 	private final int applicatorModelData;
 
-	public CharmOptions(UUID uuid, String optionsName, Material[] allowedMaterials, String[] allowedPlayers, String[] allowedPermissions,
+	public CharmOptions(String optionsName, Material[] allowedMaterials, String[] allowedPlayers, String[] allowedPermissions,
 	                    HashMap<HandlerType, IEffectSettings> effects, Integer customModelData, Integer applicatorModelData) {
-		this.optionsUuid = uuid;
 		this.optionsName = optionsName;
 		this.allowedMaterials = allowedMaterials;
 		this.allowedPlayers = allowedPlayers;
@@ -78,9 +74,9 @@ public class CharmOptions {
 		}
 	}
 
-	public CharmOptions(UUID uuid, String optionsName, Material[] allowedMaterials, String[] allowedPlayers, String[] allowedPermissions,
+	public CharmOptions(String optionsName, Material[] allowedMaterials, String[] allowedPlayers, String[] allowedPermissions,
 	                    HashMap<HandlerType, IEffectSettings> effects, Integer customModelData) {
-		this(uuid, optionsName, allowedMaterials, allowedPlayers, allowedPermissions, effects, customModelData, null);
+		this(optionsName, allowedMaterials, allowedPlayers, allowedPermissions, effects, customModelData, null);
 	}
 
 	public ItemStack applyCharm(ItemStack item) {
@@ -116,10 +112,6 @@ public class CharmOptions {
 		// Create a sub container
 		PersistentDataContainer charmsContainer = pdc.getAdapterContext().newPersistentDataContainer();
 
-
-		// Apply charm options UUID
-		charmsContainer.set(new NamespacedKey(plugin, "ParallelCharm.OptUUID"),
-				PersistentDataType.STRING, optionsUuid.toString());
 
 		charmsContainer.set(new NamespacedKey(plugin, "ParallelCharm.OptName"),
 				PersistentDataType.STRING, optionsName);
@@ -320,15 +312,10 @@ public class CharmOptions {
 			return null;
 		}
 
-		String uuidStr = charmsContainer.get(new NamespacedKey(plugin, "ParallelCharm.OptUUID"),
-				PersistentDataType.STRING);
-		if (uuidStr == null) {
-			return null;
-		}
-		UUID uuid = UUID.fromString(uuidStr);
-
 		String name = charmsContainer.get(new NamespacedKey(plugin, "ParallelCharm.OptName"),
 				PersistentDataType.STRING);
+
+		if (name == null) return null;
 
 		// Parse allowed players and permissions
 		ArrayList<String> allowedPlayersList = new ArrayList<>();
@@ -444,7 +431,7 @@ public class CharmOptions {
 			effects.put(handlerType, effectSettings);
 		}
 
-		return new CharmOptions(uuid, name,allowedMaterialsList.toArray(new Material[0]),
+		return new CharmOptions(name,allowedMaterialsList.toArray(new Material[0]),
 				allowedPlayersList.toArray(new String[0]), allowedPermissionsList.toArray(new String[0]),
 				effects, null);
 	}
@@ -460,8 +447,6 @@ public class CharmOptions {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Charm: \n");
-		sb.append("UUID: ");
-		sb.append(optionsUuid.toString());
 		sb.append("\nName: ");
 		sb.append(optionsName);
 		if (allowedMaterials != null) {
