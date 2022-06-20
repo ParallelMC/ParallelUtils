@@ -1,6 +1,7 @@
 package parallelmc.parallelutils.modules.charms.commands;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
@@ -52,7 +53,7 @@ public class GiveRemover extends ParallelCommand {
 
 		if (meta == null) return false;
 
-		meta.displayName(Component.text("<italic:false><yellow>Charm Remover"));
+		meta.displayName(MiniMessage.miniMessage().deserialize("<italic:false><yellow>Charm Remover"));
 
 		PersistentDataContainer pdc = meta.getPersistentDataContainer();
 
