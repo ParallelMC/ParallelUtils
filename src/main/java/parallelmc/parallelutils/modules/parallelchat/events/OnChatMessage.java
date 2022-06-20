@@ -79,7 +79,7 @@ public class OnChatMessage implements Listener {
             }
         }
 
-        // StaffChat + TeamChat
+        // StaffChat, TeamChat, LoreChat
         if (ParallelChat.get().getStaffChat().contains(player.getUniqueId())) {
             event.setCancelled(true);
             ParallelChat.sendMessageToStaffChat(player, event.message());
@@ -87,6 +87,10 @@ public class OnChatMessage implements Listener {
         } else if (ParallelChat.get().getTeamChat().contains(player.getUniqueId())) {
             event.setCancelled(true);
             ParallelChat.sendMessageToTeamChat(player, event.message());
+            return;
+        } else if (ParallelChat.get().getLoreChat().contains(player.getUniqueId())) {
+            event.setCancelled(true);
+            ParallelChat.sendMessageToLoreChat(player, event.message());
             return;
         }
 

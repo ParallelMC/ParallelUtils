@@ -10,25 +10,25 @@ import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.util.UUID;
 
-public class ParallelStaffChat implements CommandExecutor {
+public class ParallelLoreChat implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, String[] args) {
         if (commandSender instanceof Player sender) {
-            if (sender.hasPermission("parallelutils.staffchat")) {
+            if (sender.hasPermission("parallelutils.lorechat")) {
                 UUID uuid = sender.getUniqueId();
                 if (args.length == 0) {
-                    if (ParallelChat.get().getStaffChat().contains(uuid)) {
-                        ParallelChat.get().removeFromStaffChat(sender);
+                    if (ParallelChat.get().getLoreChat().contains(uuid)) {
+                        ParallelChat.get().removeFromLoreChat(sender);
                     }
                     else {
+                        if (ParallelChat.get().getStaffChat().contains(uuid)) {
+                            ParallelChat.get().removeFromStaffChat(sender);
+                        }
                         if (ParallelChat.get().getTeamChat().contains(uuid)) {
                             ParallelChat.get().removeFromTeamChat(sender);
                         }
-                        if (ParallelChat.get().getLoreChat().contains(uuid)) {
-                            ParallelChat.get().removeFromLoreChat(sender);
-                        }
-                        ParallelChat.get().addToStaffChat(sender);
+                        ParallelChat.get().addToLoreChat(sender);
                     }
                     return true;
                 }
@@ -38,7 +38,7 @@ public class ParallelStaffChat implements CommandExecutor {
             }
         }
         String msg = ParallelChat.getStringArg(args);
-        ParallelChat.sendMessageToStaffChat(commandSender, Component.text(msg));
+        ParallelChat.sendMessageToLoreChat(commandSender, Component.text(msg));
         return true;
     }
 
