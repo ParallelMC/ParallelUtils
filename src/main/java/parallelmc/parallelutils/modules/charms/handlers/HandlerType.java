@@ -15,6 +15,7 @@ public enum HandlerType {
 	COMMAND_HIT(HandlerCategory.EVENT), // On entity hit, run command
 	COMMAND_RUNNABLE(HandlerCategory.RUNNABLE), // Run a command at specified intervals
 	COMMAND_APPLY(HandlerCategory.APPLY),
+	SHINE(HandlerCategory.APPLY),
 	NONE(HandlerCategory.APPLY); // Do not put on charms. Does nothing
 
 	private final HandlerCategory category;
