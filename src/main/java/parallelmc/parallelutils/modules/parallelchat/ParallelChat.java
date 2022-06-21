@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.parallelchat.chatrooms.ChatRoomManager;
 import parallelmc.parallelutils.modules.parallelchat.commands.*;
 import parallelmc.parallelutils.modules.parallelchat.events.*;
 import parallelmc.parallelutils.modules.parallelchat.events.OnChatMessage;
@@ -79,6 +80,8 @@ public class ParallelChat implements ParallelModule {
 
     public BufferedWriter chatLogWriter;
     public BufferedWriter cmdLogWriter;
+
+    public ChatRoomManager chatRoomManager;
 
     private final Random rand = new Random();
 
@@ -203,6 +206,9 @@ public class ParallelChat implements ParallelModule {
         catch (IOException e) {
             Parallelutils.log(Level.SEVERE, "Failed to open writer to loggers!");
         }
+
+        this.chatRoomManager = new ChatRoomManager();
+
         manager.registerEvents(new OnChatMessage(), puPlugin);
         manager.registerEvents(new OnJoinLeave(puPlugin), puPlugin);
         manager.registerEvents(new OnSignTextSet(), puPlugin);
@@ -466,5 +472,7 @@ public class ParallelChat implements ParallelModule {
     }
 
     public HashSet<UUID> getLoreChat() { return playersInLoreChat; }
+
+    public Parallelutils getPlugin() { return puPlugin; }
 
 }

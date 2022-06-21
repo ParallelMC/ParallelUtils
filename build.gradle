@@ -93,6 +93,12 @@ bukkit {
             permissionMessage = 'You do not have permission'
             aliases = ['pu',]
         }
+        chatroom {
+            description = 'Base command for all ChatRoom commands'
+            usage = '/chatroom'
+            permissionMessage = 'You do not have permission'
+            aliases = ['cr',]
+        }
         depositexp {
             description = 'Deposit exp into the player\' s ender chest '
             usage = '/depositexp <amount | all>'
