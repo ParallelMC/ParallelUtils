@@ -31,6 +31,7 @@ public class OnJoinLeave implements Listener {
         Player player = event.getPlayer();
         ParallelChat.get().removeFromTeamChat(player);
         ParallelChat.get().removeFromStaffChat(player);
+        ParallelChat.get().removeFromLoreChat(player);
         event.quitMessage(null);
 
         Component leave = MiniMessage.miniMessage().deserialize("<yellow><player> left the game", TagResolver.resolver(Placeholder.parsed("player", player.getName())));
