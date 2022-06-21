@@ -14,6 +14,7 @@ import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
 import parallelmc.parallelutils.modules.expstorage.ExpStorage;
 import parallelmc.parallelutils.modules.gamemode4.beehiveInspector.BeehiveInspector;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
+import parallelmc.parallelutils.modules.parallelchat.commands.chatrooms.*;
 import parallelmc.parallelutils.modules.parallelflags.ParallelFlags;
 import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
 import parallelmc.parallelutils.modules.effectextender.EffectExtender;
@@ -46,6 +47,8 @@ public final class Parallelutils extends JavaPlugin {
 
 	private HashMap<String, ParallelModule> registeredModules;
 	private Commands commands;
+
+	private ChatroomCommands chatroomCommands;
 
 	@Override
 	public void onLoad() {
@@ -151,17 +154,32 @@ public final class Parallelutils extends JavaPlugin {
 		}
 
 		commands = new Commands();
+		chatroomCommands = new ChatroomCommands();
 
 		addCommand("help", new ParallelHelpCommand());
 		addCommand("test", new ParallelTestCommand());
 		addCommand("wait", new ParallelWaitCommand(this));
 
+		addChatRoomCommand("create", new ParallelCreateChatroom());
+		addChatRoomCommand("leave", new ParallelLeaveChatroom());
+		addChatRoomCommand("join", new ParallelJoinChatroom());
+		addChatRoomCommand("promote", new ParallelPromoteMember());
+		addChatRoomCommand("demote", new ParallelDemoteMember());
+		addChatRoomCommand("members", new ParallelListMembers());
+		addChatRoomCommand("kick", new ParallelKickMember());
+		addChatRoomCommand("list", new ParallelListChatrooms());
+		addChatRoomCommand("invite", new ParallelSendInvite());
+		addChatRoomCommand("accept", new ParallelAcceptInvite());
+		addChatRoomCommand("disband", new ParallelDisbandChatroom());
+
 		getCommand("parallelutils").setExecutor(commands);
 		getCommand("parallelutils").setTabCompleter(commands);
 		getCommand("pu").setExecutor(commands);
 		getCommand("pu").setTabCompleter(commands);
-
-
+		getCommand("chatroom").setExecutor(chatroomCommands);
+		getCommand("chatroom").setTabCompleter(chatroomCommands);
+		getCommand("cr").setExecutor(chatroomCommands);
+		getCommand("cr").setTabCompleter(chatroomCommands);
 
 		// Setup modules
 
@@ -422,6 +440,15 @@ public final class Parallelutils extends JavaPlugin {
 	public boolean addCommand(String name, ParallelCommand command) {
 		return commands.addCommand(name, command);
 	}
+
+	/**
+	 * Wrapper for {@code parallelmc.parallelutils.modules.parallelchat.commands.chatrooms.ChatroomCommand.addCommand}
+	 * Adds a new command to the commandmap
+	 * @param name The name of the command
+	 * @param command The command to be run when the name is called
+	 * @return Returns true when the command was added successfully, false if the command already exists.
+	 */
+	public boolean addChatRoomCommand(String name, ChatroomCommand command) { return chatroomCommands.addCommand(name, command); }
 
 	/**
 	 * Wrapper for {@code parallelmc.parallelutils.commands.Commands.getCommands}

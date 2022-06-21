@@ -94,6 +94,13 @@ public class OnChatMessage implements Listener {
             return;
         }
 
+        // ChatRooms
+        if (ParallelChat.get().chatRoomManager.hasChatroomActive(player)) {
+            event.setCancelled(true);
+            ParallelChat.get().chatRoomManager.getPlayerChatRoom(player).sendMessage(player, event.message());
+            return;
+        }
+
         // Mute Chat
         if (ParallelChat.get().isChatDisabled) {
             if (!player.hasPermission("parallelutils.bypass.mutechat")) {
