@@ -65,30 +65,55 @@ public class ChatRoom {
     public boolean hasMember(Player player) { return members.containsKey(player.getUniqueId()); }
 
     public void sendMessage(Player sender, Component message) {
+        Component text = MiniMessage.miniMessage().deserialize("<gold>[<" + chatColor + ">" + name + "<gold>] <" + chatColor + ">" + getPrefix(sender) + " <gray>> ").append(message.color(chatColor));
         members.forEach((u, b) -> {
            Player p = ParallelChat.get().getPlugin().getServer().getPlayer(u);
            if (p != null) {
-               Component text = MiniMessage.miniMessage().deserialize("<gold>[<" + chatColor + ">" + name + "<gold>] <" + chatColor + ">" + getPrefix(sender) + " <gray>> ").append(message.color(chatColor));
                p.sendMessage(text);
            }
         });
+        if (!sender.hasPermission("parallelutils.bypass.chatroomspy")) {
+            Component chatroomSpy = MiniMessage.miniMessage().deserialize("<yellow>[<aqua>ChatRoom-Spy<yellow>] ").append(text);
+            // ChatRoom Spy
+            ParallelChat.get().socialSpyUsers.forEach((u, o) -> {
+                if (u.equals(sender.getUniqueId())) return;
+                if (o.isSocialSpy()) {
+                    // this kinda sucks but not much can be done
+                    Player spyUser = sender.getServer().getPlayer(u);
+                    if (spyUser != null) {
+                        spyUser.sendMessage(chatroomSpy);
+                    }
+                }
+            });
+        }
     }
 
     public void announceMessage(String message, NamedTextColor color) {
+        Component text = MiniMessage.miniMessage().deserialize("<gold>[<" + chatColor + ">" + name + "<gold>] <gray>> ").append(Component.text(message, color));
         members.forEach((u, b) -> {
             Player p = ParallelChat.get().getPlugin().getServer().getPlayer(u);
             if (p != null) {
-                Component text = MiniMessage.miniMessage().deserialize("<gold>[<" + chatColor + ">" + name + "<gold>] <gray>> ").append(Component.text(message, color));
                 p.sendMessage(text);
+            }
+        });
+        Component chatroomSpy = MiniMessage.miniMessage().deserialize("<yellow>[<aqua>ChatRoom-Spy<yellow>] ").append(text);
+        // ChatRoom Spy
+        ParallelChat.get().socialSpyUsers.forEach((u, o) -> {
+            if (o.isSocialSpy()) {
+                // this kinda sucks but not much can be done
+                Player spyUser = ParallelChat.get().getPlugin().getServer().getPlayer(u);
+                if (spyUser != null) {
+                    spyUser.sendMessage(chatroomSpy);
+                }
             }
         });
     }
 
     private String getPrefix(Player player) {
         if (isPlayerOwner(player))
-            return "O " + player.getName();
+            return "<bold>O</bold> " + player.getName();
         if (isPlayerModerator(player))
-            return "M " + player.getName();
+            return "<bold>M</bold> " + player.getName();
         return player.getName();
     }
 

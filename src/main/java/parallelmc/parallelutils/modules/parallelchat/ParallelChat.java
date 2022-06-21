@@ -117,7 +117,8 @@ public class ParallelChat implements ParallelModule {
                     (
                         UUID        varchar(36) not null,
                         SocSpy      tinyint     not null,
-                        CmdSpy      tinyint     not null
+                        CmdSpy      tinyint     not null,
+                        ChatRoomSpy tinyint     not null
                     );""");
             conn.commit();
             statement.close();
@@ -135,7 +136,8 @@ public class ParallelChat implements ParallelModule {
                 UUID uuid = UUID.fromString(results.getString("UUID"));
                 boolean socialSpy = results.getBoolean("SocSpy");
                 boolean cmdSpy = results.getBoolean("CmdSpy");
-                socialSpyUsers.put(uuid, new SocialSpyOptions(socialSpy, cmdSpy));
+                boolean chatRoomSpy = results.getBoolean("ChatRoomSpy");
+                socialSpyUsers.put(uuid, new SocialSpyOptions(socialSpy, cmdSpy, chatRoomSpy));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -225,6 +227,7 @@ public class ParallelChat implements ParallelModule {
         puPlugin.getCommand("clearchat").setExecutor(new ParallelClearChat());
         puPlugin.getCommand("socialspy").setExecutor(new ParallelSocialSpy());
         puPlugin.getCommand("commandspy").setExecutor(new ParallelCommandSpy());
+        puPlugin.getCommand("chatroomspy").setExecutor(new ParallelChatRoomSpy());
         puPlugin.getCommand("mutechat").setExecutor(new ParallelMuteChat());
         puPlugin.getCommand("colors").setExecutor(new ParallelColors());
         puPlugin.getCommand("formats").setExecutor(new ParallelFormats());
@@ -252,7 +255,7 @@ public class ParallelChat implements ParallelModule {
             Parallelutils.log(Level.SEVERE, "Failed to close chat log writer!");
         }
 
-        // save socialspy and cmdspy data across shutdowns
+        // save spy data across shutdowns
         try (Connection conn = puPlugin.getDbConn()) {
             if (conn == null) throw new SQLException("Unable to establish connection!");
             PreparedStatement statement = conn.prepareStatement("INSERT INTO SocialSpy (UUID, SocSpy, CmdSpy) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE SocSpy = ?, CmdSpy = ?");

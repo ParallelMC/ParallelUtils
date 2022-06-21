@@ -4,10 +4,12 @@ package parallelmc.parallelutils.modules.parallelchat;
 public class SocialSpyOptions {
     private boolean socialSpy;
     private boolean cmdSpy;
+    private boolean chatRoomSpy;
 
-    public SocialSpyOptions(boolean socialSpy, boolean cmdSpy) {
+    public SocialSpyOptions(boolean socialSpy, boolean cmdSpy, boolean chatRoomSpy) {
         this.socialSpy = socialSpy;
         this.cmdSpy = cmdSpy;
+        this.chatRoomSpy = chatRoomSpy;
     }
 
     public boolean isSocialSpy() {
@@ -24,5 +26,13 @@ public class SocialSpyOptions {
 
     public void setCmdSpy(boolean cmdSpy) {
         this.cmdSpy = cmdSpy;
+    }
+
+    public boolean isChatRoomSpy() {
+        return chatRoomSpy;
+    }
+
+    public void setChatRoomSpy(boolean chatRoomSpy) {
+        this.chatRoomSpy = chatRoomSpy;
     }
 }
