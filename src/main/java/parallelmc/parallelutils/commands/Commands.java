@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.*;
-import org.bukkit.craftbukkit.v1_18_R2.command.ServerCommandSender;
+import org.bukkit.craftbukkit.v1_19_R1.command.ServerCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
