@@ -182,6 +182,12 @@ bukkit {
             permissionMessage = 'You do not have permission'
             permission = 'parallelutils.commandspy'
         }
+        chatroomspy {
+            description = 'Toggles chatroom spy'
+            usage = '/chatroomspy'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.chatrooms.chatroomspy'
+        }
         mutechat {
             description = 'Mute or unmute the chat'
             usage = '/mutechat'
@@ -335,7 +341,7 @@ bukkit {
         }
         'parallelutils.bypass' {
             description = 'Bypasses some ParallelUtils modules'
-            childrenMap = ['parallelutils.bypass.anticaps': true, 'parallelutils.bypass.antislur': true, 'parallelutils.bypass.clearchat': true, 'parallelutils.bypass.socialspy': true, 'parallelutils.bypass.commandspy': true, 'parallelutils.bypass.mutechat': true,]
+            childrenMap = ['parallelutils.bypass.anticaps': true, 'parallelutils.bypass.antislur': true, 'parallelutils.bypass.clearchat': true, 'parallelutils.bypass.socialspy': true, 'parallelutils.bypass.commandspy': true, 'parallelutils.bypass.mutechat': true, 'parallelutils.bypass.chatroomspy': true,]
         }
         'parallelutils.bypass.anticaps' {
             description = 'Bypasses the Anti-Caps module'
@@ -352,6 +358,9 @@ bukkit {
         'parallelutils.bypass.commandspy' {
             description = 'Bypasses the Command Spy module'
         }
+        'parallelutils.bypass.chatroomspy' {
+            description = 'Bypasses the ChatRoom Spy module'
+        }
         'parallelutils.bypass.mutechat' {
             description = 'Bypasses chat being muted'
         }
@@ -361,6 +370,13 @@ bukkit {
         }
         'parallelutils.notify.antislur' {
             description = 'Be notified of swearing'
+        }
+        'parallelutils.chatrooms' {
+            description = 'Chatroom admin permissions'
+            childrenMap = ['parallelutils.chatrooms.chatroomspy': true,]
+        }
+        'parallelutils.chatrooms.chatroomspy' {
+            description = 'View messages from all chatrooms'
         }
     }
 }
