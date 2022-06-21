@@ -3,10 +3,12 @@ package parallelmc.parallelutils.modules.charms;
 import dev.esophose.playerparticles.api.PlayerParticlesAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
@@ -17,7 +19,6 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.charms.commands.*;
 import parallelmc.parallelutils.modules.charms.data.*;
-import parallelmc.parallelutils.modules.charms.data.impl.GenericEffectSettings;
 import parallelmc.parallelutils.modules.charms.handlers.impl.*;
 import parallelmc.parallelutils.modules.charms.listeners.*;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
@@ -25,9 +26,11 @@ import parallelmc.parallelutils.modules.charms.handlers.ICharmHandler;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.modules.charms.helper.Types;
 import parallelmc.parallelutils.modules.charms.playerparticles.styles.ParallelStyles;
+import parallelmc.parallelutils.modules.charms.util.EnchantGlow;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -66,6 +69,8 @@ public class ParallelCharms implements ParallelModule {
 					"Module may already be registered. Quitting...");
 			return;
 		}
+
+		EnchantGlow.registerFakeGlow(puPlugin);
 
 		PlayerParticlesAPI ppAPI = null;
 
@@ -110,6 +115,9 @@ public class ParallelCharms implements ParallelModule {
 		}
 		if (!registerHandler(new CharmCommandApplyHandler())) {
 			Parallelutils.log(Level.WARNING, "Could not register COMMAND_APPLY");
+		}
+		if (!registerHandler(new CharmShineHandler())) {
+			Parallelutils.log(Level.WARNING, "Could not register SHINE");
 		}
 
 		// Register events
@@ -343,4 +351,5 @@ public class ParallelCharms implements ParallelModule {
 	public ArrayList<Charm> removeAllCharms(@NotNull Player player) {
 		return appliedCharms.remove(player.getUniqueId());
 	}
+
 }
