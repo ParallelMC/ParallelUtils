@@ -57,6 +57,9 @@ public class ParallelChat implements ParallelModule {
     private static final HashSet<UUID> playersInTeamChat = new HashSet<>();
     public static final BossBar teamChatBar = BossBar.bossBar(Component.text("Team Chat", NamedTextColor.YELLOW), 1, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
 
+    public static final HashSet<UUID> playersInLoreChat = new HashSet<>();
+    public static final BossBar loreChatBar = BossBar.bossBar(Component.text("Lore Chat", NamedTextColor.GREEN), 1, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
+
     private final FileConfiguration bannedWordsConfig = new YamlConfiguration();
     public List<String> bannedWords = new ArrayList<>();
     public List<String> allowedWords = new ArrayList<>();
@@ -210,6 +213,7 @@ public class ParallelChat implements ParallelModule {
         puPlugin.getCommand("r").setExecutor(new ParallelReply());
         puPlugin.getCommand("sc").setExecutor(new ParallelStaffChat());
         puPlugin.getCommand("tc").setExecutor(new ParallelTeamChat());
+        puPlugin.getCommand("lc").setExecutor(new ParallelLoreChat());
         puPlugin.getCommand("broadcast").setExecutor(new ParallelBroadcast());
         puPlugin.getCommand("announce").setExecutor(new ParallelAnnounce());
         puPlugin.getCommand("clearchat").setExecutor(new ParallelClearChat());
@@ -323,6 +327,23 @@ public class ParallelChat implements ParallelModule {
     }
 
     /**
+     * Sends a message into the lore chat
+     * @param sender The CommandSender who sent the messsage
+     * @param message The message Component
+     */
+    public static void sendMessageToLoreChat(CommandSender sender, Component message) {
+        Component text = MiniMessage.miniMessage().deserialize("<red>[<green>Lore-Chat<red>] <green>" + sender.getName() + " <gray>> ").append(message.color(NamedTextColor.GREEN));
+        // i know this is ugly
+        // possible todo: dynamically keep track of lore staff in a list
+        for (Player p : sender.getServer().getOnlinePlayers()) {
+            if (p.hasPermission("parallelutils.lorechat")) {
+                p.sendMessage(text);
+            }
+        }
+        Parallelutils.log(Level.INFO, LegacyComponentSerializer.legacyAmpersand().serialize(text));
+    }
+
+    /**
      * Converts a list of command arguments into a string
      * Mostly to parse string arguments
      * @param argList The list of arguments to use
@@ -423,6 +444,19 @@ public class ParallelChat implements ParallelModule {
         }
     }
 
+    public void addToLoreChat(Player player) {
+        playersInLoreChat.add(player.getUniqueId());
+        player.showBossBar(loreChatBar);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
+    }
+
+    public void removeFromLoreChat(Player player) {
+        if (playersInLoreChat.contains(player.getUniqueId())) {
+            playersInLoreChat.remove(player.getUniqueId());
+            player.hideBossBar(loreChatBar);
+        }
+    }
+
     public HashSet<UUID> getStaffChat() {
         return playersInStaffChat;
     }
@@ -430,5 +464,7 @@ public class ParallelChat implements ParallelModule {
     public HashSet<UUID> getTeamChat() {
         return playersInTeamChat;
     }
+
+    public HashSet<UUID> getLoreChat() { return playersInLoreChat; }
 
 }
