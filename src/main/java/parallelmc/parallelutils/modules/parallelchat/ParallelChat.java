@@ -278,6 +278,9 @@ public class ParallelChat implements ParallelModule {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        // save chatrooms
+        chatRoomManager.saveChatroomsToFile();
     }
 
     /**
