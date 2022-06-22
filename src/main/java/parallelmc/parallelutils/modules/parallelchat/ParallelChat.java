@@ -209,7 +209,7 @@ public class ParallelChat implements ParallelModule {
             Parallelutils.log(Level.SEVERE, "Failed to open writer to loggers!");
         }
 
-        this.chatRoomManager = new ChatRoomManager();
+        this.chatRoomManager = new ChatRoomManager(Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/chatrooms.json"));
 
         manager.registerEvents(new OnChatMessage(), puPlugin);
         manager.registerEvents(new OnJoinLeave(puPlugin), puPlugin);

@@ -1,22 +1,24 @@
 package parallelmc.parallelutils.modules.parallelchat.chatrooms;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 
 public class ChatRoomManager {
-    private HashMap<String, ChatRoom> chatRooms = new HashMap<>();
+    private final HashMap<String, ChatRoom> chatRooms = new HashMap<>();
     // list of players who are in a chatroom
     private final HashMap<UUID, String> playersInChatrooms = new HashMap<>();
     // list of players who have a chatroom passively active (i.e. by running /cr with no arguments)
@@ -25,27 +27,69 @@ public class ChatRoomManager {
     // list of players waiting to accept an invite
     private final HashMap<UUID, String> pendingInvites = new HashMap<>();
 
-    private final Path jsonPath = Path.of(ParallelChat.get().getPlugin().getDataFolder().getAbsolutePath() + "/chatrooms.json");
+    private final Path jsonPath;
 
-    public ChatRoomManager() {
+    public ChatRoomManager(Path jsonPath) {
+        this.jsonPath = jsonPath;
         if (!jsonPath.toFile().exists()) {
             Parallelutils.log(Level.WARNING, "ChatRooms JSON file does not exist, skipping loading.");
             return;
         }
+        String data;
         try {
-            Type type = new TypeToken<HashMap<String, ChatRoom>>(){}.getType();
-            this.chatRooms = new Gson().fromJson(Files.readString(jsonPath), type);
-            Parallelutils.log(Level.INFO, "Loaded " + chatRooms.size() + " chat rooms.");
+            data = Files.readString(jsonPath);
+            JSONParser parser = new JSONParser();
+            JSONArray arr = (JSONArray)parser.parse(data);
+            for (Object o : arr) {
+                JSONObject json = (JSONObject)o;
+                HashMap<UUID, Integer> members = new HashMap<>();
+                String name = (String)json.get("name");
+                for (Object m : (JSONArray)json.get("members")) {
+                    JSONObject member = (JSONObject)m;
+                    UUID uuid = UUID.fromString((String)member.get("uuid"));
+                    // the json parser reads it as a long so change it to an int
+                    members.put(uuid, Math.toIntExact((Long)member.get("rank")));
+                    playersInChatrooms.put(uuid, name);
+                }
+                chatRooms.put(name, new ChatRoom(
+                        UUID.fromString((String)json.get("owner")),
+                        name,
+                        (String)json.get("chatColor"),
+                        (Boolean)json.get("isPrivate"),
+                        members));
+            }
+            Parallelutils.log(Level.INFO, "Loaded " + chatRooms.size() + " existing chatrooms.");
         } catch (IOException e) {
             Parallelutils.log(Level.SEVERE, "Failed to load chat rooms!\n" + e.getMessage());
+        } catch (ParseException e) {
+            Parallelutils.log(Level.SEVERE, "Failed to parse chat room data!\n" + e.getMessage());
         }
+
     }
 
+    @SuppressWarnings("unchecked")
     public void saveChatroomsToFile() {
-        String json = new Gson().toJson(chatRooms);
+        JSONArray json = new JSONArray();
+        for (Map.Entry<String, ChatRoom> e : chatRooms.entrySet()) {
+            ChatRoom c = e.getValue();
+            JSONObject entry = new JSONObject();
+            entry.put("owner", c.getOwner().toString());
+            entry.put("name", c.getName());
+            entry.put("chatColor", c.getColor());
+            entry.put("isPrivate", c.isPrivate());
+            JSONArray members = new JSONArray();
+            c.getMembers().forEach((u, i) -> {
+                JSONObject member = new JSONObject();
+                member.put("uuid", u.toString());
+                member.put("rank", i);
+                members.add(member);
+            });
+            entry.put("members", members);
+            json.add(entry);
+        }
         try {
-            Files.writeString(jsonPath, json);
-            Parallelutils.log(Level.INFO, "Saved " + chatRooms.size() + " chat rooms.");
+            Files.writeString(jsonPath, json.toJSONString());
+            Parallelutils.log(Level.INFO, "Saved " + chatRooms.size() + " chatrooms.");
         } catch (IOException e) {
             Parallelutils.log(Level.SEVERE, "Failed to save chat rooms!\n" + e.getMessage());
         }
