@@ -131,7 +131,7 @@ public class ChatRoomManager {
     }
 
     public void kickPlayerFromChatroom(Player player, Player moderator) {
-        ChatRoom c = getPlayerChatRoom(player);
+        ChatRoom c = getPlayerChatRoom(moderator);
         c.kickMember(player, moderator);
         this.playersInChatrooms.remove(player.getUniqueId());
         this.hasChatroomActive.remove(player.getUniqueId());
@@ -139,7 +139,7 @@ public class ChatRoomManager {
     }
 
     public void invitePlayerToChatroom(Player player, Player moderator) {
-        ChatRoom c = getPlayerChatRoom(player);
+        ChatRoom c = getPlayerChatRoom(moderator);
         this.pendingInvites.put(player.getUniqueId(), c.getName());
         ParallelChat.sendParallelMessageTo(player, "You have been invited to the chatroom " + c.getName() + " by " + moderator.getName() + ". Type /cr accept to join!");
         player.getServer().getScheduler().runTaskLater(ParallelChat.get().getPlugin(), () -> {

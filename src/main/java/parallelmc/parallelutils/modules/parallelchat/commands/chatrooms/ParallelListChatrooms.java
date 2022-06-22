@@ -29,7 +29,11 @@ public class ParallelListChatrooms extends ChatroomCommand {
         Component text = Component.text("Public Chatrooms: ", NamedTextColor.GOLD);
         for (Map.Entry<String, ChatRoom> e : ParallelChat.get().chatRoomManager.getChatRooms().entrySet()) {
             if (e.getValue().isPrivate()) continue;
-            text = text.append(Component.text(e.getKey() + " ", NamedTextColor.AQUA));
+            text = text.append(Component.text(e.getKey() + " ", NamedTextColor.NAMES.value(e.getValue().getColor())));
+        }
+        if (ParallelChat.get().chatRoomManager.isPlayerInChatroom(player)) {
+            ChatRoom c = ParallelChat.get().chatRoomManager.getPlayerChatRoom(player);
+            text = text.append(Component.newline()).append(Component.text("Your Chatroom: ", NamedTextColor.GOLD)).append(Component.text(c.getName(), NamedTextColor.NAMES.value(c.getColor())));
         }
         player.sendMessage(text);
         return true;
