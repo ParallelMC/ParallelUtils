@@ -44,7 +44,7 @@ public class ParallelListMembers extends ChatroomCommand {
             else members = members.append(Component.text(p.getName() + " ", p.isOnline() ? NamedTextColor.GREEN : NamedTextColor.RED));
         }
         Component text = MiniMessage.miniMessage().deserialize("<gold>" + c.getName() + " Members:<newline>Owner: " + (owner.isOnline() ? "<green>" : "<red>") + owner.getName())
-                .append(Component.newline()).append(moderators.append(Component.newline())).append(Component.newline()).append(members.append(Component.newline()));
+                .append(Component.newline()).append(moderators.append(Component.newline())).append(members.append(Component.newline()));
         player.sendMessage(text);
         return true;
     }

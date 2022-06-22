@@ -30,7 +30,7 @@ public class ParallelLeaveChatroom extends ChatroomCommand {
         }
         ChatRoom c = ParallelChat.get().chatRoomManager.getPlayerChatRoom(player);
         if (c.isPlayerOwner(player)) {
-            ParallelChat.sendParallelMessageTo(player, "You cannot leave the chatroom! You can use /cr disband if you want to remove the chatroom entirely.");
+            ParallelChat.sendParallelMessageTo(player, "You cannot leave the chatroom since you are the owner. You can use /cr disband if you want to remove the chatroom entirely.");
             return true;
         }
         ParallelChat.get().chatRoomManager.removePlayerFromChatroom(player);
