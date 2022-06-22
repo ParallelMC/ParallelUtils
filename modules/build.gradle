@@ -1,0 +1,30 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+group = 'org.parallelmc'
+
+configurations {
+    moduleJarsCompile
+}
+
+/*
+sourceSets {
+    modules {
+        java {
+            compileClasspath += configurations.compileClasspath
+            compileClasspath += configurations.moduleJarsCompile
+            srcDirs = ['src/main/java/parallelmc/parallelutils/modules']
+        }
+    }
+}
+
+task moduleJars(type: ShadowJar) {
+    archiveClassifier.set("modules")
+    from sourceSets.modules.output
+    configurations = [project.configurations.compileClasspath]
+}
+
+*/
+
+dependencies {
+    compileOnly project(':api')
+}
