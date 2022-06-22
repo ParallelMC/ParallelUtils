@@ -12,7 +12,7 @@ import java.util.List;
 
 public class ParallelLeaveChatroom extends ChatroomCommand {
 
-    private final String USAGE = "/chatroom leave";
+    private final String USAGE = "/cr leave";
 
     public ParallelLeaveChatroom() {
         super("leave", "Leave the chatroom you are in.");
@@ -30,7 +30,7 @@ public class ParallelLeaveChatroom extends ChatroomCommand {
         }
         ChatRoom c = ParallelChat.get().chatRoomManager.getPlayerChatRoom(player);
         if (c.isPlayerOwner(player)) {
-            ParallelChat.sendParallelMessageTo(player, "You cannot leave the chatroom! You can use /chatroom disband if you want to remove the chatroom entirely.");
+            ParallelChat.sendParallelMessageTo(player, "You cannot leave the chatroom! You can use /cr disband if you want to remove the chatroom entirely.");
             return true;
         }
         ParallelChat.get().chatRoomManager.removePlayerFromChatroom(player);

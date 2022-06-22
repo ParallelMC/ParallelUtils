@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ParallelAcceptInvite extends ChatroomCommand {
 
-    private final String USAGE = "/chatroom accept";
+    private final String USAGE = "/cr accept";
 
     public ParallelAcceptInvite() {
         super("accept", "Accept a chatroom invite.");

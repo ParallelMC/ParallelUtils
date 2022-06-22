@@ -12,7 +12,7 @@ import java.util.List;
 public class ParallelDisbandChatroom extends ChatroomCommand {
 
     // require name to prevent accidentally running the command
-    private final String USAGE = "/chatroom disband <name>";
+    private final String USAGE = "/cr disband <name>";
 
     public ParallelDisbandChatroom() {
         super("disband", "Disbands a chatroom.");

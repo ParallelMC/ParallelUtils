@@ -95,7 +95,7 @@ bukkit {
         }
         chatroom {
             description = 'Base command for all ChatRoom commands'
-            usage = '/chatroom'
+            usage = '/cr'
             permissionMessage = 'You do not have permission'
             aliases = ['cr',]
         }

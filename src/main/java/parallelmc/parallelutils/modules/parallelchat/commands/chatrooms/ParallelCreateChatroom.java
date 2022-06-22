@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ParallelCreateChatroom extends ChatroomCommand {
 
-    private final String USAGE = "/chatroom create <name> <color> <isPrivate (true/false)>";
+    private final String USAGE = "/cr create <name> <color> <isPrivate (true/false)>";
 
     public ParallelCreateChatroom() {
         super("create", "Creates a new chatroom.");

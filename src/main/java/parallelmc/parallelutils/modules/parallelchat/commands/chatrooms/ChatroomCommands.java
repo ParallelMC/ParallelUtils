@@ -60,12 +60,7 @@ public class ChatroomCommands implements CommandExecutor, TabCompleter {
                     if (executingCommand != null) {
                         executingCommand.execute(player, command, args);
                     } else {
-                        // allows typing a message to the chatroom with the base command
-                        ChatRoom c = ParallelChat.get().chatRoomManager.getPlayerChatRoom(player);
-                        if (c != null) {
-                            String msg = ParallelChat.getStringArg(args);
-                            c.sendMessage(player, Component.text(msg));
-                        }
+                        ParallelChat.sendParallelMessageTo(player, "Unknown chatroom subcommand. Type /cr help for all commands!");
                     }
                 }
             }

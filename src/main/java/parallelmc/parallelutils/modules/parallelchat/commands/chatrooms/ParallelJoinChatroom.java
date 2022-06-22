@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ParallelJoinChatroom extends ChatroomCommand {
 
-    private final String USAGE = "/chatroom join <name>";
+    private final String USAGE = "/cr join <name>";
 
     public ParallelJoinChatroom() {
         super("join", "Join a public chatroom.");

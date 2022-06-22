@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ParallelDemoteMember  extends ChatroomCommand {
 
-    private final String USAGE = "/chatroom demote <player>";
+    private final String USAGE = "/cr demote <player>";
 
     public ParallelDemoteMember() {
         super("demote", "Demotes a player to member status in a chatroom.");
