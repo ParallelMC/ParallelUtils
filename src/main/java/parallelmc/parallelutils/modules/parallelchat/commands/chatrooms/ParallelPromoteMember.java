@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ParallelPromoteMember extends ChatroomCommand {
 
-    private final String USAGE = "/chatroom promote <player>";
+    private final String USAGE = "/cr promote <player>";
 
     public ParallelPromoteMember() {
         super("promote", "Promotes a player to moderator status in a chatroom.");

@@ -17,7 +17,7 @@ import java.util.UUID;
 
 public class ParallelListMembers extends ChatroomCommand {
 
-    private final String USAGE = "/chatroom members";
+    private final String USAGE = "/cr members";
 
     public ParallelListMembers() {
         super("members", "Lists all chatroom members.");

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ParallelKickMember extends ChatroomCommand {
 
-    private final String USAGE = "/chatroom kick <player>";
+    private final String USAGE = "/cr kick <player>";
 
     public ParallelKickMember() {
         super("kick", "Kicks a player from the chatroom.");

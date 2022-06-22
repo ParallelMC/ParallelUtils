@@ -171,6 +171,8 @@ public final class Parallelutils extends JavaPlugin {
 		addChatRoomCommand("invite", new ParallelSendInvite());
 		addChatRoomCommand("accept", new ParallelAcceptInvite());
 		addChatRoomCommand("disband", new ParallelDisbandChatroom());
+		addChatRoomCommand("help", new ParallelHelpChatrooms());
+		addChatRoomCommand("msg", new ParallelMsgChatroom());
 
 		getCommand("parallelutils").setExecutor(commands);
 		getCommand("parallelutils").setTabCompleter(commands);
@@ -456,6 +458,14 @@ public final class Parallelutils extends JavaPlugin {
 	 */
 	public Map<String, ParallelCommand> getCommands() {
 		return commands.getCommands();
+	}
+
+	/**
+	 * Wrapper for {@code parallelmc.parallelutils.modules.parallelchat.commands.chatrooms.ChatroomCommands#getCommands()}
+	 * @return A deep copy of the command map
+	 */
+	public Map<String, ChatroomCommand> getChatroomCommands() {
+		return chatroomCommands.getCommands();
 	}
 
 	/**

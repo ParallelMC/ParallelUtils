@@ -11,7 +11,7 @@ import java.util.List;
 
 public class ParallelSendInvite extends ChatroomCommand {
 
-    private final String USAGE = "/chatroom invite <player>";
+    private final String USAGE = "/cr invite <player>";
 
     public ParallelSendInvite() {
         super("invite", "Invite a player to a private chatroom.");

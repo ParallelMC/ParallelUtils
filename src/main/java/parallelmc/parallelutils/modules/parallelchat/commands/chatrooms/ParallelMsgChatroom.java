@@ -1,7 +1,6 @@
 package parallelmc.parallelutils.modules.parallelchat.commands.chatrooms;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -10,30 +9,32 @@ import parallelmc.parallelutils.modules.parallelchat.chatrooms.ChatRoom;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class ParallelListChatrooms extends ChatroomCommand {
+public class ParallelMsgChatroom extends ChatroomCommand {
 
-    private final String USAGE = "/cr list";
+    private final String USAGE = "/cr msg <message>";
 
-    public ParallelListChatrooms() {
-        super("list", "Lists all public chatrooms");
+    public ParallelMsgChatroom() {
+        super("msg", "Sends a message to the chatroom.");
     }
 
     @Override
     public boolean execute(@NotNull Player player, @NotNull Command command, String[] args) {
-        if (args.length != 1) {
+        if (args.length != 2) {
             player.sendMessage(USAGE);
             return false;
         }
-        Component text = Component.text("Public Chatrooms: ", NamedTextColor.GOLD);
-        for (Map.Entry<String, ChatRoom> e : ParallelChat.get().chatRoomManager.getChatRooms().entrySet()) {
-            if (e.getValue().isPrivate()) continue;
-            text = text.append(Component.text(e.getKey() + " ", NamedTextColor.AQUA));
+        if (!ParallelChat.get().chatRoomManager.isPlayerInChatroom(player)) {
+            ParallelChat.sendParallelMessageTo(player, "You are not in a chatroom!");
+            return true;
         }
-        player.sendMessage(text);
+        ChatRoom c = ParallelChat.get().chatRoomManager.getPlayerChatRoom(player);
+        String msg = ParallelChat.getStringArg(args);
+        // remove 'msg ' from the start of the returned getStringArg String
+        c.sendMessage(player, Component.text(msg.substring(4)));
         return true;
     }
+
 
     @Override
     public List<String> getTabComplete(@NotNull Player player, @NotNull String[] args) {
