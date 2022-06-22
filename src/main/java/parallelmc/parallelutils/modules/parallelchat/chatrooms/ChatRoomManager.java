@@ -1,14 +1,22 @@
 package parallelmc.parallelutils.modules.parallelchat.chatrooms;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
+import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public class ChatRoomManager {
-    private final HashMap<String, ChatRoom> chatRooms = new HashMap<>();
+    private HashMap<String, ChatRoom> chatRooms = new HashMap<>();
     // list of players who are in a chatroom
     private final HashMap<UUID, String> playersInChatrooms = new HashMap<>();
     // list of players who have a chatroom passively active (i.e. by running /cr with no arguments)
@@ -17,12 +25,30 @@ public class ChatRoomManager {
     // list of players waiting to accept an invite
     private final HashMap<UUID, String> pendingInvites = new HashMap<>();
 
+    private final Path jsonPath = Path.of(ParallelChat.get().getPlugin().getDataFolder().getAbsolutePath() + "/chatrooms.json");
+
     public ChatRoomManager() {
-        // TODO: load existing chatrooms from file
+        if (!jsonPath.toFile().exists()) {
+            Parallelutils.log(Level.WARNING, "ChatRooms JSON file does not exist, skipping loading.");
+            return;
+        }
+        try {
+            Type type = new TypeToken<HashMap<String, ChatRoom>>(){}.getType();
+            this.chatRooms = new Gson().fromJson(Files.readString(jsonPath), type);
+            Parallelutils.log(Level.INFO, "Loaded " + chatRooms.size() + " chat rooms.");
+        } catch (IOException e) {
+            Parallelutils.log(Level.SEVERE, "Failed to load chat rooms!\n" + e.getMessage());
+        }
     }
 
     public void saveChatroomsToFile() {
-        // TODO: save existing chatrooms to config/json on shutdown
+        String json = new Gson().toJson(chatRooms);
+        try {
+            Files.writeString(jsonPath, json);
+            Parallelutils.log(Level.INFO, "Saved " + chatRooms.size() + " chat rooms.");
+        } catch (IOException e) {
+            Parallelutils.log(Level.SEVERE, "Failed to save chat rooms!\n" + e.getMessage());
+        }
     }
 
 
