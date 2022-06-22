@@ -53,7 +53,12 @@ public class ChatroomCommands implements CommandExecutor, TabCompleter {
             if (command.getName().equalsIgnoreCase("chatroom") || command.getName().equalsIgnoreCase("cr")) {
                 // If no command was specified, toggle the player's active chatroom
                 if (args.length == 0) {
-                    ParallelChat.get().chatRoomManager.toggleActiveChatroom(player);
+                    if (ParallelChat.get().chatRoomManager.isPlayerInChatroom(player)) {
+                        ParallelChat.get().chatRoomManager.toggleActiveChatroom(player);
+                    } else {
+                        ParallelChat.sendParallelMessageTo(player, "You are not in a chatroom! Type /cr help for all commands!");
+                        return true;
+                    }
                 } else {
                     ChatroomCommand executingCommand = commandMap.get(args[0]);
 

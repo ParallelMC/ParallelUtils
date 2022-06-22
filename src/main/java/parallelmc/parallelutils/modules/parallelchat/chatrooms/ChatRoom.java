@@ -68,7 +68,7 @@ public class ChatRoom {
 
     public boolean isPlayerModerator(Player player) {
         if (members.get(player.getUniqueId()) == null) return false;
-        return members.get(player.getUniqueId()) == MODERATOR;
+        return members.get(player.getUniqueId()) == MODERATOR || isPlayerOwner(player);
     }
 
     public boolean isPlayerOwner(Player player) {

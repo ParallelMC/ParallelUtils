@@ -20,7 +20,7 @@ public class ParallelMsgChatroom extends ChatroomCommand {
 
     @Override
     public boolean execute(@NotNull Player player, @NotNull Command command, String[] args) {
-        if (args.length != 2) {
+        if (args.length < 2) {
             player.sendMessage(USAGE);
             return false;
         }

@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.parallelchat.commands.chatrooms;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -55,6 +56,16 @@ public class ParallelDemoteMember  extends ChatroomCommand {
 
     @Override
     public List<String> getTabComplete(@NotNull Player player, @NotNull String[] args) {
-        return new ArrayList<>();
+        List<String> list = new ArrayList<>();
+        if(args.length == 2){
+            ChatRoom c = ParallelChat.get().chatRoomManager.getPlayerChatRoom(player);
+            c.getMembers().forEach((u, b) -> {
+                OfflinePlayer p = player.getServer().getOfflinePlayer(u);
+                if (p.isOnline()) {
+                    list.add(p.getName());
+                }
+            });
+        }
+        return list;
     }
 }
