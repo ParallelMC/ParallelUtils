@@ -23,6 +23,14 @@ public class ParallelCreateChatroom extends ChatroomCommand {
             player.sendMessage(USAGE);
             return false;
         }
+        if (args[1].length() > 16) {
+            ParallelChat.sendParallelMessageTo(player, "Chat room name must be 16 characters or less!");
+            return true;
+        }
+        if (ParallelChat.get().bannedWords.contains(args[1])) {
+            ParallelChat.sendParallelMessageTo(player, "Invalid chatroom name.");
+            return true;
+        }
         if (ParallelChat.get().chatRoomManager.getChatRoom(args[1]) != null) {
             ParallelChat.sendParallelMessageTo(player, "Chat room with name " + args[1] + " already exists!");
             return true;

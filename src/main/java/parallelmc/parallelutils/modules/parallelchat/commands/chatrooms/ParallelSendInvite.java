@@ -1,6 +1,8 @@
 package parallelmc.parallelutils.modules.parallelchat.commands.chatrooms;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
@@ -56,6 +58,10 @@ public class ParallelSendInvite extends ChatroomCommand {
 
     @Override
     public List<String> getTabComplete(@NotNull Player player, @NotNull String[] args) {
-        return new ArrayList<>();
+        List<String> list = new ArrayList<>();
+        if(args.length == 2){
+            list.addAll(player.getServer().getOnlinePlayers().stream().map(HumanEntity::getName).toList());
+        }
+        return list;
     }
 }

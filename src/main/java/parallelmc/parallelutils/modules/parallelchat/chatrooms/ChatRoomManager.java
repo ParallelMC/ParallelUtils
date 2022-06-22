@@ -114,7 +114,7 @@ public class ChatRoomManager {
     }
 
     public boolean isPlayerInChatroom(Player player) {
-        return getPlayerChatRoom(player) != null;
+        return this.playersInChatrooms.get(player.getUniqueId()) != null;
     }
 
     public void addPlayerToChatroom(Player player, String name) {
