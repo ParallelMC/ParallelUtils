@@ -14,22 +14,35 @@ public class ChatRoom {
     private final UUID owner;
     private final String name;
     private final NamedTextColor chatColor;
-    private final HashMap<UUID, Boolean> members;
+    private final HashMap<UUID, Integer> members;
     private final boolean isPrivate;
     private final BossBar activeBossbar;
+
+    public static final int OWNER = 2;
+    public static final int MODERATOR = 1;
+    public static final int MEMBER = 0;
 
     public ChatRoom(UUID owner, String name, String color, boolean isPrivate) {
         this.owner = owner;
         this.name = name;
         this.chatColor = NamedTextColor.NAMES.value(color);
         this.members = new HashMap<>();
-        this.members.put(owner, true);
+        this.members.put(owner, OWNER);
+        this.isPrivate = isPrivate;
+        this.activeBossbar = BossBar.bossBar(Component.text("ChatRoom: " + name, chatColor), 1, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
+    }
+
+    public ChatRoom(UUID owner, String name, String color, boolean isPrivate, HashMap<UUID, Integer> members) {
+        this.owner = owner;
+        this.name = name;
+        this.chatColor = NamedTextColor.NAMES.value(color);
+        this.members = members;
         this.isPrivate = isPrivate;
         this.activeBossbar = BossBar.bossBar(Component.text("ChatRoom: " + name, chatColor), 1, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
     }
 
     public void addMember(Player player) {
-        this.members.put(player.getUniqueId(), false);
+        this.members.put(player.getUniqueId(), MEMBER);
         announceMessage(player.getName() + " joined the chatroom.", NamedTextColor.GREEN);
     }
 
@@ -44,22 +57,22 @@ public class ChatRoom {
     }
 
     public void promoteMember(Player player) {
-        this.members.put(player.getUniqueId(), true);
+        this.members.put(player.getUniqueId(), MODERATOR);
         announceMessage(player.getName() + " has been promoted to moderator.", NamedTextColor.GREEN);
     }
 
     public void demoteMember(Player player) {
-        this.members.put(player.getUniqueId(), false);
+        this.members.put(player.getUniqueId(), MEMBER);
         announceMessage(player.getName() + " has been demoted to member.", NamedTextColor.RED);
     }
 
     public boolean isPlayerModerator(Player player) {
         if (members.get(player.getUniqueId()) == null) return false;
-        return members.get(player.getUniqueId());
+        return members.get(player.getUniqueId()) == MODERATOR;
     }
 
     public boolean isPlayerOwner(Player player) {
-        return player.getUniqueId() == owner;
+        return members.get(player.getUniqueId()) == OWNER;
     }
 
     public boolean hasMember(Player player) { return members.containsKey(player.getUniqueId()); }
@@ -121,11 +134,13 @@ public class ChatRoom {
 
     public String getName() { return this.name; }
 
+    public String getColor() { return this.chatColor.toString(); }
+
     public boolean isPrivate() { return this.isPrivate; }
 
     public BossBar getBossBar() { return this.activeBossbar; }
 
-    public HashMap<UUID, Boolean> getMembers() { return this.members; }
+    public HashMap<UUID, Integer> getMembers() { return this.members; }
 
 
 }

@@ -37,14 +37,14 @@ public class ParallelListMembers extends ChatroomCommand {
         OfflinePlayer owner = player.getServer().getOfflinePlayer(c.getOwner());
         Component moderators = Component.text("Moderators: ", NamedTextColor.GOLD);
         Component members = Component.text("Members: ", NamedTextColor.GOLD);
-        for (Map.Entry<UUID, Boolean> e : c.getMembers().entrySet()) {
+        for (Map.Entry<UUID, Integer> e : c.getMembers().entrySet()) {
             OfflinePlayer p = player.getServer().getOfflinePlayer(e.getKey());
             if (p == owner) continue;
-            if (e.getValue()) moderators = moderators.append(Component.text(p.getName() + " ", p.isOnline() ? NamedTextColor.GREEN : NamedTextColor.RED));
+            if (e.getValue() == ChatRoom.MODERATOR) moderators = moderators.append(Component.text(p.getName() + " ", p.isOnline() ? NamedTextColor.GREEN : NamedTextColor.RED));
             else members = members.append(Component.text(p.getName() + " ", p.isOnline() ? NamedTextColor.GREEN : NamedTextColor.RED));
         }
         Component text = MiniMessage.miniMessage().deserialize("<gold>" + c.getName() + " Members:<newline>Owner: " + (owner.isOnline() ? "<green>" : "<red>") + owner.getName())
-                        .append(moderators.append(Component.newline())).append(Component.newline()).append(members.append(Component.newline()));
+                .append(Component.newline()).append(moderators.append(Component.newline())).append(Component.newline()).append(members.append(Component.newline()));
         player.sendMessage(text);
         return true;
     }
