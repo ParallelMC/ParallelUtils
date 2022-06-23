@@ -6,20 +6,6 @@ import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.*;
-import parallelmc.parallelutils.modules.charms.ParallelCharms;
-import parallelmc.parallelutils.modules.bitsandbobs.BitsAndBobs;
-import parallelmc.parallelutils.modules.custommobs.CustomMobs;
-import parallelmc.parallelutils.modules.customtrees.ParallelTrees;
-import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
-import parallelmc.parallelutils.modules.expstorage.ExpStorage;
-import parallelmc.parallelutils.modules.gamemode4.beehiveInspector.BeehiveInspector;
-import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
-import parallelmc.parallelutils.modules.parallelflags.ParallelFlags;
-import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
-import parallelmc.parallelutils.modules.effectextender.EffectExtender;
-import parallelmc.parallelutils.modules.gamemode4.sunkenTreasure.SunkenTreasure;
-import parallelmc.parallelutils.modules.paralleltutorial.ParallelTutorial;
-import parallelmc.parallelutils.modules.performanceTools.PerformanceTools;
 import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
 import javax.annotation.Nullable;
@@ -51,8 +37,8 @@ public final class Parallelutils extends JavaPlugin {
 	public void onLoad() {
 		registeredModules = new HashMap<>();
 
-		ParallelFlags parallelFlags = new ParallelFlags();
-		parallelFlags.onLoad();
+		/*ParallelFlags parallelFlags = new ParallelFlags();
+		parallelFlags.onLoad();*/
 	}
 
 	@Override
@@ -166,7 +152,7 @@ public final class Parallelutils extends JavaPlugin {
 		// Setup modules
 
 		// TODO: Eventually break this out into multiple plugins. This is meant to imitate that
-		try {
+		/*try {
 			CustomMobs customMobs = new CustomMobs();
 			customMobs.onEnable();
 		} catch (Exception e) {
@@ -281,7 +267,7 @@ public final class Parallelutils extends JavaPlugin {
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelFlags!");
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	@Override

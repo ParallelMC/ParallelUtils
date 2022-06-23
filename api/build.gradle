@@ -1,5 +1,9 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
+plugins {
+    id 'net.minecrell.plugin-yml.bukkit'
+}
+
 group = 'org.parallelmc'
 
 version = '3.0.0'
@@ -13,6 +17,18 @@ compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
 processResources.filteringCharset = "UTF-8"
 
+
+dependencies {
+    implementation 'org.jetbrains:annotations:23.0.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    implementation 'net.dv8tion:JDA:4.4.0_350'
+    compileOnly 'me.clip:placeholderapi:2.11.1'
+    compileOnly fileTree('libs') { include '*.jar' }
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.7'
+    implementation 'mysql:mysql-connector-java:8.0.29'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:4.8.0'
+    compileOnly 'dev.esophose:playerparticles:7.25'
+}
 
 artifacts {
     archives shadowJar

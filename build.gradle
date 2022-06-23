@@ -10,12 +10,19 @@ dependencies {
     paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19-R0.1-SNAPSHOT")
 }
 
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+processResources.filteringCharset = "UTF-8"
+
 allprojects {
     apply plugin: 'java'
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: "io.papermc.paperweight.userdev"
-    apply plugin: "xyz.jpenilla.run-paper" // Adds runServer and runMojangMappedServer tasks for testing
-    apply plugin: 'net.minecrell.plugin-yml.bukkit'
 
     repositories {
         mavenCentral()
@@ -33,16 +40,6 @@ allprojects {
         paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19-R0.1-SNAPSHOT")
 
         compileOnly "io.papermc.paper:paper-api:1.19-R0.1-SNAPSHOT"
-        implementation 'org.jetbrains:annotations:23.0.0'
-        testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-        implementation 'net.dv8tion:JDA:4.4.0_350'
-        compileOnly 'me.clip:placeholderapi:2.11.1'
-        compileOnly fileTree('libs') { include '*.jar' }
-        compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.7'
-        implementation 'mysql:mysql-connector-java:8.0.29'
         compileOnly 'net.luckperms:api:5.4'
-        compileOnly 'com.comphenix.protocol:ProtocolLib:4.8.0'
-        compileOnly 'dev.esophose:playerparticles:7.25'
-        //moduleJarsCompile files("src/main/java/parallelmc/parallelutils/")
     }
 }
