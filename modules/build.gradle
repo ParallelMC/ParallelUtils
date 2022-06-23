@@ -2,9 +2,15 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 group = 'org.parallelmc'
 
-configurations {
-    moduleJarsCompile
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+processResources.filteringCharset = "UTF-8"
+
 
 /*
 sourceSets {
@@ -27,4 +33,42 @@ task moduleJars(type: ShadowJar) {
 
 dependencies {
     compileOnly project(':api')
+    compileOnly fileTree('../libs') { include '*.jar' }
+
+    compileOnly 'org.jetbrains:annotations:23.0.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    compileOnly 'net.dv8tion:JDA:4.4.0_350'
+    compileOnly 'me.clip:placeholderapi:2.11.1'
+    compileOnly fileTree('libs') { include '*.jar' }
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.7'
+    compileOnly 'mysql:mysql-connector-java:8.0.29'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:4.8.0'
+    compileOnly 'dev.esophose:playerparticles:7.25'
+}
+
+def names = []
+fileTree("src/main/java/parallelmc/parallelutils/modules").visit { FileVisitDetails details ->
+    if (!details.path.contains('/')) {
+        def name = details.name
+        names.add(name)
+        sourceSets.add(sourceSets.create("${name}Set") {
+            java {
+                srcDirs = ['main/java/parallelmc/parallelutils/${name}']
+            }
+        })
+    }
+}
+
+task printTest() {
+    println names
+}
+
+names.each { mod ->
+    def fileDest = new File("${buildDir}", mod)
+
+    tasks.create(name: "buildModule-${mod}", type: ShadowJar) {
+        archiveClassifier.set("${mod}")
+        from sourceSets.charmsSet.output
+        //configurations = [project.configurations.compileClasspath]
+    }
 }
