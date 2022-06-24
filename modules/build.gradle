@@ -11,26 +11,6 @@ compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
 processResources.filteringCharset = "UTF-8"
 
-
-/*
-sourceSets {
-    modules {
-        java {
-            compileClasspath += configurations.compileClasspath
-            compileClasspath += configurations.moduleJarsCompile
-            srcDirs = ['src/main/java/parallelmc/parallelutils/modules']
-        }
-    }
-}
-
-task moduleJars(type: ShadowJar) {
-    archiveClassifier.set("modules")
-    from sourceSets.modules.output
-    configurations = [project.configurations.compileClasspath]
-}
-
-*/
-
 dependencies {
     compileOnly project(':api')
     compileOnly fileTree('../libs') { include '*.jar' }
@@ -51,11 +31,18 @@ fileTree("src/main/java/parallelmc/parallelutils/modules").visit { FileVisitDeta
     if (!details.path.contains('/')) {
         def name = details.name
         names.add(name)
-        sourceSets.add(sourceSets.create("${name}Set") {
+    }
+}
+
+names.each {name ->
+    sourceSets {
+        sourceSets.create("${name}Mod") {
             java {
-                srcDirs = ['main/java/parallelmc/parallelutils/${name}']
+                compileClasspath += configurations.compileClasspath
+
+                srcDirs = ['src/main/java/parallelmc/parallelutils/modules/${name}']
             }
-        })
+        }
     }
 }
 
@@ -64,11 +51,22 @@ task printTest() {
 }
 
 names.each { mod ->
-    def fileDest = new File("${buildDir}", mod)
+    task "buildModule-${mod}" (type: ShadowJar) {
+        group "ModBuild"
+        description = "Build module ${mod}"
 
-    tasks.create(name: "buildModule-${mod}", type: ShadowJar) {
+        def exList = []
+        exList.addAll(names)
+        def name = (String) "${mod}"
+        exList.remove(name)
+
         archiveClassifier.set("${mod}")
-        from sourceSets.charmsSet.output
-        //configurations = [project.configurations.compileClasspath]
+        from sourceSets.main.output
+
+        exList.forEach { x ->
+            def path = "**/${x}/**"
+            exclude path
+        }
+        // Figure out how to exclude META-INF
     }
 }
