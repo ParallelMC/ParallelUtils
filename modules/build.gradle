@@ -1,5 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
+import io.papermc.paperweight.tasks.RemapJar
+
 group = 'org.parallelmc'
 
 
@@ -51,16 +53,16 @@ task printTest() {
 }
 
 names.each { mod ->
-    task "buildModule-${mod}" (type: ShadowJar) {
-        group "ModBuild"
-        description = "Build module ${mod}"
+    task "shadow-${mod}" (type: ShadowJar) {
+        group = "ModShadow"
+        description = "Shadow module ${mod}"
 
         def exList = []
         exList.addAll(names)
         def name = (String) "${mod}"
         exList.remove(name)
 
-        archiveClassifier.set("${mod}")
+        archiveClassifier.set("shadow-${mod}")
         from sourceSets.main.output
 
         exList.forEach { x ->
@@ -68,5 +70,25 @@ names.each { mod ->
             exclude path
         }
         // Figure out how to exclude META-INF
+    }
+}
+
+names.each { mod ->
+    task "reobf-${mod}" (type: RemapJar) {
+        dependsOn "shadow-${mod}"
+        group = "ReobfMod"
+        description = "Remap the compiled module jar to Spigot's obfuscated runtime names"
+
+        fromNamespace = reobfJar.fromNamespace
+        toNamespace = reobfJar.toNamespace
+        mappingsFile = reobfJar.mappingsFile
+        remapClasspath.from(reobfJar.remapClasspath.getFrom())
+        remapper.from(reobfJar.project.configurations.named("remapper"))
+        remapperArgs = reobfJar.remapperArgs
+
+
+        inputJar.set(new File("$buildDir/libs/modules-shadow-${mod}.jar"))
+        //outputJar.set(new File("$buildDir/libs/${mod}-${project.version}.jar"))
+        outputJar.set(new File("$buildDir/libs/${mod}.jar"))
     }
 }
