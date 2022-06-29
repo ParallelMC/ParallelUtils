@@ -321,13 +321,12 @@ public final class Parallelutils extends JavaPlugin {
 
 	/**
 	 * Registers a ParallelModule with ParallelUtils
-	 * @param name The name of the module
 	 * @param module The module object
 	 * @return True if the module was successfully registered, false otherwise
 	 */
 	public boolean registerModule(ParallelModule module) {
 		String name = module.getName();
-		
+
 		if (registeredModules.containsKey(name)) {
 			return false;
 		}
