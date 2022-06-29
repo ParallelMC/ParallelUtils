@@ -9,6 +9,7 @@ import org.bukkit.craftbukkit.v1_19_R1.entity.CraftZombie;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
@@ -36,6 +37,11 @@ public class CustomMobs implements ParallelModule {
 
 	private static Parallelutils puPlugin;
 
+	@Override
+	public void onLoad() {
+
+	}
+
 	public void onEnable() {
 		PluginManager manager = Bukkit.getPluginManager();
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
@@ -47,7 +53,7 @@ public class CustomMobs implements ParallelModule {
 
 		puPlugin = (Parallelutils) plugin;
 
-		if (!puPlugin.registerModule("CustomMobs", this)) {
+		if (!puPlugin.registerModule(this)) {
 			Parallelutils.log(Level.SEVERE, "Unable to register module CustomMobs! Module may already be registered. Quitting...");
 			return;
 		}
@@ -152,6 +158,11 @@ public class CustomMobs implements ParallelModule {
 
 	public void onDisable() {
 
+	}
+
+	@Override
+	public @NotNull String getName() {
+		return "CustomMobs";
 	}
 
 	/**

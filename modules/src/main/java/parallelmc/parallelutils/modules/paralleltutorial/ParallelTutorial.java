@@ -59,6 +59,11 @@ public class ParallelTutorial implements ParallelModule {
     private static ParallelTutorial Instance;
 
     @Override
+    public void onLoad() {
+
+    }
+
+    @Override
     public void onEnable() {
         PluginManager manager = Bukkit.getPluginManager();
         Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
@@ -71,7 +76,7 @@ public class ParallelTutorial implements ParallelModule {
 
         this.puPlugin = (Parallelutils) plugin;
 
-        if (!puPlugin.registerModule("ParallelTutorial", this)) {
+        if (!puPlugin.registerModule(this)) {
             Parallelutils.log(Level.SEVERE, "Unable to register module ParallelChat! " +
                     "Module may already be registered. Quitting...");
             return;
@@ -102,6 +107,11 @@ public class ParallelTutorial implements ParallelModule {
             endTutorialFor(p, false);
         });
         runningTutorials.clear();
+    }
+
+    @Override
+    public @NotNull String getName() {
+        return "ParallelTutorial";
     }
 
     public static ParallelTutorial get(){

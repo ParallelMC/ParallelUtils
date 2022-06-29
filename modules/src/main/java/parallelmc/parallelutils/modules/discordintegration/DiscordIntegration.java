@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
@@ -14,6 +15,11 @@ import java.util.logging.Level;
 public class DiscordIntegration implements ParallelModule {
 
 	private BotManager botManager;
+
+	@Override
+	public void onLoad() {
+
+	}
 
 	@Override
 	public void onEnable() {
@@ -29,7 +35,7 @@ public class DiscordIntegration implements ParallelModule {
 
 		FileConfiguration config = puPlugin.getConfig();
 
-		if (!puPlugin.registerModule("DiscordIntegration", this)) {
+		if (!puPlugin.registerModule(this)) {
 			Parallelutils.log(Level.SEVERE, "Unable to register module DiscordIntegration! Module may already be registered. Quitting...");
 			return;
 		}
@@ -62,6 +68,11 @@ public class DiscordIntegration implements ParallelModule {
 		if (botManager != null) {
 			botManager.disable();
 		}
+	}
+
+	@Override
+	public @NotNull String getName() {
+		return "DiscordIntegration";
 	}
 
 	public BotManager getBotManager() {

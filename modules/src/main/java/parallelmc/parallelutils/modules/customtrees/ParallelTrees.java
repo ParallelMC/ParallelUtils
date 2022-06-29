@@ -3,6 +3,7 @@ package parallelmc.parallelutils.modules.customtrees;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
@@ -10,6 +11,11 @@ import parallelmc.parallelutils.Parallelutils;
 import java.util.logging.Level;
 
 public class ParallelTrees implements ParallelModule {
+	@Override
+	public void onLoad() {
+
+	}
+
 	@Override
 	public void onEnable() {
 		PluginManager manager = Bukkit.getPluginManager();
@@ -23,7 +29,7 @@ public class ParallelTrees implements ParallelModule {
 
 		Parallelutils puPlugin = (Parallelutils) plugin;
 
-		if (!puPlugin.registerModule("ParallelTrees", this)) {
+		if (!puPlugin.registerModule(this)) {
 			Parallelutils.log(Level.SEVERE, "Unable to register module ParallelTrees! " +
 					"Module may already be registered. Quitting...");
 			return;
@@ -41,5 +47,10 @@ public class ParallelTrees implements ParallelModule {
 	@Override
 	public void onDisable() {
 
+	}
+
+	@Override
+	public @NotNull String getName() {
+		return "ParallelTrees";
 	}
 }

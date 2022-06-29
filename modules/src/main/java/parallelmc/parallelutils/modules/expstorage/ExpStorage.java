@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
@@ -15,6 +16,11 @@ import parallelmc.parallelutils.modules.expstorage.events.EnderChestRightClick;
 import java.util.logging.Level;
 
 public class ExpStorage implements ParallelModule {
+
+	@Override
+	public void onLoad() {
+
+	}
 
 	@Override
 	public void onEnable() {
@@ -28,7 +34,7 @@ public class ExpStorage implements ParallelModule {
 
 		Parallelutils puPlugin = (Parallelutils) plugin;
 
-		if (!puPlugin.registerModule("ExpStorage", this)) {
+		if (!puPlugin.registerModule(this)) {
 			Parallelutils.log(Level.SEVERE, "Unable to register module ExpStorage! Module may already be registered. Quitting...");
 			return;
 		}
@@ -44,5 +50,10 @@ public class ExpStorage implements ParallelModule {
 	@Override
 	public void onDisable() {
 
+	}
+
+	@Override
+	public @NotNull String getName() {
+		return "ExpStorage";
 	}
 }

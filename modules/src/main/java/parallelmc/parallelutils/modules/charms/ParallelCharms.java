@@ -52,6 +52,11 @@ public class ParallelCharms implements ParallelModule {
 	}
 
 	@Override
+	public void onLoad() {
+
+	}
+
+	@Override
 	public void onEnable() {
 		PluginManager manager = Bukkit.getPluginManager();
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
@@ -64,7 +69,7 @@ public class ParallelCharms implements ParallelModule {
 
 		Parallelutils puPlugin = (Parallelutils) plugin;
 
-		if (!puPlugin.registerModule("ParallelCharms", this)) {
+		if (!puPlugin.registerModule(this)) {
 			Parallelutils.log(Level.SEVERE, "Unable to register module ParallelCharms! " +
 					"Module may already be registered. Quitting...");
 			return;
@@ -143,6 +148,11 @@ public class ParallelCharms implements ParallelModule {
 
 	@Override
 	public void onDisable() {
+	}
+
+	@Override
+	public @NotNull String getName() {
+		return "Charms";
 	}
 
 	public void resetCharms() {

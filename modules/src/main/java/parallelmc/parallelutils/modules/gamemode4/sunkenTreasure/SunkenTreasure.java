@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
@@ -12,6 +13,11 @@ import parallelmc.parallelutils.modules.gamemode4.sunkenTreasure.events.Treasure
 import java.util.logging.Level;
 
 public class SunkenTreasure implements ParallelModule {
+	@Override
+	public void onLoad() {
+
+	}
+
 	@Override
 	public void onEnable() {
 		PluginManager manager = Bukkit.getPluginManager();
@@ -24,7 +30,7 @@ public class SunkenTreasure implements ParallelModule {
 
 		Parallelutils puPlugin = (Parallelutils) plugin;
 
-		if (!puPlugin.registerModule("SunkenTreasure", this)) {
+		if (!puPlugin.registerModule(this)) {
 			Parallelutils.log(Level.SEVERE, "Unable to register module SunkenTreasure! Module may already be registered. Quitting...");
 			return;
 		}
@@ -41,5 +47,10 @@ public class SunkenTreasure implements ParallelModule {
 	@Override
 	public void onDisable() {
 
+	}
+
+	@Override
+	public @NotNull String getName() {
+		return "SunkenTreasure";
 	}
 }

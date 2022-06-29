@@ -14,6 +14,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
@@ -27,6 +28,7 @@ import java.util.logging.Level;
  */
 public class ParallelFlags implements ParallelModule {
 
+	@Override
 	public void onLoad() {
 		PluginManager manager = Bukkit.getPluginManager();
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
@@ -46,7 +48,7 @@ public class ParallelFlags implements ParallelModule {
 
 		Parallelutils puPlugin = (Parallelutils) plugin;
 
-		if (!puPlugin.registerModule("ParallelFlags", this)) {
+		if (!puPlugin.registerModule(this)) {
 			Parallelutils.log(Level.SEVERE, "Unable to register module ParallelFlags! " +
 					"Module may already be registered. Quitting...");
 			return;
@@ -208,5 +210,10 @@ public class ParallelFlags implements ParallelModule {
 	public void onDisable() {
 		SessionManager sessionManager = WorldGuard.getInstance().getPlatform().getSessionManager();
 		sessionManager.unregisterHandler(CustomArmorDeny.FACTORY);
+	}
+
+	@Override
+	public @NotNull String getName() {
+		return "ParallelFlags";
 	}
 }
