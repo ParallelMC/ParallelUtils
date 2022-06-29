@@ -22,6 +22,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
@@ -42,6 +43,11 @@ public class ParallelItems implements ParallelModule {
     public static PlayerPositionManager posManager;
 
     @Override
+    public void onLoad() {
+
+    }
+
+    @Override
     public void onEnable() {
         PluginManager manager = Bukkit.getPluginManager();
         Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
@@ -54,7 +60,7 @@ public class ParallelItems implements ParallelModule {
 
         Parallelutils puPlugin = (Parallelutils) plugin;
 
-        if (!puPlugin.registerModule("ParallelItems", this)) {
+        if (!puPlugin.registerModule(this)) {
             Parallelutils.log(Level.SEVERE, "Unable to register module ParallelItems! " +
                     "Module may already be registered. Quitting...");
             return;
@@ -332,6 +338,11 @@ public class ParallelItems implements ParallelModule {
     @Override
     public void onDisable() {
         posManager.unload();
+    }
+
+    @Override
+    public @NotNull String getName() {
+        return "ParallelItems";
     }
 
     /**

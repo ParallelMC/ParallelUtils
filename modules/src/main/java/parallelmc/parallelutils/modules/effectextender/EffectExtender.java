@@ -3,6 +3,7 @@ package parallelmc.parallelutils.modules.effectextender;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
@@ -21,6 +22,11 @@ public class EffectExtender implements ParallelModule {
     private Parallelutils puPlugin;
 
     @Override
+    public void onLoad() {
+
+    }
+
+    @Override
     public void onEnable() {
         PluginManager manager = Bukkit.getPluginManager();
         Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
@@ -31,6 +37,11 @@ public class EffectExtender implements ParallelModule {
         }
 
         puPlugin = (Parallelutils) plugin;
+
+        if (!puPlugin.registerModule(this)) {
+            Parallelutils.log(Level.SEVERE, "Unable to register module EffectExtender! Module may already be registered. Quitting...");
+            return;
+        }
 
         // create effects table if it doesn't exist
         try (Connection conn = puPlugin.getDbConn()) {
@@ -92,6 +103,11 @@ public class EffectExtender implements ParallelModule {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public @NotNull String getName() {
+        return "EffectsExtender";
     }
 
 }

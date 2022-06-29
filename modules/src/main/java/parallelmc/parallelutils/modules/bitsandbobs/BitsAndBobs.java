@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
@@ -19,6 +20,11 @@ public class BitsAndBobs implements ParallelModule {
     private TogglePvpManager pvpManager;
 
     @Override
+    public void onLoad() {
+
+    }
+
+    @Override
     public void onEnable() {
         PluginManager manager = Bukkit.getPluginManager();
         Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
@@ -30,7 +36,7 @@ public class BitsAndBobs implements ParallelModule {
 
         Parallelutils puPlugin = (Parallelutils) plugin;
 
-        if (!puPlugin.registerModule("BitsAndBobs", this)) {
+        if (!puPlugin.registerModule(this)) {
             Parallelutils.log(Level.SEVERE, "Unable to register module BitsAndBobs! Module may already be registered. Quitting...");
             return;
         }
@@ -60,5 +66,11 @@ public class BitsAndBobs implements ParallelModule {
     @Override
     public void onDisable() {
         this.pvpManager.unload();
+    }
+
+    @NotNull
+    @Override
+    public String getName() {
+        return "BitsAndBobs";
     }
 }

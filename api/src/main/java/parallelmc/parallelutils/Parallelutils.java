@@ -10,8 +10,17 @@ import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
 import javax.annotation.Nullable;
 import javax.sql.DataSource;
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Path;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -30,15 +39,28 @@ public final class Parallelutils extends JavaPlugin {
 
 	private DataSource dataSource;
 
+	private List<ParallelModule> availableModules = new ArrayList<>();
+
 	private HashMap<String, ParallelModule> registeredModules;
 	private Commands commands;
+
+
+	private boolean loadedModules = false;
 
 	@Override
 	public void onLoad() {
 		registeredModules = new HashMap<>();
 
-		/*ParallelFlags parallelFlags = new ParallelFlags();
-		parallelFlags.onLoad();*/
+		loadModules();
+		loadedModules = true;
+
+		for (ParallelModule module : availableModules) {
+			try {
+				module.onLoad();
+			} catch (Exception e) {
+				Parallelutils.log(Level.SEVERE, "Unable to load module " + module.getName());
+			}
+		}
 	}
 
 	@Override
@@ -151,123 +173,18 @@ public final class Parallelutils extends JavaPlugin {
 
 		// Setup modules
 
-		// TODO: Eventually break this out into multiple plugins. This is meant to imitate that
-		/*try {
-			CustomMobs customMobs = new CustomMobs();
-			customMobs.onEnable();
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module CustomMobs!");
+		if (!loadedModules) {
+			loadModules();
+			loadedModules = true;
 		}
 
-		// This will eventually be a separate config file
-		try {
-			DiscordIntegration discordIntegration = new DiscordIntegration();
-			discordIntegration.onEnable();
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module DiscordIntegration!");
-			e.printStackTrace();
-		}
-
-		try {
-			ParallelItems parallelItems = new ParallelItems();
-			parallelItems.onEnable();
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelItems!");
-			e.printStackTrace();
-		}
-
-		try {
-			SunkenTreasure sunkenTreasure = new SunkenTreasure();
-			sunkenTreasure.onEnable();
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module SunkenTreasure!");
-			e.printStackTrace();
-		}
-
-		try {
-			EffectExtender effectExtender = new EffectExtender();
-			effectExtender.onEnable();
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module EffectsExtender!");
-			e.printStackTrace();
-		}
-
-		try {
-			ParallelTrees parallelTrees = new ParallelTrees();
-			parallelTrees.onEnable();
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelTrees!");
-			e.printStackTrace();
-		}
-
-		try {
-			PerformanceTools performanceTools = new PerformanceTools();
-			performanceTools.onEnable();
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module PerformanceTools!");
-			e.printStackTrace();
-		}
-
-		try {
-			BeehiveInspector beehiveInspector = new BeehiveInspector();
-			beehiveInspector.onEnable();
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module BeehiveInspector!");
-			e.printStackTrace();
-		}
-
-		try {
-			ParallelChat parallelChat = new ParallelChat();
-			parallelChat.onEnable();
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelChat!");
-			e.printStackTrace();
-		}
-
-		try {
-			ExpStorage expStorage = new ExpStorage();
-			expStorage.onEnable();
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module ExpStorage!");
-			e.printStackTrace();
-		}
-
-		try {
-			ParallelCharms charms = new ParallelCharms();
-			charms.onEnable();
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelCharms!");
-			e.printStackTrace();
-		}
-
-		try {
-			BitsAndBobs bitsandbobs = new BitsAndBobs();
-			bitsandbobs.onEnable();
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module BitsAndBobs!");
-			e.printStackTrace();
-		}
-
-		try {
-			ParallelTutorial tutorials = new ParallelTutorial();
-			tutorials.onEnable();
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelTutorial!");
-			e.printStackTrace();
-		}
-
-		// TODO: Make this not horrible
-		try {
-			ParallelModule flags = getModule("ParallelFlags");
-			if (flags instanceof ParallelFlags parallelFlags) {
-				parallelFlags.onEnable();
-			} else {
-				Parallelutils.log(Level.SEVERE, "Unable to enable ParallelFlags!");
+		for (ParallelModule module : availableModules) {
+			try {
+				module.onEnable();
+			} catch (Exception e) {
+				Parallelutils.log(Level.SEVERE, "Error while enabling module " + module.getName());
 			}
-		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelFlags!");
-			e.printStackTrace();
-		}*/
+		}
 	}
 
 	@Override
@@ -284,6 +201,52 @@ public final class Parallelutils extends JavaPlugin {
 			}
 		});
 		registeredModules = new HashMap<>();
+		loadedModules = false;
+	}
+
+	private void loadModules() {
+		File modulesPath = new File("modules/");
+
+		if (!modulesPath.isDirectory()) {
+			Parallelutils.log(Level.SEVERE, "MODULES DIRECTORY NOT FOUND");
+			return;
+		}
+
+		File[] files = modulesPath.listFiles();
+
+		if (files == null) {
+			Parallelutils.log(Level.SEVERE, "MODULES DIRECTORY NOT FOUND");
+			return;
+		}
+
+		for (File file : files) {
+			try (URLClassLoader child = new URLClassLoader(
+					new URL[]{file.toURI().toURL()},
+					this.getClass().getClassLoader()
+			)) {
+				Field f = child.getClass().getDeclaredField("classes");
+				f.setAccessible(true);
+
+				List<Class<?>> classes = (List<Class<?>>) f.get(child);
+
+				for (Class<?> c : classes) {
+					try {
+						Annotation annotation = c.getAnnotation(Module.class);
+						if (annotation != null) {
+							// This class is the Module class
+							Class<? extends ParallelModule> moduleClass = (Class<? extends ParallelModule>) c;
+							ParallelModule module = moduleClass.getConstructor().newInstance();
+
+							availableModules.add(module);
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			} catch (IOException | NoSuchFieldException | IllegalAccessException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 
@@ -362,7 +325,9 @@ public final class Parallelutils extends JavaPlugin {
 	 * @param module The module object
 	 * @return True if the module was successfully registered, false otherwise
 	 */
-	public boolean registerModule(String name, ParallelModule module) {
+	public boolean registerModule(ParallelModule module) {
+		String name = module.getName();
+		
 		if (registeredModules.containsKey(name)) {
 			return false;
 		}
