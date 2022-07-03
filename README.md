@@ -1,5 +1,5 @@
 # ParallelUtils
-ParallelUtils is a plugin that enables a large variety of features, intended to be used for the Parallel SMP server at play.parallel.ga.
+ParallelUtils is a plugin that enables a large variety of features, intended to be used for the Parallel SMP server at play.parallelmc.org.
 
 # OLD ----- Procedure to Start Development ---- OLD
 
