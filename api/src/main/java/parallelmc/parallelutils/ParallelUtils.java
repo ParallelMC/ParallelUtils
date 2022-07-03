@@ -5,9 +5,6 @@ import com.mysql.cj.jdbc.MysqlDataSource;
 import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.reflections.Reflections;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
 import parallelmc.parallelutils.commands.*;
 import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
@@ -39,7 +36,7 @@ public final class ParallelUtils extends JavaPlugin {
 
 	private DataSource dataSource;
 
-	private final List<ParallelModule> availableModules = new ArrayList<>();
+	private final HashMap<String, ParallelModule> availableModules = new HashMap<>();
 
 	private HashMap<String, ParallelModule> registeredModules;
 
@@ -56,7 +53,7 @@ public final class ParallelUtils extends JavaPlugin {
 		loadModules();
 		loadedModules = true;
 
-		for (ParallelModule module : availableModules) {
+		for (ParallelModule module : availableModules.values()) {
 			try {
 				module.onLoad();
 				ParallelUtils.log(Level.INFO, "Loaded module " + module.getName());
@@ -167,6 +164,8 @@ public final class ParallelUtils extends JavaPlugin {
 		addCommand("test", new ParallelTestCommand());
 		addCommand("wait", new ParallelWaitCommand(this));
 		addCommand("modules", new ParallelModulesCommand(this));
+		addCommand("unload", new ParallelUnloadCommand(this));
+		addCommand("reload", new ParallelReloadCommand(this));
 
 		getCommand("parallelutils").setExecutor(commands);
 		getCommand("parallelutils").setTabCompleter(commands);
@@ -182,7 +181,7 @@ public final class ParallelUtils extends JavaPlugin {
 			loadedModules = true;
 		}
 
-		for (ParallelModule module : availableModules) {
+		for (ParallelModule module : availableModules.values()) {
 			try {
 				module.onEnable();
 				ParallelUtils.log(Level.INFO, "Enabled module " + module.getName());
@@ -225,52 +224,128 @@ public final class ParallelUtils extends JavaPlugin {
 		}
 
 		for (File file : files) {
-			try {
-				URL jar = file.toURI().toURL();
-				URLClassLoader classLoader = new URLClassLoader(new URL[]{jar}, this.getClass().getClassLoader());
-				List<String> matches = new ArrayList<>();
-				List<Class<? extends ParallelModule>> classes = new ArrayList<>();
+			String fixedName = file.getName().replaceFirst("[.][^.]+$", "");
 
-				try (JarInputStream jarInputStream = new JarInputStream(jar.openStream())) {
-					JarEntry entry;
-					while ((entry = jarInputStream.getNextJarEntry()) != null) {
-						String name = entry.getName();
-						if (name.endsWith(".class"))
-							matches.add(name.substring(0, name.lastIndexOf('.')).replace('/', '.'));
-					}
-				}
-
-				for (String match : matches) {
-					try {
-						Class<?> clazz = classLoader.loadClass(match);
-						if (ParallelModule.class.isAssignableFrom(clazz)) {
-							classes.add(clazz.asSubclass(ParallelModule.class));
-						}
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
-					}
-				}
-
-				if (classes.size() == 0) {
-					ParallelUtils.log(Level.SEVERE, "MODULE " + file.getName() + " DOES NOT CONTAIN A ParallelModule CLASS");
-					classLoader.close();
-					continue;
-				}
-
-				if (classes.size() > 1) {
-					ParallelUtils.log(Level.SEVERE, "MODULE " + file.getName() + " CONTAINS MULTIPLE ParallelModule CLASSES");
-					classLoader.close();
-					continue;
-				}
-
-				availableModules.add(classes.get(0).getDeclaredConstructor().newInstance());
-				ParallelUtils.log(Level.INFO, "Added module " + file.getName() + " to available modules");
-
-			} catch (IOException | InvocationTargetException | InstantiationException | IllegalAccessException |
-			         NoSuchMethodException e) {
-				e.printStackTrace();
-			}
+			loadModule(fixedName);
 		}
+	}
+
+	public boolean loadModule(String name) {
+		String formatted = name.toLowerCase() + ".jar";
+
+		File modulesPath = new File(this.getDataFolder(), "modules");
+
+		if (!modulesPath.isDirectory()) {
+			ParallelUtils.log(Level.SEVERE, "MODULES DIRECTORY NOT FOUND");
+			return false;
+		}
+
+		File file = new File(modulesPath, formatted);
+
+		if (!file.exists() || file.isDirectory()) {
+			ParallelUtils.log(Level.WARNING, "Module " + name + " not found!");
+			return false;
+		}
+
+		try {
+			URL jar = file.toURI().toURL();
+			URLClassLoader classLoader = new URLClassLoader(new URL[]{jar}, this.getClass().getClassLoader());
+			List<String> matches = new ArrayList<>();
+			List<Class<? extends ParallelModule>> classes = new ArrayList<>();
+
+			try (JarInputStream jarInputStream = new JarInputStream(jar.openStream())) {
+				JarEntry entry;
+				while ((entry = jarInputStream.getNextJarEntry()) != null) {
+					String entryName = entry.getName();
+					if (entryName.endsWith(".class"))
+						matches.add(entryName.substring(0, entryName.lastIndexOf('.')).replace('/', '.'));
+				}
+			}
+
+			for (String match : matches) {
+				try {
+					Class<?> clazz = classLoader.loadClass(match);
+					if (ParallelModule.class.isAssignableFrom(clazz)) {
+						classes.add(clazz.asSubclass(ParallelModule.class));
+					}
+				} catch (ClassNotFoundException e) {
+					ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
+					e.printStackTrace();
+					return false;
+				}
+			}
+
+			if (classes.size() == 0) {
+				ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
+				ParallelUtils.log(Level.SEVERE, "MODULE " + file.getName() + " DOES NOT CONTAIN A ParallelModule CLASS");
+				classLoader.close();
+				return false;
+			}
+
+			if (classes.size() > 1) {
+				ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
+				ParallelUtils.log(Level.SEVERE, "MODULE " + file.getName() + " CONTAINS MULTIPLE ParallelModule CLASSES");
+				classLoader.close();
+				return false;
+			}
+
+			ParallelModule module = classes.get(0).getDeclaredConstructor().newInstance();
+
+			availableModules.put(module.getName(), module);
+			ParallelUtils.log(Level.INFO, "Added module " + module.getName() + " to available modules");
+		} catch (IOException | InvocationTargetException | InstantiationException | IllegalAccessException |
+		         NoSuchMethodException e) {
+			ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
+	}
+
+	public boolean unloadModule(String name) {
+		ParallelModule module = availableModules.get(name);
+
+		if (module == null) return false;
+
+		if (!module.canUnload()) {
+			ParallelUtils.log(Level.WARNING, "Module " + name + " not permitted to unload. Skipping...");
+			return false;
+		}
+
+		boolean result = true;
+
+		if (registeredModules.containsKey(name)) {
+			result = disableModule(name);
+		}
+
+		if (!result) {
+			ParallelUtils.log(Level.SEVERE, "Error occurred while unloading module " + name);
+			return false;
+		}
+
+		try {
+			module.onUnload();
+		} catch (Exception e) {
+			ParallelUtils.log(Level.SEVERE, "Error occurred while unloading module " + name);
+			e.printStackTrace();
+			// Explicitly say it's unloaded since it's less likely to cause problems
+		}
+
+		availableModules.remove(name);
+		return true;
+	}
+
+	public void unloadModules() {
+		List<String> tempModules = new ArrayList<>(availableModules.keySet());
+
+		for (String name : tempModules) {
+			unloadModule(name);
+		}
+	}
+
+	public boolean isLoaded(String name) {
+		return availableModules.containsKey(name);
 	}
 
 
@@ -403,6 +478,15 @@ public final class ParallelUtils extends JavaPlugin {
 	 */
 	public boolean addCommand(String name, ParallelCommand command) {
 		return commands.addCommand(name, command);
+	}
+
+	/**
+	 * Removes a command from the commandmap
+	 * @param name The name of the command to remove
+	 * @return True if the command was removed successfully, false otherwise
+	 */
+	public boolean removeCommand(String name) {
+		return commands.removeCommand(name);
 	}
 
 	/**

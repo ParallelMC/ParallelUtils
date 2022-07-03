@@ -16,7 +16,7 @@ public class ParallelModulesCommand extends ParallelCommand {
 	private final ParallelUtils puPlugin;
 
 	public ParallelModulesCommand(ParallelUtils puPlugin) {
-		super("modules", new ParallelPermission("parallelutils.modules"));
+		super("modules", new ParallelPermission("parallelutils.modules.list"));
 		this.puPlugin = puPlugin;
 	}
 

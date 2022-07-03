@@ -46,6 +46,15 @@ public class Commands implements CommandExecutor, TabCompleter {
 		return true;
 	}
 
+	/**
+	 * Removes a command from the commandmap
+	 * @param name The name of the command to remove
+	 * @return True if the command was removed successfully, false otherwise
+	 */
+	public boolean removeCommand(String name) {
+		return commandMap.remove(name) == null;
+	}
+
 	@Override
 	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 		// Both `parallelutils` and `pu` are valid command prefixes
