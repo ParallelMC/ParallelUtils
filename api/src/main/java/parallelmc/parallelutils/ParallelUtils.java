@@ -166,6 +166,7 @@ public final class ParallelUtils extends JavaPlugin {
 		addCommand("help", new ParallelHelpCommand());
 		addCommand("test", new ParallelTestCommand());
 		addCommand("wait", new ParallelWaitCommand(this));
+		addCommand("modules", new ParallelModulesCommand(this));
 
 		getCommand("parallelutils").setExecutor(commands);
 		getCommand("parallelutils").setTabCompleter(commands);
@@ -367,6 +368,14 @@ public final class ParallelUtils extends JavaPlugin {
 	 */
 	public ParallelModule getModule(String name){
 		return registeredModules.get(name);
+	}
+
+	/**
+	 * Returns a List of module names
+	 * @return module nam,es
+	 */
+	public List<String> getModules() {
+		return registeredModules.keySet().stream().toList();
 	}
 
 	/**
