@@ -2,6 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id 'net.minecrell.plugin-yml.bukkit'
+    id "xyz.jpenilla.run-paper"
 }
 
 group = 'org.parallelmc'
@@ -28,6 +29,7 @@ dependencies {
     implementation 'mysql:mysql-connector-java:8.0.29'
     compileOnly 'com.comphenix.protocol:ProtocolLib:4.8.0'
     compileOnly 'dev.esophose:playerparticles:7.25'
+    implementation 'org.reflections:reflections:0.10.2'
 }
 
 artifacts {
@@ -63,7 +65,7 @@ bukkit {
     website = 'parallelmc.org'
     author = 'ParallelMC Team'
 
-    main = 'parallelmc.parallelutils.Parallelutils'
+    main = 'parallelmc.parallelutils.ParallelUtils'
 
     apiVersion = '1.19'
 

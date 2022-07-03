@@ -25,7 +25,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelitems.pocketteleporter.PlayerPositionManager;
 
 import java.util.ArrayList;
@@ -53,15 +53,15 @@ public class ParallelItems implements ParallelModule {
         Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
         if (plugin == null) {
-            Parallelutils.log(Level.SEVERE, "Unable to enable ParallelItems. Plugin " + Constants.PLUGIN_NAME
+            ParallelUtils.log(Level.SEVERE, "Unable to enable ParallelItems. Plugin " + Constants.PLUGIN_NAME
                     + " does not exist!");
             return;
         }
 
-        Parallelutils puPlugin = (Parallelutils) plugin;
+        ParallelUtils puPlugin = (ParallelUtils) plugin;
 
         if (!puPlugin.registerModule(this)) {
-            Parallelutils.log(Level.SEVERE, "Unable to register module ParallelItems! " +
+            ParallelUtils.log(Level.SEVERE, "Unable to register module ParallelItems! " +
                     "Module may already be registered. Quitting...");
             return;
         }
@@ -81,7 +81,7 @@ public class ParallelItems implements ParallelModule {
         PluginManager manager = Bukkit.getPluginManager();
         JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
         if (plugin == null) {
-            Parallelutils.log(Level.SEVERE, "PLUGIN NOT FOUND. THIS IS A PROBLEM");
+            ParallelUtils.log(Level.SEVERE, "PLUGIN NOT FOUND. THIS IS A PROBLEM");
             return;
         }
 
@@ -108,7 +108,7 @@ public class ParallelItems implements ParallelModule {
             itemRegistry.put("enhanced_fertilizer", aoeBonemeal);
             itemRegistryId.put(1, aoeBonemeal);
         } catch (NullPointerException e) {
-            Parallelutils.log(Level.WARNING,"NullPointerException registering enhanced_fertilizer. " +
+            ParallelUtils.log(Level.WARNING,"NullPointerException registering enhanced_fertilizer. " +
                     "Item will not work!");
             e.printStackTrace();
         }
@@ -128,7 +128,7 @@ public class ParallelItems implements ParallelModule {
             itemRegistry.put("baguette", baguette);
             itemRegistryId.put(2, baguette);
         } catch (NullPointerException e) {
-            Parallelutils.log(Level.WARNING,"NullPointerException registering baguette. " +
+            ParallelUtils.log(Level.WARNING,"NullPointerException registering baguette. " +
                     "Item will not work!");
             e.printStackTrace();
         }
@@ -185,7 +185,7 @@ public class ParallelItems implements ParallelModule {
             itemRegistry.put("space_helmet_red", spaceHelmetRed);
             itemRegistryId.put(3, spaceHelmetRed);
         } catch (NullPointerException e) {
-            Parallelutils.log(Level.WARNING, "NullPointerException registering space helmet. " +
+            ParallelUtils.log(Level.WARNING, "NullPointerException registering space helmet. " +
                     "Item will not work!");
         }
 
@@ -209,7 +209,7 @@ public class ParallelItems implements ParallelModule {
             itemRegistry.put("candy", candy);
             itemRegistryId.put(4, candy);
         } catch (NullPointerException e) {
-            Parallelutils.log(Level.WARNING,"NullPointerException registering candy. " +
+            ParallelUtils.log(Level.WARNING,"NullPointerException registering candy. " +
                     "Item will not work!");
             e.printStackTrace();
         }
@@ -270,7 +270,7 @@ public class ParallelItems implements ParallelModule {
             itemRegistry.put("early_supporter_glasses", earlySupporterGlasses);
             itemRegistryId.put(5, earlySupporterGlasses);
         } catch (NullPointerException e) {
-            Parallelutils.log(Level.WARNING, "NullPointerException registering early supporter glasses. " +
+            ParallelUtils.log(Level.WARNING, "NullPointerException registering early supporter glasses. " +
                     "Item will not work!");
         }
 
@@ -305,7 +305,7 @@ public class ParallelItems implements ParallelModule {
             itemRegistry.put("pocket_teleporter", teleporter);
             itemRegistryId.put(6, teleporter);
         } catch (NullPointerException e) {
-            Parallelutils.log(Level.WARNING,"NullPointerException registering pocket_teleporter. " +
+            ParallelUtils.log(Level.WARNING,"NullPointerException registering pocket_teleporter. " +
                     "Item will not work!");
             e.printStackTrace();
         }
@@ -329,7 +329,7 @@ public class ParallelItems implements ParallelModule {
             itemRegistry.put("totem_of_the_void", totem);
             itemRegistryId.put(7, totem);
         } catch (NullPointerException e) {
-            Parallelutils.log(Level.WARNING,"NullPointerException registering totem_of_the_void. " +
+            ParallelUtils.log(Level.WARNING,"NullPointerException registering totem_of_the_void. " +
                     "Item will not work!");
             e.printStackTrace();
         }

@@ -9,13 +9,10 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.custommobs.bukkitmobs.CraftFireWisp;
 import parallelmc.parallelutils.modules.custommobs.bukkitmobs.CraftWisp;
 import parallelmc.parallelutils.modules.custommobs.nmsmobs.EntityData;
 import parallelmc.parallelutils.modules.custommobs.registry.EntityRegistry;
-
-import java.util.logging.Level;
 
 /**
  * For listening for deaths of players and entities

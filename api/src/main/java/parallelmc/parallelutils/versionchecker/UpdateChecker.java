@@ -4,7 +4,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.Version;
 
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class UpdateChecker {
 		try (Response response = client.newCall(request).execute()) {
 			ResponseBody body = response.body();
 			if (body == null) {
-				Parallelutils.log(Level.WARNING, "Could not get latest version. Body is null");
+				ParallelUtils.log(Level.WARNING, "Could not get latest version. Body is null");
 				return null;
 			}
 
@@ -62,7 +62,7 @@ public class UpdateChecker {
 
 				String ver = sub.substring(0, index);
 
-				Parallelutils.log(Level.INFO, ver);
+				ParallelUtils.log(Level.INFO, ver);
 
 				String[] split = ver.split("\\.");
 
@@ -80,16 +80,16 @@ public class UpdateChecker {
 						return new Version(Integer.parseInt(split[0]), Integer.parseInt(split[1]),
 								Integer.parseInt(hotfix_flavor[0]), hotfix_flavor[1]);
 					default:
-						Parallelutils.log(Level.WARNING, "Unable to parse version. Something broke!");
+						ParallelUtils.log(Level.WARNING, "Unable to parse version. Something broke!");
 						return null;
 				}
 			} else {
-				Parallelutils.log(Level.WARNING, "No match!!!!!");
+				ParallelUtils.log(Level.WARNING, "No match!!!!!");
 				return null;
 			}
 
 		} catch (IOException e) {
-			Parallelutils.log(Level.WARNING, "Could not get latest version");
+			ParallelUtils.log(Level.WARNING, "Could not get latest version");
 			e.printStackTrace();
 			return null;
 		}

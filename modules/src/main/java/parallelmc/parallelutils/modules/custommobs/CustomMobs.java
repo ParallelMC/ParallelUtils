@@ -12,7 +12,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.custommobs.commands.ParallelCreateSpawnerCommand;
 import parallelmc.parallelutils.modules.custommobs.commands.ParallelDeleteSpawnerCommand;
 import parallelmc.parallelutils.modules.custommobs.commands.ParallelListSpawnersCommand;
@@ -35,7 +35,7 @@ import java.util.logging.Level;
 
 public class CustomMobs implements ParallelModule {
 
-	private static Parallelutils puPlugin;
+	private static ParallelUtils puPlugin;
 
 	@Override
 	public void onLoad() {
@@ -47,14 +47,14 @@ public class CustomMobs implements ParallelModule {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to enable CustomMobs. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
+			ParallelUtils.log(Level.SEVERE, "Unable to enable CustomMobs. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
 			return;
 		}
 
-		puPlugin = (Parallelutils) plugin;
+		puPlugin = (ParallelUtils) plugin;
 
 		if (!puPlugin.registerModule(this)) {
-			Parallelutils.log(Level.SEVERE, "Unable to register module CustomMobs! Module may already be registered. Quitting...");
+			ParallelUtils.log(Level.SEVERE, "Unable to register module CustomMobs! Module may already be registered. Quitting...");
 			return;
 		}
 
@@ -71,7 +71,7 @@ public class CustomMobs implements ParallelModule {
 		// Create the table if it doesn't exist
 		try (Connection conn = puPlugin.getDbConn()){
 			if (conn == null) {
-				Parallelutils.log(Level.WARNING, "Unable to establish connection to database. Disabling");
+				ParallelUtils.log(Level.WARNING, "Unable to establish connection to database. Disabling");
 				puPlugin.disableModule("CustomMobs");
 				return;
 			} else {
@@ -118,7 +118,7 @@ public class CustomMobs implements ParallelModule {
 		// Load spawners and mobs
 		try (Connection conn = puPlugin.getDbConn()){
 			if (conn == null) {
-				Parallelutils.log(Level.WARNING, "Unable to establish connection to database. Disabling");
+				ParallelUtils.log(Level.WARNING, "Unable to establish connection to database. Disabling");
 				puPlugin.disableModule("CustomMobs");
 				return;
 			} else {
@@ -220,7 +220,7 @@ public class CustomMobs implements ParallelModule {
 
 					ResultSet spawnerResults = statement.executeQuery();
 					if (!spawnerResults.next()) {
-						Parallelutils.log(Level.WARNING, "Invalid spawner id " + spawnerId);
+						ParallelUtils.log(Level.WARNING, "Invalid spawner id " + spawnerId);
 						continue;
 					}
 
@@ -233,7 +233,7 @@ public class CustomMobs implements ParallelModule {
 
 					statement.close();
 				} catch (SQLException e) {
-					Parallelutils.log(Level.WARNING, "Unable to read spawner for mob from database!");
+					ParallelUtils.log(Level.WARNING, "Unable to read spawner for mob from database!");
 					e.printStackTrace();
 				}
 			}
@@ -286,7 +286,7 @@ public class CustomMobs implements ParallelModule {
 			case "fire_wisp" -> {
 				return EntityFireWisp.setup(puPlugin, (CraftZombie) mob);
 			}
-			default -> Parallelutils.log(Level.WARNING, "Unknown entity type \"" + type + "\"");
+			default -> ParallelUtils.log(Level.WARNING, "Unknown entity type \"" + type + "\"");
 		}
 		return null;
 	}

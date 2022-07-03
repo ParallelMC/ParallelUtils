@@ -3,10 +3,8 @@ package parallelmc.parallelutils.modules.custommobs.bukkitmobs;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftZombie;
@@ -19,7 +17,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import java.util.List;
 import java.util.Random;
@@ -96,7 +94,7 @@ public class CraftFireWisp {
                 PluginManager manager = Bukkit.getPluginManager();
                 JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
                 if (plugin == null) {
-                    Parallelutils.log(Level.SEVERE, "PLUGIN NOT FOUND. THIS IS A PROBLEM");
+                    ParallelUtils.log(Level.SEVERE, "PLUGIN NOT FOUND. THIS IS A PROBLEM");
                     return;
                 }
 

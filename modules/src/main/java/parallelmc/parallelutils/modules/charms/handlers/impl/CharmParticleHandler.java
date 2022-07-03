@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
 import parallelmc.parallelutils.modules.charms.data.IEffectSettings;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
@@ -30,7 +30,7 @@ public class CharmParticleHandler extends ICharmRunnableHandler {
 	@Override
 	public BukkitRunnable getRunnable(Player player, ItemStack item, CharmOptions options) {
 
-		Parallelutils.log(Level.INFO, "GET");
+		ParallelUtils.log(Level.INFO, "GET");
 
 		HashMap<HandlerType, IEffectSettings> effects = options.getEffects();
 		IEffectSettings settings = effects.get(HandlerType.PARTICLE);
@@ -56,7 +56,7 @@ public class CharmParticleHandler extends ICharmRunnableHandler {
 		try {
 			particle = Particle.valueOf(particleName);
 		} catch (IllegalArgumentException e) {
-			Parallelutils.log(Level.WARNING, "Invalid particle name!");
+			ParallelUtils.log(Level.WARNING, "Invalid particle name!");
 			e.printStackTrace();
 			return null;
 		}
@@ -153,7 +153,7 @@ public class CharmParticleHandler extends ICharmRunnableHandler {
 
 										builder.data(itemStack);
 									} else {
-										Parallelutils.log(Level.WARNING, "Material is not item!");
+										ParallelUtils.log(Level.WARNING, "Material is not item!");
 									}
 								} else {
 									if (material.isBlock()) {
@@ -168,11 +168,11 @@ public class CharmParticleHandler extends ICharmRunnableHandler {
 											builder.data(data);
 										}
 									} else {
-										Parallelutils.log(Level.WARNING, "Material is not block!");
+										ParallelUtils.log(Level.WARNING, "Material is not block!");
 									}
 								}
 							} catch (IllegalArgumentException e) {
-								Parallelutils.log(Level.WARNING, "Illegal Material for dataMaterial!");
+								ParallelUtils.log(Level.WARNING, "Illegal Material for dataMaterial!");
 								e.printStackTrace();
 							}
 						}
@@ -184,7 +184,7 @@ public class CharmParticleHandler extends ICharmRunnableHandler {
 		BukkitRunnable runnable = new BukkitRunnable() {
 			@Override
 			public void run() {
-				Parallelutils.log(Level.WARNING, "" + this.getTaskId());
+				ParallelUtils.log(Level.WARNING, "" + this.getTaskId());
 				builder.location(player.getLocation());
 				builder.spawn();
 			}

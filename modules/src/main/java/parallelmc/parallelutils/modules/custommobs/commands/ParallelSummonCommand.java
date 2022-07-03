@@ -12,7 +12,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
@@ -57,7 +57,7 @@ public class ParallelSummonCommand extends ParallelCommand {
 		JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to execute command 'summon'. Plugin "
+			ParallelUtils.log(Level.SEVERE, "Unable to execute command 'summon'. Plugin "
 					+ Constants.PLUGIN_NAME + " does not exist!");
 			sender.sendMessage("Unable to execute command 'summon'. Plugin "
 					+ Constants.PLUGIN_NAME + " does not exist! Report this to the devs!");

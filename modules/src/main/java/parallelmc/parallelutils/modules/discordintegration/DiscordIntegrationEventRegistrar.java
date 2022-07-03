@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import java.util.logging.Level;
 
@@ -25,7 +25,7 @@ public class DiscordIntegrationEventRegistrar {
 			Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 			if (plugin == null) {
-				Parallelutils.log(Level.SEVERE, "Unable to register events. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
+				ParallelUtils.log(Level.SEVERE, "Unable to register events. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
 				return;
 			}
 
@@ -36,7 +36,7 @@ public class DiscordIntegrationEventRegistrar {
 			Plugin vp = manager.getPlugin("VoteParty");
 
 			if (vp == null) {
-				Parallelutils.log(Level.WARNING, "VoteParty not found. Skipping integration...");
+				ParallelUtils.log(Level.WARNING, "VoteParty not found. Skipping integration...");
 			} else {
 				manager.registerEvents(new VotePartyListener(((VotePartyPlugin) vp).getVoteParty()), plugin);
 			}

@@ -11,7 +11,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 
 import java.util.ArrayList;
@@ -28,7 +28,7 @@ public class ParallelHelpCommand extends ParallelCommand {
 
 	private static final int PAGE_SIZE = 8;
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 
 	public ParallelHelpCommand() {
 		super("help", "Show a list of ParallelUtils commands",
@@ -38,13 +38,13 @@ public class ParallelHelpCommand extends ParallelCommand {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to initialize ParallelHelpCommand. Plugin " + Constants.PLUGIN_NAME
+			ParallelUtils.log(Level.SEVERE, "Unable to initialize ParallelHelpCommand. Plugin " + Constants.PLUGIN_NAME
 					+ " does not exist!");
 			puPlugin = null;
 			return;
 		}
 
-		puPlugin = (Parallelutils) plugin;
+		puPlugin = (ParallelUtils) plugin;
 	}
 
 	@Override

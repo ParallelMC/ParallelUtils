@@ -16,7 +16,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelflags.CustomFlagRegistry;
 import parallelmc.parallelutils.modules.parallelflags.events.ParallelFlagsDeathMsgListener;
 
@@ -44,7 +44,7 @@ public class CustomArmorHealth extends Handler {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to initialize session handler. Plugin "
+			ParallelUtils.log(Level.SEVERE, "Unable to initialize session handler. Plugin "
 					+ Constants.PLUGIN_NAME + " does not exist!");
 			key = null;
 			return;

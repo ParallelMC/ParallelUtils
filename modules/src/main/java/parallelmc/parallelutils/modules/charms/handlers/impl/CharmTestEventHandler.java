@@ -3,8 +3,7 @@ package parallelmc.parallelutils.modules.charms.handlers.impl;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
-import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.handlers.ICharmHandler;
@@ -23,6 +22,6 @@ public class CharmTestEventHandler extends ICharmHandler<PlayerDeathEvent> {
 
 	@Override
 	public void handle(PlayerDeathEvent event, Player player, ItemStack item, CharmOptions options) {
-		Parallelutils.log(Level.WARNING, "Player " + player.getName() + " died. Test charm activated");
+		ParallelUtils.log(Level.WARNING, "Player " + player.getName() + " died. Test charm activated");
 	}
 }

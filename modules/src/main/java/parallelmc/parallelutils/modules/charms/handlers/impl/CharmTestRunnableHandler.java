@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.handlers.ICharmRunnableHandler;
@@ -23,7 +23,7 @@ public class CharmTestRunnableHandler extends ICharmRunnableHandler {
 		return new BukkitRunnable() {
 			@Override
 			public void run() {
-				Parallelutils.log(Level.WARNING, "Charm test functioning");
+				ParallelUtils.log(Level.WARNING, "Charm test functioning");
 			}
 		};
 	}

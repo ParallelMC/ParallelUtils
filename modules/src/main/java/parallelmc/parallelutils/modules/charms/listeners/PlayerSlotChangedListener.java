@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.charms.data.Charm;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
@@ -25,10 +25,10 @@ import java.util.logging.Level;
 
 public class PlayerSlotChangedListener implements Listener {
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 	private final ParallelCharms pCharms;
 
-	public PlayerSlotChangedListener(Parallelutils puPlugin, ParallelCharms pCharms) {
+	public PlayerSlotChangedListener(ParallelUtils puPlugin, ParallelCharms pCharms) {
 		this.puPlugin = puPlugin;
 		this.pCharms = pCharms;
 	}
@@ -93,7 +93,7 @@ public class PlayerSlotChangedListener implements Listener {
 								// Get options and get delay and period
 								runnable.runTaskTimer(puPlugin, delay, period);
 
-								Parallelutils.log(Level.INFO, "Started runnable on change");
+								ParallelUtils.log(Level.INFO, "Started runnable on change");
 
 								remainingCharm.addRunnable(runnable);
 							}

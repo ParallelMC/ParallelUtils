@@ -4,12 +4,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.charms.data.Charm;
 
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class Util {
 

@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import java.util.logging.Level;
 
@@ -20,7 +20,7 @@ public class ParallelItemsEventRegistrar {
             Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
             if (plugin == null) {
-                Parallelutils.log(Level.SEVERE, "Unable to register events. Plugin "
+                ParallelUtils.log(Level.SEVERE, "Unable to register events. Plugin "
                         + Constants.PLUGIN_NAME + " does not exist!");
                 return;
             }

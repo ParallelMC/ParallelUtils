@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.charms.events.PlayerSlotChangedEvent;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
@@ -16,10 +16,10 @@ import parallelmc.parallelutils.modules.charms.handlers.ICharmHandler;
 
 public class PlayerHeldItemListener implements Listener {
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 	private final ParallelCharms pCharms;
 
-	public PlayerHeldItemListener(Parallelutils puPlugin, ParallelCharms pCharms) {
+	public PlayerHeldItemListener(ParallelUtils puPlugin, ParallelCharms pCharms) {
 		this.puPlugin = puPlugin;
 		this.pCharms = pCharms;
 	}

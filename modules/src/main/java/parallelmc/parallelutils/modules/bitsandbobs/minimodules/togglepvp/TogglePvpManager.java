@@ -1,16 +1,16 @@
 package parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp;
 
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import java.sql.*;
 import java.util.HashMap;
 import java.util.UUID;
 
 public class TogglePvpManager {
-    private final Parallelutils puPlugin;
+    private final ParallelUtils puPlugin;
     public static HashMap<UUID, Boolean> pvpToggles = new HashMap<>();
 
-    public TogglePvpManager(Parallelutils puPlugin) {
+    public TogglePvpManager(ParallelUtils puPlugin) {
         this.puPlugin = puPlugin;
     }
 

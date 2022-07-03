@@ -4,7 +4,6 @@ import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
-import net.kyori.adventure.sound.SoundStop;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -21,7 +20,7 @@ import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltutorial.commands.*;
 import parallelmc.parallelutils.modules.paralleltutorial.handlers.OnJoinAfterOnLeave;
@@ -42,7 +41,7 @@ import java.util.stream.Stream;
 
 public class ParallelTutorial implements ParallelModule {
 
-    private Parallelutils puPlugin;
+    private ParallelUtils puPlugin;
 
     private ProtocolManager protManager;
 
@@ -69,15 +68,15 @@ public class ParallelTutorial implements ParallelModule {
         Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
         if (plugin == null) {
-            Parallelutils.log(Level.SEVERE, "Unable to enable ParallelTutorial. Plugin " + Constants.PLUGIN_NAME
+            ParallelUtils.log(Level.SEVERE, "Unable to enable ParallelTutorial. Plugin " + Constants.PLUGIN_NAME
                     + " does not exist!");
             return;
         }
 
-        this.puPlugin = (Parallelutils) plugin;
+        this.puPlugin = (ParallelUtils) plugin;
 
         if (!puPlugin.registerModule(this)) {
-            Parallelutils.log(Level.SEVERE, "Unable to register module ParallelChat! " +
+            ParallelUtils.log(Level.SEVERE, "Unable to register module ParallelChat! " +
                     "Module may already be registered. Quitting...");
             return;
         }
@@ -129,12 +128,12 @@ public class ParallelTutorial implements ParallelModule {
         Path tutorialFolder = Path.of(puPlugin.getDataFolder() + "/tutorials");
         if (!Files.exists(tutorialFolder)) {
             try {
-                Parallelutils.log(Level.WARNING, "Tutorial folder not found, attempting to create one...");
+                ParallelUtils.log(Level.WARNING, "Tutorial folder not found, attempting to create one...");
                 Files.createDirectory(tutorialFolder);
-                Parallelutils.log(Level.WARNING, "Created Tutorial folder!");
+                ParallelUtils.log(Level.WARNING, "Created Tutorial folder!");
             }
             catch (IOException e) {
-                Parallelutils.log(Level.SEVERE, "Failed to create tutorial folder!");
+                ParallelUtils.log(Level.SEVERE, "Failed to create tutorial folder!");
             }
         }
         try (Stream<Path> paths = Files.walk(tutorialFolder)) {
@@ -146,35 +145,35 @@ public class ParallelTutorial implements ParallelModule {
                         switch (split[0]) {
                             case "START", "TELEPORT" -> {
                                 if (split.length != 4) {
-                                    Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 3 arguments on line " + line.get());
+                                    ParallelUtils.log(Level.SEVERE, "Tutorial Parse Error: Expected 3 arguments on line " + line.get());
                                     return;
                                 }
                                 instructions.add(new Instruction(split[0], new String[]{split[1], split[2], split[3]}));
                             }
                             case "MOVE" -> {
                                 if (split.length != 5) {
-                                    Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 4 arguments on line " + line.get());
+                                    ParallelUtils.log(Level.SEVERE, "Tutorial Parse Error: Expected 4 arguments on line " + line.get());
                                     return;
                                 }
                                 instructions.add(new Instruction("MOVE", new String[]{split[1], split[2], split[3], split[4]}));
                             }
                             case "ROTATE" -> {
                                 if (split.length != 3) {
-                                    Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 2 arguments on line " + line.get());
+                                    ParallelUtils.log(Level.SEVERE, "Tutorial Parse Error: Expected 2 arguments on line " + line.get());
                                     return;
                                 }
                                 instructions.add(new Instruction("ROTATE", new String[]{split[1], split[2]}));
                             }
                             case "WAIT" -> {
                                 if (split.length != 2) {
-                                    Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 1 argument on line " + line.get());
+                                    ParallelUtils.log(Level.SEVERE, "Tutorial Parse Error: Expected 1 argument on line " + line.get());
                                     return;
                                 }
                                 instructions.add(new Instruction("WAIT", new String[]{split[1]}));
                             }
                             case "SAY" -> {
                                 if (split.length < 2) {
-                                    Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Expected 1 argument on line " + line.get());
+                                    ParallelUtils.log(Level.SEVERE, "Tutorial Parse Error: Expected 1 argument on line " + line.get());
                                     return;
                                 }
                                 instructions.add(new Instruction("SAY", Arrays.copyOfRange(split, 1, split.length)));
@@ -190,7 +189,7 @@ public class ParallelTutorial implements ParallelModule {
                                 instructions.add(new Instruction("END", null));
                             }
                             default -> {
-                                Parallelutils.log(Level.SEVERE, "Tutorial Parse Error: Unknown instruction on line " + line.get());
+                                ParallelUtils.log(Level.SEVERE, "Tutorial Parse Error: Unknown instruction on line " + line.get());
                             }
                         }
                         line.getAndIncrement();
@@ -202,7 +201,7 @@ public class ParallelTutorial implements ParallelModule {
                 }
                 // beautiful line of code
                 this.tutorials.put(f.getFileName().toString().split("\\.")[0].toLowerCase(), instructions);
-                Parallelutils.log(Level.INFO, "Loaded " + instructions.size() + " instructions from tutorial " + f.getFileName().toString());
+                ParallelUtils.log(Level.INFO, "Loaded " + instructions.size() + " instructions from tutorial " + f.getFileName().toString());
             }));
         }
         catch (IOException e) {
@@ -310,9 +309,9 @@ public class ParallelTutorial implements ParallelModule {
                                                 if (stand.teleport(newPoint)) {
                                                     forceSpectate(player, stand.getEntityId());
                                                     if (debug) {
-                                                        Parallelutils.log(Level.WARNING, "Armor Stand teleported!");
-                                                        Parallelutils.log(Level.WARNING, "Armor Stand looking at: " + stand.getLocation().getYaw() + " " + stand.getLocation().getPitch());
-                                                        Parallelutils.log(Level.WARNING, "Should be looking at: " + lookAt.getX() + " " + lookAt.getY());
+                                                        ParallelUtils.log(Level.WARNING, "Armor Stand teleported!");
+                                                        ParallelUtils.log(Level.WARNING, "Armor Stand looking at: " + stand.getLocation().getYaw() + " " + stand.getLocation().getPitch());
+                                                        ParallelUtils.log(Level.WARNING, "Should be looking at: " + lookAt.getX() + " " + lookAt.getY());
                                                     }
                                                     instructionFinished = true;
                                                     this.cancel();
@@ -323,7 +322,7 @@ public class ParallelTutorial implements ParallelModule {
                                 }
                                 case "ROTATE" -> {
                                     lookAt = new Vector(Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), 0);
-                                    if (debug) Parallelutils.log(Level.WARNING, "Updated look vector to " + lookAt.getX() + " " + lookAt.getY());
+                                    if (debug) ParallelUtils.log(Level.WARNING, "Updated look vector to " + lookAt.getX() + " " + lookAt.getY());
                                     instructionFinished = true;
                                 }
                                 case "WAIT" -> {
@@ -360,19 +359,19 @@ public class ParallelTutorial implements ParallelModule {
     public void endTutorialFor(Player player, boolean debug) {
         Location endPoint = startPoints.get(player);
         ArmorStand stand = armorStands.get(player);
-        if (debug) Parallelutils.log(Level.WARNING, "Ending tutorial...");
+        if (debug) ParallelUtils.log(Level.WARNING, "Ending tutorial...");
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (debug) Parallelutils.log(Level.WARNING, "Waiting for player to be teleported back.");
+                if (debug) ParallelUtils.log(Level.WARNING, "Waiting for player to be teleported back.");
                 // wait for player to be successfully teleported
                 if (player.teleport(endPoint)) {
-                    if (debug) Parallelutils.log(Level.WARNING, "Player teleported!");
+                    if (debug) ParallelUtils.log(Level.WARNING, "Player teleported!");
                     // making the player spectate themselves brings them back to the start
                     forceSpectate(player, player.getEntityId());
-                    if (debug) Parallelutils.log(Level.WARNING, "armorStands HashMap " + (stand != null ? "DOES" : "DOES NOT") + " contain the player before deletion.");
+                    if (debug) ParallelUtils.log(Level.WARNING, "armorStands HashMap " + (stand != null ? "DOES" : "DOES NOT") + " contain the player before deletion.");
                     if (stand != null) {
-                        if (debug) Parallelutils.log(Level.WARNING, "Armor stand marked for removal");
+                        if (debug) ParallelUtils.log(Level.WARNING, "Armor stand marked for removal");
                         stand.remove();
                         armorStands.remove(player);
                     }
@@ -385,38 +384,38 @@ public class ParallelTutorial implements ParallelModule {
             }
         }.runTaskTimer(puPlugin, 0L, 2L);
         if (debug) {
-            Parallelutils.log(Level.WARNING, "Checking status of armor stand in a few ticks...");
+            ParallelUtils.log(Level.WARNING, "Checking status of armor stand in a few ticks...");
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     if (stand.isDead() && !stand.isValid())
-                        Parallelutils.log(Level.WARNING, "Armor Stand removed successfully!");
+                        ParallelUtils.log(Level.WARNING, "Armor Stand removed successfully!");
                     else
-                        Parallelutils.log(Level.WARNING, "Armor Stand was NOT removed!");
+                        ParallelUtils.log(Level.WARNING, "Armor Stand was NOT removed!");
                 }
             }.runTaskLater(puPlugin, 10L);
         }
     }
 
     public void handleDisconnectedPlayer(Player player, boolean debug) {
-        if (debug) Parallelutils.log(Level.WARNING, "Ending tutorial...");
+        if (debug) ParallelUtils.log(Level.WARNING, "Ending tutorial...");
         ArmorStand stand = armorStands.get(player);
-        if (debug) Parallelutils.log(Level.WARNING, "armorStands HashMap " + (stand != null ? "DOES" : "DOES NOT") + " contain the player before deletion.");
+        if (debug) ParallelUtils.log(Level.WARNING, "armorStands HashMap " + (stand != null ? "DOES" : "DOES NOT") + " contain the player before deletion.");
         if (stand != null) {
-            if (debug) Parallelutils.log(Level.WARNING, "Armor stand marked for removal");
+            if (debug) ParallelUtils.log(Level.WARNING, "Armor stand marked for removal");
             stand.remove();
             armorStands.remove(player);
         }
         runningTutorials.remove(player);
         if (debug) {
-            Parallelutils.log(Level.WARNING, "Checking status of armor stand in a few ticks...");
+            ParallelUtils.log(Level.WARNING, "Checking status of armor stand in a few ticks...");
             new BukkitRunnable() {
                 @Override
                 public void run() {
                     if (stand.isDead() && !stand.isValid())
-                        Parallelutils.log(Level.WARNING, "Armor Stand removed successfully!");
+                        ParallelUtils.log(Level.WARNING, "Armor Stand removed successfully!");
                     else
-                        Parallelutils.log(Level.WARNING, "Armor Stand was NOT removed!");
+                        ParallelUtils.log(Level.WARNING, "Armor Stand was NOT removed!");
                 }
             }.runTaskLater(puPlugin, 10L);
         }

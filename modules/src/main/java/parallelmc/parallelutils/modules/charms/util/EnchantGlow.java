@@ -9,7 +9,7 @@ import org.bukkit.entity.EntityCategory;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import java.lang.reflect.Field;
 import java.util.Set;
@@ -96,7 +96,7 @@ public class EnchantGlow extends Enchantment {
 
 	public static EnchantGlow instance = null;
 
-	public static void registerFakeGlow(Parallelutils puPlugin) {
+	public static void registerFakeGlow(ParallelUtils puPlugin) {
 		try {
 			Field f = Enchantment.class.getDeclaredField("acceptingNew");
 			f.setAccessible(true);

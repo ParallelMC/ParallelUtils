@@ -3,12 +3,11 @@ package parallelmc.parallelutils.modules.performanceTools;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.performanceTools.commands.FindLoadedChunksCommand;
 
 import java.util.logging.Level;
@@ -32,15 +31,15 @@ public class PerformanceTools implements ParallelModule {
 		int CLDhours = 1;
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to enable PerformanceTools. Plugin " + Constants.PLUGIN_NAME
+			ParallelUtils.log(Level.SEVERE, "Unable to enable PerformanceTools. Plugin " + Constants.PLUGIN_NAME
 					+ " does not exist!");
 			return;
 		}
 
-		Parallelutils puPlugin = (Parallelutils) plugin;
+		ParallelUtils puPlugin = (ParallelUtils) plugin;
 
 		if (!puPlugin.registerModule(this)) {
-			Parallelutils.log(Level.SEVERE, "Unable to register module PerformanceTools! " +
+			ParallelUtils.log(Level.SEVERE, "Unable to register module PerformanceTools! " +
 					"Module may already be registered. Quitting...");
 			return;
 		}

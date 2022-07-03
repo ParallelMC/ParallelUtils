@@ -7,7 +7,7 @@ import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.gamemode4.sunkenTreasure.events.TreasureChecker;
 
 import java.util.logging.Level;
@@ -24,14 +24,14 @@ public class SunkenTreasure implements ParallelModule {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to enable SunkenTreasure. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
+			ParallelUtils.log(Level.SEVERE, "Unable to enable SunkenTreasure. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
 			return;
 		}
 
-		Parallelutils puPlugin = (Parallelutils) plugin;
+		ParallelUtils puPlugin = (ParallelUtils) plugin;
 
 		if (!puPlugin.registerModule(this)) {
-			Parallelutils.log(Level.SEVERE, "Unable to register module SunkenTreasure! Module may already be registered. Quitting...");
+			ParallelUtils.log(Level.SEVERE, "Unable to register module SunkenTreasure! Module may already be registered. Quitting...");
 			return;
 		}
 
@@ -39,7 +39,7 @@ public class SunkenTreasure implements ParallelModule {
 
 		String treasureLoot = config.getString("treasure_loot", "minecraft:loot_tables/blocks/sand");
 
-		Parallelutils.log(Level.INFO, treasureLoot);
+		ParallelUtils.log(Level.INFO, treasureLoot);
 
 		manager.registerEvents(new TreasureChecker(treasureLoot), plugin);
 	}

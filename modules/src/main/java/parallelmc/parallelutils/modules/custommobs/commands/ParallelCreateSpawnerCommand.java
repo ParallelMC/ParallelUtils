@@ -11,7 +11,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelOrPermission;
@@ -58,7 +58,7 @@ public class ParallelCreateSpawnerCommand extends ParallelCommand {
 		JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to execute command 'spawnerCreate'. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
+			ParallelUtils.log(Level.SEVERE, "Unable to execute command 'spawnerCreate'. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
 			return false;
 		}
 

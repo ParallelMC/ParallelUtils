@@ -7,7 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -22,7 +22,7 @@ public class ParallelFlagsDeathMsgListener implements Listener {
 		EntityDamageEvent lastDamage = player.getLastDamageCause();
 
 		if (lastDamage != null && lastDamage.getCause() == EntityDamageEvent.DamageCause.CUSTOM) {
-			Parallelutils.log(Level.INFO, "Custom Damage");
+			ParallelUtils.log(Level.INFO, "Custom Damage");
 			String message = playerDeathMessages.get(player.getName());
 			if (message == null) return;
 

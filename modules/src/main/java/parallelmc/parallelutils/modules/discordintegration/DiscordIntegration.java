@@ -7,7 +7,7 @@ import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import javax.security.auth.login.LoginException;
 import java.util.logging.Level;
@@ -27,16 +27,16 @@ public class DiscordIntegration implements ParallelModule {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to enable DiscordIntegration. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
+			ParallelUtils.log(Level.SEVERE, "Unable to enable DiscordIntegration. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
 			return;
 		}
 
-		Parallelutils puPlugin = (Parallelutils) plugin;
+		ParallelUtils puPlugin = (ParallelUtils) plugin;
 
 		FileConfiguration config = puPlugin.getConfig();
 
 		if (!puPlugin.registerModule(this)) {
-			Parallelutils.log(Level.SEVERE, "Unable to register module DiscordIntegration! Module may already be registered. Quitting...");
+			ParallelUtils.log(Level.SEVERE, "Unable to register module DiscordIntegration! Module may already be registered. Quitting...");
 			return;
 		}
 
@@ -59,7 +59,7 @@ public class DiscordIntegration implements ParallelModule {
 
 			DiscordIntegrationEventRegistrar.registerEvents();
 		} catch (LoginException e) {
-			Parallelutils.log(Level.SEVERE, "Unable to initialize BotManager. Is the token valid?");
+			ParallelUtils.log(Level.SEVERE, "Unable to initialize BotManager. Is the token valid?");
 		}
 	}
 

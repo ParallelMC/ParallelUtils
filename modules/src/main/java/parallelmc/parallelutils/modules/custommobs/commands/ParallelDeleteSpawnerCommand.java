@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.commands.Commands;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelOrPermission;
@@ -69,7 +69,7 @@ public class ParallelDeleteSpawnerCommand extends ParallelCommand {
 
 			try {
 				location = Commands.convertLocation(sender, args[1], args[2], args[3], Bukkit.getWorld(world));
-				Parallelutils.log(Level.INFO, location.toString());
+				ParallelUtils.log(Level.INFO, location.toString());
 			} catch (NumberFormatException e) {
 				sender.sendMessage("Invalid position.\n");
 				sender.sendMessage(USAGE);

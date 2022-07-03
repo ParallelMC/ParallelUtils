@@ -6,7 +6,7 @@ import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.gamemode4.beehiveInspector.events.BeehiveBroken;
 
 import java.util.logging.Level;
@@ -26,14 +26,14 @@ public class BeehiveInspector implements ParallelModule {
         Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
         if (plugin == null) {
-            Parallelutils.log(Level.SEVERE, "Unable to enable BeehiveInspector. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
+            ParallelUtils.log(Level.SEVERE, "Unable to enable BeehiveInspector. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
             return;
         }
 
-        Parallelutils puPlugin = (Parallelutils) plugin;
+        ParallelUtils puPlugin = (ParallelUtils) plugin;
 
         if (!puPlugin.registerModule(this)) {
-            Parallelutils.log(Level.SEVERE, "Unable to register module BeehiveInspector! Module may already be registered. Quitting...");
+            ParallelUtils.log(Level.SEVERE, "Unable to register module BeehiveInspector! Module may already be registered. Quitting...");
             return;
         }
 

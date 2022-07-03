@@ -5,13 +5,10 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.Nullable;
-import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.charms.data.Charm;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
@@ -24,7 +21,6 @@ import parallelmc.parallelutils.modules.charms.util.Util;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public class CharmCommandRunnableHandler extends ICharmRunnableHandler {
 

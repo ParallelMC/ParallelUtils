@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.expstorage.ExpConverter;
 import parallelmc.parallelutils.modules.expstorage.ExpDatabase;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
@@ -16,10 +16,10 @@ import java.util.logging.Level;
 
 public class DepositExperience implements CommandExecutor {
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 	private final ExpDatabase db;
 
-	public DepositExperience(Parallelutils puPlugin, ExpDatabase expDatabase) {
+	public DepositExperience(ParallelUtils puPlugin, ExpDatabase expDatabase) {
 		this.puPlugin = puPlugin;
 		this.db = expDatabase;
 	}
@@ -68,7 +68,7 @@ public class DepositExperience implements CommandExecutor {
 			}
 			return true;
 		}
-		Parallelutils.log(Level.WARNING, "Tried to deposit experience from non-player command source: " + commandSender.getName());
+		ParallelUtils.log(Level.WARNING, "Tried to deposit experience from non-player command source: " + commandSender.getName());
 		return true;
 	}
 

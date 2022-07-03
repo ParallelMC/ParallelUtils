@@ -14,7 +14,7 @@ import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 
@@ -41,19 +41,19 @@ public class ParallelItemsGiveCommand extends ParallelCommand {
         Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
         if (plugin == null) {
-            Parallelutils.log(Level.SEVERE, "Unable to find ParallelItems from give command. Plugin "
+            ParallelUtils.log(Level.SEVERE, "Unable to find ParallelItems from give command. Plugin "
                     + Constants.PLUGIN_NAME + " does not exist!");
             return;
         }
 
-        Parallelutils puPlugin = (Parallelutils) plugin;
+        ParallelUtils puPlugin = (ParallelUtils) plugin;
 
         ParallelModule module = puPlugin.getModule("ParallelItems");
         if(module instanceof ParallelItems){
             parallelItems = (ParallelItems) module;
         }
         else{
-            Parallelutils.log(Level.WARNING, "Unable to find ParallelItems module from give command.");
+            ParallelUtils.log(Level.WARNING, "Unable to find ParallelItems module from give command.");
         }
     }
 

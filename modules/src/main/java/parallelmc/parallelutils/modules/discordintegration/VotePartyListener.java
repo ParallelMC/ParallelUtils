@@ -5,7 +5,7 @@ import me.clip.voteparty.events.VoteReceivedEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import java.util.logging.Level;
 
@@ -25,10 +25,10 @@ public class VotePartyListener implements Listener {
 		if (BotManager.getInstance() != null) {
 			if (!BotManager.getInstance().editMessage("vpMessage", "vpMessage",
 					"" + (neededVotes-currVotes) + " votes are needed to have a Vote Party!")) {
-				Parallelutils.log(Level.WARNING, "Unable to edit message. Unknown error.");
+				ParallelUtils.log(Level.WARNING, "Unable to edit message. Unknown error.");
 			}
 		} else {
-			Parallelutils.log(Level.WARNING, "BotManager not initialized. Can't edit message!");
+			ParallelUtils.log(Level.WARNING, "BotManager not initialized. Can't edit message!");
 		}
 	}
 }

@@ -3,8 +3,6 @@ package parallelmc.parallelutils.modules.charms.data;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -17,7 +15,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.charms.handlers.*;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
@@ -30,7 +28,7 @@ import java.util.logging.Level;
 
 public class Charm {
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 
 	private final ParallelCharms pCharms;
 
@@ -52,13 +50,13 @@ public class Charm {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to construct charm. Plugin " + Constants.PLUGIN_NAME
+			ParallelUtils.log(Level.SEVERE, "Unable to construct charm. Plugin " + Constants.PLUGIN_NAME
 					+ " does not exist!");
 			puPlugin = null;
 			return;
 		}
 
-		puPlugin = (Parallelutils) plugin;
+		puPlugin = (ParallelUtils) plugin;
 
 		charmId = UUID.randomUUID();
 
@@ -78,11 +76,11 @@ public class Charm {
 		try {
 			// Check allowed materials
 			if (!options.isMaterialAllowed(item.getType())) {
-				Parallelutils.log(Level.INFO, "Material not allowed!");
+				ParallelUtils.log(Level.INFO, "Material not allowed!");
 				return false;
 			}
 			if (!options.isPlayerAllowed(player)) {
-				Parallelutils.log(Level.INFO, "Player/Permission not allowed!");
+				ParallelUtils.log(Level.INFO, "Player/Permission not allowed!");
 				return false;
 			}
 
@@ -90,7 +88,7 @@ public class Charm {
 			Plugin plugin = BukkitTools.getPlugin();
 
 			if (plugin == null) {
-				Parallelutils.log(Level.WARNING, "Plugin is null! Cannot apply charm");
+				ParallelUtils.log(Level.WARNING, "Plugin is null! Cannot apply charm");
 				return false;
 			}
 
@@ -155,11 +153,11 @@ public class Charm {
 
 							runnable.runTaskTimer(puPlugin, delay, period);
 
-							Parallelutils.log(Level.INFO, "Started runnable");
+							ParallelUtils.log(Level.INFO, "Started runnable");
 
 							runnables.add(runnable);
 						} else {
-							Parallelutils.log(Level.WARNING, "Non-runnable handler on Runnable effect! " + t.name());
+							ParallelUtils.log(Level.WARNING, "Non-runnable handler on Runnable effect! " + t.name());
 						}
 					}
 				} else if (t.getCategory() == HandlerCategory.APPLY) {
@@ -168,7 +166,7 @@ public class Charm {
 					if (handler instanceof ICharmApplyHandler applyHandler) {
 						applyHandler.apply(player, item, this.options);
 					} else {
-						Parallelutils.log(Level.WARNING, "Non-apply handler on Apply effect! " + t.name());
+						ParallelUtils.log(Level.WARNING, "Non-apply handler on Apply effect! " + t.name());
 					}
 				}
 			}
@@ -178,7 +176,7 @@ public class Charm {
 			}
 			return true;
 		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Unable to apply charm!");
+			ParallelUtils.log(Level.SEVERE, "Unable to apply charm!");
 			e.printStackTrace();
 			return false;
 		}
@@ -191,7 +189,7 @@ public class Charm {
 			Plugin plugin = BukkitTools.getPlugin();
 
 			if (plugin == null) {
-				Parallelutils.log(Level.WARNING, "Plugin is null! Cannot apply charm");
+				ParallelUtils.log(Level.WARNING, "Plugin is null! Cannot apply charm");
 				return false;
 			}
 
@@ -234,7 +232,7 @@ public class Charm {
 			pCharms.removeCharm(player, this);
 			return true;
 		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "Unable to take off charm!");
+			ParallelUtils.log(Level.SEVERE, "Unable to take off charm!");
 			e.printStackTrace();
 			return false;
 		}
@@ -251,7 +249,7 @@ public class Charm {
 		Plugin plugin = BukkitTools.getPlugin();
 
 		if (plugin == null) {
-			Parallelutils.log(Level.WARNING, "Plugin is null! Cannot apply charm");
+			ParallelUtils.log(Level.WARNING, "Plugin is null! Cannot apply charm");
 			return null;
 		}
 
@@ -283,7 +281,7 @@ public class Charm {
 		Plugin plugin = BukkitTools.getPlugin();
 
 		if (plugin == null) {
-			Parallelutils.log(Level.WARNING, "Plugin is null! Cannot check charm");
+			ParallelUtils.log(Level.WARNING, "Plugin is null! Cannot check charm");
 			return false;
 		}
 
@@ -386,7 +384,7 @@ public class Charm {
 		return true;
 	}
 
-	public static Charm getCharmAppl(Parallelutils puPlugin, ParallelCharms pCharms, ItemStack item) {
+	public static Charm getCharmAppl(ParallelUtils puPlugin, ParallelCharms pCharms, ItemStack item) {
 		ItemMeta meta = item.getItemMeta();
 
 		if (meta == null) return null;
@@ -422,7 +420,7 @@ public class Charm {
 
 	public void cancelRunnables() {
 		for (BukkitRunnable r : runnables) {
-			Parallelutils.log(Level.INFO, "Cancelled Runnable");
+			ParallelUtils.log(Level.INFO, "Cancelled Runnable");
 			r.cancel();
 		}
 		runnables.clear();

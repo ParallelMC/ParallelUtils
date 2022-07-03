@@ -1,6 +1,6 @@
 name: Parallelutils
 version: 1.12.9
-main: parallelmc.parallelutils.Parallelutils
+main: parallelmc.parallelutils.ParallelUtils
 api-version: 1.18
 authors: [ParallelMC Team]
 description: A plugin containing miscellaneous features and changes for play.parallel.ga

@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.charms.data.Charm;
 
@@ -21,10 +21,10 @@ import java.util.logging.Level;
 
 public class CraftingRemoveCharmListener implements Listener {
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 	private final ParallelCharms pCharms;
 
-	public CraftingRemoveCharmListener(Parallelutils puPlugin, ParallelCharms pCharms) {
+	public CraftingRemoveCharmListener(ParallelUtils puPlugin, ParallelCharms pCharms) {
 		this.puPlugin = puPlugin;
 		this.pCharms = pCharms;
 	}
@@ -122,14 +122,14 @@ public class CraftingRemoveCharmListener implements Listener {
 				Charm charmObj = Charm.parseCharm(pCharms, result, player);
 
 				if (charmObj == null) {
-					Parallelutils.log(Level.WARNING,  "Something went wrong while taking off a charm!");
+					ParallelUtils.log(Level.WARNING,  "Something went wrong while taking off a charm!");
 					return;
 				}
 
 				boolean res = charmObj.takeOff(result, player);
 
 				if (!res) {
-					Parallelutils.log(Level.WARNING,  "Something went wrong while taking off a charm!");
+					ParallelUtils.log(Level.WARNING,  "Something went wrong while taking off a charm!");
 					return;
 				}
 

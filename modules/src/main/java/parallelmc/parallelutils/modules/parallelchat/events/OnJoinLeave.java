@@ -12,17 +12,15 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.discordintegration.JoinQuitSuppressorListener;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
-import java.util.logging.Level;
-
 public class OnJoinLeave implements Listener {
 
-    private final Parallelutils puPlugin;
+    private final ParallelUtils puPlugin;
 
-    public OnJoinLeave(Parallelutils puPlugin) {
+    public OnJoinLeave(ParallelUtils puPlugin) {
         this.puPlugin = puPlugin;
     }
 

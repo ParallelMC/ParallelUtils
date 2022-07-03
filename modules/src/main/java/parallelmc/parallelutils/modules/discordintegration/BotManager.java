@@ -11,7 +11,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.EventListener;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import javax.annotation.Nullable;
 import javax.security.auth.login.LoginException;
@@ -49,7 +49,7 @@ public class BotManager extends ListenerAdapter {
 		client = JDABuilder.createDefault(token).addEventListeners((EventListener) event -> {
 			if (event instanceof ReadyEvent) {
 				ready = true;
-				Parallelutils.log(Level.INFO, "JDA Ready");
+				ParallelUtils.log(Level.INFO, "JDA Ready");
 			}
 		}).build();
 		channels = new HashMap<>();
@@ -102,7 +102,7 @@ public class BotManager extends ListenerAdapter {
 	 * @return Returns true if the message was sent successfully, false otherwise
 	 */
 	public boolean sendMessage(String channel, String message) {
-		Parallelutils.log(Level.INFO, "Attempting to send a message");
+		ParallelUtils.log(Level.INFO, "Attempting to send a message");
 		boolean success = false;
 		if (ready) {
 			TextChannel textChannel = client.getTextChannelById(channels.get(channel));
@@ -123,7 +123,7 @@ public class BotManager extends ListenerAdapter {
 	 * @return true if the message was edited successfully
 	 */
 	public boolean editMessage(String channel, String messageId, String message) {
-		Parallelutils.log(Level.INFO, "Attempting to edit message");
+		ParallelUtils.log(Level.INFO, "Attempting to edit message");
 
 		boolean success = false;
 		if (ready) {
@@ -132,7 +132,7 @@ public class BotManager extends ListenerAdapter {
 				textChannel.editMessageById(messages.get(messageId), message).queue();
 				success = true;
 			} else {
-				Parallelutils.log(Level.WARNING, "Unable to find text channel");
+				ParallelUtils.log(Level.WARNING, "Unable to find text channel");
 			}
 		}
 
@@ -155,7 +155,7 @@ public class BotManager extends ListenerAdapter {
 						List<Role> roles = member.getRoles();
 						for (Role r : roles) {
 							if (r.getId().equals(staffId)) {
-								Parallelutils.log(Level.INFO, "Trying to run command...");
+								ParallelUtils.log(Level.INFO, "Trying to run command...");
 								// Can be executed
 								String[] parts = command.split(" ");
 								executeCommand(event, parts[0],  Arrays.copyOfRange(parts, 1, parts.length));
@@ -198,7 +198,7 @@ public class BotManager extends ListenerAdapter {
 		try {
 			client.shutdownNow();
 		} catch (NoClassDefFoundError e) {
-			Parallelutils.log(Level.WARNING, "JDA Class not found! This is a bug with JDA. Handling");
+			ParallelUtils.log(Level.WARNING, "JDA Class not found! This is a bug with JDA. Handling");
 		}
 	}
 }

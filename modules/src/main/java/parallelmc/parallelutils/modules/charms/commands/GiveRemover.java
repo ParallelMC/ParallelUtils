@@ -1,19 +1,17 @@
 package parallelmc.parallelutils.modules.charms.commands;
 
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 
@@ -21,9 +19,9 @@ import java.util.List;
 
 public class GiveRemover extends ParallelCommand {
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 
-	public GiveRemover(Parallelutils puPlugin) {
+	public GiveRemover(ParallelUtils puPlugin) {
 		super("giveRemover", new ParallelPermission("parallelutils.removecharm"));
 		this.puPlugin = puPlugin;
 	}

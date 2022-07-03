@@ -18,7 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.sql.*;
@@ -34,9 +34,9 @@ public class PlayerPositionManager {
     private final HashSet<UUID> teleportCooldowns = new HashSet<>();
     private final HashMap<UUID, BukkitTask> attemptedTeleports = new HashMap<>();
 
-    private final Parallelutils puPlugin;
+    private final ParallelUtils puPlugin;
 
-    public PlayerPositionManager(Parallelutils plugin) {
+    public PlayerPositionManager(ParallelUtils plugin) {
         this.puPlugin = plugin;
     }
 
@@ -338,7 +338,7 @@ public class PlayerPositionManager {
                 case "move" -> ParallelChat.sendParallelMessageTo(player, "You moved! Teleportation cancelled.");
                 case "damage" -> ParallelChat.sendParallelMessageTo(player, "You took damage! Teleportation cancelled.");
                 case "drop" -> ParallelChat.sendParallelMessageTo(player, "You dropped your teleporter! Teleportation cancelled.");
-                case "disconnect" -> Parallelutils.log(Level.INFO, player.getName() + " left while teleporting! Cancelled teleportation.");
+                case "disconnect" -> ParallelUtils.log(Level.INFO, player.getName() + " left while teleporting! Cancelled teleportation.");
                 default -> ParallelChat.sendParallelMessageTo(player, "Teleportation cancelled for an unknown reason.");
             }
             attemptedTeleports.remove(uuid);

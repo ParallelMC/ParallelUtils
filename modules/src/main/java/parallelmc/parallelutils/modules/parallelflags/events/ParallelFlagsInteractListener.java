@@ -19,7 +19,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelflags.CustomFlagRegistry;
 
 import java.util.logging.Level;
@@ -106,10 +106,10 @@ public class ParallelFlagsInteractListener implements Listener {
 				event.getPlayer().sendMessage(message.replace("%what%", action));
 			}
 		} else {
-			Parallelutils.log(Level.WARNING, "WorldGuard updated! DENY_MESSAGE no longer StringFlag");
+			ParallelUtils.log(Level.WARNING, "WorldGuard updated! DENY_MESSAGE no longer StringFlag");
 		}
 
-		Parallelutils.log(Level.INFO, "Denied");
+		ParallelUtils.log(Level.INFO, "Denied");
 		event.setUseInteractedBlock(Event.Result.DENY);
 		event.setUseItemInHand(Event.Result.DENY);
 	}

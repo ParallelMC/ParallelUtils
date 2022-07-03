@@ -16,10 +16,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelflags.CustomFlagRegistry;
-
-import java.util.logging.Level;
 
 public class ParallelFlagsDeathListener implements Listener {
 

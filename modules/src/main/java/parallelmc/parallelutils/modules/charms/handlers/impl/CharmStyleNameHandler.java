@@ -1,18 +1,13 @@
 package parallelmc.parallelutils.modules.charms.handlers.impl;
 
-import io.papermc.paper.text.PaperComponents;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import net.kyori.adventure.translation.GlobalTranslator;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
 import parallelmc.parallelutils.modules.charms.data.IEffectSettings;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
@@ -21,9 +16,7 @@ import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.modules.charms.helper.Types;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.logging.Level;
 
 public class CharmStyleNameHandler extends ICharmApplyHandler {
 

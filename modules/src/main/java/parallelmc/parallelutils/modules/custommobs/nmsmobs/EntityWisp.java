@@ -14,7 +14,7 @@ import org.bukkit.craftbukkit.v1_19_R1.entity.CraftZombie;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.custommobs.particles.ParticleTask;
 import parallelmc.parallelutils.modules.custommobs.bukkitmobs.CraftWisp;
 import parallelmc.parallelutils.modules.custommobs.registry.EntityRegistry;
@@ -60,7 +60,7 @@ public class EntityWisp extends Zombie {
 		boolean spawned = world.getHandle().addFreshEntity(wisp, CreatureSpawnEvent.SpawnReason.CUSTOM);
 
 		if (!spawned) {
-			Parallelutils.log(java.util.logging.Level.INFO, "Unable to spawn entity");
+			ParallelUtils.log(java.util.logging.Level.INFO, "Unable to spawn entity");
 			return null;
 		}
 
