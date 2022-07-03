@@ -10,14 +10,13 @@ import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelOrPermission;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 import parallelmc.parallelutils.modules.custommobs.registry.SpawnerRegistry;
 import parallelmc.parallelutils.modules.custommobs.spawners.SpawnerData;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -88,7 +87,7 @@ public class ParallelListSpawnersCommand extends ParallelCommand {
 
 				componentBuilder.append("HasLeash: ").append("" + data[i].hasLeash()).append("\n");
 			} catch (NullPointerException e) {
-				Parallelutils.log(Level.INFO, "NullPointerException, skipping...");
+				ParallelUtils.log(Level.INFO, "NullPointerException, skipping...");
 			}
 		}
 		componentBuilder.append("--------------------------------------------\n");

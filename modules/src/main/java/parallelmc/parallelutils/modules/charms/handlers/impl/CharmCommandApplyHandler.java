@@ -8,7 +8,6 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
 import parallelmc.parallelutils.modules.charms.data.IEffectSettings;
 import parallelmc.parallelutils.modules.charms.data.impl.CommandEffectSettings;
@@ -17,7 +16,6 @@ import parallelmc.parallelutils.modules.charms.handlers.ICharmApplyHandler;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
 
 public class CharmCommandApplyHandler extends ICharmApplyHandler {
 

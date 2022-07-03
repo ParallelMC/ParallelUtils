@@ -10,13 +10,10 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.session.MoveType;
 import com.sk89q.worldguard.session.Session;
 import com.sk89q.worldguard.session.handler.Handler;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.PlayerInventory;
-import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelflags.CustomFlagRegistry;
 
 import java.util.Set;
-import java.util.logging.Level;
 
 public class InventoryClearHandler extends Handler {
 

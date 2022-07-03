@@ -7,16 +7,16 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.expstorage.ExpDatabase;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 public class EnderChestRightClick implements Listener {
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 	private final ExpDatabase db;
 
-	public EnderChestRightClick(Parallelutils puPlugin, ExpDatabase expDatabase) {
+	public EnderChestRightClick(ParallelUtils puPlugin, ExpDatabase expDatabase) {
 		this.puPlugin = puPlugin;
 		this.db = expDatabase;
 	}

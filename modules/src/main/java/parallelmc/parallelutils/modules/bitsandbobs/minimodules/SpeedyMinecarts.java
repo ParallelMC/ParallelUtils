@@ -12,7 +12,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -28,7 +28,7 @@ public class SpeedyMinecarts implements Listener {
         PluginManager manager = Bukkit.getPluginManager();
         plugin = manager.getPlugin(Constants.PLUGIN_NAME);
         if (plugin == null) {
-            Parallelutils.log(Level.SEVERE, "Unable to enable SpeedyMinecarts. Plugin " + Constants.PLUGIN_NAME
+            ParallelUtils.log(Level.SEVERE, "Unable to enable SpeedyMinecarts. Plugin " + Constants.PLUGIN_NAME
                     + " does not exist!");
         }
     }

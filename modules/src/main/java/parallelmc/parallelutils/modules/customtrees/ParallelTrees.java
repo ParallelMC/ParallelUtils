@@ -6,7 +6,7 @@ import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import java.util.logging.Level;
 
@@ -22,21 +22,21 @@ public class ParallelTrees implements ParallelModule {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to enable ParallelTrees. Plugin " + Constants.PLUGIN_NAME
+			ParallelUtils.log(Level.SEVERE, "Unable to enable ParallelTrees. Plugin " + Constants.PLUGIN_NAME
 					+ " does not exist!");
 			return;
 		}
 
-		Parallelutils puPlugin = (Parallelutils) plugin;
+		ParallelUtils puPlugin = (ParallelUtils) plugin;
 
 		if (!puPlugin.registerModule(this)) {
-			Parallelutils.log(Level.SEVERE, "Unable to register module ParallelTrees! " +
+			ParallelUtils.log(Level.SEVERE, "Unable to register module ParallelTrees! " +
 					"Module may already be registered. Quitting...");
 			return;
 		}
 
 		if (manager.getPlugin("FractalForest") == null) {
-			Parallelutils.log(Level.WARNING, "Could not find FractalForest. Will not continue initialization");
+			ParallelUtils.log(Level.WARNING, "Could not find FractalForest. Will not continue initialization");
 			return;
 		}
 

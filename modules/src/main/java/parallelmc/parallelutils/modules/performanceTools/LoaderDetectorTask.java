@@ -9,11 +9,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.discordintegration.BotManager;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
@@ -28,12 +27,12 @@ public class LoaderDetectorTask extends BukkitRunnable {
         plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
 
         if (plugin == null) {
-            Parallelutils.log(Level.SEVERE, "Unable to create LoaderDetectorTask. Plugin " + Constants.PLUGIN_NAME + "does not exist!");
+            ParallelUtils.log(Level.SEVERE, "Unable to create LoaderDetectorTask. Plugin " + Constants.PLUGIN_NAME + "does not exist!");
             throw new IllegalPluginAccessException("Unable to create LoaderDetectorTask. Plugin " + Constants.PLUGIN_NAME + "does not exist!");
         }
 
         discord = null;
-        if(plugin instanceof Parallelutils puplugin) {
+        if(plugin instanceof ParallelUtils puplugin) {
             if(puplugin.getModule("DiscordIntegration") instanceof DiscordIntegration discordIntegration) {
                 discord = discordIntegration.getBotManager();
             }
@@ -70,7 +69,7 @@ public class LoaderDetectorTask extends BukkitRunnable {
                     discord.sendMessage("staff", msg.toString());
                 }
                 else{
-                    Parallelutils.log(Level.SEVERE, "-----------------\n" + msg +"\n------------------");
+                    ParallelUtils.log(Level.SEVERE, "-----------------\n" + msg +"\n------------------");
                 }
             }
         }

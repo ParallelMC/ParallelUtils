@@ -1,14 +1,12 @@
 package parallelmc.parallelutils.modules.expstorage;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.expstorage.commands.DepositExperience;
 import parallelmc.parallelutils.modules.expstorage.commands.WithdrawExperience;
 import parallelmc.parallelutils.modules.expstorage.events.EnderChestRightClick;
@@ -28,14 +26,14 @@ public class ExpStorage implements ParallelModule {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to enable ExpStorage. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
+			ParallelUtils.log(Level.SEVERE, "Unable to enable ExpStorage. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
 			return;
 		}
 
-		Parallelutils puPlugin = (Parallelutils) plugin;
+		ParallelUtils puPlugin = (ParallelUtils) plugin;
 
 		if (!puPlugin.registerModule(this)) {
-			Parallelutils.log(Level.SEVERE, "Unable to register module ExpStorage! Module may already be registered. Quitting...");
+			ParallelUtils.log(Level.SEVERE, "Unable to register module ExpStorage! Module may already be registered. Quitting...");
 			return;
 		}
 

@@ -1,6 +1,6 @@
 package parallelmc.parallelutils.modules.custommobs.registry;
 
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.custommobs.particles.ParticleOptions;
 
 import java.util.HashMap;
@@ -37,7 +37,7 @@ public class ParticleRegistry {
 	 * @param options The configuration for this particle type
 	 */
 	public void registerParticles(String type, ParticleOptions options) {
-		Parallelutils.log(Level.INFO, "Registering particles for " + type);
+		ParallelUtils.log(Level.INFO, "Registering particles for " + type);
 		entityParticles.put(type, options);
 	}
 

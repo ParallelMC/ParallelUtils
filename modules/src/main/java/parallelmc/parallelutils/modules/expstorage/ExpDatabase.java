@@ -1,14 +1,14 @@
 package parallelmc.parallelutils.modules.expstorage;
 
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import java.sql.*;
 
 public class ExpDatabase {
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 
-	public ExpDatabase(Parallelutils puPlugin) {
+	public ExpDatabase(ParallelUtils puPlugin) {
 		this.puPlugin = puPlugin;
 	}
 

@@ -27,7 +27,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.util.HashMap;
@@ -62,7 +62,7 @@ public class PlayerInteractListener implements Listener {
         PluginManager manager = Bukkit.getPluginManager();
         JavaPlugin plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
         if (plugin == null) {
-            Parallelutils.log(Level.SEVERE, "PLUGIN NOT FOUND. THIS IS A PROBLEM");
+            ParallelUtils.log(Level.SEVERE, "PLUGIN NOT FOUND. THIS IS A PROBLEM");
             return;
         }
 
@@ -132,7 +132,7 @@ public class PlayerInteractListener implements Listener {
             ItemStack item = event.getItem();
 
             if (item == null) {
-                Parallelutils.log(Level.WARNING, "item null checking ParallelItem. This is bad!");
+                ParallelUtils.log(Level.WARNING, "item null checking ParallelItem. This is bad!");
                 return;
             }
 
@@ -155,7 +155,7 @@ public class PlayerInteractListener implements Listener {
                     }
 
                     if(item.getType() != Material.BONE_MEAL) {
-                        Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:1' are " +
+                        ParallelUtils.log(Level.WARNING, "Items with tag 'ParallelItems:1' are " +
                                 "enhanced_fertilizer, but this is not the correct material. Something isn't right.");
                         return;
                     }
@@ -169,8 +169,8 @@ public class PlayerInteractListener implements Listener {
 
                     // check if original block is ageable or sapling
                     if(!(blockData instanceof Ageable || blockData instanceof Sapling)) {
-                        Parallelutils.log(Level.INFO, "Not ageable or sapling!");
-                        Parallelutils.log(Level.INFO, origin.toString());
+                        ParallelUtils.log(Level.INFO, "Not ageable or sapling!");
+                        ParallelUtils.log(Level.INFO, origin.toString());
                         return;
                     }
 
@@ -186,11 +186,11 @@ public class PlayerInteractListener implements Listener {
                             if(bd instanceof Ageable || bd instanceof Sapling) {
                                 boolean boneMealStatus = b.applyBoneMeal(BlockFace.UP);
 
-                                Parallelutils.log(Level.INFO, "" + !removed);
-                                Parallelutils.log(Level.INFO, "" + boneMealStatus);
+                                ParallelUtils.log(Level.INFO, "" + !removed);
+                                ParallelUtils.log(Level.INFO, "" + boneMealStatus);
 
                                 if (!removed && boneMealStatus && !event.getPlayer().getGameMode().equals(GameMode.CREATIVE)) {
-                                    Parallelutils.log(Level.INFO, "Removing item");
+                                    ParallelUtils.log(Level.INFO, "Removing item");
 
                                     item.subtract();
 
@@ -206,7 +206,7 @@ public class PlayerInteractListener implements Listener {
                     }
 
                     if(item.getType() != Material.LEATHER_HORSE_ARMOR) {
-                        Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:6' are " +
+                        ParallelUtils.log(Level.WARNING, "Items with tag 'ParallelItems:6' are " +
                                 "pocket_teleporter, but this is not the correct material. Something isn't right.");
                         return;
                     }
@@ -255,7 +255,7 @@ public class PlayerInteractListener implements Listener {
             switch(val) {
                 case 2 -> { // presumably, a baguette
                     if(item.getType() != Material.BREAD) {
-                        Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:2' are " +
+                        ParallelUtils.log(Level.WARNING, "Items with tag 'ParallelItems:2' are " +
                                 "baguette, but this is not the correct material. Something isn't right.");
                         return;
                     }
@@ -379,7 +379,7 @@ public class PlayerInteractListener implements Listener {
         }
         if (val == 6) {
             if(item.getType() != Material.LEATHER_HORSE_ARMOR) {
-                Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:6' are " +
+                ParallelUtils.log(Level.WARNING, "Items with tag 'ParallelItems:6' are " +
                         "pocket_teleporter, but this is not the correct material. Something isn't right.");
                 return;
             }
@@ -393,7 +393,7 @@ public class PlayerInteractListener implements Listener {
             ParallelItems.posManager.cancelTeleport(player, "damage");
             if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
                 if (positionSaver == null || positionSaver.isCancelled()) {
-                    Parallelutils.log(Level.SEVERE, "Position saver is not running! Totem of the Void is dysfunctional!");
+                    ParallelUtils.log(Level.SEVERE, "Position saver is not running! Totem of the Void is dysfunctional!");
                     return;
                 }
                 // sanity check in case the below code takes a while to run for whatever reason
@@ -431,7 +431,7 @@ public class PlayerInteractListener implements Listener {
                         }
                     }
                     if (item.getType() != Material.GOLDEN_HORSE_ARMOR) {
-                        Parallelutils.log(Level.WARNING, "Items with tag 'ParallelItems:7' are " +
+                        ParallelUtils.log(Level.WARNING, "Items with tag 'ParallelItems:7' are " +
                                 "totem_of_the_void, but this is not the correct material. Something isn't right.");
                         return;
                     }

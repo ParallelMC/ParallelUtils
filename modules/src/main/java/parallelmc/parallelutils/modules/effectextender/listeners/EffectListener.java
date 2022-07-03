@@ -7,10 +7,10 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPotionEffectEvent;
 import org.bukkit.event.entity.EntityPotionEffectEvent.Cause;
 import org.bukkit.potion.PotionEffectType;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.effectextender.handlers.ActionAddedHandler;
 import parallelmc.parallelutils.modules.effectextender.handlers.ActionChangedHandler;
 import parallelmc.parallelutils.modules.effectextender.handlers.ActionRemovedHandler;
-import parallelmc.parallelutils.Parallelutils;
 
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -44,7 +44,7 @@ public class EffectListener implements Listener {
             case ADDED -> actionAdded.execute(event, player);
             case CLEARED, REMOVED -> actionRemoved.execute(event, player);
             case CHANGED -> actionChanged.execute(event, player);
-            default -> Parallelutils.log(Level.SEVERE, "Unhandled action. (How did you get here?) Tried handling action type " + event.getAction());
+            default -> ParallelUtils.log(Level.SEVERE, "Unhandled action. (How did you get here?) Tried handling action type " + event.getAction());
         }
     }
 }

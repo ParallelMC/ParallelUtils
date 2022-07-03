@@ -5,11 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltutorial.ParallelTutorial;
-
-import java.util.logging.Level;
 
 public class ParallelStartTutorial implements CommandExecutor {
     @Override

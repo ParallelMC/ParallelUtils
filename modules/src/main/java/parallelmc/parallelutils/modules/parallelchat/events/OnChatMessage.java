@@ -15,7 +15,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.io.IOException;
@@ -62,7 +62,7 @@ public class OnChatMessage implements Listener {
             ParallelChat.get().chatLogWriter.write("[" + timeFormatter.format(now) + "]: " + player.getName() + "> " + msgStr + "\n");
         }
         catch (IOException e) {
-            Parallelutils.log(Level.SEVERE, "Failed to log chat message!");
+            ParallelUtils.log(Level.SEVERE, "Failed to log chat message!");
         }
 
         // @ Mention check

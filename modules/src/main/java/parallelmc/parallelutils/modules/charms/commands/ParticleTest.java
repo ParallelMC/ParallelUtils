@@ -1,22 +1,17 @@
 package parallelmc.parallelutils.modules.charms.commands;
 
-import dev.esophose.playerparticles.PlayerParticles;
 import dev.esophose.playerparticles.api.PlayerParticlesAPI;
 import dev.esophose.playerparticles.particles.ParticleEffect;
 import dev.esophose.playerparticles.styles.DefaultStyles;
-import dev.esophose.playerparticles.styles.ParticleStyleCube;
-import dev.esophose.playerparticles.styles.ParticleStyleNormal;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.commands.ParallelCommand;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 
 import java.util.List;
-import java.util.logging.Level;
 
 public class ParticleTest extends ParallelCommand {
 	private PlayerParticlesAPI ppAPI;

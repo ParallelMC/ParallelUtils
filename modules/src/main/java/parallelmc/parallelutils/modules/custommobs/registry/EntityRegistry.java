@@ -8,7 +8,7 @@ import org.bukkit.craftbukkit.v1_19_R1.entity.CraftEntity;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.custommobs.nmsmobs.EntityData;
 import parallelmc.parallelutils.modules.custommobs.nmsmobs.SpawnReason;
 import parallelmc.parallelutils.modules.custommobs.spawners.SpawnerData;
@@ -29,7 +29,7 @@ public class EntityRegistry {
 
 	private static EntityRegistry registry;
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 
 	private EntityRegistry() {
 		entities = new HashMap<>();
@@ -38,12 +38,12 @@ public class EntityRegistry {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to get ParallelUtils. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
+			ParallelUtils.log(Level.SEVERE, "Unable to get ParallelUtils. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
 			puPlugin = null;
 			return;
 		}
 
-		puPlugin = (Parallelutils) plugin;
+		puPlugin = (ParallelUtils) plugin;
 	}
 
 	/**
@@ -65,7 +65,7 @@ public class EntityRegistry {
 	 * @param entity The Bukkit entity object of the entity being registered
 	 */
 	public void registerEntity(String uuid, String type, Entity entity) {
-		Parallelutils.log(Level.INFO, "Registering entity " + uuid);
+		ParallelUtils.log(Level.INFO, "Registering entity " + uuid);
 		entities.put(uuid, new EntityData(type, entity));
 		updateEntityDatabase(uuid);
 	}
@@ -79,7 +79,7 @@ public class EntityRegistry {
 	 * @param reason The reason this entity was spawned
 	 */
 	public void registerEntity(String uuid, String type, Entity entity, SpawnReason reason) {
-		Parallelutils.log(Level.INFO, "Registering entity " + uuid);
+		ParallelUtils.log(Level.INFO, "Registering entity " + uuid);
 		entities.put(uuid, new EntityData(type, entity, reason));
 		updateEntityDatabase(uuid);
 	}
@@ -94,7 +94,7 @@ public class EntityRegistry {
 	 * @param origin The original location this entity was spawned at
 	 */
 	public void registerEntity(String uuid, String type, Entity entity, SpawnReason reason, Location origin) {
-		Parallelutils.log(Level.INFO, "Registering entity " + uuid);
+		ParallelUtils.log(Level.INFO, "Registering entity " + uuid);
 		entities.put(uuid, new EntityData(type, entity, reason, origin));
 		updateEntityDatabase(uuid);
 	}
@@ -130,7 +130,7 @@ public class EntityRegistry {
 	 * @return Returns the EntityData object associated with the given UUID. Returns null if no entity with the given UUID was registered
 	 */
 	public EntityData removeEntity(String uuid) {
-		Parallelutils.log(Level.INFO, "Removing entity " + uuid);
+		ParallelUtils.log(Level.INFO, "Removing entity " + uuid);
 		deleteEntityDatabase(uuid);
 		return entities.remove(uuid);
 	}
@@ -187,7 +187,7 @@ public class EntityRegistry {
 					Entity entity = ed.entity;
 
 					if (entity == null) {
-						Parallelutils.log(Level.WARNING, "Entity is null. Will not update!");
+						ParallelUtils.log(Level.WARNING, "Entity is null. Will not update!");
 						statement.close();
 						conn.close();
 						return;
@@ -200,7 +200,7 @@ public class EntityRegistry {
 					String type = ed.type;
 
 					if (type == null) {
-						Parallelutils.log(Level.WARNING, "Unknown entity type for entity " + uuid);
+						ParallelUtils.log(Level.WARNING, "Unknown entity type for entity " + uuid);
 						return;
 					}
 
@@ -224,7 +224,7 @@ public class EntityRegistry {
 							String spawnerId = data.getUuid();
 							statement.setString(7, spawnerId);
 						} else {
-							Parallelutils.log(Level.INFO, "Spawner does not exist. Ignoring");
+							ParallelUtils.log(Level.INFO, "Spawner does not exist. Ignoring");
 							statement.setString(6, SpawnReason.UNKNOWN.name());
 						}
 					} else {
@@ -237,7 +237,7 @@ public class EntityRegistry {
 
 					statement.close();
 				} catch (SQLException e) {
-					Parallelutils.log(Level.WARNING, "Unable to update entity in database!");
+					ParallelUtils.log(Level.WARNING, "Unable to update entity in database!");
 					e.printStackTrace();
 				}
 			}
@@ -263,7 +263,7 @@ public class EntityRegistry {
 
 					statement.close();
 				} catch (SQLException e) {
-					Parallelutils.log(Level.WARNING, "Unable to delete entity from database!");
+					ParallelUtils.log(Level.WARNING, "Unable to delete entity from database!");
 					e.printStackTrace();
 				}
 			}

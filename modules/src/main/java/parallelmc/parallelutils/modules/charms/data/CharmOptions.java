@@ -9,8 +9,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.modules.charms.data.impl.GenericEffectSettings;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
 import parallelmc.parallelutils.modules.charms.helper.EncapsulatedType;
 import parallelmc.parallelutils.modules.charms.helper.Types;
@@ -20,7 +19,6 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.UUID;
 import java.util.logging.Level;
 
 /**
@@ -88,7 +86,7 @@ public class CharmOptions {
 		Plugin plugin = BukkitTools.getPlugin();
 
 		if (plugin == null) {
-			Parallelutils.log(Level.WARNING, "Plugin is null! Cannot apply charm");
+			ParallelUtils.log(Level.WARNING, "Plugin is null! Cannot apply charm");
 			return null;
 		}
 
@@ -208,7 +206,7 @@ public class CharmOptions {
 					case LONG -> setting.set(valKey, PersistentDataType.LONG, (Long) encapsulatedType.getVal());
 					case STRING -> setting.set(valKey, PersistentDataType.STRING, (String) encapsulatedType.getVal());
 					default -> {
-						Parallelutils.log(Level.WARNING, "Invalid data type! Defaulting to string");
+						ParallelUtils.log(Level.WARNING, "Invalid data type! Defaulting to string");
 						setting.set(valKey, PersistentDataType.STRING, (String) encapsulatedType.getVal());
 					}
 				}
@@ -417,7 +415,7 @@ public class CharmOptions {
 					case LONG -> eType = new EncapsulatedType(type, s.get(valKey, PersistentDataType.LONG));
 					case STRING -> eType = new EncapsulatedType(type, s.get(valKey, PersistentDataType.STRING));
 					default -> {
-						Parallelutils.log(Level.WARNING, "Invalid data type!");
+						ParallelUtils.log(Level.WARNING, "Invalid data type!");
 						continue;
 					}
 				}

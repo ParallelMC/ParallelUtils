@@ -21,7 +21,7 @@ import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.commands.*;
 import parallelmc.parallelutils.modules.parallelchat.events.*;
 import parallelmc.parallelutils.modules.parallelchat.events.OnChatMessage;
@@ -38,8 +38,6 @@ import java.nio.file.StandardOpenOption;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ParallelChat implements ParallelModule {
 
@@ -82,7 +80,7 @@ public class ParallelChat implements ParallelModule {
 
     private final Random rand = new Random();
 
-    private Parallelutils puPlugin;
+    private ParallelUtils puPlugin;
 
     private static ParallelChat Instance;
 
@@ -97,15 +95,15 @@ public class ParallelChat implements ParallelModule {
         Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
         if (plugin == null) {
-            Parallelutils.log(Level.SEVERE, "Unable to enable ParallelChat. Plugin " + Constants.PLUGIN_NAME
+            ParallelUtils.log(Level.SEVERE, "Unable to enable ParallelChat. Plugin " + Constants.PLUGIN_NAME
                     + " does not exist!");
             return;
         }
 
-        this.puPlugin = (Parallelutils) plugin;
+        this.puPlugin = (ParallelUtils) plugin;
 
         if (!puPlugin.registerModule(this)) {
-            Parallelutils.log(Level.SEVERE, "Unable to register module ParallelChat! " +
+            ParallelUtils.log(Level.SEVERE, "Unable to register module ParallelChat! " +
                     "Module may already be registered. Quitting...");
             return;
         }
@@ -151,17 +149,17 @@ public class ParallelChat implements ParallelModule {
             bannedWordsConfig.load(new File(puPlugin.getDataFolder(), "bannedwords.yml"));
         }
         catch (Exception e) {
-            Parallelutils.log(Level.SEVERE, "Failed to load banned words! Does the file not exist?");
+            ParallelUtils.log(Level.SEVERE, "Failed to load banned words! Does the file not exist?");
         }
 
         this.bannedWords = bannedWordsConfig.getStringList("Banned-Words");
         this.allowedWords = bannedWordsConfig.getStringList("Whitelisted-Words");
-        Parallelutils.log(Level.INFO, "ParallelChat: Loaded " + bannedWords.size() + " banned words.");
+        ParallelUtils.log(Level.INFO, "ParallelChat: Loaded " + bannedWords.size() + " banned words.");
 
         ConfigurationSection groups = puPlugin.getConfig().getConfigurationSection("group-formats");
         if (groups == null) {
             // allow default fallback if configuration is incorrect/missing
-            Parallelutils.log(Level.WARNING, "ParallelChat: No group formats found! Using default value.");
+            ParallelUtils.log(Level.WARNING, "ParallelChat: No group formats found! Using default value.");
             isUsingDefault = true;
         }
         else {
@@ -169,7 +167,7 @@ public class ParallelChat implements ParallelModule {
             {
                 String format = f.toString();
                 groupFormats.put(g, format);
-                Parallelutils.log(Level.INFO, "ParallelChat: Loaded chat formatting for group " + g);
+                ParallelUtils.log(Level.INFO, "ParallelChat: Loaded chat formatting for group " + g);
             });
         }
 
@@ -178,7 +176,7 @@ public class ParallelChat implements ParallelModule {
         this.capsMinMsgLength = puPlugin.getConfig().getInt("anti-caps.min-message-length", -1);
         this.capsPercentage = puPlugin.getConfig().getInt("anti-caps.match-percent", -1);
         if (capsEnabled) {
-            Parallelutils.log(Level.INFO, "ParallelChat: Enabling Anti-Caps. (Msg Length: " + capsMinMsgLength + ", Match %: " + capsPercentage + ")");
+            ParallelUtils.log(Level.INFO, "ParallelChat: Enabling Anti-Caps. (Msg Length: " + capsMinMsgLength + ", Match %: " + capsPercentage + ")");
         }
 
         // combine broadcast options into one string
@@ -206,7 +204,7 @@ public class ParallelChat implements ParallelModule {
             this.cmdLogWriter = Files.newBufferedWriter(Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/command_log.txt"), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
         }
         catch (IOException e) {
-            Parallelutils.log(Level.SEVERE, "Failed to open writer to loggers!");
+            ParallelUtils.log(Level.SEVERE, "Failed to open writer to loggers!");
         }
         manager.registerEvents(new OnChatMessage(), puPlugin);
         manager.registerEvents(new OnJoinLeave(puPlugin), puPlugin);
@@ -248,7 +246,7 @@ public class ParallelChat implements ParallelModule {
             }
         }
         catch (IOException e) {
-            Parallelutils.log(Level.SEVERE, "Failed to close chat log writer!");
+            ParallelUtils.log(Level.SEVERE, "Failed to close chat log writer!");
         }
 
         // save socialspy and cmdspy data across shutdowns
@@ -316,7 +314,7 @@ public class ParallelChat implements ParallelModule {
                 p.sendMessage(text);
             }
         }
-        Parallelutils.log(Level.INFO, LegacyComponentSerializer.legacyAmpersand().serialize(text));
+        ParallelUtils.log(Level.INFO, LegacyComponentSerializer.legacyAmpersand().serialize(text));
     }
 
     /**
@@ -333,7 +331,7 @@ public class ParallelChat implements ParallelModule {
                 p.sendMessage(text);
             }
         }
-        Parallelutils.log(Level.INFO, LegacyComponentSerializer.legacyAmpersand().serialize(text));
+        ParallelUtils.log(Level.INFO, LegacyComponentSerializer.legacyAmpersand().serialize(text));
     }
 
     /**
@@ -350,7 +348,7 @@ public class ParallelChat implements ParallelModule {
                 p.sendMessage(text);
             }
         }
-        Parallelutils.log(Level.INFO, LegacyComponentSerializer.legacyAmpersand().serialize(text));
+        ParallelUtils.log(Level.INFO, LegacyComponentSerializer.legacyAmpersand().serialize(text));
     }
 
     /**
@@ -396,7 +394,7 @@ public class ParallelChat implements ParallelModule {
             String group = this.getGroupForPlayer(source);
             String format = ParallelChat.get().groupFormats.get(group);
             if (format == null) {
-                Parallelutils.log(Level.SEVERE, "Error while formatting group! Unknown group name " + group);
+                ParallelUtils.log(Level.SEVERE, "Error while formatting group! Unknown group name " + group);
                 return Component.empty();
             }
             else {

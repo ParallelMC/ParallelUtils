@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 
 import java.util.List;
@@ -18,9 +18,9 @@ public class ParallelWaitCommand extends ParallelCommand{
 
 	private static final String USAGE = "Usage: /pu wait <time> <command>";
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 
-	public ParallelWaitCommand(Parallelutils puPlugin) {
+	public ParallelWaitCommand(ParallelUtils puPlugin) {
 		super("wait", new ParallelPermission("parallelutils.admin")); // Only admins should be allowed to use this!
 
 		this.puPlugin = puPlugin;

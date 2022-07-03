@@ -6,7 +6,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.charms.data.Charm;
 
@@ -16,10 +16,10 @@ import java.util.logging.Level;
 
 public class PlayerLeaveListener implements Listener {
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 	private final ParallelCharms pCharms;
 
-	public PlayerLeaveListener(Parallelutils puPlugin, ParallelCharms pCharms) {
+	public PlayerLeaveListener(ParallelUtils puPlugin, ParallelCharms pCharms) {
 		this.puPlugin = puPlugin;
 		this.pCharms = pCharms;
 	}
@@ -40,7 +40,7 @@ public class PlayerLeaveListener implements Listener {
 
 			for (BukkitRunnable r : runnables) {
 				r.cancel();
-				Parallelutils.log(Level.INFO, "Cancelled runnable");
+				ParallelUtils.log(Level.INFO, "Cancelled runnable");
 			}
 		}
 	}

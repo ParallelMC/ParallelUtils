@@ -6,7 +6,7 @@ import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.effectextender.commands.ParallelEffectsCommand;
 import parallelmc.parallelutils.modules.effectextender.listeners.EffectListener;
 import parallelmc.parallelutils.modules.effectextender.listeners.JoinLeaveListener;
@@ -19,7 +19,7 @@ import java.util.logging.Level;
  */
 public class EffectExtender implements ParallelModule {
 
-    private Parallelutils puPlugin;
+    private ParallelUtils puPlugin;
 
     @Override
     public void onLoad() {
@@ -32,14 +32,14 @@ public class EffectExtender implements ParallelModule {
         Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
         if (plugin == null) {
-            Parallelutils.log(Level.SEVERE, "Unable to enable EffectExtender. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
+            ParallelUtils.log(Level.SEVERE, "Unable to enable EffectExtender. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
             return;
         }
 
-        puPlugin = (Parallelutils) plugin;
+        puPlugin = (ParallelUtils) plugin;
 
         if (!puPlugin.registerModule(this)) {
-            Parallelutils.log(Level.SEVERE, "Unable to register module EffectExtender! Module may already be registered. Quitting...");
+            ParallelUtils.log(Level.SEVERE, "Unable to register module EffectExtender! Module may already be registered. Quitting...");
             return;
         }
 
@@ -67,7 +67,7 @@ public class EffectExtender implements ParallelModule {
 
         puPlugin.addCommand("effects", new ParallelEffectsCommand());
 
-        Parallelutils.log(Parallelutils.LOG_LEVEL, "EntityPotionEffectEvent registered successfully.");
+        ParallelUtils.log(ParallelUtils.LOG_LEVEL, "EntityPotionEffectEvent registered successfully.");
     }
 
     @Override

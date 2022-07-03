@@ -8,19 +8,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.charms.data.Charm;
 
 import java.util.List;
-import java.util.logging.Level;
 
 public class AnvilApplyCharmListener implements Listener {
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 	private final ParallelCharms pCharms;
 
-	public AnvilApplyCharmListener(Parallelutils puPlugin, ParallelCharms pCharms) {
+	public AnvilApplyCharmListener(ParallelUtils puPlugin, ParallelCharms pCharms) {
 		this.puPlugin = puPlugin;
 		this.pCharms = pCharms;
 	}

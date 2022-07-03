@@ -7,7 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.io.IOException;
@@ -47,7 +47,7 @@ public class OnCommand implements Listener {
             ParallelChat.get().cmdLogWriter.write("[" + timeFormatter.format(now) + "]: " + player.getName() + "> " + event.getMessage());
         }
         catch (IOException e) {
-            Parallelutils.log(Level.SEVERE, "Failed to log command!");
+            ParallelUtils.log(Level.SEVERE, "Failed to log command!");
         }
     }
 }

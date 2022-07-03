@@ -12,7 +12,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.custommobs.nmsmobs.EntityFireWisp;
 import parallelmc.parallelutils.modules.custommobs.nmsmobs.EntityWisp;
 import parallelmc.parallelutils.modules.custommobs.nmsmobs.SpawnReason;
@@ -51,7 +51,7 @@ public class SpawnTask extends BukkitRunnable {
 		plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to create SpawnTask. Plugin " + Constants.PLUGIN_NAME + "does not exist!");
+			ParallelUtils.log(Level.SEVERE, "Unable to create SpawnTask. Plugin " + Constants.PLUGIN_NAME + "does not exist!");
 		}
 
 		this.type = type;

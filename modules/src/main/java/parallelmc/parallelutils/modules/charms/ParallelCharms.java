@@ -3,12 +3,10 @@ package parallelmc.parallelutils.modules.charms;
 import dev.esophose.playerparticles.api.PlayerParticlesAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.Plugin;
@@ -16,7 +14,7 @@ import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.commands.*;
 import parallelmc.parallelutils.modules.charms.data.*;
 import parallelmc.parallelutils.modules.charms.handlers.impl.*;
@@ -30,7 +28,6 @@ import parallelmc.parallelutils.modules.charms.util.EnchantGlow;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -62,15 +59,15 @@ public class ParallelCharms implements ParallelModule {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to enable ParallelCharms. Plugin " + Constants.PLUGIN_NAME
+			ParallelUtils.log(Level.SEVERE, "Unable to enable ParallelCharms. Plugin " + Constants.PLUGIN_NAME
 					+ " does not exist!");
 			return;
 		}
 
-		Parallelutils puPlugin = (Parallelutils) plugin;
+		ParallelUtils puPlugin = (ParallelUtils) plugin;
 
 		if (!puPlugin.registerModule(this)) {
-			Parallelutils.log(Level.SEVERE, "Unable to register module ParallelCharms! " +
+			ParallelUtils.log(Level.SEVERE, "Unable to register module ParallelCharms! " +
 					"Module may already be registered. Quitting...");
 			return;
 		}
@@ -86,43 +83,43 @@ public class ParallelCharms implements ParallelModule {
 
 		// Register handlers
 		if (!registerHandler(new CharmKillMessageHandler())) {
-			Parallelutils.log(Level.WARNING, "Could not register MESSAGE_KILL");
+			ParallelUtils.log(Level.WARNING, "Could not register MESSAGE_KILL");
 		}
 		if (!registerHandler(new CharmStyleNameHandler())) {
-			Parallelutils.log(Level.WARNING, "Could not register STYLE_NAME");
+			ParallelUtils.log(Level.WARNING, "Could not register STYLE_NAME");
 		}
 		if (!registerHandler(new CharmParticleHandler())) {
-			Parallelutils.log(Level.WARNING, "Could not register PARTICLE");
+			ParallelUtils.log(Level.WARNING, "Could not register PARTICLE");
 		}
 		if (!registerHandler(new CharmLoreHandler())) {
-			Parallelutils.log(Level.WARNING, "Could not register LORE");
+			ParallelUtils.log(Level.WARNING, "Could not register LORE");
 		}
 		if (!registerHandler(new CharmTestRunnableHandler())) {
-			Parallelutils.log(Level.WARNING, "Could not register TEST_RUNNABLE");
+			ParallelUtils.log(Level.WARNING, "Could not register TEST_RUNNABLE");
 		}
 		if (!registerHandler(new CharmTestEventHandler())) {
-			Parallelutils.log(Level.WARNING, "Could not register TEST_EVENT");
+			ParallelUtils.log(Level.WARNING, "Could not register TEST_EVENT");
 		}
 		if (!registerHandler(new CharmTestApplyHandler())) {
-			Parallelutils.log(Level.WARNING, "Could not register TEST_APPLY");
+			ParallelUtils.log(Level.WARNING, "Could not register TEST_APPLY");
 		}
 		if (ppAPI == null || !registerHandler(new CharmPlayerParticleHandler(puPlugin, this, ppAPI))) {
-			Parallelutils.log(Level.WARNING, "Could not register PLAYER_PARTICLE");
+			ParallelUtils.log(Level.WARNING, "Could not register PLAYER_PARTICLE");
 		}
 		if (!registerHandler(new CharmCommandKillHandler())) {
-			Parallelutils.log(Level.WARNING, "Could not register COMMAND_KILL");
+			ParallelUtils.log(Level.WARNING, "Could not register COMMAND_KILL");
 		}
 		if (!registerHandler(new CharmCommandHitHandler())) {
-			Parallelutils.log(Level.WARNING, "Could not register COMMAND_HIT");
+			ParallelUtils.log(Level.WARNING, "Could not register COMMAND_HIT");
 		}
 		if (!registerHandler(new CharmCommandRunnableHandler(this))) {
-			Parallelutils.log(Level.WARNING, "Could not register COMMAND_RUNNABLE");
+			ParallelUtils.log(Level.WARNING, "Could not register COMMAND_RUNNABLE");
 		}
 		if (!registerHandler(new CharmCommandApplyHandler())) {
-			Parallelutils.log(Level.WARNING, "Could not register COMMAND_APPLY");
+			ParallelUtils.log(Level.WARNING, "Could not register COMMAND_APPLY");
 		}
 		if (!registerHandler(new CharmShineHandler())) {
-			Parallelutils.log(Level.WARNING, "Could not register SHINE");
+			ParallelUtils.log(Level.WARNING, "Could not register SHINE");
 		}
 
 		// Register events
@@ -160,22 +157,22 @@ public class ParallelCharms implements ParallelModule {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to reset ParallelCharms. Plugin " + Constants.PLUGIN_NAME
+			ParallelUtils.log(Level.SEVERE, "Unable to reset ParallelCharms. Plugin " + Constants.PLUGIN_NAME
 					+ " does not exist!");
 			return;
 		}
 
-		Parallelutils puPlugin = (Parallelutils) plugin;
+		ParallelUtils puPlugin = (ParallelUtils) plugin;
 
 		charmOptions.clear();
 		setupCharms(puPlugin);
 	}
 
-	private void setupCharms(Parallelutils puPlugin) {
+	private void setupCharms(ParallelUtils puPlugin) {
 		try {
 			Path charmsFolder = Path.of(puPlugin.getDataFolder() + "/charms");
 			if (!Files.exists(charmsFolder)) {
-				Parallelutils.log(Level.WARNING, "Charms folder does not exist. Creating...");
+				ParallelUtils.log(Level.WARNING, "Charms folder does not exist. Creating...");
 				Files.createDirectory(charmsFolder);
 			}
 
@@ -193,8 +190,8 @@ public class ParallelCharms implements ParallelModule {
 								// This is a single charm option
 								String name = section.getString("name");
 								if (name == null || name.equals("")) {
-									Parallelutils.log(Level.WARNING, "Invalid Charm Option for option: " + s);
-									Parallelutils.log(Level.WARNING, "Must have name");
+									ParallelUtils.log(Level.WARNING, "Invalid Charm Option for option: " + s);
+									ParallelUtils.log(Level.WARNING, "Must have name");
 									continue;
 								}
 
@@ -259,24 +256,24 @@ public class ParallelCharms implements ParallelModule {
 								this.charmOptions.put(name, charmOptions);
 
 							} catch (IllegalArgumentException e) {
-								Parallelutils.log(Level.WARNING, "Cannot parse charm settings!");
+								ParallelUtils.log(Level.WARNING, "Cannot parse charm settings!");
 								e.printStackTrace();
 							}
 						}
 					}
 
 				} catch (IOException e) {
-					Parallelutils.log(Level.WARNING, "Unable to load charm options!");
+					ParallelUtils.log(Level.WARNING, "Unable to load charm options!");
 					e.printStackTrace();
 				} catch (InvalidConfigurationException e) {
-					Parallelutils.log(Level.WARNING, "Invalid charm options configuration!");
+					ParallelUtils.log(Level.WARNING, "Invalid charm options configuration!");
 					e.printStackTrace();
 				}
 			});
 
 
 		} catch (IOException e) {
-			Parallelutils.log(Level.WARNING, "Unable to load charm options!");
+			ParallelUtils.log(Level.WARNING, "Unable to load charm options!");
 			e.printStackTrace();
 		}
 	}
@@ -307,7 +304,7 @@ public class ParallelCharms implements ParallelModule {
 	public <T extends Event> ICharmHandler<T> getHandler(HandlerType type, @NotNull Class<T> event) {
 		ICharmHandler<? extends Event> handler = handlers.get(type);
 		if (handler == null) {
-			Parallelutils.log(Level.WARNING, "Handler of type " + type.name() + " does not exist!!!");
+			ParallelUtils.log(Level.WARNING, "Handler of type " + type.name() + " does not exist!!!");
 			return null;
 		}
 		try {
@@ -315,7 +312,7 @@ public class ParallelCharms implements ParallelModule {
 				return (ICharmHandler<T>) handler;
 			}
 		} catch (Exception e) {
-			Parallelutils.log(Level.SEVERE, "UNABLE TO CAST HANDLER!!!");
+			ParallelUtils.log(Level.SEVERE, "UNABLE TO CAST HANDLER!!!");
 			e.printStackTrace();
 		}
 		return null;

@@ -9,7 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import java.util.Map;
 import java.util.Random;
@@ -51,7 +51,7 @@ public class TreasureChecker implements Listener {
 
 					Integer enchantVal = enchantments.get(Enchantment.LOOT_BONUS_BLOCKS);
 
-					Parallelutils.log(Level.INFO, "" + enchantVal);
+					ParallelUtils.log(Level.INFO, "" + enchantVal);
 
 					if (enchantVal == null) enchantVal = 0;
 

@@ -6,19 +6,16 @@ import dev.esophose.playerparticles.particles.ParticlePair;
 import dev.esophose.playerparticles.particles.data.ColorTransition;
 import dev.esophose.playerparticles.particles.data.OrdinaryColor;
 import dev.esophose.playerparticles.particles.data.Vibration;
-import dev.esophose.playerparticles.styles.DefaultStyles;
 import dev.esophose.playerparticles.styles.ParticleStyle;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftInventoryPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.charms.data.Charm;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
@@ -26,21 +23,19 @@ import parallelmc.parallelutils.modules.charms.data.IEffectSettings;
 import parallelmc.parallelutils.modules.charms.data.impl.PlayerParticleEffectSettings;
 import parallelmc.parallelutils.modules.charms.events.PlayerSlotChangedEvent;
 import parallelmc.parallelutils.modules.charms.handlers.HandlerType;
-import parallelmc.parallelutils.modules.charms.handlers.ICharmApplyHandler;
 import parallelmc.parallelutils.modules.charms.handlers.ICharmHandler;
 import parallelmc.parallelutils.modules.charms.util.Util;
 
-import javax.naming.Name;
 import java.util.HashMap;
 import java.util.logging.Level;
 
 public class CharmPlayerParticleHandler extends ICharmHandler<PlayerSlotChangedEvent> {
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 	private final ParallelCharms pCharms;
 	private final PlayerParticlesAPI ppAPI;
 
-	public CharmPlayerParticleHandler(Parallelutils puPlugin, ParallelCharms pCharms, PlayerParticlesAPI ppAPI) {
+	public CharmPlayerParticleHandler(ParallelUtils puPlugin, ParallelCharms pCharms, PlayerParticlesAPI ppAPI) {
 		super(PlayerSlotChangedEvent.class);
 		this.puPlugin = puPlugin;
 		this.pCharms = pCharms;
@@ -109,7 +104,7 @@ public class CharmPlayerParticleHandler extends ICharmHandler<PlayerSlotChangedE
 									ParticleStyle style = ppSettings.getStyle();
 
 									if (effect == null || style == null) {
-										Parallelutils.log(Level.WARNING, "Unknown effect or style!");
+										ParallelUtils.log(Level.WARNING, "Unknown effect or style!");
 										return;
 									}
 
@@ -141,7 +136,7 @@ public class CharmPlayerParticleHandler extends ICharmHandler<PlayerSlotChangedE
 									}
 
 									if (pair == null) {
-										Parallelutils.log(Level.WARNING, "Could not add active player particle for player " + player.getName());
+										ParallelUtils.log(Level.WARNING, "Could not add active player particle for player " + player.getName());
 										return;
 									}
 
@@ -186,7 +181,7 @@ public class CharmPlayerParticleHandler extends ICharmHandler<PlayerSlotChangedE
 							Integer id = pdc.get(key, PersistentDataType.INTEGER);
 
 							if (id == null) {
-								Parallelutils.log(Level.WARNING, "Player " + player.getName() + " tried to remove a charm that doesn't exist!");
+								ParallelUtils.log(Level.WARNING, "Player " + player.getName() + " tried to remove a charm that doesn't exist!");
 								return;
 							}
 

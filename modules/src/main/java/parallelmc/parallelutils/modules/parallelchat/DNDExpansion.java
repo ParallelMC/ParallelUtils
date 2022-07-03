@@ -4,12 +4,12 @@ import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 public class DNDExpansion extends PlaceholderExpansion {
-    private final Parallelutils plugin;
+    private final ParallelUtils plugin;
 
-    public DNDExpansion(Parallelutils plugin) {
+    public DNDExpansion(ParallelUtils plugin) {
         this.plugin = plugin;
     }
 

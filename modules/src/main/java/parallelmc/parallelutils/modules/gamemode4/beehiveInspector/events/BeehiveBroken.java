@@ -10,7 +10,7 @@ import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -30,7 +30,7 @@ public class BeehiveBroken implements Listener {
             if (block.getDrops().isEmpty())
                 return;
 
-            Parallelutils.log(Level.INFO, "Dropping");
+            ParallelUtils.log(Level.INFO, "Dropping");
 
             // don't drop the original block
             event.setDropItems(false);
@@ -49,8 +49,8 @@ public class BeehiveBroken implements Listener {
                 honey = beeHiveData.getHoneyLevel();
             }
 
-            Parallelutils.log(Level.INFO, "" + bees);
-            Parallelutils.log(Level.INFO, "" + honey);
+            ParallelUtils.log(Level.INFO, "" + bees);
+            ParallelUtils.log(Level.INFO, "" + honey);
 
             // more beautiful code
             // since a beehive usually only drops itself or nothing, we can hardcode this index

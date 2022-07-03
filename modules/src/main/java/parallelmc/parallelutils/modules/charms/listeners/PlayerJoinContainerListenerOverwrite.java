@@ -12,12 +12,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.jetbrains.annotations.NotNull;
-import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.charms.data.NonNullListRemember;
 import parallelmc.parallelutils.modules.charms.events.PlayerSlotChangedEvent;
 
 import java.lang.reflect.Field;
-import java.util.logging.Level;
 
 public class PlayerJoinContainerListenerOverwrite implements Listener {
 

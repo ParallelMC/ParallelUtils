@@ -7,7 +7,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.custommobs.nmsmobs.EntityData;
 import parallelmc.parallelutils.modules.custommobs.registry.EntityRegistry;
 import parallelmc.parallelutils.modules.custommobs.registry.ParticleRegistry;
@@ -27,7 +27,7 @@ public class ParticleTask extends BukkitRunnable {
 		plugin = (JavaPlugin) manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to create SpawnTask. Plugin " + Constants.PLUGIN_NAME + "does not exist!");
+			ParallelUtils.log(Level.SEVERE, "Unable to create SpawnTask. Plugin " + Constants.PLUGIN_NAME + "does not exist!");
 			throw new IllegalPluginAccessException("Unable to create SpawnTask. Plugin " + Constants.PLUGIN_NAME + "does not exist!");
 		}
 	}

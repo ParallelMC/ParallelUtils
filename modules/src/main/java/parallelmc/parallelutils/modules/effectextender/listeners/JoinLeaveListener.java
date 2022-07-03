@@ -7,17 +7,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffectType;
-import parallelmc.parallelutils.ParallelModule;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 
 import java.sql.*;
 import java.util.HashMap;
 
 public class JoinLeaveListener implements Listener {
 
-    private final Parallelutils puPlugin;
+    private final ParallelUtils puPlugin;
 
-    public JoinLeaveListener(Parallelutils puPlugin) {
+    public JoinLeaveListener(ParallelUtils puPlugin) {
         this.puPlugin = puPlugin;
     }
 

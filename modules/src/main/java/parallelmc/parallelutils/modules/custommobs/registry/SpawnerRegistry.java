@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.custommobs.spawners.SpawnerData;
 import parallelmc.parallelutils.modules.custommobs.spawners.SpawnerOptions;
 
@@ -34,7 +34,7 @@ public class SpawnerRegistry {
 
 	private static SpawnerRegistry registry;
 
-	private final Parallelutils puPlugin;
+	private final ParallelUtils puPlugin;
 
 	private SpawnerRegistry() {
 		spawnerTypes = new HashMap<>();
@@ -48,12 +48,12 @@ public class SpawnerRegistry {
 		Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
 
 		if (plugin == null) {
-			Parallelutils.log(Level.SEVERE, "Unable to get ParallelUtils. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
+			ParallelUtils.log(Level.SEVERE, "Unable to get ParallelUtils. Plugin " + Constants.PLUGIN_NAME + " does not exist!");
 			puPlugin = null;
 			return;
 		}
 
-		puPlugin = (Parallelutils) plugin;
+		puPlugin = (ParallelUtils) plugin;
 	}
 
 	/**
@@ -90,7 +90,7 @@ public class SpawnerRegistry {
 	public void registerSpawner(String uuid, String type, Location location, boolean hasLeash) {
 		location.setPitch(0);
 		location.setYaw(0);
-		Parallelutils.log(Level.INFO, "Registering spawner " + uuid + " location: " + location.toString());
+		ParallelUtils.log(Level.INFO, "Registering spawner " + uuid + " location: " + location.toString());
 		spawners.put(location, new SpawnerData(uuid, type, location.toBlockLocation(), hasLeash));
 		updateSpawnerDatabase(location);
 	}
@@ -121,7 +121,7 @@ public class SpawnerRegistry {
 	 * @return Returns true if the spawner was removed or false if the spawner does not exist
 	 */
 	public boolean deleteSpawner(Location location) {
-		Parallelutils.log(Level.INFO, "Removing spawner " + location.toString());
+		ParallelUtils.log(Level.INFO, "Removing spawner " + location.toString());
 		SpawnerData result = spawners.remove(location);
 
 		if (result != null) {
@@ -154,7 +154,7 @@ public class SpawnerRegistry {
 	 * @param options The options for this spawner type to use
 	 */
 	public void registerSpawnerType(String type, SpawnerOptions options) {
-		Parallelutils.log(Level.INFO, "Registering spawner type for " + type);
+		ParallelUtils.log(Level.INFO, "Registering spawner type for " + type);
 		spawnerTypes.put(type, options);
 	}
 
@@ -173,7 +173,7 @@ public class SpawnerRegistry {
 	 * @param count The initial mob count
 	 */
 	public void addCount(Location loc, int count) {
-		Parallelutils.log(Level.INFO, "Registering counter for " + loc.toString());
+		ParallelUtils.log(Level.INFO, "Registering counter for " + loc.toString());
 		mobCounts.put(loc, count);
 	}
 
@@ -200,7 +200,7 @@ public class SpawnerRegistry {
 	 * @param loc The location of the spawner to increment the mob count of
 	 */
 	public void incrementMobCount(Location loc) {
-		Parallelutils.log(Level.INFO, "Incrementing mob count for " + loc.toString());
+		ParallelUtils.log(Level.INFO, "Incrementing mob count for " + loc.toString());
 		if (!mobCounts.containsKey(loc)) {
 			addCount(loc, 1);
 		} else {
@@ -213,7 +213,7 @@ public class SpawnerRegistry {
 	 * @param loc The location of the spawner to decrement the mob count of
 	 */
 	public void decrementMobCount(Location loc) {
-		Parallelutils.log(Level.INFO, "Decrementing mob count for " + loc.toString());
+		ParallelUtils.log(Level.INFO, "Decrementing mob count for " + loc.toString());
 		if (!mobCounts.containsKey(loc)) {
 			return;
 		}
@@ -234,7 +234,7 @@ public class SpawnerRegistry {
 	 * @param id The id of the BukkitRunnable associated with spawning mobs for this spawner
 	 */
 	public void addSpawnTaskID(Location loc, int id) {
-		Parallelutils.log(Level.INFO, "Adding spawn task ID for " + loc.toString());
+		ParallelUtils.log(Level.INFO, "Adding spawn task ID for " + loc.toString());
 		spawnTaskID.put(loc, id);
 	}
 
@@ -287,7 +287,7 @@ public class SpawnerRegistry {
 	 * @param id The UUID of the entity to be leashed to the spawner
 	 */
 	public void addLeashedEntity(Location loc, String id) {
-		Parallelutils.log(Level.INFO, "Adding leashed entity for " + loc.toString());
+		ParallelUtils.log(Level.INFO, "Adding leashed entity for " + loc.toString());
 		if (!leashedEntityLists.containsKey(loc)) {
 			leashedEntityLists.put(loc, new ArrayList<>());
 		}
@@ -355,7 +355,7 @@ public class SpawnerRegistry {
 
 					statement.close();
 				} catch (SQLException e) {
-					Parallelutils.log(Level.WARNING, "Unable to update spawner in database!");
+					ParallelUtils.log(Level.WARNING, "Unable to update spawner in database!");
 					e.printStackTrace();
 				}
 			}
@@ -385,7 +385,7 @@ public class SpawnerRegistry {
 
 					statement.close();
 				} catch (SQLException e) {
-					Parallelutils.log(Level.WARNING, "Unable to delete spawner from database!");
+					ParallelUtils.log(Level.WARNING, "Unable to delete spawner from database!");
 					e.printStackTrace();
 				}
 			}
