@@ -65,6 +65,7 @@ names.each { mod ->
         archiveClassifier.set("shadow-${mod}")
         from sourceSets.main.output
 
+
         exList.forEach { x ->
             def path = "**/${x}/**"
             exclude path
