@@ -25,6 +25,10 @@ public abstract class ParallelModule
 	 */
 	public abstract void onUnload();
 
+	/**
+	 * Overload this method and set to true when {@link #onUnload() onUnload} properly removes references to all classes in the module
+	 * @return True if this module can be safely and properly unloaded. False otherwise
+	 */
 	public boolean canUnload() {
 		return false;
 	}

@@ -36,6 +36,8 @@ public final class ParallelUtils extends JavaPlugin {
 
 	private DataSource dataSource;
 
+	private final List<String> loadedList = new ArrayList<>();
+
 	private final HashMap<String, ParallelModule> availableModules = new HashMap<>();
 
 	private HashMap<String, ParallelModule> registeredModules;
@@ -226,9 +228,15 @@ public final class ParallelUtils extends JavaPlugin {
 		for (File file : files) {
 			String fixedName = file.getName().replaceFirst("[.][^.]+$", "");
 
+			if (loadedList.contains(fixedName)) {
+				continue;
+			}
+
 			loadModule(fixedName);
 		}
 	}
+
+	private final List<String> currentlyLoading = new ArrayList<>();
 
 	public boolean loadModule(String name) {
 		String formatted = name.toLowerCase() + ".jar";
@@ -251,7 +259,8 @@ public final class ParallelUtils extends JavaPlugin {
 			URL jar = file.toURI().toURL();
 			URLClassLoader classLoader = new URLClassLoader(new URL[]{jar}, this.getClass().getClassLoader());
 			List<String> matches = new ArrayList<>();
-			List<Class<? extends ParallelModule>> classes = new ArrayList<>();
+			List<Class<? extends ParallelModule>> modules = new ArrayList<>();
+			List<Class<? extends Config>> configs = new ArrayList<>();
 
 			try (JarInputStream jarInputStream = new JarInputStream(jar.openStream())) {
 				JarEntry entry;
@@ -266,7 +275,9 @@ public final class ParallelUtils extends JavaPlugin {
 				try {
 					Class<?> clazz = classLoader.loadClass(match);
 					if (ParallelModule.class.isAssignableFrom(clazz)) {
-						classes.add(clazz.asSubclass(ParallelModule.class));
+						modules.add(clazz.asSubclass(ParallelModule.class));
+					} else if (Config.class.isAssignableFrom(clazz)) {
+						configs.add(clazz.asSubclass(Config.class));
 					}
 				} catch (ClassNotFoundException e) {
 					ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
@@ -275,23 +286,78 @@ public final class ParallelUtils extends JavaPlugin {
 				}
 			}
 
-			if (classes.size() == 0) {
+			if (modules.size() == 0) {
 				ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
 				ParallelUtils.log(Level.SEVERE, "MODULE " + file.getName() + " DOES NOT CONTAIN A ParallelModule CLASS");
 				classLoader.close();
 				return false;
 			}
 
-			if (classes.size() > 1) {
+			if (modules.size() > 1) {
 				ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
 				ParallelUtils.log(Level.SEVERE, "MODULE " + file.getName() + " CONTAINS MULTIPLE ParallelModule CLASSES");
 				classLoader.close();
 				return false;
 			}
 
-			ParallelModule module = classes.get(0).getDeclaredConstructor(URLClassLoader.class).newInstance(classLoader);
+			// Check for config
+			if (configs.size() == 0) {
+				ParallelUtils.log(Level.WARNING, "No config file found in module " + name);
+			}
+
+			if (configs.size() > 1) {
+				ParallelUtils.log(Level.SEVERE, "Multiple config files found in module " + name + ". Skipping...");
+				return false;
+			}
+
+			currentlyLoading.add(name); // This is to prevent circular loading
+
+			// Load config first
+			if (configs.size() > 0) {
+				Config configObj = configs.get(0).getDeclaredConstructor().newInstance();
+
+				List<String> hardDepends = configObj.getHardDepends();
+				List<String> softDepends = configObj.getSoftDepends();
+
+				// Try loading hard depends
+				for (String hardDep : hardDepends) {
+					if (currentlyLoading.contains(hardDep)) {
+						ParallelUtils.log(Level.WARNING, "Circular dependency found in module " + name +
+								"Module depends on module that is already loading!");
+						continue;
+					}
+
+					boolean success = loadModule(hardDep);
+
+					if (!success) {
+						ParallelUtils.log(Level.WARNING, "Unable to load hard dependency for " + name);
+						return false;
+					}
+				}
+
+				// Try loading soft dependencies
+				for (String softDep : softDepends) {
+					if (currentlyLoading.contains(softDep)) {
+						ParallelUtils.log(Level.WARNING, "Circular dependency found in module " + name +
+								"Module depends on module that is already loading!");
+						continue;
+					}
+
+					boolean success = loadModule(softDep);
+
+					if (!success) {
+						ParallelUtils.log(Level.WARNING, "Unable to load soft dependency for " + name);
+					}
+				}
+
+			}
+
+			ParallelModule module = modules.get(0).getDeclaredConstructor(URLClassLoader.class).newInstance(classLoader);
 
 			availableModules.put(module.getName(), module);
+
+			currentlyLoading.remove(name);
+
 			ParallelUtils.log(Level.INFO, "Added module " + module.getName() + " to available modules");
 		} catch (IOException | InvocationTargetException | InstantiationException | IllegalAccessException |
 		         NoSuchMethodException e) {
