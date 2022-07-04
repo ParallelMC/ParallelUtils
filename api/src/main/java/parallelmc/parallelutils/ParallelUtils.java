@@ -238,6 +238,8 @@ public final class ParallelUtils extends JavaPlugin {
 
 	private final List<String> currentlyLoading = new ArrayList<>();
 
+	// A lot of this was inspired by the PlayerParticles Particle Pack loading system.
+	// Check it out here! https://github.com/Rosewood-Development/PlayerParticles/blob/master/src/main/java/dev/esophose/playerparticles/manager/ParticlePackManager.java#L135
 	public boolean loadModule(String name) {
 		String formatted = name.toLowerCase() + ".jar";
 
