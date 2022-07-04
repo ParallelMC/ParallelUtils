@@ -28,12 +28,13 @@ import parallelmc.parallelutils.modules.charms.util.EnchantGlow;
 
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Level;
 
-public class ParallelCharms implements ParallelModule {
+public class ParallelCharms extends ParallelModule {
 
 	private final HashMap<HandlerType, ICharmHandler<? extends Event>> handlers;
 
@@ -42,7 +43,8 @@ public class ParallelCharms implements ParallelModule {
 	// Key is player UUID, value is list of Charms associated with the player
 	private final HashMap<UUID, ArrayList<Charm>> appliedCharms;
 
-	public ParallelCharms() {
+	public ParallelCharms(URLClassLoader classLoader) {
+		super(classLoader);
 		handlers = new HashMap<>();
 		charmOptions = new HashMap<>();
 		appliedCharms = new HashMap<>();
@@ -145,6 +147,11 @@ public class ParallelCharms implements ParallelModule {
 
 	@Override
 	public void onDisable() {
+	}
+
+	@Override
+	public void onUnload() {
+
 	}
 
 	@Override

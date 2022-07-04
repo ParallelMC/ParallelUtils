@@ -10,14 +10,19 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.performanceTools.commands.FindLoadedChunksCommand;
 
+import java.net.URLClassLoader;
 import java.util.logging.Level;
 
 /**
  * This module adds tools to help diagnose performance issues
  */
-public class PerformanceTools implements ParallelModule {
+public class PerformanceTools extends ParallelModule {
 
 	private BukkitTask loaderDetector;
+
+	public PerformanceTools(URLClassLoader classLoader) {
+		super(classLoader);
+	}
 
 	@Override
 	public void onLoad() {
@@ -53,6 +58,11 @@ public class PerformanceTools implements ParallelModule {
 	@Override
 	public void onDisable() {
 		//loaderDetector.cancel();
+	}
+
+	@Override
+	public void onUnload() {
+
 	}
 
 	@Override

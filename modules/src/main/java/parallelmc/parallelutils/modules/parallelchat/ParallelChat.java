@@ -31,6 +31,7 @@ import parallelmc.parallelutils.modules.parallelchat.commands.ParallelFakeLeave;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,7 +40,7 @@ import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
 
-public class ParallelChat implements ParallelModule {
+public class ParallelChat extends ParallelModule {
 
     // possibly put ParallelChat settings somewhere else
     public static HashMap<Player, Component> dndPlayers = new HashMap<>();
@@ -83,6 +84,10 @@ public class ParallelChat implements ParallelModule {
     private ParallelUtils puPlugin;
 
     private static ParallelChat Instance;
+
+    public ParallelChat(URLClassLoader classLoader) {
+        super(classLoader);
+    }
 
     @Override
     public void onLoad() {
@@ -272,6 +277,11 @@ public class ParallelChat implements ParallelModule {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onUnload() {
+
     }
 
     @Override

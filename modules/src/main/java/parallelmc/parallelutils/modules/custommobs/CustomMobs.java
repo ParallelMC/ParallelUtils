@@ -29,13 +29,18 @@ import parallelmc.parallelutils.modules.custommobs.spawners.LeashTask;
 import parallelmc.parallelutils.modules.custommobs.spawners.SpawnTask;
 import parallelmc.parallelutils.modules.custommobs.spawners.SpawnerOptions;
 
+import java.net.URLClassLoader;
 import java.sql.*;
 import java.util.UUID;
 import java.util.logging.Level;
 
-public class CustomMobs implements ParallelModule {
+public class CustomMobs extends ParallelModule {
 
 	private static ParallelUtils puPlugin;
+
+	public CustomMobs(URLClassLoader classLoader) {
+		super(classLoader);
+	}
 
 	@Override
 	public void onLoad() {
@@ -157,6 +162,11 @@ public class CustomMobs implements ParallelModule {
 	}
 
 	public void onDisable() {
+
+	}
+
+	@Override
+	public void onUnload() {
 
 	}
 

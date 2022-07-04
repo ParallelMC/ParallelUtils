@@ -11,9 +11,14 @@ import parallelmc.parallelutils.modules.expstorage.commands.DepositExperience;
 import parallelmc.parallelutils.modules.expstorage.commands.WithdrawExperience;
 import parallelmc.parallelutils.modules.expstorage.events.EnderChestRightClick;
 
+import java.net.URLClassLoader;
 import java.util.logging.Level;
 
-public class ExpStorage implements ParallelModule {
+public class ExpStorage extends ParallelModule {
+
+	public ExpStorage(URLClassLoader classLoader) {
+		super(classLoader);
+	}
 
 	@Override
 	public void onLoad() {
@@ -47,6 +52,11 @@ public class ExpStorage implements ParallelModule {
 
 	@Override
 	public void onDisable() {
+
+	}
+
+	@Override
+	public void onUnload() {
 
 	}
 

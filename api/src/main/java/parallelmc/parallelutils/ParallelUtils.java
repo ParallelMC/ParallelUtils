@@ -289,7 +289,7 @@ public final class ParallelUtils extends JavaPlugin {
 				return false;
 			}
 
-			ParallelModule module = classes.get(0).getDeclaredConstructor().newInstance();
+			ParallelModule module = classes.get(0).getDeclaredConstructor(URLClassLoader.class).newInstance(classLoader);
 
 			availableModules.put(module.getName(), module);
 			ParallelUtils.log(Level.INFO, "Added module " + module.getName() + " to available modules");
@@ -326,13 +326,16 @@ public final class ParallelUtils extends JavaPlugin {
 
 		try {
 			module.onUnload();
+			availableModules.remove(name);
+			registeredModules.remove(name); // Double check that it's removed from here
+
+			module.getClassLoader().close();
 		} catch (Exception e) {
 			ParallelUtils.log(Level.SEVERE, "Error occurred while unloading module " + name);
 			e.printStackTrace();
 			// Explicitly say it's unloaded since it's less likely to cause problems
+			availableModules.remove(name);
 		}
-
-		availableModules.remove(name);
 		return true;
 	}
 

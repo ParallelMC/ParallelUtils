@@ -11,15 +11,20 @@ import parallelmc.parallelutils.modules.effectextender.commands.ParallelEffectsC
 import parallelmc.parallelutils.modules.effectextender.listeners.EffectListener;
 import parallelmc.parallelutils.modules.effectextender.listeners.JoinLeaveListener;
 
+import java.net.URLClassLoader;
 import java.sql.*;
 import java.util.logging.Level;
 
 /**
  * A module to allow stacking of potions
  */
-public class EffectExtender implements ParallelModule {
+public class EffectExtender extends ParallelModule {
 
     private ParallelUtils puPlugin;
+
+    public EffectExtender(URLClassLoader classLoader) {
+        super(classLoader);
+    }
 
     @Override
     public void onLoad() {
@@ -103,6 +108,11 @@ public class EffectExtender implements ParallelModule {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onUnload() {
+
     }
 
     @Override
