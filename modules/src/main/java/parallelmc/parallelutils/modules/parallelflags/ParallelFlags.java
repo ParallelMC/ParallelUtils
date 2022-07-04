@@ -16,12 +16,17 @@ import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelflags.events.*;
 import parallelmc.parallelutils.modules.parallelflags.session.*;
 
+import java.net.URLClassLoader;
 import java.util.logging.Level;
 
 /**
  * This module implements custom flags for WorldGuard
  */
-public class ParallelFlags implements ParallelModule {
+public class ParallelFlags extends ParallelModule {
+
+	public ParallelFlags(URLClassLoader classLoader) {
+		super(classLoader);
+	}
 
 	@Override
 	public void onLoad() {
@@ -205,6 +210,11 @@ public class ParallelFlags implements ParallelModule {
 	public void onDisable() {
 		SessionManager sessionManager = WorldGuard.getInstance().getPlatform().getSessionManager();
 		sessionManager.unregisterHandler(CustomArmorDeny.FACTORY);
+	}
+
+	@Override
+	public void onUnload() {
+
 	}
 
 	@Override

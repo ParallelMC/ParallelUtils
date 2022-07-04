@@ -8,9 +8,14 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 
+import java.net.URLClassLoader;
 import java.util.logging.Level;
 
-public class ParallelTrees implements ParallelModule {
+public class ParallelTrees extends ParallelModule {
+	public ParallelTrees(URLClassLoader classLoader) {
+		super(classLoader);
+	}
+
 	@Override
 	public void onLoad() {
 
@@ -46,6 +51,11 @@ public class ParallelTrees implements ParallelModule {
 
 	@Override
 	public void onDisable() {
+
+	}
+
+	@Override
+	public void onUnload() {
 
 	}
 

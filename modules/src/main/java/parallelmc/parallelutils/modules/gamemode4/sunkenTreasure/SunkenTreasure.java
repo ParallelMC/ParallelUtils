@@ -10,9 +10,14 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.gamemode4.sunkenTreasure.events.TreasureChecker;
 
+import java.net.URLClassLoader;
 import java.util.logging.Level;
 
-public class SunkenTreasure implements ParallelModule {
+public class SunkenTreasure extends ParallelModule {
+	public SunkenTreasure(URLClassLoader classLoader) {
+		super(classLoader);
+	}
+
 	@Override
 	public void onLoad() {
 
@@ -46,6 +51,11 @@ public class SunkenTreasure implements ParallelModule {
 
 	@Override
 	public void onDisable() {
+
+	}
+
+	@Override
+	public void onUnload() {
 
 	}
 

@@ -13,11 +13,16 @@ import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.OnPvp;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpCommand;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpManager;
 
+import java.net.URLClassLoader;
 import java.util.logging.Level;
 
-public class BitsAndBobs implements ParallelModule {
+public class BitsAndBobs extends ParallelModule {
 
     private TogglePvpManager pvpManager;
+
+    public BitsAndBobs(URLClassLoader classLoader) {
+        super(classLoader);
+    }
 
     @Override
     public void onLoad() {
@@ -66,6 +71,11 @@ public class BitsAndBobs implements ParallelModule {
     @Override
     public void onDisable() {
         this.pvpManager.unload();
+    }
+
+    @Override
+    public void onUnload() {
+
     }
 
     @NotNull

@@ -30,6 +30,7 @@ import parallelmc.parallelutils.modules.paralleltutorial.scripting.Instruction;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
-public class ParallelTutorial implements ParallelModule {
+public class ParallelTutorial extends ParallelModule {
 
     private ParallelUtils puPlugin;
 
@@ -56,6 +57,10 @@ public class ParallelTutorial implements ParallelModule {
 
     // doing this again cuz lazy
     private static ParallelTutorial Instance;
+
+    public ParallelTutorial(URLClassLoader classLoader) {
+        super(classLoader);
+    }
 
     @Override
     public void onLoad() {
@@ -106,6 +111,11 @@ public class ParallelTutorial implements ParallelModule {
             endTutorialFor(p, false);
         });
         runningTutorials.clear();
+    }
+
+    @Override
+    public void onUnload() {
+
     }
 
     @Override

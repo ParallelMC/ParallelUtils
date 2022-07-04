@@ -28,6 +28,7 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelitems.pocketteleporter.PlayerPositionManager;
 
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -35,12 +36,16 @@ import java.util.logging.Level;
 /**
  * A module that adds custom items to Parallel
  */
-public class ParallelItems implements ParallelModule {
+public class ParallelItems extends ParallelModule {
 
     private final HashMap<String, ItemStack> itemRegistry = new HashMap<>();
     private final HashMap<Integer, ItemStack> itemRegistryId = new HashMap<>();
 
     public static PlayerPositionManager posManager;
+
+    public ParallelItems(URLClassLoader classLoader) {
+        super(classLoader);
+    }
 
     @Override
     public void onLoad() {
@@ -338,6 +343,11 @@ public class ParallelItems implements ParallelModule {
     @Override
     public void onDisable() {
         posManager.unload();
+    }
+
+    @Override
+    public void onUnload() {
+
     }
 
     @Override

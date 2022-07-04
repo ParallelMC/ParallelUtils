@@ -10,11 +10,16 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 
 import javax.security.auth.login.LoginException;
+import java.net.URLClassLoader;
 import java.util.logging.Level;
 
-public class DiscordIntegration implements ParallelModule {
+public class DiscordIntegration extends ParallelModule {
 
 	private BotManager botManager;
+
+	public DiscordIntegration(URLClassLoader classLoader) {
+		super(classLoader);
+	}
 
 	@Override
 	public void onLoad() {
@@ -68,6 +73,11 @@ public class DiscordIntegration implements ParallelModule {
 		if (botManager != null) {
 			botManager.disable();
 		}
+	}
+
+	@Override
+	public void onUnload() {
+
 	}
 
 	@Override

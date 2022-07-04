@@ -2,24 +2,37 @@ package parallelmc.parallelutils;
 
 import org.jetbrains.annotations.NotNull;
 
-public interface ParallelModule
+import java.net.URLClassLoader;
+
+public abstract class ParallelModule
 {
-	public void onLoad();
 
-	public void onEnable();
+	protected URLClassLoader classLoader;
+
+	public ParallelModule(URLClassLoader classLoader) {
+		this.classLoader = classLoader;
+	}
+
+	public abstract void onLoad();
+
+	public abstract void onEnable();
 
 
-	public void onDisable();
+	public abstract void onDisable();
 
 	/**
 	 * This MUST remove all references to every class so it can be successfully unloaded
 	 */
-	public void onUnload();
+	public abstract void onUnload();
 
-	public default boolean canUnload() {
+	public boolean canUnload() {
 		return false;
 	}
 
 	@NotNull
-	public String getName();
+	public abstract String getName();
+
+	public URLClassLoader getClassLoader() {
+		return classLoader;
+	}
 }
