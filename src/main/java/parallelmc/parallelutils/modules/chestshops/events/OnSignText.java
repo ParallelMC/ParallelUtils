@@ -1,6 +1,8 @@
 package parallelmc.parallelutils.modules.chestshops.events;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyFormat;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -79,7 +81,20 @@ public class OnSignText implements Listener {
                         name = sell.getItemMeta().displayName();
                     }
                     // warning can be ignored, compiler doesn't recognize the hasDisplayName check
-                    event.line(2, Component.text(sellNum + " ").append(name));
+                    // we have to do this or else long names don't display at all
+                    String trim = LegacyComponentSerializer.legacyAmpersand().serialize(name);
+                    if (trim.length() > 15) {
+                        trim = trim.substring(0, 12);
+                        if (trim.endsWith("&")) {
+                            trim = trim.substring(0, 11);
+                        }
+                        trim += "...";
+                        event.line(2, Component.text(sellNum + " ").append(LegacyComponentSerializer.legacyAmpersand().deserialize(trim)));
+                    }
+                    else {
+                        // if shorter than 13 characters just use the existing component
+                        event.line(2, Component.text(sellNum + " ").append(name));
+                    }
                     event.line(3, Component.text(buyNum + " diamonds"));
                     ChestShops.get().addShop(player.getUniqueId(), attached.getLocation(), event.getBlock().getLocation(), sell.getType(), sellNum, buyNum);
                     ParallelChat.sendParallelMessageTo(player, "Chest shop created!");
