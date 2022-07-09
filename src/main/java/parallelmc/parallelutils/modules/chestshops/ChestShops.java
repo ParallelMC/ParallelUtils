@@ -17,6 +17,7 @@ import parallelmc.parallelutils.modules.parallelchat.SocialSpyOptions;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -63,7 +64,6 @@ public class ChestShops implements ParallelModule {
                         SignY       int         not null,
                         SignZ       int         not null,
                         Item        varchar(50) not null,
-                        Currency    tinyint     not null,
                         SellAmt     int         not null,
                         BuyAmt      int         not null
                     );""");
@@ -85,10 +85,9 @@ public class ChestShops implements ParallelModule {
                 Location chestLoc = new Location(world, results.getInt("ChestX"), results.getInt("ChestY"), results.getInt("ChestZ"));
                 Location signLoc = new Location(world, results.getInt("SignX"), results.getInt("SignY"), results.getInt("SignZ"));
                 Material item = Material.getMaterial(results.getString("Item"));
-                ShopCurrency cur = results.getBoolean("Currency") ? ShopCurrency.RIFTCOIN : ShopCurrency.DIAMOND;
                 int sellAmt = results.getInt("SellAmt");
                 int buyAmt = results.getInt("BuyAmt");
-                addShop(uuid, chestLoc, signLoc, item, cur, sellAmt, buyAmt);
+                addShop(uuid, chestLoc, signLoc, item, sellAmt, buyAmt);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -106,8 +105,8 @@ public class ChestShops implements ParallelModule {
         try (Connection conn = puPlugin.getDbConn()) {
             if (conn == null) throw new SQLException("Unable to establish connection!");
             // allow duplicate uuids since players can have multiple shops
-            PreparedStatement statement = conn.prepareStatement("INSERT INTO ChestShops (UUID, World, ChestX, ChestY, ChestZ, SignX, SignY, SignZ, Item, Currency, SellAmt, BuyAmt) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement statement = conn.prepareStatement("INSERT INTO ChestShops (UUID, World, ChestX, ChestY, ChestZ, SignX, SignY, SignZ, Item, SellAmt, BuyAmt) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             statement.setQueryTimeout(30);
             this.chestShops.forEach((u, o) -> {
                 o.forEach((s) -> {
@@ -121,7 +120,6 @@ public class ChestShops implements ParallelModule {
                         statement.setInt(7, s.signPos().getBlockY());
                         statement.setInt(8, s.signPos().getBlockZ());
                         statement.setString(9, s.item().toString());
-                        statement.setBoolean(10, s.currency() == ShopCurrency.RIFTCOIN);
                         statement.setInt(11, s.sellAmt());
                         statement.setInt(12, s.buyAmt());
                         statement.addBatch();
@@ -138,8 +136,8 @@ public class ChestShops implements ParallelModule {
         }
     }
 
-    public void addShop(UUID owner, Location chestPos, Location signPos, Material item, ShopCurrency currency, int sellAmt, int buyAmt) {
-        Shop shop = new Shop(owner, chestPos, signPos, item, currency, sellAmt, buyAmt);
+    public void addShop(UUID owner, Location chestPos, Location signPos, Material item, int sellAmt, int buyAmt) {
+        Shop shop = new Shop(owner, chestPos, signPos, item, sellAmt, buyAmt);
         if (chestShops.containsKey(owner)) {
             HashSet<Shop> shops = chestShops.get(owner);
             shops.add(shop);
@@ -149,11 +147,12 @@ public class ChestShops implements ParallelModule {
             shops.add(shop);
             chestShops.put(owner, shops);
         }
+        Parallelutils.log(Level.WARNING, "Added chest shop: " + chestPos + "\n" + signPos);
     }
 
     public void removeShop(UUID owner, Location chestPos) {
         HashSet<Shop> shops = chestShops.get(owner);
-        shops.removeIf(x -> x.chestPos() == chestPos);
+        shops.removeIf(x -> x.chestPos().equals(chestPos));
         if (shops.size() == 0)
             chestShops.remove(owner);
     }
@@ -163,9 +162,9 @@ public class ChestShops implements ParallelModule {
     public Shop getShopFromSignPos(Location signPos) {
         Shop out = null;
         for (HashSet<Shop> s : chestShops.values()) {
-            Shop r = s.stream().filter(x -> x.signPos() == signPos).findFirst().orElse(null);
-            if (r != null) {
-                out = r;
+            Optional<Shop> r = s.stream().filter(x -> x.signPos().equals(signPos)).findFirst();
+            if (r.isPresent()) {
+                out = r.get();
                 break;
             }
         }
@@ -175,9 +174,9 @@ public class ChestShops implements ParallelModule {
     public Shop getShopFromChestPos(Location chestPos) {
         Shop out = null;
         for (HashSet<Shop> s : chestShops.values()) {
-            Shop r = s.stream().filter(x -> x.chestPos() == chestPos).findFirst().orElse(null);
-            if (r != null) {
-                out = r;
+            Optional<Shop> r = s.stream().filter(x -> x.chestPos().equals(chestPos)).findFirst();
+            if (r.isPresent()) {
+                out = r.get();
                 break;
             }
         }
