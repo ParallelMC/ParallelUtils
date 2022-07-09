@@ -1,9 +1,14 @@
 package parallelmc.parallelutils.modules.chestshops;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
@@ -11,8 +16,8 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.chestshops.events.OnBreakShop;
 import parallelmc.parallelutils.modules.chestshops.events.OnClickBlock;
+import parallelmc.parallelutils.modules.chestshops.events.OnPreviewInteract;
 import parallelmc.parallelutils.modules.chestshops.events.OnSignText;
-import parallelmc.parallelutils.modules.parallelchat.SocialSpyOptions;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -24,6 +29,7 @@ import java.util.logging.Level;
 public class ChestShops implements ParallelModule {
 
     private final HashMap<UUID, HashSet<Shop>> chestShops = new HashMap<>();
+    private final HashMap<UUID, Inventory> shopPreviews = new HashMap<>();
 
     private Parallelutils puPlugin;
 
@@ -96,6 +102,7 @@ public class ChestShops implements ParallelModule {
         manager.registerEvents(new OnSignText(), puPlugin);
         manager.registerEvents(new OnClickBlock(), puPlugin);
         manager.registerEvents(new OnBreakShop(), puPlugin);
+        manager.registerEvents(new OnPreviewInteract(), puPlugin);
 
         INSTANCE = this;
     }
@@ -181,6 +188,25 @@ public class ChestShops implements ParallelModule {
             }
         }
         return out;
+    }
+
+    public void openShopPreview(Player player, ItemStack item) {
+        Inventory inv = Bukkit.createInventory(null, InventoryType.CHEST, Component.text("ChestShop"));
+        inv.setItem(13, item);
+        player.openInventory(inv);
+        shopPreviews.put(player.getUniqueId(), inv);
+    }
+
+    public void closeShopPreview(Player player) {
+        shopPreviews.remove(player.getUniqueId());
+    }
+
+    public Inventory getPreviewInventory(Player player) {
+        return shopPreviews.get(player.getUniqueId());
+    }
+
+    public boolean previewInventoryExists(Inventory inv) {
+        return shopPreviews.containsValue(inv);
     }
 
 

@@ -1,5 +1,7 @@
 package parallelmc.parallelutils.modules.chestshops.events;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
@@ -23,9 +25,9 @@ public class OnClickBlock implements Listener {
     @EventHandler(ignoreCancelled = true)
     public void onClickBlock(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        // TODO: add left click support
+        Block block = event.getClickedBlock();
+        if (block == null) return;
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            Block block = event.getClickedBlock();
             if (block.getState() instanceof Sign) {
                 Shop shop = ChestShops.get().getShopFromSignPos(block.getLocation());
                 if (shop == null) {
@@ -76,15 +78,53 @@ public class OnClickBlock implements Listener {
                 item.subtract(shop.buyAmt());
                 player.getInventory().addItem(give);
                 inv.removeItem(give);
-                ParallelChat.sendParallelMessageTo(player, "You bought " + shop.sellAmt() + "x " + shop.item() + "!");
+                Component name = give.displayName();
+                if (give.hasItemMeta() && give.getItemMeta().hasDisplayName()) {
+                    name = give.getItemMeta().displayName();
+                }
+                // warning can be ignored, compiler doesn't recognize the hasDisplayName check
+                ParallelChat.sendParallelMessageTo(player, Component.text("You bought " + shop.sellAmt() + "x ", NamedTextColor.GREEN).append(name));
             }
             else if (block.getState() instanceof Chest) {
                 Shop shop = ChestShops.get().getShopFromChestPos(block.getLocation());
                 if (shop == null)
                     return;
-                if (shop.owner() != player.getUniqueId()) {
+                if (!player.hasPermission("parallelutils.bypass.chestshops") && shop.owner() != player.getUniqueId()) {
                     event.setCancelled(true);
                     ParallelChat.sendParallelMessageTo(player, "You cannot open this chest shop!");
+                }
+            }
+        }
+        else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            if (block.getState() instanceof Sign) {
+                Shop shop = ChestShops.get().getShopFromSignPos(block.getLocation());
+                if (shop != null) {
+                    if (ChestShops.get().getPreviewInventory(player) != null) {
+                        Parallelutils.log(Level.WARNING, player.getName() + " tried to open a shop preview with one already open!");
+                        event.setCancelled(true);
+                        return;
+                    }
+                    Block c = player.getWorld().getBlockAt(shop.chestPos());
+                    if (!(c.getState() instanceof Chest chest)) {
+                        Parallelutils.log(Level.WARNING, "Block at " + shop.chestPos() + " should be a chest but it is actually a " + c.getType() + "! Removing...");
+                        ChestShops.get().removeShop(shop.owner(), shop.chestPos());
+                        return;
+                    }
+                    Inventory inv = chest.getBlockInventory();
+                    int slot = inv.first(shop.item());
+                    if (slot == -1) {
+                        ParallelChat.sendParallelMessageTo(player, "This shop is out of stock!");
+                        return;
+                    }
+                    ItemStack item = inv.getItem(slot);
+                    if (item == null) {
+                        Parallelutils.log(Level.WARNING, "Preview item was null when it shouldn't be!");
+                        return;
+                    }
+                    ItemStack preview = new ItemStack(item);
+                    preview.setAmount(shop.sellAmt());
+                    ChestShops.get().openShopPreview(player, preview);
+                    ParallelChat.sendParallelMessageTo(player, "Opening preview...");
                 }
             }
         }

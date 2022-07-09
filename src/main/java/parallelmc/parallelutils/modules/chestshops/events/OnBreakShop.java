@@ -18,17 +18,25 @@ public class OnBreakShop implements Listener {
         Block block = event.getBlock();
         if (block.getState() instanceof Sign) {
             Shop s = ChestShops.get().getShopFromSignPos(block.getLocation());
-            if (s.owner() != player.getUniqueId()) {
+            if (s == null) return;
+            if (!player.hasPermission("parallelutils.bypass.chestshops") && s.owner() != player.getUniqueId()) {
                 event.setCancelled(true);
                 ParallelChat.sendParallelMessageTo(player, "You cannot break this chest shop!");
+                return;
             }
+            ChestShops.get().removeShop(s.owner(), s.chestPos());
+            ParallelChat.sendParallelMessageTo(player, "Chest shop unregistered.");
         }
         else if (block.getState() instanceof Chest) {
             Shop s = ChestShops.get().getShopFromChestPos(block.getLocation());
-            if (s.owner() != player.getUniqueId()) {
+            if (s == null) return;
+            if (!player.hasPermission("parallelutils.bypass.chestshops") && s.owner() != player.getUniqueId()) {
                 event.setCancelled(true);
                 ParallelChat.sendParallelMessageTo(player, "You cannot break this chest shop!");
+                return;
             }
+            ChestShops.get().removeShop(s.owner(), s.chestPos());
+            ParallelChat.sendParallelMessageTo(player, "Chest shop unregistered.");
         }
     }
 }
