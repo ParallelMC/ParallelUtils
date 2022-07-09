@@ -13,15 +13,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.chestshops.ChestShops;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class OnSignText implements Listener {
     // ChestShop formatting:
@@ -42,6 +38,11 @@ public class OnSignText implements Listener {
             // thanks kyori
             event.lines().forEach((l) -> lines.add(PlainTextComponentSerializer.plainText().serialize(l)));
             if (lines.get(0).equals("ChestShop")) {
+                if (ChestShops.get().getShopFromSignPos(event.getBlock().getLocation()) != null) {
+                    event.setCancelled(true);
+                    ParallelChat.sendParallelMessageTo(player, "Error: A shop already exists at this location.");
+                    return;
+                }
                 Directional d = (Directional)event.getBlock().getBlockData();
                 Block attached = event.getBlock().getRelative(d.getFacing().getOppositeFace());
                 if (attached.getState() instanceof Chest chest) {
@@ -73,17 +74,19 @@ public class OnSignText implements Listener {
                     }
                     event.line(0, Component.text("ChestShop"));
                     event.line(1, Component.text(player.getName()));
-                    if (sell.getType().toString().length() > 13)
-                        event.line(2, Component.text(sellNum + " " + sell.getType().toString().substring(0, 13)));
-                    else
-                        event.line(2, Component.text(sellNum + " " + sell.getType()));
+                    Component name = sell.displayName();
+                    if (sell.hasItemMeta() && sell.getItemMeta().hasDisplayName()) {
+                        name = sell.getItemMeta().displayName();
+                    }
+                    // warning can be ignored, compiler doesn't recognize the hasDisplayName check
+                    event.line(2, Component.text(sellNum + " ").append(name));
                     event.line(3, Component.text(buyNum + " diamonds"));
                     ChestShops.get().addShop(player.getUniqueId(), attached.getLocation(), event.getBlock().getLocation(), sell.getType(), sellNum, buyNum);
                     ParallelChat.sendParallelMessageTo(player, "Chest shop created!");
                 }
                 else {
                     event.setCancelled(true);
-                    ParallelChat.sendParallelMessageTo(player, "Chest shop must be a regular chest!");
+                    ParallelChat.sendParallelMessageTo(player, "Chest shop sign must be placed on the side of a regular chest!");
                 }
             }
         }
