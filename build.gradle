@@ -356,5 +356,8 @@ bukkit {
         'parallelutils.notify.antislur' {
             description = 'Be notified of swearing'
         }
+        'parallelutils.chestshops.create' {
+            description = 'Allows creation of Chest Shops'
+        }
     }
 }
