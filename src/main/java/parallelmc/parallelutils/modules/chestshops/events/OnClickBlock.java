@@ -5,6 +5,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,10 +13,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.chestshops.ChestShops;
 import parallelmc.parallelutils.modules.chestshops.Shop;
+import parallelmc.parallelutils.modules.chestshops.ShopResult;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.util.*;
@@ -40,53 +43,67 @@ public class OnClickBlock implements Listener {
                     ChestShops.get().removeShop(shop.owner(), shop.chestPos());
                     return;
                 }
-                Inventory inv = chest.getBlockInventory();
-                List<? extends ItemStack> items = inv.all(shop.item()).values().stream().toList();
-                int itemAmt = 0;
-                for (ItemStack i : items) {
-                    itemAmt += i.getAmount();
+                InventoryHolder holder = chest.getInventory().getHolder();
+                ItemStack diamonds = event.getItem();
+                ShopResult result;
+                if (holder instanceof DoubleChest dc) {
+                    Chest temp = (Chest)dc.getLeftSide();
+                    if (temp == null) {
+                        Parallelutils.log(Level.WARNING, "OnClickBlock Sign: getLeftSide() returned null!");
+                        return;
+                    }
+                    result = ChestShops.get().attemptPurchase(player, shop, temp, diamonds);
+                    if (result != ShopResult.INVENTORY_FULL &&
+                            result != ShopResult.NO_DIAMONDS &&
+                            result != ShopResult.INSUFFICIENT_FUNDS &&
+                            result != ShopResult.SUCCESS) {
+                        temp = (Chest)dc.getRightSide();
+                        if (temp == null) {
+                            Parallelutils.log(Level.WARNING, "OnClickBlock Sign: getRightSide() returned null!");
+                            return;
+                        }
+                        result = ChestShops.get().attemptPurchase(player, shop, temp, diamonds);
+                    }
                 }
-                if (inv.getContents().length == 0 || items.size() == 0 || itemAmt < shop.sellAmt()) {
-                    ParallelChat.sendParallelMessageTo(player, "This shop is out of stock!");
-                    return;
+                else {
+                    result = ChestShops.get().attemptPurchase(player, shop, chest, diamonds);
                 }
-                ItemStack item = event.getItem();
-                if (player.getInventory().firstEmpty() == -1) {
-                    ParallelChat.sendParallelMessageTo(player, "Your inventory is full!");
-                    return;
+                switch (result) {
+                    case SHOP_EMPTY -> ParallelChat.sendParallelMessageTo(player, "This shop is out of stock!");
+                    case INVENTORY_FULL -> ParallelChat.sendParallelMessageTo(player, "Your inventory is full!");
+                    case NO_DIAMONDS -> ParallelChat.sendParallelMessageTo(player, "You must be holding diamonds in your hand to purchase an item!");
+                    case INSUFFICIENT_FUNDS -> ParallelChat.sendParallelMessageTo(player, "You do not have enough diamonds to purchase this item!");
+                    case SHOP_FULL -> ParallelChat.sendParallelMessageTo(player, "This chest shop cannot accept any more currency!");
                 }
-                if (item == null || item.getType() != Material.DIAMOND) {
-                    ParallelChat.sendParallelMessageTo(player, "You must be holding diamonds in your hand to purchase an item!");
-                    return;
-                }
-                if (item.getAmount() < shop.buyAmt()) {
-                    ParallelChat.sendParallelMessageTo(player, "You do not have enough diamonds to purchase this item!");
-                    return;
-                }
-                // make a copy of each item
-                ItemStack give = new ItemStack(items.get(0));
-                give.setAmount(shop.sellAmt());
-                ItemStack take = new ItemStack(item);
-                take.setAmount(shop.buyAmt());
-                if (inv.addItem(take).size() > 0) {
-                    // if addItem returns any stacks, then the chest is too full
-                    // undo the addition and cancel the transaction
-                    inv.removeItem(take);
-                    ParallelChat.sendParallelMessageTo(player, "This chest shop cannot accept any more currency!");
-                    return;
-                }
-                item.subtract(shop.buyAmt());
-                player.getInventory().addItem(give);
-                inv.removeItem(give);
-                Component name = give.displayName();
-                if (give.hasItemMeta() && give.getItemMeta().hasDisplayName()) {
-                    name = give.getItemMeta().displayName();
-                }
-                // warning can be ignored, compiler doesn't recognize the hasDisplayName check
-                ParallelChat.sendParallelMessageTo(player, Component.text("You bought " + shop.sellAmt() + "x ", NamedTextColor.GREEN).append(name));
             }
-            else if (block.getState() instanceof Chest) {
-                Shop shop = ChestShops.get().getShopFromChestPos(block.getLocation());
+            else if (block.getState() instanceof Chest chest) {
+                Shop shop;
+                InventoryHolder holder = chest.getInventory().getHolder();
+                // check both sides of the double chest since each side is a separate block
+                if (holder instanceof DoubleChest dc) {
+                    Chest temp = (Chest)dc.getLeftSide();
+                    if (temp == null) {
+                        Parallelutils.log(Level.WARNING, "OnClickBlock: getLeftSide() returned null!");
+                        return;
+                    }
+                    shop = ChestShops.get().getShopFromChestPos(temp.getLocation());
+                    if (shop == null) {
+                        temp = (Chest)dc.getRightSide();
+                        if (temp == null) {
+                            Parallelutils.log(Level.WARNING, "OnClickBlock: getRightSide() returned null!");
+                            return;
+                        }
+                        shop = ChestShops.get().getShopFromChestPos(temp.getLocation());
+                        if (shop == null)
+                            return;
+                    }
+                    if (!player.hasPermission("parallelutils.bypass.chestshops") && shop.owner() != player.getUniqueId()) {
+                        event.setCancelled(true);
+                        ParallelChat.sendParallelMessageTo(player, "You cannot open this chest shop!");
+                    }
+                    return;
+                }
+                shop = ChestShops.get().getShopFromChestPos(block.getLocation());
                 if (shop == null)
                     return;
                 if (!player.hasPermission("parallelutils.bypass.chestshops") && shop.owner() != player.getUniqueId()) {
