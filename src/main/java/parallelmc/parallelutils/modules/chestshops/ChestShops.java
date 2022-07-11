@@ -1,10 +1,12 @@
 package parallelmc.parallelutils.modules.chestshops;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -18,12 +20,10 @@ import parallelmc.parallelutils.modules.chestshops.events.OnBreakShop;
 import parallelmc.parallelutils.modules.chestshops.events.OnClickBlock;
 import parallelmc.parallelutils.modules.chestshops.events.OnPreviewInteract;
 import parallelmc.parallelutils.modules.chestshops.events.OnSignText;
+import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.sql.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 public class ChestShops implements ParallelModule {
@@ -34,6 +34,9 @@ public class ChestShops implements ParallelModule {
     private Parallelutils puPlugin;
 
     private static ChestShops INSTANCE;
+
+    // 26 stacks of 64 diamonds
+    private static final int MAX_DIAMONDS = 1664;
 
     @Override
     public void onEnable() {
@@ -127,8 +130,8 @@ public class ChestShops implements ParallelModule {
                         statement.setInt(7, s.signPos().getBlockY());
                         statement.setInt(8, s.signPos().getBlockZ());
                         statement.setString(9, s.item().toString());
-                        statement.setInt(11, s.sellAmt());
-                        statement.setInt(12, s.buyAmt());
+                        statement.setInt(10, s.sellAmt());
+                        statement.setInt(11, s.buyAmt());
                         statement.addBatch();
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -188,6 +191,45 @@ public class ChestShops implements ParallelModule {
             }
         }
         return out;
+    }
+
+    public ShopResult attemptPurchase(Player player, Shop shop, Chest chest, ItemStack diamonds) {
+        Inventory inv = chest.getBlockInventory();
+        List<? extends ItemStack> items = inv.all(shop.item()).values().stream().toList();
+        int itemAmt = 0;
+        for (ItemStack i : items) {
+            itemAmt += i.getAmount();
+        }
+        if (inv.getContents().length == 0 || items.size() == 0 || itemAmt < shop.sellAmt()) {
+            return ShopResult.SHOP_EMPTY;
+        }
+        if (player.getInventory().firstEmpty() == -1) {
+            return ShopResult.INVENTORY_FULL;
+        }
+        if (diamonds == null || diamonds.getType() != Material.DIAMOND) {
+            return ShopResult.NO_DIAMONDS;
+        }
+        if (diamonds.getAmount() < shop.buyAmt()) {
+            return ShopResult.INSUFFICIENT_FUNDS;
+        }
+        // make a copy of each item
+        ItemStack give = new ItemStack(items.get(0));
+        give.setAmount(shop.sellAmt());
+        ItemStack take = new ItemStack(diamonds);
+        take.setAmount(shop.buyAmt());
+        if (inv.containsAtLeast(new ItemStack(Material.DIAMOND), MAX_DIAMONDS - shop.buyAmt())) {
+            return ShopResult.SHOP_FULL;
+        }
+        diamonds.subtract(shop.buyAmt());
+        player.getInventory().addItem(give);
+        inv.removeItem(give);
+        inv.addItem(take);
+        Component name = give.displayName();
+        if (give.hasItemMeta() && give.getItemMeta().hasDisplayName()) {
+            name = give.getItemMeta().displayName();
+        }
+        ParallelChat.sendParallelMessageTo(player, Component.text("You bought " + shop.sellAmt() + "x ", NamedTextColor.GREEN).append(name));
+        return ShopResult.SUCCESS;
     }
 
     public void openShopPreview(Player player, ItemStack item) {
