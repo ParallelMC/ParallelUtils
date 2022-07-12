@@ -381,6 +381,8 @@ public final class ParallelUtils extends JavaPlugin {
 			return false;
 		}
 
+		// TODO: Unload things that depend on this module too
+
 		boolean result = true;
 
 		if (registeredModules.containsKey(name)) {
