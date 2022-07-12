@@ -1,5 +1,5 @@
 # ParallelUtils
-ParallelUtils is a plugin that enables a large variety of features, intended to be used for the Parallel SMP server at play.parallel.ga.
+ParallelUtils is a plugin that enables a large variety of features, intended to be used for the Parallel SMP server at play.parallelmc.org.
 
 # OLD ----- Procedure to Start Development ---- OLD
 
@@ -25,7 +25,7 @@ The `util/` folder contains miscellaneous helper classes and methods.
 
 The `versionchecker/` folder contains classes related to the version checker and updater.
 
-The `Constants` class contains constants that are useful for ParallelUtils
+The `Constants` class contains constants that are useful for ParallelUtils.
 
 The `ParallelModule` interface is used by modules to be recognized by ParallelUtils. See the [New Structure](https://github.com/ParallelMC/ParallelUtils#New_Structure) section.
 
@@ -62,7 +62,7 @@ This is a list of the current modules for ParallelUtils
   - Adds custom WorldGuard flags
     
 - ParallelItems
-  - Adds custom items for use on play.parallel.ga
+  - Adds custom items for use on play.parallelmc.org
   
 - PerformanceTools
   - Adds tools to help diagnose performance issues
