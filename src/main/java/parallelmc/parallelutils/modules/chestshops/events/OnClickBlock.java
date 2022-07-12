@@ -1,8 +1,5 @@
 package parallelmc.parallelutils.modules.chestshops.events;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.DoubleChest;
@@ -21,7 +18,7 @@ import parallelmc.parallelutils.modules.chestshops.Shop;
 import parallelmc.parallelutils.modules.chestshops.ShopResult;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
-import java.util.*;
+import java.util.HashMap;
 import java.util.logging.Level;
 
 public class OnClickBlock implements Listener {
@@ -43,31 +40,8 @@ public class OnClickBlock implements Listener {
                     ChestShops.get().removeShop(shop.owner(), shop.chestPos());
                     return;
                 }
-                InventoryHolder holder = chest.getInventory().getHolder();
                 ItemStack diamonds = event.getItem();
-                ShopResult result;
-                if (holder instanceof DoubleChest dc) {
-                    Chest temp = (Chest)dc.getLeftSide();
-                    if (temp == null) {
-                        Parallelutils.log(Level.WARNING, "OnClickBlock Sign: getLeftSide() returned null!");
-                        return;
-                    }
-                    result = ChestShops.get().attemptPurchase(player, shop, temp, diamonds);
-                    if (result != ShopResult.INVENTORY_FULL &&
-                            result != ShopResult.NO_DIAMONDS &&
-                            result != ShopResult.INSUFFICIENT_FUNDS &&
-                            result != ShopResult.SUCCESS) {
-                        temp = (Chest)dc.getRightSide();
-                        if (temp == null) {
-                            Parallelutils.log(Level.WARNING, "OnClickBlock Sign: getRightSide() returned null!");
-                            return;
-                        }
-                        result = ChestShops.get().attemptPurchase(player, shop, temp, diamonds);
-                    }
-                }
-                else {
-                    result = ChestShops.get().attemptPurchase(player, shop, chest, diamonds);
-                }
+                ShopResult result = ChestShops.get().attemptPurchase(player, shop, chest, diamonds);
                 switch (result) {
                     case SHOP_EMPTY -> ParallelChat.sendParallelMessageTo(player, "This shop is out of stock!");
                     case INVENTORY_FULL -> ParallelChat.sendParallelMessageTo(player, "Your inventory is full!");
@@ -133,14 +107,7 @@ public class OnClickBlock implements Listener {
                         ParallelChat.sendParallelMessageTo(player, "This shop is out of stock!");
                         return;
                     }
-                    ItemStack item = inv.getItem(slot);
-                    if (item == null) {
-                        Parallelutils.log(Level.WARNING, "Preview item was null when it shouldn't be!");
-                        return;
-                    }
-                    ItemStack preview = new ItemStack(item);
-                    preview.setAmount(shop.sellAmt());
-                    ChestShops.get().openShopPreview(player, preview);
+                    ChestShops.get().openShopPreview(player, shop, inv);
                     ParallelChat.sendParallelMessageTo(player, "Opening preview...");
                 }
             }

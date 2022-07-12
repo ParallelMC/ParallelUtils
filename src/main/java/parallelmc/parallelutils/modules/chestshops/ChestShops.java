@@ -10,16 +10,14 @@ import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
-import parallelmc.parallelutils.modules.chestshops.events.OnBreakShop;
-import parallelmc.parallelutils.modules.chestshops.events.OnClickBlock;
-import parallelmc.parallelutils.modules.chestshops.events.OnPreviewInteract;
-import parallelmc.parallelutils.modules.chestshops.events.OnSignText;
+import parallelmc.parallelutils.modules.chestshops.events.*;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.sql.*;
@@ -30,6 +28,7 @@ public class ChestShops implements ParallelModule {
 
     private final HashMap<UUID, HashSet<Shop>> chestShops = new HashMap<>();
     private final HashMap<UUID, Inventory> shopPreviews = new HashMap<>();
+    private final HashMap<UUID, ShopperData> shoppingPlayers = new HashMap<>();
 
     private Parallelutils puPlugin;
 
@@ -106,6 +105,7 @@ public class ChestShops implements ParallelModule {
         manager.registerEvents(new OnClickBlock(), puPlugin);
         manager.registerEvents(new OnBreakShop(), puPlugin);
         manager.registerEvents(new OnPreviewInteract(), puPlugin);
+        manager.registerEvents(new OnShopInteract(), puPlugin);
 
         INSTANCE = this;
     }
@@ -157,7 +157,7 @@ public class ChestShops implements ParallelModule {
             shops.add(shop);
             chestShops.put(owner, shops);
         }
-        Parallelutils.log(Level.WARNING, "Added chest shop: " + chestPos + "\n" + signPos);
+        Parallelutils.log(Level.WARNING, "Added chest shop: \nChestPos: " + chestPos + "\nSignPos: " + signPos + "\nMaterial: " + item);
     }
 
     public void removeShop(UUID owner, Location chestPos) {
@@ -193,16 +193,9 @@ public class ChestShops implements ParallelModule {
         return out;
     }
 
+
     public ShopResult attemptPurchase(Player player, Shop shop, Chest chest, ItemStack diamonds) {
         Inventory inv = chest.getBlockInventory();
-        List<? extends ItemStack> items = inv.all(shop.item()).values().stream().toList();
-        int itemAmt = 0;
-        for (ItemStack i : items) {
-            itemAmt += i.getAmount();
-        }
-        if (inv.getContents().length == 0 || items.size() == 0 || itemAmt < shop.sellAmt()) {
-            return ShopResult.SHOP_EMPTY;
-        }
         if (player.getInventory().firstEmpty() == -1) {
             return ShopResult.INVENTORY_FULL;
         }
@@ -212,29 +205,30 @@ public class ChestShops implements ParallelModule {
         if (diamonds.getAmount() < shop.buyAmt()) {
             return ShopResult.INSUFFICIENT_FUNDS;
         }
-        // make a copy of each item
-        ItemStack give = new ItemStack(items.get(0));
-        give.setAmount(shop.sellAmt());
-        ItemStack take = new ItemStack(diamonds);
-        take.setAmount(shop.buyAmt());
         if (inv.containsAtLeast(new ItemStack(Material.DIAMOND), MAX_DIAMONDS - shop.buyAmt())) {
             return ShopResult.SHOP_FULL;
         }
-        diamonds.subtract(shop.buyAmt());
-        player.getInventory().addItem(give);
-        inv.removeItem(give);
-        inv.addItem(take);
-        Component name = give.displayName();
-        if (give.hasItemMeta() && give.getItemMeta().hasDisplayName()) {
-            name = give.getItemMeta().displayName();
+
+        HashMap<Integer, ? extends ItemStack> items = inv.all(shop.item());
+        Inventory shopping = Bukkit.createInventory(null, InventoryType.CHEST, Component.text("ChestShop (Click to Buy)"));
+        int itemAmt = 0;
+        // would rather use two for loops than AtomicInteger tee hee
+        for (ItemStack i : items.values()) {
+            itemAmt += i.getAmount();
         }
-        ParallelChat.sendParallelMessageTo(player, Component.text("You bought " + shop.sellAmt() + "x ", NamedTextColor.GREEN).append(name));
+        items.forEach(shopping::setItem);
+        if (inv.getContents().length == 0 || items.size() == 0 || itemAmt < shop.sellAmt()) {
+            return ShopResult.SHOP_EMPTY;
+        }
+        player.openInventory(shopping);
+        shoppingPlayers.put(player.getUniqueId(), new ShopperData(shopping, inv, shop, diamonds));
         return ShopResult.SUCCESS;
     }
 
-    public void openShopPreview(Player player, ItemStack item) {
-        Inventory inv = Bukkit.createInventory(null, InventoryType.CHEST, Component.text("ChestShop"));
-        inv.setItem(13, item);
+    public void openShopPreview(Player player, Shop shop, Inventory chest) {
+        Inventory inv = Bukkit.createInventory(null, InventoryType.CHEST, Component.text("ChestShop Preview"));
+        HashMap<Integer, ? extends ItemStack> items = chest.all(shop.item());
+        items.forEach(inv::setItem);
         player.openInventory(inv);
         shopPreviews.put(player.getUniqueId(), inv);
     }
@@ -243,12 +237,20 @@ public class ChestShops implements ParallelModule {
         shopPreviews.remove(player.getUniqueId());
     }
 
+    public void stopShopping(Player player) { shoppingPlayers.remove(player.getUniqueId()); }
+
     public Inventory getPreviewInventory(Player player) {
         return shopPreviews.get(player.getUniqueId());
     }
 
+    public ShopperData getShoppingData(Player player) { return shoppingPlayers.get(player.getUniqueId()); }
+
     public boolean previewInventoryExists(Inventory inv) {
         return shopPreviews.containsValue(inv);
+    }
+
+    public boolean shopInventoryExists(Inventory inv) {
+        return shoppingPlayers.values().stream().anyMatch(x -> x.fakeInv() == inv);
     }
 
 
