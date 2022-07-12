@@ -7,6 +7,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,8 +15,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import parallelmc.parallelutils.modules.chestshops.ChestShops;
+import parallelmc.parallelutils.modules.chestshops.Shop;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.util.ArrayList;
@@ -40,14 +43,28 @@ public class OnSignText implements Listener {
             // thanks kyori
             event.lines().forEach((l) -> lines.add(PlainTextComponentSerializer.plainText().serialize(l)));
             if (lines.get(0).equals("ChestShop")) {
-                if (ChestShops.get().getShopFromSignPos(event.getBlock().getLocation()) != null) {
-                    event.setCancelled(true);
-                    ParallelChat.sendParallelMessageTo(player, "Error: A shop already exists at this location.");
-                    return;
-                }
                 Directional d = (Directional)event.getBlock().getBlockData();
                 Block attached = event.getBlock().getRelative(d.getFacing().getOppositeFace());
                 if (attached.getState() instanceof Chest chest) {
+                    Shop existing = ChestShops.get().getShopFromChestPos(chest.getLocation());
+                    if (existing != null) {
+                        event.setCancelled(true);
+                        ParallelChat.sendParallelMessageTo(player, "Error: A shop already exists at this location.");
+                        return;
+                    }
+                    if (chest.getInventory().getHolder() instanceof DoubleChest dc) {
+                        InventoryHolder left = dc.getLeftSide();
+                        InventoryHolder right = dc.getRightSide();
+                        if (left == null || right == null) {
+                            return;
+                        }
+                        if (ChestShops.get().getShopFromChestPos(((Chest)left).getLocation()) != null ||
+                                ChestShops.get().getShopFromChestPos(((Chest)right).getLocation()) != null) {
+                            event.setCancelled(true);
+                            ParallelChat.sendParallelMessageTo(player, "Error: A shop already exists at this location.");
+                            return;
+                        }
+                    }
                     Inventory inv = chest.getInventory();
                     ItemStack sell = inv.getItem(0);
                     if (sell == null || sell.getType() == Material.AIR) {
