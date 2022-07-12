@@ -101,7 +101,7 @@ public class OnClickBlock implements Listener {
                         ChestShops.get().removeShop(shop.owner(), shop.chestPos());
                         return;
                     }
-                    Inventory inv = chest.getBlockInventory();
+                    Inventory inv = chest.getInventory();
                     int slot = inv.first(shop.item());
                     if (slot == -1) {
                         ParallelChat.sendParallelMessageTo(player, "This shop is out of stock!");

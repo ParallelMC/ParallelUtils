@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
+import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
@@ -195,7 +196,6 @@ public class ChestShops implements ParallelModule {
 
 
     public ShopResult attemptPurchase(Player player, Shop shop, Chest chest, ItemStack diamonds) {
-        Inventory inv = chest.getBlockInventory();
         if (player.getInventory().firstEmpty() == -1) {
             return ShopResult.INVENTORY_FULL;
         }
@@ -205,32 +205,93 @@ public class ChestShops implements ParallelModule {
         if (diamonds.getAmount() < shop.buyAmt()) {
             return ShopResult.INSUFFICIENT_FUNDS;
         }
-        if (inv.containsAtLeast(new ItemStack(Material.DIAMOND), MAX_DIAMONDS - shop.buyAmt())) {
-            return ShopResult.SHOP_FULL;
-        }
 
-        HashMap<Integer, ? extends ItemStack> items = inv.all(shop.item());
-        Inventory shopping = Bukkit.createInventory(null, InventoryType.CHEST, Component.text("ChestShop (Click to Buy)"));
-        int itemAmt = 0;
-        // would rather use two for loops than AtomicInteger tee hee
-        for (ItemStack i : items.values()) {
-            itemAmt += i.getAmount();
+        Inventory inv = chest.getInventory();
+        InventoryHolder holder = inv.getHolder();
+        HashMap<Integer, ? extends ItemStack> items;
+        if (holder instanceof DoubleChest dc) {
+            Chest left = (Chest)dc.getLeftSide();
+            if (left == null) {
+                Parallelutils.log(Level.WARNING, "attemptPurchase: getLeftSide() returned null");
+                return ShopResult.ERROR;
+            }
+            Chest right = (Chest)dc.getRightSide();
+            if (right == null) {
+                Parallelutils.log(Level.WARNING, "attemptPurchase: getRightSide() returned null");
+                return ShopResult.ERROR;
+            }
+            if (left.getInventory().containsAtLeast(new ItemStack(Material.DIAMOND), MAX_DIAMONDS - shop.buyAmt())
+                && right.getInventory().containsAtLeast(new ItemStack(Material.DIAMOND), MAX_DIAMONDS - shop.buyAmt())) {
+                return ShopResult.SHOP_FULL;
+            }
+            items = left.getInventory().all(shop.item());
+            Inventory shopping = Bukkit.createInventory(null, 54, Component.text("ChestShop (Click to Buy)"));
+            items.forEach(shopping::setItem);
+            int itemAmt = 0;
+            for (ItemStack i : items.values()) {
+                itemAmt += i.getAmount();
+            }
+            // unfortunately have to do this in two iterations to avoid '? extends/captures' conflicts
+            items = right.getInventory().all(shop.item());
+            items.forEach(shopping::setItem);
+            for (ItemStack i : items.values()) {
+                itemAmt += i.getAmount();
+            }
+            if (inv.getContents().length == 0 || items.size() == 0 || itemAmt < shop.sellAmt()) {
+                return ShopResult.SHOP_EMPTY;
+            }
+            player.openInventory(shopping);
+            shoppingPlayers.put(player.getUniqueId(), new ShopperData(shopping, inv, shop, diamonds));
         }
-        items.forEach(shopping::setItem);
-        if (inv.getContents().length == 0 || items.size() == 0 || itemAmt < shop.sellAmt()) {
-            return ShopResult.SHOP_EMPTY;
+        else {
+            if (inv.containsAtLeast(new ItemStack(Material.DIAMOND), MAX_DIAMONDS - shop.buyAmt())) {
+                return ShopResult.SHOP_FULL;
+            }
+            items = inv.all(shop.item());
+            Inventory shopping = Bukkit.createInventory(null, InventoryType.CHEST, Component.text("ChestShop (Click to Buy)"));
+            int itemAmt = 0;
+            // would rather use two for loops than AtomicInteger tee hee
+            for (ItemStack i : items.values()) {
+                itemAmt += i.getAmount();
+            }
+            items.forEach(shopping::setItem);
+            if (inv.getContents().length == 0 || items.size() == 0 || itemAmt < shop.sellAmt()) {
+                return ShopResult.SHOP_EMPTY;
+            }
+            player.openInventory(shopping);
+            shoppingPlayers.put(player.getUniqueId(), new ShopperData(shopping, inv, shop, diamonds));
         }
-        player.openInventory(shopping);
-        shoppingPlayers.put(player.getUniqueId(), new ShopperData(shopping, inv, shop, diamonds));
         return ShopResult.SUCCESS;
     }
 
     public void openShopPreview(Player player, Shop shop, Inventory chest) {
-        Inventory inv = Bukkit.createInventory(null, InventoryType.CHEST, Component.text("ChestShop Preview"));
-        HashMap<Integer, ? extends ItemStack> items = chest.all(shop.item());
-        items.forEach(inv::setItem);
-        player.openInventory(inv);
-        shopPreviews.put(player.getUniqueId(), inv);
+        if (chest.getHolder() instanceof DoubleChest dc) {
+            Chest left = (Chest)dc.getLeftSide();
+            if (left == null) {
+                Parallelutils.log(Level.WARNING, "attemptPurchase: getLeftSide() returned null");
+                return;
+            }
+            Chest right = (Chest)dc.getRightSide();
+            if (right == null) {
+                Parallelutils.log(Level.WARNING, "attemptPurchase: getRightSide() returned null");
+                return;
+            }
+            Inventory inv = Bukkit.createInventory(null, 54, Component.text("ChestShop Preview"));
+            HashMap<Integer, ? extends ItemStack> items = left.getInventory().all(shop.item());
+            // unfortunately have to do this in two iterations to avoid '? extends/captures' conflicts
+            items.forEach(inv::setItem);
+            items = right.getInventory().all(shop.item());
+            items.forEach(inv::setItem);
+            player.openInventory(inv);
+            shopPreviews.put(player.getUniqueId(), inv);
+        }
+        else {
+            Inventory inv = Bukkit.createInventory(null, InventoryType.CHEST, Component.text("ChestShop Preview"));
+            HashMap<Integer, ? extends ItemStack> items = chest.all(shop.item());
+            items.forEach(inv::setItem);
+            player.openInventory(inv);
+            shopPreviews.put(player.getUniqueId(), inv);
+        }
     }
 
     public void closeShopPreview(Player player) {
