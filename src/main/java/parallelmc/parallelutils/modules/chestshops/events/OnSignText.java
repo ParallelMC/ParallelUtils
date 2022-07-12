@@ -48,7 +48,7 @@ public class OnSignText implements Listener {
                 Directional d = (Directional)event.getBlock().getBlockData();
                 Block attached = event.getBlock().getRelative(d.getFacing().getOppositeFace());
                 if (attached.getState() instanceof Chest chest) {
-                    Inventory inv = chest.getBlockInventory();
+                    Inventory inv = chest.getInventory();
                     ItemStack sell = inv.getItem(0);
                     if (sell == null || sell.getType() == Material.AIR) {
                         event.setCancelled(true);

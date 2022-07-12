@@ -6,5 +6,6 @@ public enum ShopResult {
     NO_DIAMONDS,
     INSUFFICIENT_FUNDS,
     SHOP_FULL,
-    SUCCESS
+    SUCCESS,
+    ERROR
 }
