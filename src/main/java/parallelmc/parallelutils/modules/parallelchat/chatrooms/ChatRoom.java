@@ -90,7 +90,7 @@ public class ChatRoom {
             // ChatRoom Spy
             ParallelChat.get().socialSpyUsers.forEach((u, o) -> {
                 if (u.equals(sender.getUniqueId())) return;
-                if (o.isSocialSpy()) {
+                if (o.isChatRoomSpy()) {
                     // this kinda sucks but not much can be done
                     Player spyUser = sender.getServer().getPlayer(u);
                     if (spyUser != null) {
@@ -112,7 +112,7 @@ public class ChatRoom {
         Component chatroomSpy = MiniMessage.miniMessage().deserialize("<yellow>[<aqua>ChatRoom-Spy<yellow>] ").append(text);
         // ChatRoom Spy
         ParallelChat.get().socialSpyUsers.forEach((u, o) -> {
-            if (o.isSocialSpy()) {
+            if (o.isChatRoomSpy()) {
                 // this kinda sucks but not much can be done
                 Player spyUser = ParallelChat.get().getPlugin().getServer().getPlayer(u);
                 if (spyUser != null) {
