@@ -314,6 +314,10 @@ public class ChestShops implements ParallelModule {
         return shoppingPlayers.values().stream().anyMatch(x -> x.fakeInv() == inv);
     }
 
+    public boolean isPlayerUsingShop(Shop shop) {
+        return shoppingPlayers.values().stream().anyMatch(x -> x.shop().equals(shop));
+    }
+
 
     public static ChestShops get() {
         return INSTANCE;
