@@ -22,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
+import parallelmc.parallelutils.modules.parallelchat.chatrooms.ChatRoomManager;
 import parallelmc.parallelutils.modules.parallelchat.commands.*;
 import parallelmc.parallelutils.modules.parallelchat.events.*;
 import parallelmc.parallelutils.modules.parallelchat.events.OnChatMessage;
@@ -80,6 +81,8 @@ public class ParallelChat implements ParallelModule {
     public BufferedWriter chatLogWriter;
     public BufferedWriter cmdLogWriter;
 
+    public ChatRoomManager chatRoomManager;
+
     private final Random rand = new Random();
 
     private Parallelutils puPlugin;
@@ -114,7 +117,8 @@ public class ParallelChat implements ParallelModule {
                     (
                         UUID        varchar(36) not null,
                         SocSpy      tinyint     not null,
-                        CmdSpy      tinyint     not null
+                        CmdSpy      tinyint     not null,
+                        ChatRoomSpy tinyint     not null
                     );""");
             conn.commit();
             statement.close();
@@ -132,7 +136,8 @@ public class ParallelChat implements ParallelModule {
                 UUID uuid = UUID.fromString(results.getString("UUID"));
                 boolean socialSpy = results.getBoolean("SocSpy");
                 boolean cmdSpy = results.getBoolean("CmdSpy");
-                socialSpyUsers.put(uuid, new SocialSpyOptions(socialSpy, cmdSpy));
+                boolean chatRoomSpy = results.getBoolean("ChatRoomSpy");
+                socialSpyUsers.put(uuid, new SocialSpyOptions(socialSpy, cmdSpy, chatRoomSpy));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -203,6 +208,9 @@ public class ParallelChat implements ParallelModule {
         catch (IOException e) {
             Parallelutils.log(Level.SEVERE, "Failed to open writer to loggers!");
         }
+
+        this.chatRoomManager = new ChatRoomManager(Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/chatrooms.json"));
+
         manager.registerEvents(new OnChatMessage(), puPlugin);
         manager.registerEvents(new OnJoinLeave(puPlugin), puPlugin);
         manager.registerEvents(new OnSignTextSet(), puPlugin);
@@ -219,6 +227,7 @@ public class ParallelChat implements ParallelModule {
         puPlugin.getCommand("clearchat").setExecutor(new ParallelClearChat());
         puPlugin.getCommand("socialspy").setExecutor(new ParallelSocialSpy());
         puPlugin.getCommand("commandspy").setExecutor(new ParallelCommandSpy());
+        puPlugin.getCommand("chatroomspy").setExecutor(new ParallelChatRoomSpy());
         puPlugin.getCommand("mutechat").setExecutor(new ParallelMuteChat());
         puPlugin.getCommand("colors").setExecutor(new ParallelColors());
         puPlugin.getCommand("formats").setExecutor(new ParallelFormats());
@@ -246,7 +255,7 @@ public class ParallelChat implements ParallelModule {
             Parallelutils.log(Level.SEVERE, "Failed to close chat log writer!");
         }
 
-        // save socialspy and cmdspy data across shutdowns
+        // save spy data across shutdowns
         try (Connection conn = puPlugin.getDbConn()) {
             if (conn == null) throw new SQLException("Unable to establish connection!");
             PreparedStatement statement = conn.prepareStatement("INSERT INTO SocialSpy (UUID, SocSpy, CmdSpy) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE SocSpy = ?, CmdSpy = ?");
@@ -269,6 +278,9 @@ public class ParallelChat implements ParallelModule {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        // save chatrooms
+        chatRoomManager.saveChatroomsToFile();
     }
 
     /**
@@ -477,5 +489,7 @@ public class ParallelChat implements ParallelModule {
     }
 
     public HashSet<UUID> getLoreChat() { return playersInLoreChat; }
+
+    public Parallelutils getPlugin() { return puPlugin; }
 
 }
