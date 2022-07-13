@@ -29,6 +29,11 @@ public class OnBreakShop implements Listener {
                 ParallelChat.sendParallelMessageTo(player, "You cannot break this chest shop!");
                 return;
             }
+            if (ChestShops.get().isPlayerUsingShop(s)) {
+                event.setCancelled(true);
+                ParallelChat.sendParallelMessageTo(player, "Please wait, a player is using this shop.");
+                return;
+            }
             ChestShops.get().removeShop(s.owner(), s.chestPos());
             ParallelChat.sendParallelMessageTo(player, "Chest shop unregistered.");
         }
@@ -58,6 +63,11 @@ public class OnBreakShop implements Listener {
                     ParallelChat.sendParallelMessageTo(player, "You cannot break this chest shop!");
                     return;
                 }
+                if (ChestShops.get().isPlayerUsingShop(s)) {
+                    event.setCancelled(true);
+                    ParallelChat.sendParallelMessageTo(player, "Please wait, a player is using this shop.");
+                    return;
+                }
                 ChestShops.get().removeShop(s.owner(), s.chestPos());
                 ParallelChat.sendParallelMessageTo(player, "Chest shop unregistered.");
                 return;
@@ -67,6 +77,11 @@ public class OnBreakShop implements Listener {
             if (!player.hasPermission("parallelutils.bypass.chestshops") && s.owner() != player.getUniqueId()) {
                 event.setCancelled(true);
                 ParallelChat.sendParallelMessageTo(player, "You cannot break this chest shop!");
+                return;
+            }
+            if (ChestShops.get().isPlayerUsingShop(s)) {
+                event.setCancelled(true);
+                ParallelChat.sendParallelMessageTo(player, "Please wait, a player is using this shop.");
                 return;
             }
             ChestShops.get().removeShop(s.owner(), s.chestPos());
