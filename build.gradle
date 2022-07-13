@@ -1,14 +1,14 @@
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id("io.papermc.paperweight.userdev") version "1.3.3"
+    id("io.papermc.paperweight.userdev") version "1.3.7"
     id("xyz.jpenilla.run-paper") version "1.0.6" // Adds runServer and runMojangMappedServer tasks for testing
-    id 'net.minecrell.plugin-yml.bukkit' version '0.5.1'
+    id 'net.minecrell.plugin-yml.bukkit' version '0.5.2'
 }
 
 group = 'org.parallelmc'
 
-version = '2.4.0'
+version = '2.5.0'
 description = 'A set of utilities and features for use on the Parallel Minecraft server'
 
 java {
@@ -29,22 +29,23 @@ repositories {
     maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
     maven { url = 'https://repo.dmulloy2.net/repository/public/' }
     maven { url = 'https://repo.codemc.org/repository/maven-public/' }
+    maven { url = 'https://repo.rosewooddev.io/repository/public/' }
 }
 
 dependencies {
-    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.18.2-R0.1-SNAPSHOT")
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19-R0.1-SNAPSHOT")
 
-    compileOnly "io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT"
-    implementation 'org.jetbrains:annotations:16.0.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+    compileOnly "io.papermc.paper:paper-api:1.19-R0.1-SNAPSHOT"
+    implementation 'org.jetbrains:annotations:23.0.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
     implementation 'net.dv8tion:JDA:4.4.0_350'
-    compileOnly 'me.clip:placeholderapi:2.10.10'
+    compileOnly 'me.clip:placeholderapi:2.11.2'
     compileOnly fileTree('libs') { include '*.jar' }
-    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.6'
-    implementation 'mysql:mysql-connector-java:8.0.26'
-    compileOnly 'net.luckperms:api:5.3'
-    compileOnly 'com.comphenix.protocol:ProtocolLib:4.7.0'
-    compileOnly 'dev.esophose:playerparticles:7.25'
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.7'
+    implementation 'mysql:mysql-connector-java:8.0.29'
+    compileOnly 'net.luckperms:api:5.4'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:4.8.0'
+    compileOnly 'dev.esophose:playerparticles:8.2'
 }
 
 artifacts {
@@ -81,7 +82,7 @@ bukkit {
 
     main = 'parallelmc.parallelutils.Parallelutils'
 
-    apiVersion = '1.18'
+    apiVersion = '1.19'
 
     depend = ['PlaceholderAPI', 'ProtocolLib']
     softDepend = ['Multiverse-Core', 'FractalForest', 'WorldGuard', 'VoteParty', 'PlayerParticles', 'ProNouns']
@@ -92,6 +93,12 @@ bukkit {
             usage = '/parallelutils'
             permissionMessage = 'You do not have permission'
             aliases = ['pu',]
+        }
+        chatroom {
+            description = 'Base command for all ChatRoom commands'
+            usage = '/cr'
+            permissionMessage = 'You do not have permission'
+            aliases = ['cr',]
         }
         depositexp {
             description = 'Deposit exp into the player\' s ender chest '
@@ -175,6 +182,12 @@ bukkit {
             usage = '/commandspy'
             permissionMessage = 'You do not have permission'
             permission = 'parallelutils.commandspy'
+        }
+        chatroomspy {
+            description = 'Toggles chatroom spy'
+            usage = '/chatroomspy'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.chatrooms.chatroomspy'
         }
         mutechat {
             description = 'Mute or unmute the chat'
@@ -329,7 +342,7 @@ bukkit {
         }
         'parallelutils.bypass' {
             description = 'Bypasses some ParallelUtils modules'
-            childrenMap = ['parallelutils.bypass.anticaps': true, 'parallelutils.bypass.antislur': true, 'parallelutils.bypass.clearchat': true, 'parallelutils.bypass.socialspy': true, 'parallelutils.bypass.commandspy': true, 'parallelutils.bypass.mutechat': true,]
+            childrenMap = ['parallelutils.bypass.anticaps': true, 'parallelutils.bypass.antislur': true, 'parallelutils.bypass.clearchat': true, 'parallelutils.bypass.socialspy': true, 'parallelutils.bypass.commandspy': true, 'parallelutils.bypass.mutechat': true,'parallelutils.bypass.chestshops': true, 'parallelutils.bypass.chatroomspy': true]
         }
         'parallelutils.bypass.anticaps' {
             description = 'Bypasses the Anti-Caps module'
@@ -346,8 +359,14 @@ bukkit {
         'parallelutils.bypass.commandspy' {
             description = 'Bypasses the Command Spy module'
         }
+        'parallelutils.bypass.chatroomspy' {
+            description = 'Bypasses the ChatRoom Spy module'
+        }
         'parallelutils.bypass.mutechat' {
             description = 'Bypasses chat being muted'
+        }
+        'parallelutils.bypass.chestshops' {
+            description = 'Bypasses chest shop protection'
         }
         'parallelutils.notify' {
             description = 'Be notified by some ParallelUtils modules'
@@ -355,6 +374,16 @@ bukkit {
         }
         'parallelutils.notify.antislur' {
             description = 'Be notified of swearing'
+        }
+        'parallelutils.chestshops.create' {
+            description = 'Allows creation of Chest Shops'
+        }
+        'parallelutils.chatrooms' {
+            description = 'Chatroom admin permissions'
+            childrenMap = ['parallelutils.chatrooms.chatroomspy': true,]
+        }
+        'parallelutils.chatrooms.chatroomspy' {
+            description = 'View messages from all chatrooms'
         }
     }
 }
