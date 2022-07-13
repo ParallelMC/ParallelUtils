@@ -88,7 +88,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		String lowerName = command.getName().toLowerCase().strip();
 
-		if (lowerName.equals("parallelutils") || lowerName.equals("pu") && args.length == 1) {
+		if ((lowerName.equals("parallelutils") || lowerName.equals("pu")) && args.length == 1) {
 			// List every sub-command
 			list.addAll(commandMap.keySet());
 		} else {
