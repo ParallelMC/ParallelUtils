@@ -18,7 +18,6 @@ import parallelmc.parallelutils.modules.chestshops.Shop;
 import parallelmc.parallelutils.modules.chestshops.ShopResult;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
-import java.util.HashMap;
 import java.util.logging.Level;
 
 public class OnClickBlock implements Listener {
@@ -38,6 +37,10 @@ public class OnClickBlock implements Listener {
                 if (!(c.getState() instanceof Chest chest)) {
                     Parallelutils.log(Level.WARNING, "Block at " + shop.chestPos() + " should be a chest but it is actually a " + c.getType() + "! Removing...");
                     ChestShops.get().removeShop(shop.owner(), shop.chestPos());
+                    return;
+                }
+                if (ChestShops.get().isPlayerUsingShop(shop)) {
+                    ParallelChat.sendParallelMessageTo(player, "Someone is already using this shop!");
                     return;
                 }
                 ItemStack diamonds = event.getItem();
@@ -75,6 +78,10 @@ public class OnClickBlock implements Listener {
                         event.setCancelled(true);
                         ParallelChat.sendParallelMessageTo(player, "You cannot open this chest shop!");
                     }
+                    if (ChestShops.get().isPlayerUsingShop(shop)) {
+                        event.setCancelled(true);
+                        ParallelChat.sendParallelMessageTo(player, "Please wait, a player is using this shop.");
+                    }
                     return;
                 }
                 shop = ChestShops.get().getShopFromChestPos(block.getLocation());
@@ -83,6 +90,10 @@ public class OnClickBlock implements Listener {
                 if (!player.hasPermission("parallelutils.bypass.chestshops") && shop.owner() != player.getUniqueId()) {
                     event.setCancelled(true);
                     ParallelChat.sendParallelMessageTo(player, "You cannot open this chest shop!");
+                }
+                if (ChestShops.get().isPlayerUsingShop(shop)) {
+                    event.setCancelled(true);
+                    ParallelChat.sendParallelMessageTo(player, "Please wait, a player is using this shop.");
                 }
             }
         }
