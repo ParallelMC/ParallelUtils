@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.*;
-import org.bukkit.craftbukkit.v1_18_R2.command.ServerCommandSender;
+import org.bukkit.craftbukkit.v1_19_R1.command.ServerCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -88,7 +88,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		String lowerName = command.getName().toLowerCase().strip();
 
-		if (lowerName.equals("parallelutils") || lowerName.equals("pu") && args.length == 1) {
+		if ((lowerName.equals("parallelutils") || lowerName.equals("pu")) && args.length == 1) {
 			// List every sub-command
 			list.addAll(commandMap.keySet());
 		} else {
