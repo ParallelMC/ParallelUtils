@@ -329,7 +329,7 @@ bukkit {
         }
         'parallelutils.bypass' {
             description = 'Bypasses some ParallelUtils modules'
-            childrenMap = ['parallelutils.bypass.anticaps': true, 'parallelutils.bypass.antislur': true, 'parallelutils.bypass.clearchat': true, 'parallelutils.bypass.socialspy': true, 'parallelutils.bypass.commandspy': true, 'parallelutils.bypass.mutechat': true,]
+            childrenMap = ['parallelutils.bypass.anticaps': true, 'parallelutils.bypass.antislur': true, 'parallelutils.bypass.clearchat': true, 'parallelutils.bypass.socialspy': true, 'parallelutils.bypass.commandspy': true, 'parallelutils.bypass.mutechat': true,'parallelutils.bypass.chestshops': true,]
         }
         'parallelutils.bypass.anticaps' {
             description = 'Bypasses the Anti-Caps module'
@@ -349,12 +349,18 @@ bukkit {
         'parallelutils.bypass.mutechat' {
             description = 'Bypasses chat being muted'
         }
+        'parallelutils.bypass.chestshops' {
+            description = 'Bypasses chest shop protection'
+        }
         'parallelutils.notify' {
             description = 'Be notified by some ParallelUtils modules'
             childrenMap = ['parallelutils.notify.antislur': true,]
         }
         'parallelutils.notify.antislur' {
             description = 'Be notified of swearing'
+        }
+        'parallelutils.chestshops.create' {
+            description = 'Allows creation of Chest Shops'
         }
     }
 }

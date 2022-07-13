@@ -8,6 +8,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.*;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.bitsandbobs.BitsAndBobs;
+import parallelmc.parallelutils.modules.chestshops.ChestShops;
 import parallelmc.parallelutils.modules.custommobs.CustomMobs;
 import parallelmc.parallelutils.modules.customtrees.ParallelTrees;
 import parallelmc.parallelutils.modules.discordintegration.DiscordIntegration;
@@ -267,6 +268,14 @@ public final class Parallelutils extends JavaPlugin {
 			tutorials.onEnable();
 		} catch (Exception e) {
 			Parallelutils.log(Level.SEVERE, "Error while enabling module ParallelTutorial!");
+			e.printStackTrace();
+		}
+
+		try {
+			ChestShops chestShops = new ChestShops();
+			chestShops.onEnable();
+		} catch (Exception e) {
+			Parallelutils.log(Level.SEVERE, "Error while enabling module ChestShops!");
 			e.printStackTrace();
 		}
 
