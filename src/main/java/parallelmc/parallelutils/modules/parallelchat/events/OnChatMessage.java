@@ -49,9 +49,19 @@ public class OnChatMessage implements Listener {
             event.message(Component.text(msgStr.replaceAll("&[[0-9][a-f]]", "")));
         }
 
+        // check hex permission
+        if (!player.hasPermission("parallelutils.chat.hex")) {
+            event.message(Component.text(msgStr.replaceAll("&#(.{6})", "")));
+        }
+
         // check formats permission
         if (!player.hasPermission("parallelutils.chat.formats")) {
-            event.message(Component.text(msgStr.replaceAll("&[[k-o]r]", "")));
+            event.message(Component.text(msgStr.replaceAll("&[[l-o]r]", "")));
+        }
+
+        // check magic permission
+        if (!player.hasPermission("parallel.chat.magic")) {
+            event.message(Component.text(msgStr.replaceAll("&k", "")));
         }
 
         // Chat Logger

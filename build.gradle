@@ -331,14 +331,36 @@ bukkit {
             description = 'Gives access to tutorialinfo command'
         }
         'parallelutils.chat' {
-            description = 'Gives access to chat elemets'
-            childrenMap = ['parallelutils.chat.colors': true, 'parallelutils.chat.formats': true,]
+            description = 'Gives access to chat elements'
+            childrenMap = ['parallelutils.chat.colors': true, 'parallelutils.chat.formats': true,'parallelutils.chat.hex': true,'parallelutils.chat.magic': true,]
         }
         'parallelutils.chat.colors' {
             description = 'Gives access to chat colors'
         }
         'parallelutils.chat.formats' {
             description = 'Gives access to chat formatting'
+        }
+        'parallelutils.chat.hex' {
+            description = 'Gives access to chat hex colors'
+        }
+        'parallelutils.chat.magic' {
+            description = 'Gives access to magic chat formatting'
+        }
+        'parallelutils.sign' {
+            description = 'Gives access to chat elements on signs'
+            childrenMap = ['parallelutils.sign.colors': true, 'parallelutils.sign.formats': true,'parallelutils.sign.hex': true,'parallelutils.sign.magic': true,]
+        }
+        'parallelutils.sign.colors' {
+            description = 'Gives access to chat colors on signs'
+        }
+        'parallelutils.sign.formats' {
+            description = 'Gives access to chat formatting on signs'
+        }
+        'parallelutils.sign.hex' {
+            description = 'Gives access to chat hex colors on signs'
+        }
+        'parallelutils.sign.magic' {
+            description = 'Gives access to magic chat formatting on signs'
         }
         'parallelutils.bypass' {
             description = 'Bypasses some ParallelUtils modules'
