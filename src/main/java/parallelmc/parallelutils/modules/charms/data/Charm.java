@@ -6,6 +6,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -104,7 +105,7 @@ public class Charm {
 			List<Component> lore = meta.lore();
 			if (lore == null) lore = new ArrayList<>();
 
-			lore.add(MiniMessage.miniMessage().deserialize("<aqua>Charm: " + options.getName()));
+			lore.add(MiniMessage.miniMessage().deserialize("<italic:false><aqua>Charm: " + options.getName()));
 			meta.lore(lore);
 
 			PersistentDataContainer pdc = meta.getPersistentDataContainer();

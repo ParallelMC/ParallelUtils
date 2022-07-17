@@ -54,6 +54,7 @@ public class GiveRemover extends ParallelCommand {
 		if (meta == null) return false;
 
 		meta.displayName(MiniMessage.miniMessage().deserialize("<italic:false><yellow>Charm Remover"));
+		meta.setCustomModelData(1000000);
 
 		PersistentDataContainer pdc = meta.getPersistentDataContainer();
 
