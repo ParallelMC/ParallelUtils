@@ -27,7 +27,7 @@ import java.util.logging.Level;
  */
 public class ParallelItemsGiveCommand extends ParallelCommand {
 
-    public static final String[] ITEMS = new String[]{"enhanced_fertilizer", "baguette", "space_helmet_red", "candy", "early_supporter_glasses", "pocket_teleporter", "chorus_totem"};
+    public static final String[] ITEMS = new String[]{"enhanced_fertilizer", "baguette", "space_helmet_red", "candy", "early_supporter_glasses", "pocket_teleporter", "totem_of_the_void"};
 
     private final String USAGE = "Usage: /pu give <username> <item> [amount]";
 
