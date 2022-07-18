@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.IntTag;
 import net.minecraft.nbt.ListTag;
@@ -12,8 +13,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -27,8 +31,13 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelitems.pocketteleporter.PlayerPositionManager;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -38,8 +47,13 @@ public class ParallelItems implements ParallelModule {
 
     private final HashMap<String, ItemStack> itemRegistry = new HashMap<>();
     private final HashMap<Integer, ItemStack> itemRegistryId = new HashMap<>();
+    private final HashMap<String, ParallelFish> fishRegistry = new HashMap<>();
+
+    private final HashMap<Integer, ParallelFish> fishRegistryId = new HashMap<>();
 
     public static PlayerPositionManager posManager;
+
+    private Parallelutils puPlugin;
 
     @Override
     public void onEnable() {
@@ -63,6 +77,7 @@ public class ParallelItems implements ParallelModule {
         registerItems();
         ParallelItemsEventRegistrar.registerEvents();
         puPlugin.addCommand("give", new ParallelItemsGiveCommand());
+        puPlugin.addCommand("givefish", new ParallelItemsGiveFishCommand());
 
         posManager = new PlayerPositionManager(puPlugin);
         posManager.init();
@@ -78,6 +93,8 @@ public class ParallelItems implements ParallelModule {
             Parallelutils.log(Level.SEVERE, "PLUGIN NOT FOUND. THIS IS A PROBLEM");
             return;
         }
+
+        this.puPlugin = (Parallelutils)plugin;
 
         // A special tag to keep track of ParallelItems. Each type of item has it's own number.
         NamespacedKey key = new NamespacedKey(plugin, "ParallelItem");
@@ -327,6 +344,8 @@ public class ParallelItems implements ParallelModule {
                     "Item will not work!");
             e.printStackTrace();
         }
+
+        loadFish();
     }
 
     @Override
@@ -341,5 +360,83 @@ public class ParallelItems implements ParallelModule {
      */
     public ItemStack getItem(String key){
         return itemRegistry.get(key);
+    }
+
+    public ParallelFish getFish(String key) { return fishRegistry.get(key); }
+    public ParallelFish getFishById(int id) { return fishRegistryId.get(id); }
+
+    public HashMap<String, ParallelFish> getAllFish() { return fishRegistry; }
+
+    public void loadFish() {
+        int id = 1;
+        NamespacedKey ikey = new NamespacedKey(puPlugin, "ParallelFish");
+        File fishFile = new File(puPlugin.getDataFolder(), "fish.yml");
+        FileConfiguration fishConfig = new YamlConfiguration();
+        try {
+            if (fishFile.createNewFile()) {
+                Parallelutils.log(Level.WARNING, "fish.yml does not exist. Creating...");
+            }
+            fishConfig.load(fishFile);
+        } catch (IOException e) {
+            Parallelutils.log(Level.SEVERE, "Failed to create or read fish.yml\n" + e);
+            return;
+        } catch (Exception e) {
+            Parallelutils.log(Level.SEVERE, "Failed to load fish.yml\n" + e);
+            return;
+        }
+        for (String key : fishConfig.getKeys(false)) {
+            try {
+                ItemStack fish;
+                int hunger = 0, saturation = 0;
+                boolean consumable = fishConfig.getBoolean(key + ".consumable");
+                if (consumable) {
+                    fish = new ItemStack(Material.COD);
+                    hunger = fishConfig.getInt(key + ".hunger");
+                    saturation = fishConfig.getInt(key + ".saturation");
+                    if (hunger == 0 || saturation == 0) {
+                        Parallelutils.log(Level.WARNING, "Failed to load fish " + key + ", could not find hunger or saturation");
+                        continue;
+                    }
+                }
+                else
+                    fish = new ItemStack(Material.PAPER);
+                ItemMeta fishMeta = fish.getItemMeta();
+                String fishName = fishConfig.getString(key + ".name");
+                if (fishName == null) {
+                    Parallelutils.log(Level.WARNING, "Failed to load fish " + key + ", could not find name");
+                    continue;
+                }
+                fishMeta.displayName(Component.text(fishName, NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
+                int modelData = fishConfig.getInt(key + ".model_data");
+                if (modelData == 0) {
+                    Parallelutils.log(Level.WARNING, "Failed to load fish " + key + ", could not find model data");
+                    continue;
+                }
+                List<String> desc = fishConfig.getStringList(key + ".description");
+                if (desc.size() == 0) {
+                    Parallelutils.log(Level.WARNING, "Failed to load fish " + key + ", could not find description");
+                    continue;
+                }
+                List<Component> lore = new ArrayList<>();
+                for (String s : desc) {
+                    lore.add(MiniMessage.miniMessage().deserialize(s).decoration(TextDecoration.ITALIC, false));
+                }
+                fishMeta.lore(lore);
+                fishMeta.setCustomModelData(modelData);
+                fishMeta.getPersistentDataContainer().set(ikey, PersistentDataType.INTEGER, id);
+                fish.setItemMeta(fishMeta);
+                String cooked_key = fishConfig.getString(key + ".cooked_name");
+                ParallelFish pFish = new ParallelFish(id, key, hunger, saturation, cooked_key, fish);
+                fishRegistry.put(key, pFish);
+                fishRegistryId.put(id, pFish);
+                id++;
+
+            } catch (NullPointerException e) {
+                Parallelutils.log(Level.WARNING,"NullPointerException registering " + key +
+                        ". Item will not work!");
+                e.printStackTrace();
+            }
+        }
+        Parallelutils.log(Level.WARNING, "[ParallelFish]: Loaded " + fishRegistry.size() + " fish");
     }
 }

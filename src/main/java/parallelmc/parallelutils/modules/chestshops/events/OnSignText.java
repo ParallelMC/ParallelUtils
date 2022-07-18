@@ -23,6 +23,7 @@ import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class OnSignText implements Listener {
     // ChestShop formatting:
@@ -118,7 +119,7 @@ public class OnSignText implements Listener {
                         event.line(2, Component.text(sellNum + " ").append(name));
                     }
                     event.line(3, Component.text(buyNum + " diamonds"));
-                    ChestShops.get().addShop(player.getUniqueId(), attached.getLocation(), event.getBlock().getLocation(), sell.getType(), sellNum, buyNum);
+                    ChestShops.get().addShop(player.getUniqueId(), UUID.randomUUID(), attached.getLocation(), event.getBlock().getLocation(), sell.getType(), sellNum, buyNum);
                     ParallelChat.sendParallelMessageTo(player, "Chest shop created!");
                 }
                 else {

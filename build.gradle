@@ -275,6 +275,10 @@ bukkit {
             description = 'Gives access to giving ParallelItems.'
             setDefault('FALSE')
         }
+        'parallelutils.givefish' {
+            description = 'Gives access to giving ParallelFish.'
+            setDefault('FALSE')
+        }
         'parallelutils.test' {
             description = 'Gives access to the test command'
             setDefault('FALSE')
