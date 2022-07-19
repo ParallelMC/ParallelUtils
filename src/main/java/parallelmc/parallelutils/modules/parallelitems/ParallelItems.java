@@ -387,13 +387,14 @@ public class ParallelItems implements ParallelModule {
         for (String key : fishConfig.getKeys(false)) {
             try {
                 ItemStack fish;
-                int hunger = 0, saturation = 0;
+                int hunger = 0;
+                float saturation = 0f;
                 boolean consumable = fishConfig.getBoolean(key + ".consumable");
                 if (consumable) {
                     fish = new ItemStack(Material.COD);
                     hunger = fishConfig.getInt(key + ".hunger");
-                    saturation = fishConfig.getInt(key + ".saturation");
-                    if (hunger == 0 || saturation == 0) {
+                    saturation = (float)fishConfig.getDouble(key + ".saturation");
+                    if (hunger == 0 || saturation == 0f) {
                         Parallelutils.log(Level.WARNING, "Failed to load fish " + key + ", could not find hunger or saturation");
                         continue;
                     }
