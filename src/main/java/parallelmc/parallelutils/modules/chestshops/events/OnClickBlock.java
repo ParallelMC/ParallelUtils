@@ -30,7 +30,6 @@ public class OnClickBlock implements Listener {
             if (block.getState() instanceof Sign) {
                 Shop shop = ChestShops.get().getShopFromSignPos(block.getLocation());
                 if (shop == null) {
-                    Parallelutils.log(Level.WARNING, "Returned shop was null.");
                     return;
                 }
                 Block c = player.getWorld().getBlockAt(shop.chestPos());

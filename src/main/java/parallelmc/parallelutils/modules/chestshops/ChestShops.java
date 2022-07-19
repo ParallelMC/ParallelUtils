@@ -158,7 +158,6 @@ public class ChestShops implements ParallelModule {
             shops.add(shop);
             chestShops.put(owner, shops);
         }
-        Parallelutils.log(Level.WARNING, "Added chest shop: \nChestPos: " + chestPos + "\nSignPos: " + signPos + "\nMaterial: " + item);
     }
 
     public void removeShop(UUID owner, Location chestPos) {
