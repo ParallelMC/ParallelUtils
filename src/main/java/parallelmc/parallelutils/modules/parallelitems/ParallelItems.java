@@ -400,12 +400,17 @@ public class ParallelItems implements ParallelModule {
                 }
                 else
                     fish = new ItemStack(Material.PAPER);
-                ItemMeta fishMeta = fish.getItemMeta();
                 String fishName = fishConfig.getString(key + ".name");
                 if (fishName == null) {
                     Parallelutils.log(Level.WARNING, "Failed to load fish " + key + ", could not find name");
                     continue;
                 }
+                // it's a bad idea to assume this but most of the cooked fish should have this, so it works for now
+                // saves having to loop twice or add extra config stuff
+                if (fishName.toLowerCase().contains("cooked")) {
+                    fish = new ItemStack(Material.COOKED_COD);
+                }
+                ItemMeta fishMeta = fish.getItemMeta();
                 fishMeta.displayName(Component.text(fishName, NamedTextColor.WHITE).decoration(TextDecoration.ITALIC, false));
                 int modelData = fishConfig.getInt(key + ".model_data");
                 if (modelData == 0) {
