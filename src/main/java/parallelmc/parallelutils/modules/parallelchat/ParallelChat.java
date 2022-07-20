@@ -396,7 +396,7 @@ public class ParallelChat implements ParallelModule {
                 Placeholder.component("displayname", displayName.hoverEvent(Component.text(
                         PlaceholderAPI.setPlaceholders(source, "%pronouns_pronouns%")).asHoverEvent())),
                 Placeholder.component("tag", getTagForPlayer(source)),
-                Placeholder.component("message", message)
+                Placeholder.component("message", Component.text(LegacyComponentSerializer.legacyAmpersand().serialize(message)))
         );
 
         if (isUsingDefault) {
