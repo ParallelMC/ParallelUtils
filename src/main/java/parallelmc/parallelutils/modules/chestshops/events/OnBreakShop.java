@@ -24,7 +24,7 @@ public class OnBreakShop implements Listener {
         if (block.getState() instanceof Sign) {
             Shop s = ChestShops.get().getShopFromSignPos(block.getLocation());
             if (s == null) return;
-            if (!player.hasPermission("parallelutils.bypass.chestshops") && s.owner() != player.getUniqueId()) {
+            if (!player.hasPermission("parallelutils.bypass.chestshops") && !s.owner().equals(player.getUniqueId())) {
                 event.setCancelled(true);
                 ParallelChat.sendParallelMessageTo(player, "You cannot break this chest shop!");
                 return;
@@ -58,7 +58,7 @@ public class OnBreakShop implements Listener {
                     if (s == null)
                         return;
                 }
-                if (!player.hasPermission("parallelutils.bypass.chestshops") && s.owner() != player.getUniqueId()) {
+                if (!player.hasPermission("parallelutils.bypass.chestshops") && !s.owner().equals(player.getUniqueId())) {
                     event.setCancelled(true);
                     ParallelChat.sendParallelMessageTo(player, "You cannot break this chest shop!");
                     return;
@@ -74,7 +74,7 @@ public class OnBreakShop implements Listener {
             }
             s = ChestShops.get().getShopFromChestPos(chest.getLocation());
             if (s == null) return;
-            if (!player.hasPermission("parallelutils.bypass.chestshops") && s.owner() != player.getUniqueId()) {
+            if (!player.hasPermission("parallelutils.bypass.chestshops") && !s.owner().equals(player.getUniqueId())) {
                 event.setCancelled(true);
                 ParallelChat.sendParallelMessageTo(player, "You cannot break this chest shop!");
                 return;
