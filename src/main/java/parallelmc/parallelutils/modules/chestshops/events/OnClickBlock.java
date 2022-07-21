@@ -73,7 +73,7 @@ public class OnClickBlock implements Listener {
                         if (shop == null)
                             return;
                     }
-                    if (!player.hasPermission("parallelutils.bypass.chestshops") && shop.owner() != player.getUniqueId()) {
+                    if (!player.hasPermission("parallelutils.bypass.chestshops") && !shop.owner().equals(player.getUniqueId())) {
                         event.setCancelled(true);
                         ParallelChat.sendParallelMessageTo(player, "You cannot open this chest shop!");
                     }
@@ -86,7 +86,7 @@ public class OnClickBlock implements Listener {
                 shop = ChestShops.get().getShopFromChestPos(block.getLocation());
                 if (shop == null)
                     return;
-                if (!player.hasPermission("parallelutils.bypass.chestshops") && shop.owner() != player.getUniqueId()) {
+                if (!player.hasPermission("parallelutils.bypass.chestshops") && !shop.owner().equals(player.getUniqueId())) {
                     event.setCancelled(true);
                     ParallelChat.sendParallelMessageTo(player, "You cannot open this chest shop!");
                 }
