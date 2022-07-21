@@ -42,9 +42,9 @@ public class BitsAndBobs implements ParallelModule {
 
         puPlugin.getCommand("togglepvp").setExecutor(new TogglePvpCommand());
 
-        //manager.registerEvents(new DoorKnocker(), plugin);
+        manager.registerEvents(new DoorKnocker(), plugin);
         manager.registerEvents(new SpecialItems(), plugin);
-        //manager.registerEvents(new SpeedyMinecarts(), plugin);
+        manager.registerEvents(new SpeedyMinecarts(), plugin);
         manager.registerEvents(new OnPvp(), plugin);
         manager.registerEvents(new ShardLotto(), plugin);
 
