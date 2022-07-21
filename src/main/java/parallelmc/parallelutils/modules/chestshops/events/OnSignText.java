@@ -99,9 +99,9 @@ public class OnSignText implements Listener {
                         return;
                     }
                     int buyNum = Integer.parseInt(lines.get(2));
-                    if (buyNum < 1 || buyNum > 64) {
+                    if (buyNum < 0 || buyNum > 64) {
                         event.setCancelled(true);
-                        ParallelChat.sendParallelMessageTo(player, "Invalid buy amount! Must be between 1 and 64.");
+                        ParallelChat.sendParallelMessageTo(player, "Invalid buy amount! Must be between 0 and 64.");
                         return;
                     }
                     event.line(0, Component.text("ChestShop"));
@@ -125,7 +125,12 @@ public class OnSignText implements Listener {
                         // if shorter than 13 characters just use the existing component
                         event.line(2, Component.text(sellNum + " ").append(name));
                     }
-                    event.line(3, Component.text(buyNum + " diamonds"));
+                    if (buyNum == 0) {
+                        event.line(3, Component.text("Free"));
+                    }
+                    else {
+                        event.line(3, Component.text(buyNum + " diamonds"));
+                    }
                     ChestShops.get().addShop(player.getUniqueId(), attached.getLocation(), event.getBlock().getLocation(), sell.getType(), sellNum, buyNum);
                     ParallelChat.sendParallelMessageTo(player, "Chest shop created!");
                 }

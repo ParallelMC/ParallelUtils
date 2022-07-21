@@ -26,16 +26,23 @@ public class ParallelListChatrooms extends ChatroomCommand {
             player.sendMessage(USAGE);
             return false;
         }
+        boolean seePrivate = player.hasPermission("parallelutils.chatrooms.viewprivate") || player.isOp();
         Component text = Component.text("Public Chatrooms: ", NamedTextColor.GOLD);
+        Component ptext = Component.text("Private Chatrooms: ", NamedTextColor.GOLD);
         for (Map.Entry<String, ChatRoom> e : ParallelChat.get().chatRoomManager.getChatRooms().entrySet()) {
-            if (e.getValue().isPrivate()) continue;
+            if (e.getValue().isPrivate()) {
+                if (seePrivate)
+                    ptext = ptext.append(Component.text(e.getKey() + " ", NamedTextColor.NAMES.value(e.getValue().getColor())));
+                continue;
+            }
             text = text.append(Component.text(e.getKey() + " ", NamedTextColor.NAMES.value(e.getValue().getColor())));
         }
         if (ParallelChat.get().chatRoomManager.isPlayerInChatroom(player)) {
             ChatRoom c = ParallelChat.get().chatRoomManager.getPlayerChatRoom(player);
             text = text.append(Component.newline()).append(Component.text("Your Chatroom: ", NamedTextColor.GOLD)).append(Component.text(c.getName(), NamedTextColor.NAMES.value(c.getColor())));
         }
-        player.sendMessage(text);
+        if (seePrivate) player.sendMessage(ptext.append(Component.newline()).append(text));
+        else player.sendMessage(text);
         return true;
     }
 
