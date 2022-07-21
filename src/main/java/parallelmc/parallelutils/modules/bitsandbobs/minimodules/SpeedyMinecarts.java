@@ -36,25 +36,29 @@ public class SpeedyMinecarts implements Listener {
     @EventHandler
     public void onMinecartMove(VehicleMoveEvent event) {
         if (event.getVehicle() instanceof Minecart minecart) {
-            Location cartlocation = minecart.getLocation();
+            Location cartLocation = minecart.getLocation();
 
             // Checks if the block below the minecart is a powered rail
-            if (minecart.getWorld().getBlockAt(cartlocation).getType() == Material.POWERED_RAIL) {
+            if (minecart.getWorld().getBlockAt(cartLocation).getType() == Material.POWERED_RAIL) {
 
                 // Checks if the block below the rail is a redstone block
-                Location blockbelowRail = cartlocation.add(0, -1, 0);
+                Location blockbelowRail = cartLocation.add(0, -1, 0);
 
-                if (minecart.getWorld().getBlockAt(blockbelowRail).getType() == Material.REDSTONE_BLOCK) {
+                if (minecart.getWorld().getBlockAt(blockbelowRail).getType() == Material.COPPER_BLOCK) {
 
                     Vector cartVelocity = minecart.getVelocity();
                     // *SHOULD* set the minecart max speed to 20 m/s (default is 8 m/s)
                     minecart.setMaxSpeed(DEFAULT_MINECART_SPEED * 2.5);
                     cartVelocity.multiply(2.5d);
 
+
+                    // If another redstone block is driven over, the boost timer is reset to 3 seconds
+                    if (minecartList.containsKey(minecart)) {
+                        minecartList.put(minecart, SPEED_BOOST_SECONDS);
+                    }
                     // Checks if the minecart is NOT in the map - if it's not, it'll add it to the map
                     // and remove the extra speed in 3 seconds IF no extra redstone block is driven over
-                    if (!minecartList.containsKey(minecart)) {
-
+                    else {
                         // Adds the minecart to the hashmap
                         minecartList.put(minecart, SPEED_BOOST_SECONDS);
                         // Counts down the speed boost timer from 3 seconds to 0 seconds
@@ -74,10 +78,6 @@ public class SpeedyMinecarts implements Listener {
                                 }
                             }
                         }.runTaskTimer(plugin, 20L, 20L);
-                    }
-                    // If another redstone block is driven over, the boost timer is reset to 3 seconds
-                    else if (minecartList.containsKey(minecart)) {
-                        minecartList.put(minecart, SPEED_BOOST_SECONDS);
                     }
                 }
             }
