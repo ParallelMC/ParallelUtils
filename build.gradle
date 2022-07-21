@@ -8,7 +8,7 @@ plugins {
 
 group = 'org.parallelmc'
 
-version = '2.5.2'
+version = '2.5.3'
 description = 'A set of utilities and features for use on the Parallel Minecraft server'
 
 java {
@@ -402,10 +402,13 @@ bukkit {
         }
         'parallelutils.chatrooms' {
             description = 'Chatroom admin permissions'
-            childrenMap = ['parallelutils.chatrooms.chatroomspy': true,]
+            childrenMap = ['parallelutils.chatrooms.chatroomspy': true,'parallelutils.chatrooms.viewprivate': true,]
         }
         'parallelutils.chatrooms.chatroomspy' {
             description = 'View messages from all chatrooms'
+        }
+        'parallelutils.chatrooms.viewprivate' {
+            description = 'Shows private chatrooms with the /cr list command'
         }
     }
 }

@@ -34,13 +34,16 @@ public class OnShopInteract implements Listener {
             // make a copy of each item
             ItemStack give = new ItemStack(event.getCurrentItem());
             give.setAmount(data.shop().sellAmt());
-            ItemStack take = new ItemStack(data.diamonds());
-            take.setAmount(data.shop().buyAmt());
-            data.diamonds().subtract(data.shop().buyAmt());
             player.getInventory().addItem(give);
             int amtLeft = event.getCurrentItem().getAmount() - data.shop().sellAmt();
             ItemStack update = event.getCurrentItem().subtract(data.shop().sellAmt());
             data.chestInv().setItem(event.getRawSlot(), update);
+            if (data.shop().buyAmt() > 0) {
+                ItemStack take = new ItemStack(data.diamonds());
+                take.setAmount(data.shop().buyAmt());
+                data.diamonds().subtract(data.shop().buyAmt());
+                data.chestInv().addItem(take);
+            }
             if (amtLeft < 0) {
                 amtLeft = -amtLeft;
                 while (amtLeft > 0) {
@@ -58,7 +61,6 @@ public class OnShopInteract implements Listener {
                     amtLeft = -amt;
                 }
             }
-            data.chestInv().addItem(take);
             Component name = give.displayName();
             if (give.hasItemMeta() && give.getItemMeta().hasDisplayName()) {
                 name = give.getItemMeta().displayName();

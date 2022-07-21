@@ -198,11 +198,13 @@ public class ChestShops implements ParallelModule {
         if (player.getInventory().firstEmpty() == -1) {
             return ShopResult.INVENTORY_FULL;
         }
-        if (diamonds == null || diamonds.getType() != Material.DIAMOND) {
-            return ShopResult.NO_DIAMONDS;
-        }
-        if (diamonds.getAmount() < shop.buyAmt()) {
-            return ShopResult.INSUFFICIENT_FUNDS;
+        if (shop.buyAmt() > 0) {
+            if (diamonds == null || diamonds.getType() != Material.DIAMOND) {
+                return ShopResult.NO_DIAMONDS;
+            }
+            if (diamonds.getAmount() < shop.buyAmt()) {
+                return ShopResult.INSUFFICIENT_FUNDS;
+            }
         }
 
         Inventory inv = chest.getInventory();
