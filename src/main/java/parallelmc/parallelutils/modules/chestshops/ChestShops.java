@@ -219,20 +219,13 @@ public class ChestShops implements ParallelModule {
                 Parallelutils.log(Level.WARNING, "attemptPurchase: getRightSide() returned null");
                 return ShopResult.ERROR;
             }
-            if (left.getInventory().containsAtLeast(new ItemStack(Material.DIAMOND), MAX_DIAMONDS - shop.buyAmt())
-                && right.getInventory().containsAtLeast(new ItemStack(Material.DIAMOND), MAX_DIAMONDS - shop.buyAmt())) {
+            if (left.getInventory().containsAtLeast(new ItemStack(Material.DIAMOND), MAX_DIAMONDS - shop.buyAmt())) {
                 return ShopResult.SHOP_FULL;
             }
             items = left.getInventory().all(shop.item());
             Inventory shopping = Bukkit.createInventory(null, 54, Component.text("ChestShop (Click to Buy)"));
             items.forEach(shopping::setItem);
             int itemAmt = 0;
-            for (ItemStack i : items.values()) {
-                itemAmt += i.getAmount();
-            }
-            // unfortunately have to do this in two iterations to avoid '? extends/captures' conflicts
-            items = right.getInventory().all(shop.item());
-            items.forEach(shopping::setItem);
             for (ItemStack i : items.values()) {
                 itemAmt += i.getAmount();
             }
@@ -310,7 +303,7 @@ public class ChestShops implements ParallelModule {
     }
 
     public boolean shopInventoryExists(Inventory inv) {
-        return shoppingPlayers.values().stream().anyMatch(x -> x.fakeInv() == inv);
+        return shoppingPlayers.values().stream().anyMatch(x -> x.fakeInv().equals(inv));
     }
 
     public boolean isPlayerUsingShop(Shop shop) {

@@ -2,18 +2,13 @@ package parallelmc.parallelutils.modules.chestshops.events;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.chestshops.ChestShops;
@@ -23,26 +18,18 @@ import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import java.util.logging.Level;
 
 public class OnShopInteract implements Listener {
+    // suppress supposed null pointers that the compiler doesn't recognize
+    @SuppressWarnings("ConstantConditions")
     @EventHandler
     public void onShopClick(InventoryClickEvent event) {
         Player player = (Player)event.getWhoClicked();
         ShopperData data = ChestShops.get().getShoppingData(player);
         Inventory inv = event.getClickedInventory();
-        boolean isRightSide = false;
         if (data != null && data.fakeInv().equals(inv) && event.getCurrentItem() != null) {
-            InventoryHolder holder = inv.getHolder();
-            if (holder instanceof DoubleChest dc) {
-                Chest right = (Chest)dc.getRightSide();
-                if (right == null) {
-                    Parallelutils.log(Level.WARNING, "onShopClick: getRightSide was null!");
-                    return;
-                }
-                // only handle the right side since the left side is treated as a normal chest
-                // override the inv to the right side of the double chest
-                if (event.getRawSlot() > 26) {
-                    inv = right.getInventory();
-                    isRightSide = true;
-                }
+            if (!inv.containsAtLeast(event.getCurrentItem(), data.shop().sellAmt())) {
+                ParallelChat.sendParallelMessageTo(player, "Shop is out of stock!");
+                player.closeInventory();
+                return;
             }
             // make a copy of each item
             ItemStack give = new ItemStack(event.getCurrentItem());
@@ -51,15 +38,27 @@ public class OnShopInteract implements Listener {
             take.setAmount(data.shop().buyAmt());
             data.diamonds().subtract(data.shop().buyAmt());
             player.getInventory().addItem(give);
+            int amtLeft = event.getCurrentItem().getAmount() - data.shop().sellAmt();
             ItemStack update = event.getCurrentItem().subtract(data.shop().sellAmt());
-            if (isRightSide) {
-                inv.setItem(event.getRawSlot(), update);
-                inv.addItem(take);
+            data.chestInv().setItem(event.getRawSlot(), update);
+            if (amtLeft < 0) {
+                amtLeft = -amtLeft;
+                while (amtLeft > 0) {
+                    int nextSlot = data.chestInv().first(data.shop().item());
+                    if (nextSlot == -1) {
+                        Parallelutils.log(Level.SEVERE, "ItemStack was null when it shouldn't be!");
+                        return;
+                    }
+                    ItemStack next = data.chestInv().getItem(nextSlot);
+                    int amt = next.getAmount() - amtLeft;
+                    next.subtract(amtLeft);
+                    data.fakeInv().getItem(nextSlot).subtract(amtLeft);
+                    if (amt > 0)
+                        break;
+                    amtLeft = -amt;
+                }
             }
-            else {
-                data.chestInv().setItem(event.getRawSlot(), update);
-                data.chestInv().addItem(take);
-            }
+            data.chestInv().addItem(take);
             Component name = give.displayName();
             if (give.hasItemMeta() && give.getItemMeta().hasDisplayName()) {
                 name = give.getItemMeta().displayName();

@@ -80,10 +80,18 @@ public class OnSignText implements Listener {
                     int sellNum;
                     try {
                         sellNum = Integer.parseInt(lines.get(1));
-                        if (sellNum < 1 || sellNum > sell.getMaxStackSize()) {
-                            event.setCancelled(true);
-                            ParallelChat.sendParallelMessageTo(player, "Invalid sell amount! Must be between 1 and " + sell.getMaxStackSize() + ".");
-                            return;
+                        if (sell.hasItemMeta()) {
+                            if (sellNum < 1 || sellNum > sell.getMaxStackSize()) {
+                                event.setCancelled(true);
+                                ParallelChat.sendParallelMessageTo(player, "Invalid sell amount! Must be between 1 and " + sell.getMaxStackSize() + ".");
+                                return;
+                            }
+                        } else {
+                            if (sellNum < 1 || sellNum > sell.getMaxStackSize() * 4) {
+                                event.setCancelled(true);
+                                ParallelChat.sendParallelMessageTo(player, "Invalid sell amount! Must be between 1 and " + sell.getMaxStackSize() * 4 + ".");
+                                return;
+                            }
                         }
                     } catch (NumberFormatException e) {
                         event.setCancelled(true);
