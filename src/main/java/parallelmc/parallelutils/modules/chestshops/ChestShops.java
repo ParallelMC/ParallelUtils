@@ -64,6 +64,7 @@ public class ChestShops implements ParallelModule {
             statement.execute("""
                     create table if not exists ChestShops
                     (
+                        shopID      varchar(36) not null,
                         UUID        varchar(36) not null,
                         World       varchar(32) not null,
                         ChestX      int         not null,
@@ -75,6 +76,9 @@ public class ChestShops implements ParallelModule {
                         Item        varchar(50) not null,
                         SellAmt     int         not null,
                         BuyAmt      int         not null
+                        constraint ChestShops_UUID_uindex
+					        unique (shopID),
+					    PRIMARY KEY (shopID)
                     );""");
             conn.commit();
             statement.close();
@@ -90,13 +94,14 @@ public class ChestShops implements ParallelModule {
             ResultSet results = statement.executeQuery("select * from ChestShops");
             while (results.next()) {
                 UUID uuid = UUID.fromString(results.getString("UUID"));
+                UUID id = UUID.fromString(results.getString("shopID"));
                 World world = puPlugin.getServer().getWorld(results.getString("World"));
                 Location chestLoc = new Location(world, results.getInt("ChestX"), results.getInt("ChestY"), results.getInt("ChestZ"));
                 Location signLoc = new Location(world, results.getInt("SignX"), results.getInt("SignY"), results.getInt("SignZ"));
                 Material item = Material.getMaterial(results.getString("Item"));
                 int sellAmt = results.getInt("SellAmt");
                 int buyAmt = results.getInt("BuyAmt");
-                addShop(uuid, chestLoc, signLoc, item, sellAmt, buyAmt);
+                addShop(uuid, id, chestLoc, signLoc, item, sellAmt, buyAmt);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -115,24 +120,27 @@ public class ChestShops implements ParallelModule {
     public void onDisable() {
         try (Connection conn = puPlugin.getDbConn()) {
             if (conn == null) throw new SQLException("Unable to establish connection!");
-            // allow duplicate uuids since players can have multiple shops
-            PreparedStatement statement = conn.prepareStatement("INSERT INTO ChestShops (UUID, World, ChestX, ChestY, ChestZ, SignX, SignY, SignZ, Item, SellAmt, BuyAmt) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            // allow duplicate player uuids since players can have multiple shops
+            // however, shop ids should never be the same nor update their data
+            // so do nothing in that case
+            PreparedStatement statement = conn.prepareStatement("INSERT INTO ChestShops (shopID, UUID, World, ChestX, ChestY, ChestZ, SignX, SignY, SignZ, Item, SellAmt, BuyAmt) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE shopID = shopID");
             statement.setQueryTimeout(30);
             this.chestShops.forEach((u, o) -> {
                 o.forEach((s) -> {
                     try {
-                        statement.setString(1, u.toString());
-                        statement.setString(2, s.chestPos().getWorld().getName());
-                        statement.setInt(3, s.chestPos().getBlockX());
-                        statement.setInt(4, s.chestPos().getBlockY());
-                        statement.setInt(5, s.chestPos().getBlockZ());
-                        statement.setInt(6, s.signPos().getBlockX());
-                        statement.setInt(7, s.signPos().getBlockY());
-                        statement.setInt(8, s.signPos().getBlockZ());
-                        statement.setString(9, s.item().toString());
-                        statement.setInt(10, s.sellAmt());
-                        statement.setInt(11, s.buyAmt());
+                        statement.setString(1, s.id().toString());
+                        statement.setString(2, u.toString());
+                        statement.setString(3, s.chestPos().getWorld().getName());
+                        statement.setInt(4, s.chestPos().getBlockX());
+                        statement.setInt(5, s.chestPos().getBlockY());
+                        statement.setInt(6, s.chestPos().getBlockZ());
+                        statement.setInt(7, s.signPos().getBlockX());
+                        statement.setInt(8, s.signPos().getBlockY());
+                        statement.setInt(9, s.signPos().getBlockZ());
+                        statement.setString(10, s.item().toString());
+                        statement.setInt(11, s.sellAmt());
+                        statement.setInt(12, s.buyAmt());
                         statement.addBatch();
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -147,8 +155,8 @@ public class ChestShops implements ParallelModule {
         }
     }
 
-    public void addShop(UUID owner, Location chestPos, Location signPos, Material item, int sellAmt, int buyAmt) {
-        Shop shop = new Shop(owner, chestPos, signPos, item, sellAmt, buyAmt);
+    public void addShop(UUID owner, UUID id, Location chestPos, Location signPos, Material item, int sellAmt, int buyAmt) {
+        Shop shop = new Shop(owner, id, chestPos, signPos, item, sellAmt, buyAmt);
         if (chestShops.containsKey(owner)) {
             HashSet<Shop> shops = chestShops.get(owner);
             shops.add(shop);

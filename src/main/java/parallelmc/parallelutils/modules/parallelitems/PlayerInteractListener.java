@@ -15,6 +15,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.inventory.FurnaceSmeltEvent;
+import org.bukkit.event.inventory.FurnaceStartSmeltEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
@@ -27,6 +29,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
@@ -53,10 +56,13 @@ public class PlayerInteractListener implements Listener {
             new PotionEffect(PotionEffectType.WATER_BREATHING, 120, 0)};
     private JavaPlugin javaPlugin;
     private NamespacedKey customKey;
+    private NamespacedKey fishKey;
 
     public final HashMap<Player, Location> lastSafePosition = new HashMap<>();
     private BukkitTask positionSaver;
     private final HashSet<Player> attemptingToSave = new HashSet<>();
+
+    private ParallelItems parallelItems;
 
     public PlayerInteractListener(){
         PluginManager manager = Bukkit.getPluginManager();
@@ -68,6 +74,14 @@ public class PlayerInteractListener implements Listener {
 
         javaPlugin = plugin;
         customKey = new NamespacedKey(javaPlugin, "ParallelItem");
+        fishKey = new NamespacedKey(javaPlugin, "ParallelFish");
+        ParallelModule module = ((Parallelutils)javaPlugin).getModule("ParallelItems");
+        if(module instanceof ParallelItems){
+            parallelItems = (ParallelItems) module;
+        }
+        else{
+            Parallelutils.log(Level.WARNING, "Unable to find ParallelItems module.");
+        }
         positionSaver = new BukkitRunnable() {
             @Override
             public void run() {
@@ -249,6 +263,17 @@ public class PlayerInteractListener implements Listener {
 
             Integer val = meta.getPersistentDataContainer().get(customKey, PersistentDataType.INTEGER);
             if (val == null) {
+                val = meta.getPersistentDataContainer().get(fishKey, PersistentDataType.INTEGER);
+                if (val == null) return;
+                ParallelFish fish = parallelItems.getFishById(val);
+                if (item.getType() != Material.COD) {
+                    Parallelutils.log(Level.WARNING, "Items with tag 'ParallelFish: " + val + "' are " +
+                            fish.key() + ", but this is not the correct material. Something isn't right.");
+                    return;
+                }
+                HumanEntity entity = event.getEntity();
+                event.setFoodLevel(Math.min(entity.getFoodLevel() + fish.hunger(), 20));
+                entity.setSaturation(entity.getSaturation() + fish.saturation());
                 return;
             }
 
@@ -471,5 +496,27 @@ public class PlayerInteractListener implements Listener {
     @EventHandler
     public void onPlayerDisconnect(PlayerQuitEvent event) {
         ParallelItems.posManager.cancelTeleport(event.getPlayer(), "disconnect");
+    }
+
+
+    @EventHandler
+    public void onFurnaceSmelt(FurnaceSmeltEvent event) {
+        ItemStack source = event.getSource();
+        Integer val = source.getItemMeta().getPersistentDataContainer().get(fishKey, PersistentDataType.INTEGER);
+        if (val != null) {
+            ParallelFish fish = parallelItems.getFishById(val);
+            if (fish == null) {
+                Parallelutils.log(Level.SEVERE, "Tried to get non-existent fish with id " + val);
+                return;
+            }
+            if (fish.cooked_key() != null) {
+                ParallelFish result = parallelItems.getFish(fish.cooked_key());
+                if (result == null) {
+                    Parallelutils.log(Level.SEVERE, "Tried to get non-existent fish with id " + val);
+                    return;
+                }
+                event.setResult(result.item());
+            }
+        }
     }
 }
