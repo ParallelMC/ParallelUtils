@@ -23,6 +23,7 @@ import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class OnSignText implements Listener {
     // ChestShop formatting:
