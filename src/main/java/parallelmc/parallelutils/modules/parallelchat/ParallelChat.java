@@ -395,38 +395,20 @@ public class ParallelChat implements ParallelModule {
         TagResolver placeholders = TagResolver.resolver(
                 Placeholder.component("displayname", displayName.hoverEvent(Component.text(
                         PlaceholderAPI.setPlaceholders(source, "%pronouns_pronouns%")).asHoverEvent())),
-                Placeholder.component("tag", getTagForPlayer(source)),
-                Placeholder.component("donorrank", getDonorRankForPlayer(source)),
                 Placeholder.component("message", LegacyComponentSerializer.legacyAmpersand().deserialize(LegacyComponentSerializer.legacyAmpersand().serialize(message)))
         );
 
         if (isUsingDefault) {
             // if default is enabled for whatever reason mimic the default rank
-            Component result = MiniMessage.builder().build().deserialize("<tag><gray><displayname><donorrank> > <reset><message>", placeholders);
-            return result;
+            String format = PlaceholderAPI.setPlaceholders(source, "%deluxetags_tag%<gray><displayname>%luckperms_suffix_element_highest_on_track_donortrack% > <reset><message>");
+            return MiniMessage.builder().build().deserialize(format, placeholders);
         }
         else {
             String group = this.getGroupForPlayer(source);
             String format = ParallelChat.get().groupFormats.get(group);
-            if (format == null) {
-                Parallelutils.log(Level.SEVERE, "Error while formatting group! Unknown group name " + group);
-                return Component.empty();
-            }
-            else {
-                Component result = MiniMessage.builder().build().deserialize(format, placeholders);
-                return result;
-            }
+            format = PlaceholderAPI.setPlaceholders(source, format).replaceAll("§", "&");
+            return MiniMessage.builder().build().deserialize(format, placeholders);
         }
-    }
-
-    private Component getTagForPlayer(Player player) {
-        String formatted = PlaceholderAPI.setPlaceholders(player, "%deluxetags_tag%").replaceAll("§", "&");
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(formatted);
-    }
-
-    private Component getDonorRankForPlayer(Player player) {
-        String formatted = PlaceholderAPI.setPlaceholders(player, "%luckperms_suffix_element_highest_on_track_donortrack%").replaceAll("§", "&");
-        return LegacyComponentSerializer.legacyAmpersand().deserialize(formatted);
     }
 
     private String getGroupForPlayer(Player player) {
