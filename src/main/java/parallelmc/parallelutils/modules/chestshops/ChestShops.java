@@ -75,7 +75,7 @@ public class ChestShops implements ParallelModule {
                         SignZ       int         not null,
                         Item        varchar(50) not null,
                         SellAmt     int         not null,
-                        BuyAmt      int         not null
+                        BuyAmt      int         not null,
                         constraint ChestShops_UUID_uindex
 					        unique (shopID),
 					    PRIMARY KEY (shopID)
