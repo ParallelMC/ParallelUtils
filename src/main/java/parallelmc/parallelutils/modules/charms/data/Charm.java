@@ -215,6 +215,8 @@ public class Charm {
 
 			pdc.remove(new NamespacedKey(plugin, "ParallelCharm"));
 
+			meta.lore(List.of());
+
 			item.setItemMeta(meta);
 
 			// Cancel runnables if needed
