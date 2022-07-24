@@ -400,7 +400,7 @@ public class ParallelChat implements ParallelModule {
 
         if (isUsingDefault) {
             // if default is enabled for whatever reason mimic the default rank
-            String format = PlaceholderAPI.setPlaceholders(source, "%deluxetags_tag%<gray><displayname>%luckperms_suffix_element_highest_on_track_donortrack% > <reset><message>");
+            String format = PlaceholderAPI.setPlaceholders(source, "%deluxetags_tag%<gray><displayname>%luckperms_suffix_element_highest_on_track_donortrack% > <reset><message>").replaceAll("§", "&");
             return MiniMessage.builder().build().deserialize(format, placeholders);
         }
         else {
