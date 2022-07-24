@@ -396,13 +396,13 @@ public class ParallelChat implements ParallelModule {
                 Placeholder.component("displayname", displayName.hoverEvent(Component.text(
                         PlaceholderAPI.setPlaceholders(source, "%pronouns_pronouns%")).asHoverEvent())),
                 Placeholder.component("tag", getTagForPlayer(source)),
+                Placeholder.component("donorrank", getDonorRankForPlayer(source)),
                 Placeholder.component("message", LegacyComponentSerializer.legacyAmpersand().deserialize(LegacyComponentSerializer.legacyAmpersand().serialize(message)))
         );
 
         if (isUsingDefault) {
             // if default is enabled for whatever reason mimic the default rank
-
-            Component result = MiniMessage.builder().build().deserialize("<tag><gray><displayname> > <reset><message>", placeholders);
+            Component result = MiniMessage.builder().build().deserialize("<tag><gray><displayname><donorrank> > <reset><message>", placeholders);
             return result;
         }
         else {
@@ -420,16 +420,12 @@ public class ParallelChat implements ParallelModule {
     }
 
     private Component getTagForPlayer(Player player) {
-        StringBuilder sb = new StringBuilder();
-        String formatted = PlaceholderAPI.setPlaceholders(player, "%deluxetags_tag%");
-        /*
-        Matcher matcher = Pattern.compile("&#(.{6})").matcher(formatted);
-        while (matcher.find()) {
-            // fix ampersands to be parsable by minimessage
-            matcher.appendReplacement(sb, "<color:#" + matcher.group(1) + ">");
-        }
-        matcher.appendTail(sb);*/
-        formatted = formatted.replaceAll("§", "&");
+        String formatted = PlaceholderAPI.setPlaceholders(player, "%deluxetags_tag%").replaceAll("§", "&");
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(formatted);
+    }
+
+    private Component getDonorRankForPlayer(Player player) {
+        String formatted = PlaceholderAPI.setPlaceholders(player, "%luckperms_suffix_element_highest_on_track_donortrack%").replaceAll("§", "&");
         return LegacyComponentSerializer.legacyAmpersand().deserialize(formatted);
     }
 
