@@ -266,7 +266,7 @@ public class PlayerInteractListener implements Listener {
                 val = meta.getPersistentDataContainer().get(fishKey, PersistentDataType.INTEGER);
                 if (val == null) return;
                 ParallelFish fish = parallelItems.getFishById(val);
-                if (item.getType() != Material.COD) {
+                if (item.getType() != Material.COD && item.getType() != Material.COOKED_COD) {
                     Parallelutils.log(Level.WARNING, "Items with tag 'ParallelFish: " + val + "' are " +
                             fish.key() + ", but this is not the correct material. Something isn't right.");
                     return;

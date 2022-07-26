@@ -31,6 +31,11 @@ public class OnShopInteract implements Listener {
                 player.closeInventory();
                 return;
             }
+            if (player.getItemOnCursor() != null && !player.getItemOnCursor().getType().isAir()) {
+                ParallelChat.sendParallelMessageTo(player, "Your held mouse item must be empty!");
+                player.closeInventory();
+                return;
+            }
             // make a copy of each item
             ItemStack give = new ItemStack(event.getCurrentItem());
             give.setAmount(data.shop().sellAmt());
