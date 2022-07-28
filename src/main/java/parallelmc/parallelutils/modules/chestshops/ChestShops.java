@@ -203,7 +203,12 @@ public class ChestShops implements ParallelModule {
 
 
     public ShopResult attemptPurchase(Player player, Shop shop, Chest chest, ItemStack diamonds) {
-        if (player.getInventory().firstEmpty() == -1) {
+        int empty = 0;
+        for (ItemStack i : player.getInventory().getStorageContents()) {
+            if (i == null || i.getType() == Material.AIR)
+                empty++;
+        }
+        if (empty < Math.ceil((double)shop.sellAmt() / shop.item().getMaxStackSize())) {
             return ShopResult.INVENTORY_FULL;
         }
         if (shop.buyAmt() > 0) {
