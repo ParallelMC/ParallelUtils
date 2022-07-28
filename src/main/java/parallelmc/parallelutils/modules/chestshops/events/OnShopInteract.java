@@ -38,8 +38,20 @@ public class OnShopInteract implements Listener {
             }
             // make a copy of each item
             ItemStack give = new ItemStack(event.getCurrentItem());
-            give.setAmount(data.shop().sellAmt());
-            player.getInventory().addItem(give);
+            int maxStack = give.getMaxStackSize();
+            if (data.shop().sellAmt() <= maxStack) {
+                give.setAmount(data.shop().sellAmt());
+                player.getInventory().addItem(give);
+            }
+            else {
+                // prevent stacking unstackable items
+                int itemsLeft = data.shop().sellAmt();
+                while (itemsLeft > 0) {
+                    give.setAmount(Math.min(itemsLeft, maxStack));
+                    player.getInventory().addItem(give);
+                    itemsLeft -= give.getMaxStackSize();
+                }
+            }
             int amtLeft = event.getCurrentItem().getAmount() - data.shop().sellAmt();
             ItemStack update = event.getCurrentItem().subtract(data.shop().sellAmt());
             data.chestInv().setItem(event.getRawSlot(), update);
