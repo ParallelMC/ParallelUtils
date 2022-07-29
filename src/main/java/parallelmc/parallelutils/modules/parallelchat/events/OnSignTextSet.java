@@ -26,21 +26,21 @@ public class OnSignTextSet implements Listener {
         // also rip running these checks for every line
         for (int i = 0; i < event.lines().size(); i++) {
             // check sign colors permission
-            if (!player.hasPermission("parallelutils.chat.colors")) {
+            if (!player.hasPermission("parallelutils.sign.colors")) {
                 event.line(i, event.lines().get(i).replaceText(x -> x.match("&[[0-9][a-f]]").replacement("")));
             }
             // check sign hex permission
-            if (!player.hasPermission("parallelutils.chat.hex")) {
+            if (!player.hasPermission("parallelutils.sign.hex")) {
                 event.line(i, event.lines().get(i).replaceText(x -> x.match("&#(.{6})").replacement("")));
             }
 
             // check sign formats permission
-            if (!player.hasPermission("parallelutils.chat.formats")) {
+            if (!player.hasPermission("parallelutils.sign.formats")) {
                 event.line(i, event.lines().get(i).replaceText(x -> x.match("&[[l-o]r]").replacement("")));
             }
 
             // check sign magic permission
-            if (!player.hasPermission("parallel.chat.magic")) {
+            if (!player.hasPermission("parallel.sign.magic")) {
                 event.line(i, event.lines().get(i).replaceText(x -> x.match("&k").replacement("")));
             }
         }
