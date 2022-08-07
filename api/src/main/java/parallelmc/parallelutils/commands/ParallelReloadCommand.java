@@ -3,6 +3,7 @@ package parallelmc.parallelutils.commands;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
+import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.commands.permissions.ParallelPermission;
 
@@ -39,15 +40,15 @@ public class ParallelReloadCommand extends ParallelCommand {
 			}
 		}
 
-		boolean result = puPlugin.loadModule(moduleName);
+		ParallelModule module = puPlugin.loadModule(moduleName);
 
-		if (result) {
+		if (module != null) {
 			sender.sendMessage("Successfully loaded module");
+			return true;
 		} else {
 			sender.sendMessage("Failed to load module. Contact a developer!");
+			return false;
 		}
-
-		return result;
 	}
 
 	@Override
