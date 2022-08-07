@@ -7,9 +7,9 @@ import java.net.URLClassLoader;
 public abstract class ParallelModule
 {
 
-	protected URLClassLoader classLoader;
+	protected ParallelClassLoader classLoader;
 
-	public ParallelModule(URLClassLoader classLoader) {
+	public ParallelModule(ParallelClassLoader classLoader) {
 		this.classLoader = classLoader;
 	}
 
@@ -36,7 +36,7 @@ public abstract class ParallelModule
 	@NotNull
 	public abstract String getName();
 
-	public URLClassLoader getClassLoader() {
+	public ParallelClassLoader getClassLoader() {
 		return classLoader;
 	}
 }

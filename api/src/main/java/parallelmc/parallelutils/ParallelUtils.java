@@ -240,26 +240,26 @@ public final class ParallelUtils extends JavaPlugin {
 
 	// A lot of this was inspired by the PlayerParticles Particle Pack loading system.
 	// Check it out here! https://github.com/Rosewood-Development/PlayerParticles/blob/master/src/main/java/dev/esophose/playerparticles/manager/ParticlePackManager.java#L135
-	public boolean loadModule(String name) {
+	public @Nullable ParallelModule loadModule(String name) {
 		String formatted = name.toLowerCase() + ".jar";
 
 		File modulesPath = new File(this.getDataFolder(), "modules");
 
 		if (!modulesPath.isDirectory()) {
 			ParallelUtils.log(Level.SEVERE, "MODULES DIRECTORY NOT FOUND");
-			return false;
+			return null;
 		}
 
 		File file = new File(modulesPath, formatted);
 
 		if (!file.exists() || file.isDirectory()) {
 			ParallelUtils.log(Level.WARNING, "Module " + name + " not found!");
-			return false;
+			return null;
 		}
 
 		try {
 			URL jar = file.toURI().toURL();
-			URLClassLoader classLoader = new URLClassLoader(new URL[]{jar}, this.getClass().getClassLoader());
+			ParallelClassLoader classLoader = new ParallelClassLoader(new URL[]{jar}, this.getClass().getClassLoader());
 			List<String> matches = new ArrayList<>();
 			List<Class<? extends ParallelModule>> modules = new ArrayList<>();
 			List<Class<? extends Config>> configs = new ArrayList<>();
@@ -284,7 +284,7 @@ public final class ParallelUtils extends JavaPlugin {
 				} catch (ClassNotFoundException e) {
 					ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
 					e.printStackTrace();
-					return false;
+					return null;
 				}
 			}
 
@@ -292,14 +292,14 @@ public final class ParallelUtils extends JavaPlugin {
 				ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
 				ParallelUtils.log(Level.SEVERE, "MODULE " + file.getName() + " DOES NOT CONTAIN A ParallelModule CLASS");
 				classLoader.close();
-				return false;
+				return null;
 			}
 
 			if (modules.size() > 1) {
 				ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
 				ParallelUtils.log(Level.SEVERE, "MODULE " + file.getName() + " CONTAINS MULTIPLE ParallelModule CLASSES");
 				classLoader.close();
-				return false;
+				return null;
 			}
 
 			// Check for config
@@ -309,7 +309,7 @@ public final class ParallelUtils extends JavaPlugin {
 
 			if (configs.size() > 1) {
 				ParallelUtils.log(Level.SEVERE, "Multiple config files found in module " + name + ". Skipping...");
-				return false;
+				return null;
 			}
 
 			currentlyLoading.add(name); // This is to prevent circular loading
@@ -329,12 +329,33 @@ public final class ParallelUtils extends JavaPlugin {
 						continue;
 					}
 
-					boolean success = loadModule(hardDep);
 
-					if (!success) {
+					ParallelModule out = loadModule(hardDep);
+
+					// If a module was loaded, get its jar and classes and load them
+
+					if (out == null) {
 						ParallelUtils.log(Level.WARNING, "Unable to load hard dependency for " + name);
-						return false;
+						return null;
 					}
+
+					// Add URLs. This includes jar files for that module and any of its dependencies
+					URL[] depURL = out.getClassLoader().getURLs();
+					for (URL u : depURL) {
+						classLoader.addURL(u);
+					}
+
+					// Load all of the classes
+					for (String depClass : out.getClassLoader().getLoadedClasses()) {
+						try {
+							classLoader.loadClass(depClass);
+						} catch (ClassNotFoundException e) {
+							ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
+							e.printStackTrace();
+							return null;
+						}
+					}
+
 				}
 
 				// Try loading soft dependencies
@@ -345,10 +366,27 @@ public final class ParallelUtils extends JavaPlugin {
 						continue;
 					}
 
-					boolean success = loadModule(softDep);
+					ParallelModule out = loadModule(softDep);
 
-					if (!success) {
+					if (out == null) {
 						ParallelUtils.log(Level.WARNING, "Unable to load soft dependency for " + name);
+					} else {
+						// Add URLs. This includes jar files for that module and any of its dependencies
+						URL[] depURL = out.getClassLoader().getURLs();
+						for (URL u : depURL) {
+							classLoader.addURL(u);
+						}
+
+						// Load all of the classes
+						for (String depClass : out.getClassLoader().getLoadedClasses()) {
+							try {
+								classLoader.loadClass(depClass);
+							} catch (ClassNotFoundException e) {
+								ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
+								e.printStackTrace();
+								return null;
+							}
+						}
 					}
 				}
 
@@ -361,14 +399,13 @@ public final class ParallelUtils extends JavaPlugin {
 			currentlyLoading.remove(name);
 
 			ParallelUtils.log(Level.INFO, "Added module " + module.getName() + " to available modules");
+			return module;
 		} catch (IOException | InvocationTargetException | InstantiationException | IllegalAccessException |
 		         NoSuchMethodException e) {
 			ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
 			e.printStackTrace();
-			return false;
+			return null;
 		}
-
-		return true;
 	}
 
 	public boolean unloadModule(String name) {
