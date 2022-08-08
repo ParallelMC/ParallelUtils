@@ -5,6 +5,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 
@@ -12,7 +13,7 @@ import java.net.URLClassLoader;
 import java.util.logging.Level;
 
 public class ParallelTrees extends ParallelModule {
-	public ParallelTrees(URLClassLoader classLoader) {
+	public ParallelTrees(ParallelClassLoader classLoader) {
 		super(classLoader);
 	}
 

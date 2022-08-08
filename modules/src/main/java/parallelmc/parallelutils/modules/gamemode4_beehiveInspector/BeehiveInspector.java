@@ -5,6 +5,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.gamemode4_beehiveInspector.events.BeehiveBroken;
@@ -16,7 +17,7 @@ import java.util.logging.Level;
  * A module to replicate the behavior of the Gamemode4 BeehiveInspector datapack
  */
 public class BeehiveInspector extends ParallelModule {
-    public BeehiveInspector(URLClassLoader classLoader) {
+    public BeehiveInspector(ParallelClassLoader classLoader) {
         super(classLoader);
     }
 

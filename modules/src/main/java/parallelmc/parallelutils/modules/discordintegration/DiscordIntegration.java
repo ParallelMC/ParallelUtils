@@ -6,6 +6,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 
@@ -17,7 +18,7 @@ public class DiscordIntegration extends ParallelModule {
 
 	private BotManager botManager;
 
-	public DiscordIntegration(URLClassLoader classLoader) {
+	public DiscordIntegration(ParallelClassLoader classLoader) {
 		super(classLoader);
 	}
 

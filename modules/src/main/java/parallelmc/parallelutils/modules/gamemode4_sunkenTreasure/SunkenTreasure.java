@@ -6,6 +6,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.gamemode4_sunkenTreasure.events.TreasureChecker;
@@ -14,7 +15,7 @@ import java.net.URLClassLoader;
 import java.util.logging.Level;
 
 public class SunkenTreasure extends ParallelModule {
-	public SunkenTreasure(URLClassLoader classLoader) {
+	public SunkenTreasure(ParallelClassLoader classLoader) {
 		super(classLoader);
 	}
 

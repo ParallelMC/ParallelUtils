@@ -6,6 +6,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.performanceTools.commands.FindLoadedChunksCommand;
@@ -20,7 +21,7 @@ public class PerformanceTools extends ParallelModule {
 
 	private BukkitTask loaderDetector;
 
-	public PerformanceTools(URLClassLoader classLoader) {
+	public PerformanceTools(ParallelClassLoader classLoader) {
 		super(classLoader);
 	}
 

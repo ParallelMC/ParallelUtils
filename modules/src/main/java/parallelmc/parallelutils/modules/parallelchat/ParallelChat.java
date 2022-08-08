@@ -20,6 +20,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.commands.*;
@@ -85,7 +86,7 @@ public class ParallelChat extends ParallelModule {
 
     private static ParallelChat Instance;
 
-    public ParallelChat(URLClassLoader classLoader) {
+    public ParallelChat(ParallelClassLoader classLoader) {
         super(classLoader);
     }
 

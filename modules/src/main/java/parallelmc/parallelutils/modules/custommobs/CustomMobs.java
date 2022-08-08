@@ -11,6 +11,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.custommobs.commands.ParallelCreateSpawnerCommand;
@@ -38,7 +39,7 @@ public class CustomMobs extends ParallelModule {
 
 	private static ParallelUtils puPlugin;
 
-	public CustomMobs(URLClassLoader classLoader) {
+	public CustomMobs(ParallelClassLoader classLoader) {
 		super(classLoader);
 	}
 
