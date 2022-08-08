@@ -19,6 +19,7 @@ import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
@@ -58,7 +59,7 @@ public class ParallelTutorial extends ParallelModule {
     // doing this again cuz lazy
     private static ParallelTutorial Instance;
 
-    public ParallelTutorial(URLClassLoader classLoader) {
+    public ParallelTutorial(ParallelClassLoader classLoader) {
         super(classLoader);
     }
 

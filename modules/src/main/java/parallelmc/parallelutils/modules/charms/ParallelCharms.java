@@ -13,6 +13,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.commands.*;
@@ -43,7 +44,7 @@ public class ParallelCharms extends ParallelModule {
 	// Key is player UUID, value is list of Charms associated with the player
 	private final HashMap<UUID, ArrayList<Charm>> appliedCharms;
 
-	public ParallelCharms(URLClassLoader classLoader) {
+	public ParallelCharms(ParallelClassLoader classLoader) {
 		super(classLoader);
 		handlers = new HashMap<>();
 		charmOptions = new HashMap<>();

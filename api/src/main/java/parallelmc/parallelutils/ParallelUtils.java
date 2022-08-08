@@ -392,7 +392,7 @@ public final class ParallelUtils extends JavaPlugin {
 
 			}
 
-			ParallelModule module = modules.get(0).getDeclaredConstructor(URLClassLoader.class).newInstance(classLoader);
+			ParallelModule module = modules.get(0).getDeclaredConstructor(ParallelClassLoader.class).newInstance(classLoader);
 
 			availableModules.put(module.getName(), module);
 

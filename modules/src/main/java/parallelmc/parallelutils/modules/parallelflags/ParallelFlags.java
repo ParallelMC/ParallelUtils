@@ -11,6 +11,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelflags.events.*;
@@ -24,7 +25,7 @@ import java.util.logging.Level;
  */
 public class ParallelFlags extends ParallelModule {
 
-	public ParallelFlags(URLClassLoader classLoader) {
+	public ParallelFlags(ParallelClassLoader classLoader) {
 		super(classLoader);
 	}
 

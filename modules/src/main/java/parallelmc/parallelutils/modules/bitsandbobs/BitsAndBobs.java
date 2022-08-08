@@ -6,6 +6,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.*;
@@ -20,7 +21,7 @@ public class BitsAndBobs extends ParallelModule {
 
     private TogglePvpManager pvpManager;
 
-    public BitsAndBobs(URLClassLoader classLoader) {
+    public BitsAndBobs(ParallelClassLoader classLoader) {
         super(classLoader);
     }
 

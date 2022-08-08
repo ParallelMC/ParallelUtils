@@ -24,6 +24,7 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
+import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelitems.pocketteleporter.PlayerPositionManager;
@@ -43,7 +44,7 @@ public class ParallelItems extends ParallelModule {
 
     public static PlayerPositionManager posManager;
 
-    public ParallelItems(URLClassLoader classLoader) {
+    public ParallelItems(ParallelClassLoader classLoader) {
         super(classLoader);
     }
 
