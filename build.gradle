@@ -297,122 +297,160 @@ bukkit {
         }
         'parallelutils.staffchat' {
             description = 'Gives access to reading and writing to staff chat'
+            setDefault('FALSE')
         }
         'parallelutils.teamchat' {
             description = 'Gives access to reading and writing to team chat'
+            setDefault('FALSE')
         }
         'parallelutils.lorechat' {
             description = 'Gives access to reading and writing to lore chat'
+            setDefault('FALSE')
         }
         'parallelutils.broadcast' {
             description = 'Gives access to the broadcast command'
+            setDefault('FALSE')
         }
         'parallelutils.announce' {
             description = 'Gives access to the announce command'
+            setDefault('FALSE')
         }
         'parallelutils.mutechat' {
             description = 'Gives access to the mutechat command'
+            setDefault('FALSE')
         }
         'parallelutils.socialspy' {
             description = 'Gives access to the SocialSpy command'
+            setDefault('FALSE')
         }
         'parallelutils.commandspy' {
             description = 'Gives access to the CommandSpy command'
+            setDefault('FALSE')
         }
         'parallelutils.clearchat' {
             description = 'Gives access to the clearchat command'
+            setDefault('FALSE')
         }
         'parallelutils.starttutorial' {
             description = 'Gives access to starttutorial command'
+            setDefault('FALSE')
         }
         'parallelutils.listtutorials' {
             description = 'Gives access to listtutorials command'
+            setDefault('FALSE')
         }
         'parallelutils.reloadtutorials' {
             description = 'Gives access to reloadtutorials command'
+            setDefault('FALSE')
         }
         'parallelutils.tutorialinfo' {
             description = 'Gives access to tutorialinfo command'
+            setDefault('FALSE')
         }
         'parallelutils.chat' {
             description = 'Gives access to chat elements'
             childrenMap = ['parallelutils.chat.colors': true, 'parallelutils.chat.formats': true,'parallelutils.chat.hex': true,'parallelutils.chat.magic': true,]
+            setDefault('FALSE')
         }
         'parallelutils.chat.colors' {
             description = 'Gives access to chat colors'
+            setDefault('FALSE')
         }
         'parallelutils.chat.formats' {
             description = 'Gives access to chat formatting'
+            setDefault('FALSE')
         }
         'parallelutils.chat.hex' {
             description = 'Gives access to chat hex colors'
+            setDefault('FALSE')
         }
         'parallelutils.chat.magic' {
             description = 'Gives access to magic chat formatting'
+            setDefault('FALSE')
         }
         'parallelutils.sign' {
             description = 'Gives access to chat elements on signs'
             childrenMap = ['parallelutils.sign.colors': true, 'parallelutils.sign.formats': true,'parallelutils.sign.hex': true,'parallelutils.sign.magic': true,]
+            setDefault('FALSE')
         }
         'parallelutils.sign.colors' {
             description = 'Gives access to chat colors on signs'
+            setDefault('FALSE')
         }
         'parallelutils.sign.formats' {
             description = 'Gives access to chat formatting on signs'
+            setDefault('FALSE')
         }
         'parallelutils.sign.hex' {
             description = 'Gives access to chat hex colors on signs'
+            setDefault('FALSE')
         }
         'parallelutils.sign.magic' {
             description = 'Gives access to magic chat formatting on signs'
+            setDefault('FALSE')
         }
         'parallelutils.bypass' {
             description = 'Bypasses some ParallelUtils modules'
             childrenMap = ['parallelutils.bypass.anticaps': true, 'parallelutils.bypass.antislur': true, 'parallelutils.bypass.clearchat': true, 'parallelutils.bypass.socialspy': true, 'parallelutils.bypass.commandspy': true, 'parallelutils.bypass.mutechat': true,'parallelutils.bypass.chestshops': true, 'parallelutils.bypass.chatroomspy': true]
+            setDefault('FALSE')
         }
         'parallelutils.bypass.anticaps' {
             description = 'Bypasses the Anti-Caps module'
+            setDefault('FALSE')
         }
         'parallelutils.bypass.antislur' {
             description = 'Bypasses the Anti-Slur module in chat and on signs'
+            setDefault('FALSE')
         }
         'parallelutils.bypass.clearchat' {
             description = 'Bypasses chat being cleared by clearchat'
+            setDefault('FALSE')
         }
         'parallelutils.bypass.socialspy' {
             description = 'Bypasses the Social Spy module'
+            setDefault('FALSE')
         }
         'parallelutils.bypass.commandspy' {
             description = 'Bypasses the Command Spy module'
+            setDefault('FALSE')
         }
         'parallelutils.bypass.chatroomspy' {
             description = 'Bypasses the ChatRoom Spy module'
+            setDefault('FALSE')
         }
         'parallelutils.bypass.mutechat' {
             description = 'Bypasses chat being muted'
+            setDefault('FALSE')
         }
         'parallelutils.bypass.chestshops' {
             description = 'Bypasses chest shop protection'
+            setDefault('FALSE')
         }
         'parallelutils.notify' {
             description = 'Be notified by some ParallelUtils modules'
             childrenMap = ['parallelutils.notify.antislur': true,]
+            setDefault('FALSE')
         }
         'parallelutils.notify.antislur' {
             description = 'Be notified of swearing'
+            setDefault('FALSE')
         }
         'parallelutils.chestshops.create' {
             description = 'Allows creation of Chest Shops'
+            setDefault('FALSE')
         }
         'parallelutils.chatrooms' {
             description = 'Chatroom admin permissions'
             childrenMap = ['parallelutils.chatrooms.chatroomspy': true,'parallelutils.chatrooms.viewprivate': true,]
+            setDefault('FALSE')
         }
         'parallelutils.chatrooms.chatroomspy' {
             description = 'View messages from all chatrooms'
+            setDefault('FALSE')
         }
         'parallelutils.chatrooms.viewprivate' {
             description = 'Shows private chatrooms with the /cr list command'
+            setDefault('FALSE')
         }
     }
 }
