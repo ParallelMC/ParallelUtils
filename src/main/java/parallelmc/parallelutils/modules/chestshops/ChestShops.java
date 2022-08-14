@@ -7,6 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Container;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -202,7 +203,7 @@ public class ChestShops implements ParallelModule {
     }
 
 
-    public ShopResult attemptPurchase(Player player, Shop shop, Chest chest, ItemStack diamonds) {
+    public ShopResult attemptPurchase(Player player, Shop shop, Chest chest) {
         int empty = 0;
         for (ItemStack i : player.getInventory().getStorageContents()) {
             if (i == null || i.getType() == Material.AIR)
@@ -212,9 +213,11 @@ public class ChestShops implements ParallelModule {
             return ShopResult.INVENTORY_FULL;
         }
         if (shop.buyAmt() > 0) {
-            if (diamonds == null || diamonds.getType() != Material.DIAMOND) {
+            int slot = player.getInventory().first(Material.DIAMOND);
+            if (slot == -1) {
                 return ShopResult.NO_DIAMONDS;
             }
+            ItemStack diamonds = player.getInventory().getItem(slot);
             if (diamonds.getAmount() < shop.buyAmt()) {
                 return ShopResult.INSUFFICIENT_FUNDS;
             }
@@ -248,7 +251,7 @@ public class ChestShops implements ParallelModule {
                 return ShopResult.SHOP_EMPTY;
             }
             player.openInventory(shopping);
-            shoppingPlayers.put(player.getUniqueId(), new ShopperData(shopping, inv, shop, diamonds));
+            shoppingPlayers.put(player.getUniqueId(), new ShopperData(shopping, inv, shop));
         }
         else {
             if (inv.containsAtLeast(new ItemStack(Material.DIAMOND), MAX_DIAMONDS - shop.buyAmt())) {
@@ -266,7 +269,7 @@ public class ChestShops implements ParallelModule {
                 return ShopResult.SHOP_EMPTY;
             }
             player.openInventory(shopping);
-            shoppingPlayers.put(player.getUniqueId(), new ShopperData(shopping, inv, shop, diamonds));
+            shoppingPlayers.put(player.getUniqueId(), new ShopperData(shopping, inv, shop));
         }
         return ShopResult.SUCCESS;
     }
