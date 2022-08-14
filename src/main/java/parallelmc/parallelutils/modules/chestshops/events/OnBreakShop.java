@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.chestshops.events;
 
+import org.bukkit.Material;
 import org.bukkit.block.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -34,7 +35,8 @@ public class OnBreakShop implements Listener {
             ChestShops.get().removeShop(s.owner(), s.chestPos());
             ParallelChat.sendParallelMessageTo(player, "Chest shop unregistered.");
         }
-        else if (block.getState() instanceof Chest chest) {
+        else if (block.getType() == Material.CHEST || block.getType() == Material.BARREL) {
+            Container chest = (Container)block.getState();
             Shop s;
             InventoryHolder holder = chest.getInventory().getHolder();
             // check both sides of the double chest since each side is a separate block

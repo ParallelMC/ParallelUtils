@@ -7,6 +7,7 @@ import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Container;
 import org.bukkit.block.DoubleChest;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
@@ -46,7 +47,8 @@ public class OnSignText implements Listener {
             if (lines.get(0).equals("ChestShop")) {
                 Directional d = (Directional)event.getBlock().getBlockData();
                 Block attached = event.getBlock().getRelative(d.getFacing().getOppositeFace());
-                if (attached.getState() instanceof Chest chest) {
+                if (attached.getType() == Material.CHEST || attached.getType() == Material.BARREL) {
+                    Container chest = (Container)attached.getState();
                     Shop existing = ChestShops.get().getShopFromChestPos(chest.getLocation());
                     if (existing != null) {
                         event.setCancelled(true);
@@ -137,7 +139,7 @@ public class OnSignText implements Listener {
                 }
                 else {
                     event.setCancelled(true);
-                    ParallelChat.sendParallelMessageTo(player, "Chest shop sign must be placed on the side of a regular chest!");
+                    ParallelChat.sendParallelMessageTo(player, "Chest shop sign must be placed on the side of a regular chest or barrel!");
                 }
             }
         }

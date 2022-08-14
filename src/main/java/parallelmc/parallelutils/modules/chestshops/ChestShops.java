@@ -203,7 +203,7 @@ public class ChestShops implements ParallelModule {
     }
 
 
-    public ShopResult attemptPurchase(Player player, Shop shop, Chest chest) {
+    public ShopResult attemptPurchase(Player player, Shop shop, Container chest) {
         int empty = 0;
         for (ItemStack i : player.getInventory().getStorageContents()) {
             if (i == null || i.getType() == Material.AIR)

@@ -9,7 +9,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.inventory.ItemStack;
 import parallelmc.parallelutils.Parallelutils;
 import parallelmc.parallelutils.modules.chestshops.ChestShops;
 import parallelmc.parallelutils.modules.chestshops.Shop;
@@ -31,8 +30,8 @@ public class OnClickBlock implements Listener {
                     return;
                 }
                 Block c = player.getWorld().getBlockAt(shop.chestPos());
-                if (!(c.getState() instanceof Chest chest)) {
-                    Parallelutils.log(Level.WARNING, "Block at " + shop.chestPos() + " should be a chest but it is actually a " + c.getType() + "! Removing...");
+                if (c.getType() != Material.CHEST && c.getType() != Material.BARREL) {
+                    Parallelutils.log(Level.WARNING, "Block at " + shop.chestPos() + " should be a chest/barrel but it is actually a " + c.getType() + "! Removing...");
                     ChestShops.get().removeShop(shop.owner(), shop.chestPos());
                     return;
                 }
@@ -40,7 +39,7 @@ public class OnClickBlock implements Listener {
                     ParallelChat.sendParallelMessageTo(player, "Someone is already using this shop!");
                     return;
                 }
-                ShopResult result = ChestShops.get().attemptPurchase(player, shop, chest);
+                ShopResult result = ChestShops.get().attemptPurchase(player, shop, (Container)c.getState());
                 switch (result) {
                     case SHOP_EMPTY -> ParallelChat.sendParallelMessageTo(player, "This shop is out of stock!");
                     case INVENTORY_FULL -> ParallelChat.sendParallelMessageTo(player, "Your inventory is full!");
@@ -49,7 +48,8 @@ public class OnClickBlock implements Listener {
                     case SHOP_FULL -> ParallelChat.sendParallelMessageTo(player, "This chest shop cannot accept any more currency!");
                 }
             }
-            else if (block.getState() instanceof Chest chest) {
+            else if (block.getType() == Material.CHEST || block.getType() == Material.BARREL) {
+                Container chest = (Container)block.getState();
                 Shop shop;
                 InventoryHolder holder = chest.getInventory().getHolder();
                 // check both sides of the double chest since each side is a separate block
@@ -103,7 +103,8 @@ public class OnClickBlock implements Listener {
                         return;
                     }
                     Block c = player.getWorld().getBlockAt(shop.chestPos());
-                    if (c.getState() instanceof Chest chest) {
+                    if (c.getType() == Material.CHEST || c.getType() == Material.BARREL) {
+                        Container chest = (Container)c.getState();
                         Inventory inv = chest.getInventory();
                         int slot = inv.first(shop.item());
                         if (slot == -1) {
@@ -114,7 +115,7 @@ public class OnClickBlock implements Listener {
                         ParallelChat.sendParallelMessageTo(player, "Opening preview...");
                     }
                     else {
-                        Parallelutils.log(Level.WARNING, "Block at " + shop.chestPos() + " should be a chest but it is actually a " + c.getType() + "! Removing...");
+                        Parallelutils.log(Level.WARNING, "Block at " + shop.chestPos() + " should be a chest/barrel but it is actually a " + c.getType() + "! Removing...");
                         ChestShops.get().removeShop(shop.owner(), shop.chestPos());
                     }
                 }
