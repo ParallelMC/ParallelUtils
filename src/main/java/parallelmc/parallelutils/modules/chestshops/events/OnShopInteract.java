@@ -2,7 +2,7 @@ package parallelmc.parallelutils.modules.chestshops.events;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.entity.HumanEntity;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -36,6 +36,24 @@ public class OnShopInteract implements Listener {
                 player.closeInventory();
                 return;
             }
+            if (data.shop().buyAmt() > 0) {
+                int slot = player.getInventory().first(Material.DIAMOND);
+                if (slot == -1) {
+                    ParallelChat.sendParallelMessageTo(player, "You do not have enough diamonds left!");
+                    player.closeInventory();
+                    return;
+                }
+                ItemStack diamonds = player.getInventory().getItem(slot);
+                if (diamonds.getAmount() < data.shop().buyAmt()) {
+                    ParallelChat.sendParallelMessageTo(player, "You do not have enough diamonds left!");
+                    player.closeInventory();
+                    return;
+                }
+                ItemStack take = new ItemStack(Material.DIAMOND);
+                take.setAmount(data.shop().buyAmt());
+                diamonds.subtract(data.shop().buyAmt());
+                data.chestInv().addItem(take);
+            }
             // make a copy of each item
             ItemStack give = new ItemStack(event.getCurrentItem());
             int maxStack = give.getMaxStackSize();
@@ -55,12 +73,6 @@ public class OnShopInteract implements Listener {
             int amtLeft = event.getCurrentItem().getAmount() - data.shop().sellAmt();
             ItemStack update = event.getCurrentItem().subtract(data.shop().sellAmt());
             data.chestInv().setItem(event.getRawSlot(), update);
-            if (data.shop().buyAmt() > 0) {
-                ItemStack take = new ItemStack(data.diamonds());
-                take.setAmount(data.shop().buyAmt());
-                data.diamonds().subtract(data.shop().buyAmt());
-                data.chestInv().addItem(take);
-            }
             if (amtLeft < 0) {
                 amtLeft = -amtLeft;
                 while (amtLeft > 0) {
