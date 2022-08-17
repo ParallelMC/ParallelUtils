@@ -46,23 +46,25 @@ public class OnChatMessage implements Listener {
         // so I guess I have to use strings
         // check colors permission
         if (!player.hasPermission("parallelutils.chat.colors")) {
-            event.message(Component.text(msgStr.replaceAll("&[[0-9][a-f]]", "")));
+            msgStr = msgStr.replaceAll("&[[0-9][a-f]]", "");
         }
 
         // check hex permission
         if (!player.hasPermission("parallelutils.chat.hex")) {
-            event.message(Component.text(msgStr.replaceAll("&#(.{6})", "")));
+            msgStr = msgStr.replaceAll("&#(.{6})", "");
         }
 
         // check formats permission
         if (!player.hasPermission("parallelutils.chat.formats")) {
-            event.message(Component.text(msgStr.replaceAll("&[[l-o]r]", "")));
+            msgStr = msgStr.replaceAll("&[[l-o]r]", "");
         }
 
         // check magic permission
-        if (!player.hasPermission("parallel.chat.magic")) {
-            event.message(Component.text(msgStr.replaceAll("&k", "")));
+        if (!player.hasPermission("parallelutils.chat.magic")) {
+            msgStr = msgStr.replaceAll("&k", "");
         }
+
+        event.message(Component.text(msgStr));
 
         // Chat Logger
         // Log chat no matter what happens below
