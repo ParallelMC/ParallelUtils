@@ -1,6 +1,7 @@
 package parallelmc.parallelutils.modules.parallelchat.events;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -25,23 +26,29 @@ public class OnSignTextSet implements Listener {
         // foreach was acting weird so regular for loop tally-ho
         // also rip running these checks for every line
         for (int i = 0; i < event.lines().size(); i++) {
-            // check sign colors permission
-            if (!player.hasPermission("parallelutils.sign.colors")) {
-                event.line(i, event.lines().get(i).replaceText(x -> x.match("&[[0-9][a-f]]").replacement("")));
-            }
-            // check sign hex permission
-            if (!player.hasPermission("parallelutils.sign.hex")) {
-                event.line(i, event.lines().get(i).replaceText(x -> x.match("&#(.{6})").replacement("")));
-            }
+            Component line = event.line(i);
+            if (line != null) {
+                // check sign colors permission
+                if (!player.hasPermission("parallelutils.sign.colors")) {
+                    line = line.replaceText(x -> x.match("&[[0-9][a-f]]").replacement(""));
+                }
 
-            // check sign formats permission
-            if (!player.hasPermission("parallelutils.sign.formats")) {
-                event.line(i, event.lines().get(i).replaceText(x -> x.match("&[[l-o]r]").replacement("")));
-            }
+                // check sign hex permission
+                if (!player.hasPermission("parallelutils.sign.hex")) {
+                    line = line.replaceText(x -> x.match("&#(.{6})").replacement(""));
+                }
 
-            // check sign magic permission
-            if (!player.hasPermission("parallel.sign.magic")) {
-                event.line(i, event.lines().get(i).replaceText(x -> x.match("&k").replacement("")));
+                // check sign formats permission
+                if (!player.hasPermission("parallelutils.sign.formats")) {
+                    line = line.replaceText(x -> x.match("&[[l-o]r]").replacement(""));
+                }
+
+                // check sign magic permission
+                if (!player.hasPermission("parallelutils.sign.magic")) {
+                    line = line.replaceText(x -> x.match("&k").replacement(""));
+                }
+
+                event.line(i, LegacyComponentSerializer.legacyAmpersand().deserialize(LegacyComponentSerializer.legacyAmpersand().serialize(line)));
             }
         }
     }
