@@ -2,11 +2,16 @@ package parallelmc.parallelutils.modules.parallelchat.events;
 
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.minecraft.network.chat.HoverEvent;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.Sound;
@@ -166,20 +171,6 @@ public class OnChatMessage implements Listener {
         }
 
 
-        // Item chat
-        ItemStack item = player.getInventory().getItemInMainHand();
-
-        if (item.getType() != Material.AIR) {
-            Component itemName = item.displayName().hoverEvent(item.asHoverEvent());
-
-            TextComponent itemComponent = Component.text()
-                    .append(itemName)
-                    .append(Component.text(" x" + item.getAmount(), item.displayName().color()))
-                    .build();
-
-            event.message(event.message().replaceText(x -> x.once().match("\\[item\\]").replacement(itemComponent)));
-        }
-
         // remove dnd players from the recipient list if they have not been mentioned
         // also show the message to the player if they send it
         event.viewers().removeAll(ParallelChat.dndPlayers.keySet()
@@ -189,8 +180,22 @@ public class OnChatMessage implements Listener {
              .collect(Collectors.toSet()));
 
         // re-render the formatted message and send it
-        event.renderer(ChatRenderer.viewerUnaware((source, sourceDisplayName, message)
-                -> ParallelChat.get().formatForGroup(source, sourceDisplayName, message)));
+        event.renderer(ChatRenderer.viewerUnaware((source, sourceDisplayName, message) ->
+        {
+            message =  LegacyComponentSerializer.legacyAmpersand().deserialize(LegacyComponentSerializer.legacyAmpersand().serialize(message));
+            // Item chat
+            ItemStack item = player.getInventory().getItemInMainHand();
+
+            if (item.getType() != Material.AIR) {
+                TextComponent itemComponent = Component.text()
+                        .append(item.displayName().hoverEvent(item.asHoverEvent()))
+                        .append(Component.text(" x" + item.getAmount(), item.displayName().color()))
+                        .build();
+
+                message = message.replaceText(x -> x.once().match("\\[item\\]").replacement(itemComponent));
+            }
+            return ParallelChat.get().formatForGroup(source, sourceDisplayName, message);
+        }));
         // not sure if this is necessary but I don't want to touch it
         event.message(event.message());
     }
