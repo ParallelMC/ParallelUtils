@@ -16,6 +16,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
@@ -397,7 +398,7 @@ public class ParallelChat implements ParallelModule {
                         PlaceholderAPI.setPlaceholders(source, "%pronouns_pronouns%")).asHoverEvent())),
                 Placeholder.component("tag", getTagForPlayer(source)),
                 Placeholder.component("donorrank", getDonorRankForPlayer(source)),
-                Placeholder.component("message", LegacyComponentSerializer.legacyAmpersand().deserialize(LegacyComponentSerializer.legacyAmpersand().serialize(message)))
+                Placeholder.component("message", message)
         );
 
         if (isUsingDefault) {
