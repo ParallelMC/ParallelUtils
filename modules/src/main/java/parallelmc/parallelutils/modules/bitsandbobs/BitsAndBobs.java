@@ -15,15 +15,17 @@ import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.Toggle
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpManager;
 
 import java.net.URLClassLoader;
+import java.util.List;
 import java.util.logging.Level;
 
 public class BitsAndBobs extends ParallelModule {
 
     private TogglePvpManager pvpManager;
 
-    public BitsAndBobs(ParallelClassLoader classLoader) {
-        super(classLoader);
+    public BitsAndBobs(ParallelClassLoader classLoader, List<String> dependents) {
+        super(classLoader, dependents);
     }
+
 
     @Override
     public void onLoad() {

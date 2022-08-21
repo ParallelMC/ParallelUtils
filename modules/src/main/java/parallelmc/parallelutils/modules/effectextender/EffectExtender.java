@@ -14,6 +14,7 @@ import parallelmc.parallelutils.modules.effectextender.listeners.JoinLeaveListen
 
 import java.net.URLClassLoader;
 import java.sql.*;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -23,8 +24,8 @@ public class EffectExtender extends ParallelModule {
 
     private ParallelUtils puPlugin;
 
-    public EffectExtender(ParallelClassLoader classLoader) {
-        super(classLoader);
+    public EffectExtender(ParallelClassLoader classLoader, List<String> dependents) {
+        super(classLoader, dependents);
     }
 
     @Override

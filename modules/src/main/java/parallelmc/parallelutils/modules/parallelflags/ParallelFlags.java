@@ -18,6 +18,7 @@ import parallelmc.parallelutils.modules.parallelflags.events.*;
 import parallelmc.parallelutils.modules.parallelflags.session.*;
 
 import java.net.URLClassLoader;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -25,8 +26,8 @@ import java.util.logging.Level;
  */
 public class ParallelFlags extends ParallelModule {
 
-	public ParallelFlags(ParallelClassLoader classLoader) {
-		super(classLoader);
+	public ParallelFlags(ParallelClassLoader classLoader, List<String> dependents) {
+		super(classLoader, dependents);
 	}
 
 	@Override

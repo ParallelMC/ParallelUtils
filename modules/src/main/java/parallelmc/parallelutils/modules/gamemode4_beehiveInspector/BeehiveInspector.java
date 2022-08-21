@@ -11,14 +11,15 @@ import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.gamemode4_beehiveInspector.events.BeehiveBroken;
 
 import java.net.URLClassLoader;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
  * A module to replicate the behavior of the Gamemode4 BeehiveInspector datapack
  */
 public class BeehiveInspector extends ParallelModule {
-    public BeehiveInspector(ParallelClassLoader classLoader) {
-        super(classLoader);
+    public BeehiveInspector(ParallelClassLoader classLoader, List<String> dependents) {
+        super(classLoader, dependents);
     }
 
     @Override

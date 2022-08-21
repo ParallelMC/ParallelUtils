@@ -13,12 +13,13 @@ import parallelmc.parallelutils.modules.expstorage.commands.WithdrawExperience;
 import parallelmc.parallelutils.modules.expstorage.events.EnderChestRightClick;
 
 import java.net.URLClassLoader;
+import java.util.List;
 import java.util.logging.Level;
 
 public class ExpStorage extends ParallelModule {
 
-	public ExpStorage(ParallelClassLoader classLoader) {
-		super(classLoader);
+	public ExpStorage(ParallelClassLoader classLoader, List<String> dependents) {
+		super(classLoader, dependents);
 	}
 
 	@Override

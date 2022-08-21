@@ -10,11 +10,12 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 
 import java.net.URLClassLoader;
+import java.util.List;
 import java.util.logging.Level;
 
 public class ParallelTrees extends ParallelModule {
-	public ParallelTrees(ParallelClassLoader classLoader) {
-		super(classLoader);
+	public ParallelTrees(ParallelClassLoader classLoader, List<String> dependents) {
+		super(classLoader, dependents);
 	}
 
 	@Override

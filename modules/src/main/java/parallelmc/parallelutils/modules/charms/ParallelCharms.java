@@ -44,8 +44,8 @@ public class ParallelCharms extends ParallelModule {
 	// Key is player UUID, value is list of Charms associated with the player
 	private final HashMap<UUID, ArrayList<Charm>> appliedCharms;
 
-	public ParallelCharms(ParallelClassLoader classLoader) {
-		super(classLoader);
+	public ParallelCharms(ParallelClassLoader classLoader, List<String> dependents) {
+		super(classLoader, dependents);
 		handlers = new HashMap<>();
 		charmOptions = new HashMap<>();
 		appliedCharms = new HashMap<>();
