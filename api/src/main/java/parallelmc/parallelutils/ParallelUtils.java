@@ -427,8 +427,7 @@ public final class ParallelUtils extends JavaPlugin {
 		}
 
 		currentlyUnloading.add(name);
-
-		// TODO: Unload things that depend on this module too
+		
 		List<String> dependents = module.getDependents();
 
 		for (String s : dependents) {
