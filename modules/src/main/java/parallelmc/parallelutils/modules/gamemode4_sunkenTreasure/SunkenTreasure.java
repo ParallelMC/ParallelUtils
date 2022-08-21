@@ -12,11 +12,12 @@ import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.gamemode4_sunkenTreasure.events.TreasureChecker;
 
 import java.net.URLClassLoader;
+import java.util.List;
 import java.util.logging.Level;
 
 public class SunkenTreasure extends ParallelModule {
-	public SunkenTreasure(ParallelClassLoader classLoader) {
-		super(classLoader);
+	public SunkenTreasure(ParallelClassLoader classLoader, List<String> dependents) {
+		super(classLoader, dependents);
 	}
 
 	@Override

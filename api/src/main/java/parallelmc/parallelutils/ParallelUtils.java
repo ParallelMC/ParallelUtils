@@ -314,6 +314,8 @@ public final class ParallelUtils extends JavaPlugin {
 
 			currentlyLoading.add(name); // This is to prevent circular loading
 
+			ArrayList<String> dependents = new ArrayList<>();
+
 			// Load config first
 			if (configs.size() > 0) {
 				Config configObj = configs.get(0).getDeclaredConstructor().newInstance();
@@ -356,6 +358,7 @@ public final class ParallelUtils extends JavaPlugin {
 						}
 					}
 
+					dependents.add(hardDep);
 				}
 
 				// Try loading soft dependencies
@@ -387,12 +390,13 @@ public final class ParallelUtils extends JavaPlugin {
 								return null;
 							}
 						}
+						dependents.add(softDep);
 					}
 				}
 
 			}
 
-			ParallelModule module = modules.get(0).getDeclaredConstructor(ParallelClassLoader.class).newInstance(classLoader);
+			ParallelModule module = modules.get(0).getDeclaredConstructor(ParallelClassLoader.class, List.class).newInstance(classLoader, dependents);
 
 			availableModules.put(module.getName(), module);
 
@@ -408,7 +412,11 @@ public final class ParallelUtils extends JavaPlugin {
 		}
 	}
 
+	private final List<String> currentlyUnloading = new ArrayList<>();
+
 	public boolean unloadModule(String name) {
+		if (currentlyUnloading.contains(name)) return true;
+
 		ParallelModule module = availableModules.get(name);
 
 		if (module == null) return false;
@@ -418,7 +426,18 @@ public final class ParallelUtils extends JavaPlugin {
 			return false;
 		}
 
+		currentlyUnloading.add(name);
+
 		// TODO: Unload things that depend on this module too
+		List<String> dependents = module.getDependents();
+
+		for (String s : dependents) {
+			boolean depResult = unloadModule(s);
+			if (!depResult) {
+				ParallelUtils.log(Level.WARNING, "Cannot unload dependent module! Quitting...");
+				return false;
+			}
+		}
 
 		boolean result = true;
 
@@ -428,6 +447,7 @@ public final class ParallelUtils extends JavaPlugin {
 
 		if (!result) {
 			ParallelUtils.log(Level.SEVERE, "Error occurred while unloading module " + name);
+			currentlyUnloading.remove(name);
 			return false;
 		}
 
@@ -443,6 +463,8 @@ public final class ParallelUtils extends JavaPlugin {
 			// Explicitly say it's unloaded since it's less likely to cause problems
 			availableModules.remove(name);
 		}
+
+		currentlyUnloading.remove(name);
 		return true;
 	}
 

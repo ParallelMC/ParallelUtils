@@ -12,14 +12,15 @@ import parallelmc.parallelutils.ParallelUtils;
 
 import javax.security.auth.login.LoginException;
 import java.net.URLClassLoader;
+import java.util.List;
 import java.util.logging.Level;
 
 public class DiscordIntegration extends ParallelModule {
 
 	private BotManager botManager;
 
-	public DiscordIntegration(ParallelClassLoader classLoader) {
-		super(classLoader);
+	public DiscordIntegration(ParallelClassLoader classLoader, List<String> dependents) {
+		super(classLoader, dependents);
 	}
 
 	@Override

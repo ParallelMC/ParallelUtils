@@ -32,6 +32,7 @@ import parallelmc.parallelutils.modules.custommobs.spawners.SpawnerOptions;
 
 import java.net.URLClassLoader;
 import java.sql.*;
+import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -39,8 +40,8 @@ public class CustomMobs extends ParallelModule {
 
 	private static ParallelUtils puPlugin;
 
-	public CustomMobs(ParallelClassLoader classLoader) {
-		super(classLoader);
+	public CustomMobs(ParallelClassLoader classLoader, List<String> dependents) {
+		super(classLoader, dependents);
 	}
 
 	@Override

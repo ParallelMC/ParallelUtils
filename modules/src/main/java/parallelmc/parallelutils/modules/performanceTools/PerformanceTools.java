@@ -12,6 +12,7 @@ import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.performanceTools.commands.FindLoadedChunksCommand;
 
 import java.net.URLClassLoader;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -21,8 +22,8 @@ public class PerformanceTools extends ParallelModule {
 
 	private BukkitTask loaderDetector;
 
-	public PerformanceTools(ParallelClassLoader classLoader) {
-		super(classLoader);
+	public PerformanceTools(ParallelClassLoader classLoader, List<String> dependents) {
+		super(classLoader, dependents);
 	}
 
 	@Override

@@ -32,6 +32,7 @@ import parallelmc.parallelutils.modules.parallelitems.pocketteleporter.PlayerPos
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -44,8 +45,8 @@ public class ParallelItems extends ParallelModule {
 
     public static PlayerPositionManager posManager;
 
-    public ParallelItems(ParallelClassLoader classLoader) {
-        super(classLoader);
+    public ParallelItems(ParallelClassLoader classLoader, List<String> dependents) {
+        super(classLoader, dependents);
     }
 
     @Override

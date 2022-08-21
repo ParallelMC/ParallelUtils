@@ -37,6 +37,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
 import java.util.stream.Stream;
@@ -59,8 +60,8 @@ public class ParallelTutorial extends ParallelModule {
     // doing this again cuz lazy
     private static ParallelTutorial Instance;
 
-    public ParallelTutorial(ParallelClassLoader classLoader) {
-        super(classLoader);
+    public ParallelTutorial(ParallelClassLoader classLoader, List<String> dependents) {
+        super(classLoader, dependents);
     }
 
     @Override

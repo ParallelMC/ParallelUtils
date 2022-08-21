@@ -1,16 +1,20 @@
 package parallelmc.parallelutils;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.net.URLClassLoader;
+import java.util.List;
 
 public abstract class ParallelModule
 {
 
 	protected ParallelClassLoader classLoader;
+	protected List<String> dependents; // Any modules that depend on this module. Used in unloading
 
-	public ParallelModule(ParallelClassLoader classLoader) {
+	public ParallelModule(ParallelClassLoader classLoader, List<String> dependents) {
 		this.classLoader = classLoader;
+		this.dependents = List.copyOf(dependents); // Ensure it's immutable
 	}
 
 	public abstract void onLoad();
@@ -38,5 +42,11 @@ public abstract class ParallelModule
 
 	public ParallelClassLoader getClassLoader() {
 		return classLoader;
+	}
+
+	@NotNull
+	@Unmodifiable
+	public List<String> getDependents() {
+		return dependents;
 	}
 }
