@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GiveCharm extends ParallelCommand {
 
@@ -92,6 +93,7 @@ public class GiveCharm extends ParallelCommand {
 	@Override
 	public List<String> getTabComplete(@NotNull CommandSender sender, @NotNull String[] args) {
 		if (args.length == 2) {
+			String currVal = args[1];
 			List<String> charmsNoSpaces = new ArrayList<>();
 			// First all names that are online, then charms noSpaces
 
@@ -103,9 +105,10 @@ public class GiveCharm extends ParallelCommand {
 				if (s.contains(" ")) continue;
 				charmsNoSpaces.add(s);
 			}
-			return charmsNoSpaces;
+			return charmsNoSpaces.stream().filter(x -> x.startsWith(currVal)).collect(Collectors.toList());
 		} else if (args.length == 3) {
-			return List.copyOf(options.keySet());
+			String currVal = args[2];
+			return List.copyOf(options.keySet()).stream().filter(x -> x.startsWith(currVal)).collect(Collectors.toList());
 		}
 
 		return null;

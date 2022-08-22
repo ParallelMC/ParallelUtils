@@ -10,30 +10,29 @@ import parallelmc.parallelutils.modules.parallelchat.SocialSpyOptions;
 
 import java.util.UUID;
 
-
-public class ParallelSocialSpy implements CommandExecutor {
+public class ParallelChatRoomSpy implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, String[] args) {
         if (commandSender instanceof Player sender) {
-            if (sender.hasPermission("parallelutils.socialspy")) {
+            if (sender.hasPermission("parallelutils.chatrooms.chatroomspy")) {
                 UUID uuid = sender.getUniqueId();
                 if (ParallelChat.get().socialSpyUsers.containsKey(uuid)) {
                     SocialSpyOptions options = ParallelChat.get().socialSpyUsers.get(uuid);
-                    if (options.isSocialSpy()) {
-                        options.setSocialSpy(false);
+                    if (options.isChatRoomSpy()) {
+                        options.setChatRoomSpy(false);
                         ParallelChat.get().socialSpyUsers.put(uuid, options);
-                        ParallelChat.sendParallelMessageTo(sender, "<red>Disabled Social Spy");
+                        ParallelChat.sendParallelMessageTo(sender, "<red>Disabled ChatRoom Spy");
                     }
                     else {
-                        options.setSocialSpy(true);
+                        options.setChatRoomSpy(true);
                         ParallelChat.get().socialSpyUsers.put(uuid, options);
-                        ParallelChat.sendParallelMessageTo(sender, "Enabled Social Spy");
+                        ParallelChat.sendParallelMessageTo(sender, "Enabled ChatRoom Spy");
                     }
                 }
                 else {
-                    ParallelChat.get().socialSpyUsers.put(uuid, new SocialSpyOptions(true, false, false));
-                    ParallelChat.sendParallelMessageTo(sender, "Enabled Social Spy");
+                    ParallelChat.get().socialSpyUsers.put(uuid, new SocialSpyOptions(false,false, true));
+                    ParallelChat.sendParallelMessageTo(sender, "Enabled ChatRoom Spy");
                 }
             }
         }

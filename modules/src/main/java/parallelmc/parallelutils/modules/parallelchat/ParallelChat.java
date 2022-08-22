@@ -16,6 +16,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +24,7 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
+import parallelmc.parallelutils.modules.parallelchat.chatrooms.ChatRoomManager;
 import parallelmc.parallelutils.modules.parallelchat.commands.*;
 import parallelmc.parallelutils.modules.parallelchat.events.*;
 import parallelmc.parallelutils.modules.parallelchat.events.OnChatMessage;
@@ -80,14 +82,16 @@ public class ParallelChat extends ParallelModule {
     public BufferedWriter chatLogWriter;
     public BufferedWriter cmdLogWriter;
 
+    public ChatRoomManager chatRoomManager;
+
     private final Random rand = new Random();
 
     private ParallelUtils puPlugin;
 
     private static ParallelChat Instance;
 
-    public ParallelChat(ParallelClassLoader classLoader) {
-        super(classLoader);
+    public ParallelChat(ParallelClassLoader classLoader, List<String> dependents) {
+        super(classLoader, dependents);
     }
 
     @Override
@@ -123,7 +127,8 @@ public class ParallelChat extends ParallelModule {
                     (
                         UUID        varchar(36) not null,
                         SocSpy      tinyint     not null,
-                        CmdSpy      tinyint     not null
+                        CmdSpy      tinyint     not null,
+                        ChatRoomSpy tinyint     not null
                     );""");
             conn.commit();
             statement.close();
@@ -141,7 +146,8 @@ public class ParallelChat extends ParallelModule {
                 UUID uuid = UUID.fromString(results.getString("UUID"));
                 boolean socialSpy = results.getBoolean("SocSpy");
                 boolean cmdSpy = results.getBoolean("CmdSpy");
-                socialSpyUsers.put(uuid, new SocialSpyOptions(socialSpy, cmdSpy));
+                boolean chatRoomSpy = results.getBoolean("ChatRoomSpy");
+                socialSpyUsers.put(uuid, new SocialSpyOptions(socialSpy, cmdSpy, chatRoomSpy));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -212,6 +218,9 @@ public class ParallelChat extends ParallelModule {
         catch (IOException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to open writer to loggers!");
         }
+
+        this.chatRoomManager = new ChatRoomManager(Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/chatrooms.json"));
+
         manager.registerEvents(new OnChatMessage(), puPlugin);
         manager.registerEvents(new OnJoinLeave(puPlugin), puPlugin);
         manager.registerEvents(new OnSignTextSet(), puPlugin);
@@ -228,6 +237,7 @@ public class ParallelChat extends ParallelModule {
         puPlugin.getCommand("clearchat").setExecutor(new ParallelClearChat());
         puPlugin.getCommand("socialspy").setExecutor(new ParallelSocialSpy());
         puPlugin.getCommand("commandspy").setExecutor(new ParallelCommandSpy());
+        puPlugin.getCommand("chatroomspy").setExecutor(new ParallelChatRoomSpy());
         puPlugin.getCommand("mutechat").setExecutor(new ParallelMuteChat());
         puPlugin.getCommand("colors").setExecutor(new ParallelColors());
         puPlugin.getCommand("formats").setExecutor(new ParallelFormats());
@@ -255,7 +265,7 @@ public class ParallelChat extends ParallelModule {
             ParallelUtils.log(Level.SEVERE, "Failed to close chat log writer!");
         }
 
-        // save socialspy and cmdspy data across shutdowns
+        // save spy data across shutdowns
         try (Connection conn = puPlugin.getDbConn()) {
             if (conn == null) throw new SQLException("Unable to establish connection!");
             PreparedStatement statement = conn.prepareStatement("INSERT INTO SocialSpy (UUID, SocSpy, CmdSpy) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE SocSpy = ?, CmdSpy = ?");
@@ -278,6 +288,9 @@ public class ParallelChat extends ParallelModule {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        // save chatrooms
+        chatRoomManager.saveChatroomsToFile();
     }
 
     @Override
@@ -297,6 +310,17 @@ public class ParallelChat extends ParallelModule {
      */
     public static void sendParallelMessageTo(Player player, String message) {
         Component text = MiniMessage.miniMessage().deserialize("<dark_aqua>[<white><bold>P<reset><dark_aqua>] <green>" + message);
+        player.sendMessage(text);
+    }
+
+    /**
+     * Sends a chat component to a player with the ParallelUtils prefix.
+     * Note that with this function the chat color is dependent on the message parameter
+     * @param player The player to send the message to
+     * @param message The component to send
+     */
+    public static void sendParallelMessageTo(Player player, Component message) {
+        Component text = MiniMessage.miniMessage().deserialize("<dark_aqua>[<white><bold>P<reset><dark_aqua>] ").append(message);
         player.sendMessage(text);
     }
     
@@ -392,13 +416,13 @@ public class ParallelChat extends ParallelModule {
                 Placeholder.component("displayname", displayName.hoverEvent(Component.text(
                         PlaceholderAPI.setPlaceholders(source, "%pronouns_pronouns%")).asHoverEvent())),
                 Placeholder.component("tag", getTagForPlayer(source)),
+                Placeholder.component("donorrank", getDonorRankForPlayer(source)),
                 Placeholder.component("message", message)
         );
 
         if (isUsingDefault) {
             // if default is enabled for whatever reason mimic the default rank
-
-            Component result = MiniMessage.builder().build().deserialize("<tag><gray><displayname> > <reset><message>", placeholders);
+            Component result = MiniMessage.builder().build().deserialize("<tag><gray><displayname><donorrank> > <reset><message>", placeholders);
             return result;
         }
         else {
@@ -416,16 +440,12 @@ public class ParallelChat extends ParallelModule {
     }
 
     private Component getTagForPlayer(Player player) {
-        StringBuilder sb = new StringBuilder();
-        String formatted = PlaceholderAPI.setPlaceholders(player, "%deluxetags_tag%");
-        /*
-        Matcher matcher = Pattern.compile("&#(.{6})").matcher(formatted);
-        while (matcher.find()) {
-            // fix ampersands to be parsable by minimessage
-            matcher.appendReplacement(sb, "<color:#" + matcher.group(1) + ">");
-        }
-        matcher.appendTail(sb);*/
-        formatted = formatted.replaceAll("§", "&");
+        String formatted = PlaceholderAPI.setPlaceholders(player, "%deluxetags_tag%").replaceAll("§", "&");
+        return LegacyComponentSerializer.legacyAmpersand().deserialize(formatted);
+    }
+
+    private Component getDonorRankForPlayer(Player player) {
+        String formatted = PlaceholderAPI.setPlaceholders(player, "%luckperms_suffix_element_highest_on_track_donortrack%").replaceAll("§", "&");
         return LegacyComponentSerializer.legacyAmpersand().deserialize(formatted);
     }
 
@@ -485,5 +505,7 @@ public class ParallelChat extends ParallelModule {
     }
 
     public HashSet<UUID> getLoreChat() { return playersInLoreChat; }
+
+    public ParallelUtils getPlugin() { return puPlugin; }
 
 }

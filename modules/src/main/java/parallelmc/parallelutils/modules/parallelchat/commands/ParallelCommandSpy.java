@@ -30,7 +30,7 @@ public class ParallelCommandSpy implements CommandExecutor {
                     }
                 }
                 else {
-                    ParallelChat.get().socialSpyUsers.put(uuid, new SocialSpyOptions(false, true));
+                    ParallelChat.get().socialSpyUsers.put(uuid, new SocialSpyOptions(false, true, false));
                     ParallelChat.sendParallelMessageTo(sender, "Enabled Command Spy");
                 }
             }

@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -80,7 +81,10 @@ public class CustomArmorDeny extends Handler {
 			ItemStack helm = bukkitPlayer.getPlayer().getInventory().getItem(EquipmentSlot.HEAD);
 			Integer itemVal = -1;
 			if (helm != null) {
-				itemVal = helm.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				ItemMeta meta = helm.getItemMeta();
+				if (meta != null) {
+					itemVal = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				}
 			}
 
 			if (itemVal == null || !itemVal.equals(helmVal)) {
@@ -94,7 +98,10 @@ public class CustomArmorDeny extends Handler {
 
 			Integer itemVal = -1;
 			if (chest != null) {
-				itemVal = chest.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				ItemMeta meta = chest.getItemMeta();
+				if (meta != null) {
+					itemVal = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				}
 			}
 
 			if (itemVal == null || !itemVal.equals(chestVal)) {
@@ -108,7 +115,10 @@ public class CustomArmorDeny extends Handler {
 
 			Integer itemVal = -1;
 			if (leggings != null) {
-				itemVal = leggings.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				ItemMeta meta = leggings.getItemMeta();
+				if (meta != null) {
+					itemVal = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				}
 			}
 			if (itemVal == null || !itemVal.equals(leggingsVal)) {
 				allowed = false;
@@ -121,7 +131,10 @@ public class CustomArmorDeny extends Handler {
 
 			Integer itemVal = -1;
 			if (boots != null) {
-				itemVal = boots.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				ItemMeta meta = boots.getItemMeta();
+				if (meta != null) {
+					itemVal = meta.getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				}
 			}
 			if (itemVal == null || !itemVal.equals(bootsVal)) {
 				allowed = false;
