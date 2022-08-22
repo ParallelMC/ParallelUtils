@@ -56,11 +56,12 @@ public class BitsAndBobs extends ParallelModule {
 
         puPlugin.getCommand("togglepvp").setExecutor(new TogglePvpCommand());
 
-        //manager.registerEvents(new DoorKnocker(), plugin);
+        manager.registerEvents(new DoorKnocker(), plugin);
         manager.registerEvents(new SpecialItems(), plugin);
-        //manager.registerEvents(new SpeedyMinecarts(), plugin);
+        manager.registerEvents(new SpeedyMinecarts(), plugin);
         manager.registerEvents(new OnPvp(), plugin);
         manager.registerEvents(new ShardLotto(), plugin);
+        manager.registerEvents(new ChickenFeatherDrops(), plugin);
 
         if (config.getBoolean("disable-ender-chests", false)) {
             manager.registerEvents(new DisableEnderChest(), plugin);
