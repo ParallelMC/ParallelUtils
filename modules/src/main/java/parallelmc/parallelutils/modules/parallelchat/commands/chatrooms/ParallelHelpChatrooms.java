@@ -12,6 +12,7 @@ import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelUtils;
+import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +45,7 @@ public class ParallelHelpChatrooms extends ChatroomCommand {
     @Override
     public boolean execute(@NotNull Player sender, @NotNull Command command, @NotNull String[] args) {
 
-        Map<String, ChatroomCommand> commands = puPlugin.getChatroomCommands();
+        Map<String, ChatroomCommand> commands = ParallelChat.get().getChatroomCommands();
 
         List<String> sortedNames = new ArrayList<>(commands.keySet());
         Collections.sort(sortedNames);

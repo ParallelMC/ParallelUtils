@@ -45,8 +45,6 @@ public final class ParallelUtils extends JavaPlugin {
 	private HashMap<ParallelModule, ClassLoader> classloaders = new HashMap<>();
 	private Commands commands;
 
-	private ChatroomCommands chatroomCommands;
-
 	private boolean loadedModules = false;
 
 	@Override
@@ -162,20 +160,6 @@ public final class ParallelUtils extends JavaPlugin {
 		}
 
 		commands = new Commands();
-		chatroomCommands = new ChatroomCommands();
-		addChatRoomCommand("create", new ParallelCreateChatroom());
-		addChatRoomCommand("leave", new ParallelLeaveChatroom());
-		addChatRoomCommand("join", new ParallelJoinChatroom());
-		addChatRoomCommand("promote", new ParallelPromoteMember());
-		addChatRoomCommand("demote", new ParallelDemoteMember());
-		addChatRoomCommand("members", new ParallelListMembers());
-		addChatRoomCommand("kick", new ParallelKickMember());
-		addChatRoomCommand("list", new ParallelListChatrooms());
-		addChatRoomCommand("invite", new ParallelSendInvite());
-		addChatRoomCommand("accept", new ParallelAcceptInvite());
-		addChatRoomCommand("disband", new ParallelDisbandChatroom());
-		addChatRoomCommand("help", new ParallelHelpChatrooms());
-		addChatRoomCommand("msg", new ParallelMsgChatroom());
 
 		addCommand("help", new ParallelHelpCommand());
 		addCommand("test", new ParallelTestCommand());
@@ -627,15 +611,6 @@ public final class ParallelUtils extends JavaPlugin {
 	}
 
 	/**
-	 * Wrapper for {@code parallelmc.parallelutils.modules.parallelchat.commands.chatrooms.ChatroomCommand.addCommand}
-	 * Adds a new command to the commandmap
-	 * @param name The name of the command
-	 * @param command The command to be run when the name is called
-	 * @return Returns true when the command was added successfully, false if the command already exists.
-	 */
-	public boolean addChatRoomCommand(String name, ChatroomCommand command) { return chatroomCommands.addCommand(name, command); }
-
-	/**
 	 * Removes a command from the commandmap
 	 * @param name The name of the command to remove
 	 * @return True if the command was removed successfully, false otherwise
@@ -650,14 +625,6 @@ public final class ParallelUtils extends JavaPlugin {
 	 */
 	public Map<String, ParallelCommand> getCommands() {
 		return commands.getCommands();
-	}
-
-	/**
-	 * Wrapper for {@code parallelmc.parallelutils.modules.parallelchat.commands.chatrooms.ChatroomCommands#getCommands()}
-	 * @return A deep copy of the command map
-	 */
-	public Map<String, ChatroomCommand> getChatroomCommands() {
-		return chatroomCommands.getCommands();
 	}
 
 	/**
