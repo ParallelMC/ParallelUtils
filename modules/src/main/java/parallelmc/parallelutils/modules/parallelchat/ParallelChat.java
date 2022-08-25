@@ -27,6 +27,7 @@ import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.chatrooms.ChatRoomManager;
 import parallelmc.parallelutils.modules.parallelchat.commands.*;
 import parallelmc.parallelutils.modules.parallelchat.commands.chatrooms.*;
+import parallelmc.parallelutils.modules.parallelchat.emotes.EmoteManager;
 import parallelmc.parallelutils.modules.parallelchat.events.*;
 import parallelmc.parallelutils.modules.parallelchat.events.OnChatMessage;
 import parallelmc.parallelutils.modules.parallelchat.commands.ParallelFakeJoin;
@@ -84,6 +85,8 @@ public class ParallelChat extends ParallelModule {
     public BufferedWriter cmdLogWriter;
 
     public ChatRoomManager chatRoomManager;
+
+    public EmoteManager emoteManager;
 
     private final Random rand = new Random();
 
@@ -223,6 +226,8 @@ public class ParallelChat extends ParallelModule {
         }
 
         this.chatRoomManager = new ChatRoomManager(Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/chatrooms.json"));
+
+        this.emoteManager = new EmoteManager();
 
         manager.registerEvents(new OnChatMessage(), puPlugin);
         manager.registerEvents(new OnJoinLeave(puPlugin), puPlugin);

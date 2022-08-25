@@ -22,6 +22,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
+import parallelmc.parallelutils.modules.parallelchat.emotes.Emote;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -36,6 +37,7 @@ public class OnChatMessage implements Listener {
 
     private static final Pattern mention = Pattern.compile("@(\\S+)", Pattern.MULTILINE);
     private static final Pattern caps = Pattern.compile("[A-Z]", Pattern.MULTILINE);
+    private static final Pattern emote = Pattern.compile(":\\w+:");
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onChatMessage(AsyncChatEvent event) {
@@ -93,6 +95,17 @@ public class OnChatMessage implements Listener {
                 event.message(event.message().replaceText(x -> x.matchLiteral(match).replacement(Component.text(mentionMatcher.group(), NamedTextColor.YELLOW))));
                 matchPlayer.playSound(matchPlayer.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1f, 1f);
                 mentionedPlayers.add(matchPlayer);
+            }
+        }
+
+        // Emotes
+        // again easier to use the string version of the message to search for emotes
+        Matcher emoteMatcher = emote.matcher(msgStr);
+        while (emoteMatcher.find()) {
+            String match = emoteMatcher.group();
+            Emote emote = ParallelChat.get().emoteManager.getEmote(match);
+            if (emote != null && player.hasPermission("parallelutils.emote." + emote.name())) {
+                event.message(event.message().replaceText(y -> y.matchLiteral(emote.id()).replacement(Component.text(emote.replacement()).hoverEvent(Component.text(emote.id()).asHoverEvent()))));
             }
         }
 
