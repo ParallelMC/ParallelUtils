@@ -16,7 +16,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
@@ -27,7 +26,7 @@ import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.chatrooms.ChatRoomManager;
 import parallelmc.parallelutils.modules.parallelchat.commands.*;
 import parallelmc.parallelutils.modules.parallelchat.commands.chatrooms.*;
-import parallelmc.parallelutils.modules.parallelchat.emotes.EmoteManager;
+import parallelmc.parallelutils.modules.parallelchat.emojis.EmojiManager;
 import parallelmc.parallelutils.modules.parallelchat.events.*;
 import parallelmc.parallelutils.modules.parallelchat.events.OnChatMessage;
 import parallelmc.parallelutils.modules.parallelchat.commands.ParallelFakeJoin;
@@ -36,7 +35,6 @@ import parallelmc.parallelutils.modules.parallelchat.commands.ParallelFakeLeave;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
-import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -86,7 +84,7 @@ public class ParallelChat extends ParallelModule {
 
     public ChatRoomManager chatRoomManager;
 
-    public EmoteManager emoteManager;
+    public EmojiManager emojiManager;
 
     private final Random rand = new Random();
 
@@ -227,7 +225,7 @@ public class ParallelChat extends ParallelModule {
 
         this.chatRoomManager = new ChatRoomManager(Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/chatrooms.json"));
 
-        this.emoteManager = new EmoteManager();
+        this.emojiManager = new EmojiManager();
 
         manager.registerEvents(new OnChatMessage(), puPlugin);
         manager.registerEvents(new OnJoinLeave(puPlugin), puPlugin);
