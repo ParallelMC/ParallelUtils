@@ -2,16 +2,11 @@ package parallelmc.parallelutils.modules.parallelchat.events;
 
 import io.papermc.paper.chat.ChatRenderer;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentBuilder;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
-import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import net.minecraft.network.chat.HoverEvent;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.Sound;
@@ -22,7 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
-import parallelmc.parallelutils.modules.parallelchat.emotes.Emote;
+import parallelmc.parallelutils.modules.parallelchat.emojis.Emoji;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -37,7 +32,7 @@ public class OnChatMessage implements Listener {
 
     private static final Pattern mention = Pattern.compile("@(\\S+)", Pattern.MULTILINE);
     private static final Pattern caps = Pattern.compile("[A-Z]", Pattern.MULTILINE);
-    private static final Pattern emote = Pattern.compile(":\\w+:");
+    private static final Pattern emoji = Pattern.compile(":\\w+:");
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onChatMessage(AsyncChatEvent event) {
@@ -98,14 +93,14 @@ public class OnChatMessage implements Listener {
             }
         }
 
-        // Emotes
+        // Emojis
         // again easier to use the string version of the message to search for emotes
-        Matcher emoteMatcher = emote.matcher(msgStr);
-        while (emoteMatcher.find()) {
-            String match = emoteMatcher.group();
-            Emote emote = ParallelChat.get().emoteManager.getEmote(match);
-            if (emote != null && player.hasPermission("parallelutils.emote." + emote.name())) {
-                event.message(event.message().replaceText(y -> y.matchLiteral(emote.id()).replacement(Component.text(emote.replacement()).hoverEvent(Component.text(emote.id()).asHoverEvent()))));
+        Matcher emojiMatcher = emoji.matcher(msgStr);
+        while (emojiMatcher.find()) {
+            String match = emojiMatcher.group();
+            Emoji emoji = ParallelChat.get().emojiManager.getEmojis(match);
+            if (emoji != null && player.hasPermission("parallelutils.emoji." + emoji.name())) {
+                event.message(event.message().replaceText(y -> y.matchLiteral(emoji.id()).replacement(Component.text(emoji.replacement()).hoverEvent(Component.text(emoji.id()).asHoverEvent()))));
             }
         }
 
