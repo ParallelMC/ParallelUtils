@@ -6,3 +6,5 @@ pluginManagement {
 }
 
 rootProject.name = "ParallelUtils"
+include 'api'
+include 'modules'

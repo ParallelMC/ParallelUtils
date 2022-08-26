@@ -1,0 +1,95 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
+import io.papermc.paperweight.tasks.RemapJar
+
+group = 'org.parallelmc'
+
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+}
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+processResources.filteringCharset = "UTF-8"
+
+dependencies {
+    compileOnly project(':api')
+    compileOnly fileTree('../libs') { include '*.jar' }
+
+    compileOnly 'org.jetbrains:annotations:23.0.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    compileOnly 'net.dv8tion:JDA:4.4.0_350'
+    compileOnly 'me.clip:placeholderapi:2.11.1'
+    compileOnly fileTree('libs') { include '*.jar' }
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.7'
+    compileOnly 'mysql:mysql-connector-java:8.0.29'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:4.8.0'
+    compileOnly 'dev.esophose:playerparticles:7.25'
+}
+
+def names = []
+fileTree("src/main/java/parallelmc/parallelutils/modules").visit { FileVisitDetails details ->
+    if (!details.path.contains('/')) {
+        def name = details.name
+        names.add(name)
+    }
+}
+
+names.each {name ->
+    sourceSets {
+        sourceSets.create("${name}Mod") {
+            java {
+                compileClasspath += configurations.compileClasspath
+
+                srcDirs = ['src/main/java/parallelmc/parallelutils/modules/${name}']
+            }
+        }
+    }
+}
+
+task printTest() {
+    println names
+}
+
+names.each { mod ->
+    task "shadow-${mod}" (type: ShadowJar) {
+        group = "ModShadow"
+        description = "Shadow module ${mod}"
+
+        def exList = []
+        exList.addAll(names)
+        def name = (String) "${mod}"
+        exList.remove(name)
+
+        archiveClassifier.set("shadow-${mod}")
+        from sourceSets.main.output
+
+
+        exList.forEach { x ->
+            def path = "**/${x}/**"
+            exclude path
+        }
+        // Figure out how to exclude META-INF
+    }
+}
+
+names.each { mod ->
+    task "reobf-${mod}" (type: RemapJar) {
+        dependsOn "shadow-${mod}"
+        group = "ReobfMod"
+        description = "Remap the compiled module jar to Spigot's obfuscated runtime names"
+
+        fromNamespace = reobfJar.fromNamespace
+        toNamespace = reobfJar.toNamespace
+        mappingsFile = reobfJar.mappingsFile
+        remapClasspath.from(reobfJar.remapClasspath.getFrom())
+        remapper.from(reobfJar.project.configurations.named("remapper"))
+        remapperArgs = reobfJar.remapperArgs
+
+
+        inputJar.set(new File("$buildDir/libs/modules-shadow-${mod}.jar"))
+        //outputJar.set(new File("$buildDir/libs/${mod}-${project.version}.jar"))
+        outputJar.set(new File("$buildDir/libs/${mod}.jar"))
+    }
+}
