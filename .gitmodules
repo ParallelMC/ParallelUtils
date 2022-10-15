@@ -1,3 +1,6 @@
 [submodule "docs/Parallel-Documentation"]
 	path = docs/Parallel-Documentation
 	url = git@github.com:ParallelMC/Parallel-Documentation.git
+[submodule "modules/src/main/java/parallelmc/parallelutils/modules/custommobs"]
+	path = modules/src/main/java/parallelmc/parallelutils/modules/custommobs
+	url = git@github.com:ParallelMC/CustomMobs.git
