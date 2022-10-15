@@ -90,7 +90,9 @@ public class CustomArmorHealth extends Handler {
 			ItemStack helm = bukkitPlayer.getPlayer().getInventory().getItem(EquipmentSlot.HEAD);
 			Integer itemVal = -1;
 			if (helm != null) {
-				itemVal = helm.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				if (helm.getItemMeta() != null) {
+					itemVal = helm.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				}
 			}
 
 			if (itemVal == null || !itemVal.equals(helmVal)) {
@@ -104,7 +106,9 @@ public class CustomArmorHealth extends Handler {
 
 			Integer itemVal = -1;
 			if (chest != null) {
-				itemVal = chest.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				if (chest.getItemMeta() != null) {
+					itemVal = chest.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				}
 			}
 
 			if (itemVal == null || !itemVal.equals(chestVal)) {
@@ -118,7 +122,9 @@ public class CustomArmorHealth extends Handler {
 
 			Integer itemVal = -1;
 			if (leggings != null) {
-				itemVal = leggings.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				if (leggings.getItemMeta() != null) {
+					itemVal = leggings.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				}
 			}
 			if (itemVal == null || !itemVal.equals(leggingsVal)) {
 				allowed = false;
@@ -131,7 +137,9 @@ public class CustomArmorHealth extends Handler {
 
 			Integer itemVal = -1;
 			if (boots != null) {
-				itemVal = boots.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				if (boots.getItemMeta() != null) {
+					itemVal = boots.getItemMeta().getPersistentDataContainer().get(key, PersistentDataType.INTEGER);
+				}
 			}
 			if (itemVal == null || !itemVal.equals(bootsVal)) {
 				allowed = false;
