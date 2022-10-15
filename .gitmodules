@@ -4,3 +4,6 @@
 [submodule "modules/src/main/java/parallelmc/parallelutils/modules/custommobs"]
 	path = modules/src/main/java/parallelmc/parallelutils/modules/custommobs
 	url = git@github.com:ParallelMC/CustomMobs.git
+[submodule "modules/src/main/java/parallelmc/parallelutils/modules/discordintegration"]
+	path = modules/src/main/java/parallelmc/parallelutils/modules/discordintegration
+	url = git@github.com:ParallelMC/DiscordIntegration.git
