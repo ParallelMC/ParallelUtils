@@ -1,3 +1,15 @@
 [submodule "docs/Parallel-Documentation"]
 	path = docs/Parallel-Documentation
 	url = git@github.com:ParallelMC/Parallel-Documentation.git
+[submodule "modules/src/main/java/parallelmc/parallelutils/modules/custommobs"]
+	path = modules/src/main/java/parallelmc/parallelutils/modules/custommobs
+	url = git@github.com:ParallelMC/CustomMobs.git
+[submodule "modules/src/main/java/parallelmc/parallelutils/modules/discordintegration"]
+	path = modules/src/main/java/parallelmc/parallelutils/modules/discordintegration
+	url = git@github.com:ParallelMC/DiscordIntegration.git
+[submodule "modules/src/main/java/parallelmc/parallelutils/modules/parallelitems"]
+	path = modules/src/main/java/parallelmc/parallelutils/modules/parallelitems
+	url = git@github.com:ParallelMC/ParallelItems.git
+[submodule "modules/src/main/java/parallelmc/parallelutils/modules/performanceTools"]
+	path = modules/src/main/java/parallelmc/parallelutils/modules/performanceTools
+	url = git@github.com:ParallelMC/PerformanceTools.git
