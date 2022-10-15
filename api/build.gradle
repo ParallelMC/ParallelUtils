@@ -313,6 +313,27 @@ bukkit {
         'parallelutils.chat.formats' {
             description = 'Gives access to chat formatting'
         }
+        'parallelutils.book' {
+            description = 'Gives access to chat elements on books'
+            childrenMap = ['parallelutils.book.colors': true, 'parallelutils.book.formats': true,'parallelutils.book.hex': true,'parallelutils.book.magic': true,]
+            setDefault('FALSE')
+        }
+        'parallelutils.book.colors' {
+            description = 'Gives access to chat colors on signs'
+            setDefault('FALSE')
+        }
+        'parallelutils.book.formats' {
+            description = 'Gives access to chat formatting on signs'
+            setDefault('FALSE')
+        }
+        'parallelutils.book.hex' {
+            description = 'Gives access to chat hex colors on signs'
+            setDefault('FALSE')
+        }
+        'parallelutils.book.magic' {
+            description = 'Gives access to magic chat formatting on signs'
+            setDefault('FALSE')
+        }
         'parallelutils.bypass' {
             description = 'Bypasses some ParallelUtils modules'
             childrenMap = ['parallelutils.bypass.anticaps': true, 'parallelutils.bypass.antislur': true, 'parallelutils.bypass.clearchat': true, 'parallelutils.bypass.socialspy': true, 'parallelutils.bypass.commandspy': true, 'parallelutils.bypass.mutechat': true,]
