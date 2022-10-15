@@ -54,3 +54,6 @@ This is a list of the current modules for ParallelUtils
   
 - PerformanceTools
   - Adds tools to help diagnose performance issues
+  
+## Why are some modules not accessible?
+These modules either contain lore spoilers or are plugins very specifically designed for Parallel. We chose to make these plugins private (at least for now) to provide a better experience for the community.
