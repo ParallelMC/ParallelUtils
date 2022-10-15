@@ -317,6 +317,7 @@ public class ParallelCharms extends ParallelModule {
 		}
 		try {
 			if (handler.getEventType().equals(event)) {
+				//noinspection unchecked
 				return (ICharmHandler<T>) handler;
 			}
 		} catch (Exception e) {
