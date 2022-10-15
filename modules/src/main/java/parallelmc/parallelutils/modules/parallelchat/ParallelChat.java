@@ -227,6 +227,7 @@ public class ParallelChat extends ParallelModule {
 
         this.emojiManager = new EmojiManager();
 
+        manager.registerEvents(new OnBookEdit(), puPlugin);
         manager.registerEvents(new OnChatMessage(), puPlugin);
         manager.registerEvents(new OnJoinLeave(puPlugin), puPlugin);
         manager.registerEvents(new OnSignTextSet(), puPlugin);
