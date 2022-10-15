@@ -7,3 +7,6 @@
 [submodule "modules/src/main/java/parallelmc/parallelutils/modules/discordintegration"]
 	path = modules/src/main/java/parallelmc/parallelutils/modules/discordintegration
 	url = git@github.com:ParallelMC/DiscordIntegration.git
+[submodule "modules/src/main/java/parallelmc/parallelutils/modules/parallelitems"]
+	path = modules/src/main/java/parallelmc/parallelutils/modules/parallelitems
+	url = git@github.com:ParallelMC/ParallelItems.git
