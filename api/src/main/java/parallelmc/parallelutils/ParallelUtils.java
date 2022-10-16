@@ -214,14 +214,14 @@ public final class ParallelUtils extends JavaPlugin {
 		File modulesPath = new File(this.getDataFolder(), "modules");
 
 		if (!modulesPath.isDirectory()) {
-			ParallelUtils.log(Level.SEVERE, "MODULES DIRECTORY NOT FOUND");
+			ParallelUtils.log(Level.SEVERE, "MODULES DIRECTORY NOT FOUND - plugins/ParallelUtils/modules");
 			return;
 		}
 
 		File[] files = modulesPath.listFiles();
 
 		if (files == null) {
-			ParallelUtils.log(Level.SEVERE, "MODULES DIRECTORY NOT FOUND");
+			ParallelUtils.log(Level.SEVERE, "MODULES DIRECTORY NOT FOUND - plugins/ParallelUtils/modules");
 			return;
 		}
 
@@ -246,7 +246,7 @@ public final class ParallelUtils extends JavaPlugin {
 		File modulesPath = new File(this.getDataFolder(), "modules");
 
 		if (!modulesPath.isDirectory()) {
-			ParallelUtils.log(Level.SEVERE, "MODULES DIRECTORY NOT FOUND");
+			ParallelUtils.log(Level.SEVERE, "MODULES DIRECTORY NOT FOUND - plugins/ParallelUtils/modules");
 			return null;
 		}
 
