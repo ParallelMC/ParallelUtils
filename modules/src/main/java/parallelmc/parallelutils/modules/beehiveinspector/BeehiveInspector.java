@@ -1,4 +1,4 @@
-package parallelmc.parallelutils.modules.gamemode4_beehiveInspector;
+package parallelmc.parallelutils.modules.beehiveinspector;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -8,9 +8,8 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
-import parallelmc.parallelutils.modules.gamemode4_beehiveInspector.events.BeehiveBroken;
+import parallelmc.parallelutils.modules.beehiveinspector.events.BeehiveBroken;
 
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.logging.Level;
 

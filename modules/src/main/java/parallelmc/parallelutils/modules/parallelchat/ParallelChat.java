@@ -122,6 +122,13 @@ public class ParallelChat extends ParallelModule {
             return;
         }
 
+
+        // makes things safer and easier in other events
+        // plus it saves us a .getModule() every time we need this class
+        // if there is a better way of exposing this class
+        // feel free to change it
+        Instance = this;
+
         try (Connection conn = puPlugin.getDbConn()) {
             if (conn == null) throw new SQLException("Unable to establish connection!");
             Statement statement = conn.createStatement();
@@ -264,12 +271,6 @@ public class ParallelChat extends ParallelModule {
         addChatRoomCommand("disband", new ParallelDisbandChatroom());
         addChatRoomCommand("help", new ParallelHelpChatrooms());
         addChatRoomCommand("msg", new ParallelMsgChatroom());
-
-        // makes things safer and easier in other events
-        // plus it saves us a .getModule() every time we need this class
-        // if there is a better way of exposing this class
-        // feel free to change it
-        Instance = this;
     }
 
     public static ParallelChat get() {
