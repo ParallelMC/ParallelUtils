@@ -1,4 +1,4 @@
-package parallelmc.parallelutils.modules.gamemode4_beehiveInspector.events;
+package parallelmc.parallelutils.modules.beehiveinspector.events;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;

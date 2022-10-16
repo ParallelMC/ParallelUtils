@@ -188,6 +188,7 @@ public final class ParallelUtils extends JavaPlugin {
 				ParallelUtils.log(Level.INFO, "Enabled module " + module.getName());
 			} catch (Exception e) {
 				ParallelUtils.log(Level.SEVERE, "Error while enabling module " + module.getName());
+				e.printStackTrace();
 			}
 		}
 	}

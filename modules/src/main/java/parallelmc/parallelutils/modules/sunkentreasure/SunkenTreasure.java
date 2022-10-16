@@ -1,4 +1,4 @@
-package parallelmc.parallelutils.modules.gamemode4_sunkenTreasure;
+package parallelmc.parallelutils.modules.sunkentreasure;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -9,9 +9,8 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
-import parallelmc.parallelutils.modules.gamemode4_sunkenTreasure.events.TreasureChecker;
+import parallelmc.parallelutils.modules.sunkentreasure.events.TreasureChecker;
 
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.logging.Level;
 
