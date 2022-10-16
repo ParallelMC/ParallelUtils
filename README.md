@@ -1,5 +1,6 @@
 # ParallelUtils
 
+<a href="https://parallelmc.org/">![Website](https://img.shields.io/badge/website-000000?style=for-the-badge&logo=About.me&logoColor=white)</a>
 <a href="https://discord.gg/7PSDuCbg7Y">![Discord](https://img.shields.io/badge/Discord-%237289DA.svg?style=for-the-badge&logo=discord&logoColor=white)</a>
 <a href="https://parallelmc.tumblr.com/">![Tumblr](https://img.shields.io/badge/Tumblr-%2336465D.svg?style=for-the-badge&logo=Tumblr&logoColor=white)</a>
 <a href="https://twitter.com/ParallelMC">![Twitter](https://img.shields.io/badge/Twitter-%231DA1F2.svg?style=for-the-badge&logo=Twitter&logoColor=white)</a>
