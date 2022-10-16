@@ -1,4 +1,4 @@
-package parallelmc.parallelutils.modules.gamemode4_sunkenTreasure.events;
+package parallelmc.parallelutils.modules.sunkentreasure.events;
 
 import org.bukkit.Material;
 import org.bukkit.World;

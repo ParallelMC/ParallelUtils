@@ -79,6 +79,12 @@ bukkit {
             permissionMessage = 'You do not have permission'
             aliases = ['pu',]
         }
+        chatroom {
+            description = 'Base command for all ChatRoom commands'
+            usage = '/cr'
+            permissionMessage = 'You do not have permission'
+            aliases = ['cr',]
+        }
         depositexp {
             description = 'Deposit exp into the player\' s ender chest '
             usage = '/depositexp <amount | all>'
@@ -161,6 +167,12 @@ bukkit {
             usage = '/commandspy'
             permissionMessage = 'You do not have permission'
             permission = 'parallelutils.commandspy'
+        }
+        chatroomspy {
+            description = 'Toggles chatroom spy'
+            usage = '/chatroomspy'
+            permissionMessage = 'You do not have permission'
+            permission = 'parallelutils.chatrooms.chatroomspy'
         }
         mutechat {
             description = 'Mute or unmute the chat'
@@ -287,6 +299,9 @@ bukkit {
         }
         'parallelutils.commandspy' {
             description = 'Gives access to the CommandSpy command'
+        }
+        'parallelutils.chatroomspy' {
+            description = 'Gives access to the ChatroomSpy command'
         }
         'parallelutils.clearchat' {
             description = 'Gives access to the clearchat command'
