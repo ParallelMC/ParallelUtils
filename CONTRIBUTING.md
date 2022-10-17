@@ -73,7 +73,30 @@ If it cannot, but we still determine the feature is worthwhile, we will label th
 
 ### Your First Contribution
 
+Take a look at issues with the `good first issue` and `help wanted` labels:
+- `good first issue` - Should only require a few lines of code or are otherwise very simple
+- `help wanted` - A bit more involved than `good first issue`. These are generally issues that the development team 
+doesn't have the time to pick up.
+
+Setting up a development environment for ParallelUtils can be a bit tricky:
+
+- If you are modifying an existing module, simply fork and clone ParallelUtils.
+- First, ensure that you have Git installed. Second, create a public GitHub repository. This will house your module.
+Next, fork and clone ParallelUtils. Now, you must add a submodule using `git submodule add repoURL modules/src/main/java/parallelmc/parallelutils/modules/<moduleName>`
+Next, run `git submodule update --init modules/src/main/java/parallelmc/parallelutils/modules/<moduleName>`. 
+These steps will allow you to use our development environment for creating the module and will prepare your fork for an eventual Pull Request.
+
 ### Submitting Your Contribution
+
+Create a Pull Request! Please add a changelog of all features (new things), improvements (things that work better), bug fixes, and new known bugs
+to the description. Also, link all relevant issues to the PR with `#issueNum`. The PR should include changes 
+to existing modules or a git submodule to a new module. 
+
+During review, the development team will:
+1. Ensure any CI tests pass
+2. At least one member will review all code and add comments or request changes
+3. Once at least one team member approves the PR, we will merge it into the `staging` branch, where it will stay until
+the next release.
 
 
 ## Styleguides
