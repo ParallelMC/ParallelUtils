@@ -10,6 +10,3 @@
 [submodule "modules/src/main/java/parallelmc/parallelutils/modules/parallelitems"]
 	path = modules/src/main/java/parallelmc/parallelutils/modules/parallelitems
 	url = git@github.com:ParallelMC/ParallelItems.git
-[submodule "modules/src/main/java/parallelmc/parallelutils/modules/performancetools"]
-	path = modules/src/main/java/parallelmc/parallelutils/modules/performancetools
-	url = git@github.com:ParallelMC/PerformanceTools.git
