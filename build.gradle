@@ -7,7 +7,7 @@ plugins {
 }
 
 dependencies {
-    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19-R0.1-SNAPSHOT")
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19.2-R0.1-SNAPSHOT")
 }
 
 
@@ -39,9 +39,9 @@ allprojects {
     }
 
     dependencies {
-        paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19-R0.1-SNAPSHOT")
+        paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19.2-R0.1-SNAPSHOT")
 
-        compileOnly "io.papermc.paper:paper-api:1.19-R0.1-SNAPSHOT"
+        compileOnly "io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT"
         compileOnly 'net.luckperms:api:5.4'
         compileOnly 'dev.esophose:playerparticles:8.2'
     }
