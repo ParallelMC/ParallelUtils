@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketContainer;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.minecraft.util.Mth;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -31,7 +32,6 @@ import parallelmc.parallelutils.modules.paralleltutorial.scripting.Instruction;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -157,7 +157,7 @@ public class ParallelTutorial extends ParallelModule {
                     stream.forEach(s -> {
                         String[] split = s.split(" ");
                         switch (split[0]) {
-                            case "START", "TELEPORT" -> {
+                            case "START", "TELEPORT", "LOOKAT" -> {
                                 if (split.length != 4) {
                                     ParallelUtils.log(Level.SEVERE, "Tutorial Parse Error: Expected 3 arguments on line " + line.get());
                                     return;
@@ -232,6 +232,8 @@ public class ParallelTutorial extends ParallelModule {
         // TIL entities can't be spawned in async runnables
         Bukkit.getScheduler().runTaskAsynchronously(puPlugin, new Runnable() {
             Vector lookAt = null;
+            // prevent running calculations for a static look vector
+            boolean isBlock = false;
             final ArrayList<Instruction> instructions = tutorials.get(tutorial.toLowerCase());
             boolean instructionFinished = true;
             int instructionIndex = 0;
@@ -280,8 +282,16 @@ public class ParallelTutorial extends ParallelModule {
                                         public void run() {
                                             if (steps == duration) {
                                                 if (lookAt != null) {
-                                                    b.setYaw((float)lookAt.getX());
-                                                    b.setPitch((float)lookAt.getY());
+                                                    if (isBlock) {
+                                                        Vector look = lookAt(stand, lookAt);
+                                                        if (debug) ParallelUtils.log(Level.WARNING, "Calculated look vector: " + look.getX() + " " + look.getY());
+                                                        b.setYaw((float) look.getX());
+                                                        b.setPitch((float) look.getY());
+                                                    }
+                                                    else {
+                                                        b.setYaw((float) lookAt.getX());
+                                                        b.setPitch((float) lookAt.getY());
+                                                    }
                                                 }
                                                 stand.teleport(b);
                                                 instructionFinished = true;
@@ -298,8 +308,16 @@ public class ParallelTutorial extends ParallelModule {
                                                         a.getY() + (b.getY() - a.getY()) * t,
                                                         a.getZ() + (b.getZ() - a.getZ()) * t);
                                                 if (lookAt != null) {
-                                                    point.setYaw((float)lookAt.getX());
-                                                    point.setPitch((float)lookAt.getY());
+                                                    if (isBlock) {
+                                                        Vector look = lookAt(stand, lookAt);
+                                                        if (debug) ParallelUtils.log(Level.WARNING, "Calculated look vector: " + look.getX() + " " + look.getY());
+                                                        point.setYaw((float) look.getX());
+                                                        point.setPitch((float) look.getY());
+                                                    }
+                                                    else {
+                                                        point.setYaw((float) lookAt.getX());
+                                                        point.setPitch((float) lookAt.getY());
+                                                    }
                                                 }
                                                 stand.teleport(point);
                                                 steps++;
@@ -315,11 +333,17 @@ public class ParallelTutorial extends ParallelModule {
                                         public void run() {
                                             if(player.teleport(newPoint)) {
                                                 if (lookAt != null) {
-                                                    newPoint.setYaw((float)lookAt.getX());
-                                                    newPoint.setPitch((float)lookAt.getY());
-
+                                                    if (isBlock) {
+                                                        Vector look = lookAt(stand, lookAt);
+                                                        if (debug) ParallelUtils.log(Level.WARNING, "Calculated look vector: " + look.getX() + " " + look.getY());
+                                                        newPoint.setYaw((float) look.getX());
+                                                        newPoint.setPitch((float) look.getY());
+                                                    }
+                                                    else {
+                                                        newPoint.setYaw((float) lookAt.getX());
+                                                        newPoint.setPitch((float) lookAt.getY());
+                                                    }
                                                 }
-                                                stand.setRotation((float)lookAt.getX(), (float)lookAt.getY());
                                                 if (stand.teleport(newPoint)) {
                                                     forceSpectate(player, stand.getEntityId());
                                                     if (debug) {
@@ -334,8 +358,14 @@ public class ParallelTutorial extends ParallelModule {
                                         }
                                     }.runTaskTimer(puPlugin, 0L, 2L);
                                 }
+                                case "LOOKAT" -> {
+                                    lookAt = new Vector(Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
+                                    isBlock = true;
+                                    instructionFinished = true;
+                                }
                                 case "ROTATE" -> {
                                     lookAt = new Vector(Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), 0);
+                                    isBlock = false;
                                     if (debug) ParallelUtils.log(Level.WARNING, "Updated look vector to " + lookAt.getX() + " " + lookAt.getY());
                                     instructionFinished = true;
                                 }
@@ -459,6 +489,60 @@ public class ParallelTutorial extends ParallelModule {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
+    }
+
+    private Vector lookAt(ArmorStand stand, Vector block) {
+        Vector eyes = stand.getEyeLocation().toVector();
+        double d = block.getX() - eyes.getX();
+        double e = block.getY() - eyes.getY();
+        double f = block.getZ() - eyes.getZ();
+        double g = Math.sqrt(d * d + f * f);
+        return new Vector(Mth.wrapDegrees((float)(Mth.atan2(f, d) * 57.2957763671875) - 90.0F), Mth.wrapDegrees((float)(-(Mth.atan2(e, g) * 57.2957763671875))), 0);
+    }
+
+    private Vector faceBlock(ArmorStand stand, Vector block) {
+        Vector eyes = stand.getEyeLocation().toVector();
+        Vector blockPos = new Vector(block.getX(), block.getY(), block.getZ());
+        double diffX = blockPos.getX() - eyes.getX();
+        double diffY = blockPos.getY() - eyes.getY();
+        double diffZ = blockPos.getZ() - eyes.getZ();
+
+        double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
+
+        float yaw = (float)Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F;
+        float pitch = (float)-Math.toDegrees(Math.atan2(diffY, diffXZ));
+        float prevYaw = stand.getLocation().getYaw();
+        float prevPitch = stand.getLocation().getPitch();
+        // use a rotational lerp to prevent snapping
+        return new Vector(rotLerp(prevYaw, yaw, 30f), rotLerp(prevPitch, pitch, 30f), 0);
+    }
+
+    private float rotLerp(float pSourceAngle, float pTargetAngle, float pMaximumChange)
+    {
+        float f = Mth.wrapDegrees(pTargetAngle - pSourceAngle);
+
+        if (f > pMaximumChange)
+        {
+            f = pMaximumChange;
+        }
+
+        if (f < -pMaximumChange)
+        {
+            f = -pMaximumChange;
+        }
+
+        float f1 = pSourceAngle + f;
+
+        if (f1 < 0.0F)
+        {
+            f1 += 360.0F;
+        }
+        else if (f1 > 360.0F)
+        {
+            f1 -= 360.0F;
+        }
+
+        return f1;
     }
 
 }
