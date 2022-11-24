@@ -3,6 +3,7 @@ package parallelmc.parallelutils.modules.paralleltowns.commands;
 import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
 
 import java.util.ArrayList;
@@ -21,8 +22,12 @@ public class ParallelTownGUI extends TownCommand {
             player.sendMessage(USAGE);
             return false;
         }
-        // TODO: make sure player is in a town
-        ParallelTowns.get().guiManager.openMainMenuForPlayer(player);
+        if (ParallelTowns.get().getPlayerTown(player) == null) {
+            ParallelChat.sendParallelMessageTo(player, "You are not in a town! Use /town create to create one!");
+        }
+        else {
+            ParallelTowns.get().guiManager.openMainMenuForPlayer(player);
+        }
         return true;
     }
 

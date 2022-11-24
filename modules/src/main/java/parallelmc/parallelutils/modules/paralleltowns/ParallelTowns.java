@@ -1,6 +1,7 @@
 package parallelmc.parallelutils.modules.paralleltowns;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
@@ -8,11 +9,14 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
+import parallelmc.parallelutils.modules.paralleltowns.commands.ParallelCreateTown;
 import parallelmc.parallelutils.modules.paralleltowns.commands.ParallelTownGUI;
 import parallelmc.parallelutils.modules.paralleltowns.commands.TownCommands;
 import parallelmc.parallelutils.modules.paralleltowns.events.OnMenuInteract;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 public class ParallelTowns extends ParallelModule {
@@ -26,6 +30,10 @@ public class ParallelTowns extends ParallelModule {
     public GUIManager guiManager;
 
     private TownCommands townCommands;
+
+    private final HashMap<String, Town> towns = new HashMap<>();
+
+    private final HashMap<UUID, String> playersInTown = new HashMap<>();
 
     private static ParallelTowns Instance;
 
@@ -58,6 +66,7 @@ public class ParallelTowns extends ParallelModule {
         townCommands = new TownCommands();
         puPlugin.getCommand("town").setExecutor(townCommands);
         townCommands.addCommand("gui", new ParallelTownGUI());
+        townCommands.addCommand("create", new ParallelCreateTown());
 
         Instance = this;
     }
@@ -71,6 +80,23 @@ public class ParallelTowns extends ParallelModule {
     @Override
     public @NotNull String getName() {
         return "ParallelTowns";
+    }
+
+    public void addTown(Player founder, String townName) {
+        towns.put(townName, new Town(townName, founder.getUniqueId()));
+        addPlayerToTown(founder, townName);
+    }
+
+    public Town getTown(String townName) {
+        return towns.get(townName);
+    }
+
+    public Town getPlayerTown(Player player) {
+        return towns.get(playersInTown.get(player.getUniqueId()));
+    }
+
+    public void addPlayerToTown(Player player, String townName) {
+        playersInTown.put(player.getUniqueId(), townName);
     }
 
     public static ParallelTowns get() { return Instance; }
