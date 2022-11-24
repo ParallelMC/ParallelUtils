@@ -83,7 +83,7 @@ public class ParallelTutorial extends ParallelModule {
         this.puPlugin = (ParallelUtils) plugin;
 
         if (!puPlugin.registerModule(this)) {
-            ParallelUtils.log(Level.SEVERE, "Unable to register module ParallelChat! " +
+            ParallelUtils.log(Level.SEVERE, "Unable to register module ParallelTutorial! " +
                     "Module may already be registered. Quitting...");
             return;
         }
@@ -456,7 +456,7 @@ public class ParallelTutorial extends ParallelModule {
         packet.getIntegers().write(0, entityId);
         try {
             protManager.sendServerPacket(player, packet);
-        } catch (InvocationTargetException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
