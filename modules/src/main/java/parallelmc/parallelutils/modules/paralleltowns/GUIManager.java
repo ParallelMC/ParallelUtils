@@ -1,9 +1,5 @@
 package parallelmc.parallelutils.modules.paralleltowns;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import parallelmc.parallelutils.modules.paralleltowns.gui.GUIInventory;
@@ -16,12 +12,6 @@ import java.util.UUID;
 
 // helper class to manage all possible menus and submenus of the town gui
 public class GUIManager {
-    // the town options menu
-    private final Inventory townOptions = Bukkit.createInventory(null, 9, Component.text("Town Options", NamedTextColor.DARK_AQUA).decoration(TextDecoration.BOLD, true));
-
-    // the town members menu
-    private final Inventory townMembers = Bukkit.createInventory(null, 54, Component.text("Town Members", NamedTextColor.DARK_AQUA).decoration(TextDecoration.BOLD, true));
-
     // a list of all players with the towns UI open
     private final HashMap<UUID, GUIInventory> openGUIs = new HashMap<>();
 
