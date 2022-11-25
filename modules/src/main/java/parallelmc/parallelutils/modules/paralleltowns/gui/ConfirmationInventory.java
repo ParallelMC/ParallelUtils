@@ -12,6 +12,7 @@ import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
 import parallelmc.parallelutils.modules.paralleltowns.Town;
+import parallelmc.parallelutils.modules.paralleltowns.TownMember;
 
 import java.util.logging.Level;
 
@@ -122,6 +123,8 @@ public class ConfirmationInventory extends GUIInventory {
                     case PROMOTE -> {
                         if (town.promoteMember(townMember.getUniqueId())) {
                             ParallelChat.sendParallelMessageTo(player, townMember.getName() + " was successfully promoted!");
+                            TownMember member = town.getMember(townMember.getUniqueId());
+                            town.sendMessage(townMember.getName() + " was promoted to " + member.getTownRankStr() + " by " + player.getName() + "!", NamedTextColor.GREEN);
                         }
                         else {
                             ParallelChat.sendParallelMessageTo(player, "Unable to promote " + townMember.getName() + ", they are already the highest rank.");
@@ -130,6 +133,8 @@ public class ConfirmationInventory extends GUIInventory {
                     case DEMOTE -> {
                         if (town.demoteMember(townMember.getUniqueId())) {
                             ParallelChat.sendParallelMessageTo(player, townMember.getName() + " was successfully demoted!");
+                            TownMember member = town.getMember(townMember.getUniqueId());
+                            town.sendMessage(townMember.getName() + " was demoted to " + member.getTownRankStr() + " by " + player.getName() + ".", NamedTextColor.RED);
                         }
                         else {
                             ParallelChat.sendParallelMessageTo(player, "Unable to demote " + townMember.getName() + ", they are already the lowest rank.");
@@ -138,8 +143,10 @@ public class ConfirmationInventory extends GUIInventory {
                     case EVICT -> {
                         ParallelTowns.get().removePlayerFromTown(townMember.getUniqueId(), town);
                         ParallelChat.sendParallelMessageTo(player, townMember.getName() + " was evicted from the town!");
+                        town.sendMessage(townMember.getName() + " was evicted by " + player.getName() + ".", NamedTextColor.RED);
                     }
                     case DELETE -> {
+                        town.sendMessage("The town has been deleted by " + player.getName() + ".", NamedTextColor.RED);
                         ParallelTowns.get().deleteTown(town.getName());
                         ParallelChat.sendParallelMessageTo(player, "Town " + town.getName() + " was deleted.");
                     }

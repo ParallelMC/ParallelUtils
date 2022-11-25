@@ -21,6 +21,14 @@ public class TownMember {
         townRank = rank;
     }
 
+    public String getTownRankStr() {
+        return switch (townRank) {
+            case 1 -> "Officer";
+            case 2 -> "Leader";
+            default -> "Member";
+        };
+    }
+
     public boolean getIsFounder() {
         return isFounder;
     }
