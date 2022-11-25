@@ -1,9 +1,13 @@
 package parallelmc.parallelutils.modules.paralleltowns;
 
+import org.bukkit.entity.Player;
+
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -13,13 +17,12 @@ public class Town {
     // unix timestamp of founding date
     private final long dateFounded;
     // the town's members
-    // TODO: support "ranks" (leader, official, etc.), maybe via fancy enum flag system
-    private final HashSet<UUID> members = new HashSet<>();
+    private final HashMap<UUID, TownMember> members = new HashMap<>();
 
-    public Town(String name, UUID founder) {
+    public Town(String name, Player founder) {
         Name = name;
         dateFounded = System.currentTimeMillis();
-        members.add(founder);
+        members.put(founder.getUniqueId(), new TownMember(TownRank.LEADER, true));
     }
 
     public String getName() { return Name; }
@@ -31,13 +34,29 @@ public class Town {
         return time.format(formatter);
     }
 
-    public HashSet<UUID> getMembers() { return members; }
+    public HashMap<UUID, TownMember> getMembers() { return members; }
+
+    public TownMember getMember(Player player) {
+        return members.get(player.getUniqueId());
+    }
+
+    public TownMember getMember(UUID player) {
+        return members.get(player);
+    }
 
     public void addMember(UUID player) {
-        members.add(player);
+        members.put(player, new TownMember(TownRank.MEMBER, false));
     }
 
     public void removeMember(UUID player) {
         members.remove(player);
+    }
+
+    public boolean promoteMember(UUID player) {
+        return members.get(player).promote();
+    }
+
+    public boolean demoteMember(UUID player) {
+        return members.get(player).demote();
     }
 }

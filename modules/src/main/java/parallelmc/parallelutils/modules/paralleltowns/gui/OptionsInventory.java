@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
+import parallelmc.parallelutils.modules.paralleltowns.Town;
 import parallelmc.parallelutils.modules.paralleltowns.TownMember;
 import parallelmc.parallelutils.modules.paralleltowns.TownRank;
 
@@ -64,12 +65,9 @@ public class OptionsInventory extends GUIInventory {
     public void onSlotClicked(Player player, int slotNum, ItemStack itemClicked) {
         switch (slotNum) {
             case 3 -> {
-                TownMember member = ParallelTowns.get().getPlayerTownStatus(player);
-                if (member.getTownRank() == TownRank.LEADER) {
-                    // TODO: open "are you sure" ui and handle deletion there
-                    player.closeInventory();
-                    ParallelTowns.get().deleteTown(member.getTownName());
-                    ParallelChat.sendParallelMessageTo(player, "Town deleted.");
+                Town town = ParallelTowns.get().getPlayerTown(player);
+                if (town.getMember(player).getTownRank() == TownRank.LEADER) {
+                    ParallelTowns.get().guiManager.openDeletionConfirmationForPlayer(player, town);
                 }
                 else {
                     // this message should never display but sanity check anyway

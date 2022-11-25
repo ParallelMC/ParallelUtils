@@ -30,6 +30,14 @@ public class GUIManager {
         openInventoryForPlayer(player, new MemberOptionsInventory(edit));
     }
 
+    public void openDeletionConfirmationForPlayer(Player player, Town town) {
+        openInventoryForPlayer(player, new ConfirmationInventory(town, ConfirmationAction.DELETE));
+    }
+
+    public void openTownMemberConfirmationForPlayer(Player player, Town town, OfflinePlayer townMember, ConfirmationAction action) {
+        openInventoryForPlayer(player, new ConfirmationInventory(town, townMember, action));
+    }
+
     private void openInventoryForPlayer(Player player, GUIInventory type) {
         type.onOpen(player);
         player.openInventory(type.inventory);
