@@ -1,10 +1,9 @@
 package parallelmc.parallelutils.modules.paralleltowns;
 
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import parallelmc.parallelutils.modules.paralleltowns.gui.GUIInventory;
-import parallelmc.parallelutils.modules.paralleltowns.gui.MainMenuInventory;
-import parallelmc.parallelutils.modules.paralleltowns.gui.OptionsInventory;
+import parallelmc.parallelutils.modules.paralleltowns.gui.*;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -21,6 +20,14 @@ public class GUIManager {
 
     public void openOptionsMenuForPlayer(Player player) {
         openInventoryForPlayer(player, new OptionsInventory());
+    }
+
+    public void openMembersMenuForPlayer(Player player) {
+        openInventoryForPlayer(player, new MembersInventory());
+    }
+
+    public void openMemberOptionsMenuForPlayer(Player player, OfflinePlayer edit) {
+        openInventoryForPlayer(player, new MemberOptionsInventory(edit));
     }
 
     private void openInventoryForPlayer(Player player, GUIInventory type) {

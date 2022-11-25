@@ -19,7 +19,7 @@ public class MainMenuInventory extends GUIInventory {
     private static final int MAP_INDEX = 2;
 
     public MainMenuInventory() {
-        super(9, Component.text("Town Menu", NamedTextColor.DARK_AQUA).decoration(TextDecoration.BOLD, true));
+        super(9, Component.text("Town Menu", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
         ItemStack members = new ItemStack(Material.PLAYER_HEAD);
         ItemMeta meta = members.getItemMeta();
         meta.displayName(Component.text("Town Members", NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
@@ -53,15 +53,15 @@ public class MainMenuInventory extends GUIInventory {
         exit.setItemMeta(meta);
 
         inventory.setContents(new ItemStack[]{
-                        placeholder(),
-                        placeholder(),
+                        PLACEHOLDER,
+                        PLACEHOLDER,
                         new ItemStack(Material.MAP),
                         members,
                         charter,
                         options,
                         exit,
-                        placeholder(),
-                        placeholder()
+                        PLACEHOLDER,
+                        PLACEHOLDER
                 }
         );
     }
@@ -88,8 +88,9 @@ public class MainMenuInventory extends GUIInventory {
     }
 
     @Override
-    public void onSlotClicked(Player player, int slotNum) {
+    public void onSlotClicked(Player player, int slotNum, ItemStack itemClicked) {
         switch (slotNum) {
+            case 3 -> ParallelTowns.get().guiManager.openMembersMenuForPlayer(player);
             case 5 -> ParallelTowns.get().guiManager.openOptionsMenuForPlayer(player);
             case 6 -> player.closeInventory();
             default -> {

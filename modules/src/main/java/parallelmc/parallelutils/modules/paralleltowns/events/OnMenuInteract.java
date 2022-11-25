@@ -26,7 +26,7 @@ public class OnMenuInteract implements Listener {
             if (item == null || item.getType() == Material.AIR || item.getType() == Material.LIGHT_BLUE_STAINED_GLASS_PANE) {
                 return;
             }
-            inv.onSlotClicked(player, event.getRawSlot());
+            inv.onSlotClicked(player, event.getRawSlot(), item);
         }
     }
 
