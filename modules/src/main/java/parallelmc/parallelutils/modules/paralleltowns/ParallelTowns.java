@@ -16,8 +16,10 @@ import parallelmc.parallelutils.modules.paralleltowns.events.OnMenuInteract;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class ParallelTowns extends ParallelModule {
 
@@ -85,7 +87,6 @@ public class ParallelTowns extends ParallelModule {
     public void addTown(Player founder, String townName) {
         towns.put(townName, new Town(townName, founder.getUniqueId()));
         addPlayerToTown(founder, new TownMember(townName, TownRank.LEADER, true));
-        ParallelUtils.log(Level.INFO, getPlayerTownStatus(founder).getTownRank().toString());
     }
 
     public Town getTown(String townName) {
@@ -98,6 +99,10 @@ public class ParallelTowns extends ParallelModule {
 
     public TownMember getPlayerTownStatus(Player player) {
         return playersInTown.get(player.getUniqueId());
+    }
+
+    public TownMember getPlayerTownStatus(UUID uuid) {
+        return playersInTown.get(uuid);
     }
 
     public boolean isPlayerInTown(Player player) {

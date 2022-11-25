@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
 import parallelmc.parallelutils.modules.paralleltowns.TownMember;
@@ -15,12 +14,11 @@ import parallelmc.parallelutils.modules.paralleltowns.TownRank;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 public class OptionsInventory extends GUIInventory {
 
     public OptionsInventory() {
-        super(9, Component.text("Town Options", NamedTextColor.DARK_AQUA).decoration(TextDecoration.BOLD, true));
+        super(9, Component.text("Town Options", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
 
         ItemStack exit = new ItemStack(Material.BARRIER);
         ItemMeta meta = exit.getItemMeta();
@@ -28,15 +26,15 @@ public class OptionsInventory extends GUIInventory {
         exit.setItemMeta(meta);
 
         inventory.setContents(new ItemStack[]{
-                        placeholder(),
-                        placeholder(),
-                        placeholder(),
+                        PLACEHOLDER,
+                        PLACEHOLDER,
+                        PLACEHOLDER,
                         new ItemStack(Material.AIR),
                         new ItemStack(Material.AIR),
                         exit,
-                        placeholder(),
-                        placeholder(),
-                        placeholder()
+                        PLACEHOLDER,
+                        PLACEHOLDER,
+                        PLACEHOLDER
                 }
         );
     }
@@ -61,7 +59,7 @@ public class OptionsInventory extends GUIInventory {
     }
 
     @Override
-    public void onSlotClicked(Player player, int slotNum) {
+    public void onSlotClicked(Player player, int slotNum, ItemStack itemClicked) {
         switch (slotNum) {
             case 3 -> {
                 TownMember member = ParallelTowns.get().getPlayerTownStatus(player);
