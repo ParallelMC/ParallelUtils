@@ -16,16 +16,17 @@ public class GUIManager {
     private final HashMap<UUID, GUIInventory> openGUIs = new HashMap<>();
 
     public void openMainMenuForPlayer(Player player) {
-        MainMenuInventory inv = new MainMenuInventory();
-        inv.onOpen(player);
-        player.openInventory(inv.inventory);
-        openGUIs.put(player.getUniqueId(), inv);
+        openInventoryForPlayer(player, new MainMenuInventory());
     }
 
     public void openOptionsMenuForPlayer(Player player) {
-        OptionsInventory inv = new OptionsInventory();
-        player.openInventory(inv.inventory);
-        openGUIs.put(player.getUniqueId(), inv);
+        openInventoryForPlayer(player, new OptionsInventory());
+    }
+
+    private void openInventoryForPlayer(Player player, GUIInventory type) {
+        type.onOpen(player);
+        player.openInventory(type.inventory);
+        openGUIs.put(player.getUniqueId(), type);
     }
 
     public boolean openInventoryExists(Inventory input) {

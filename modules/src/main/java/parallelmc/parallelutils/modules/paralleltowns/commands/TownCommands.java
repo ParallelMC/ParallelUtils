@@ -42,7 +42,7 @@ public class TownCommands implements CommandExecutor, TabCompleter {
             if (command.getName().equalsIgnoreCase("town")) {
                 if (args.length == 0) {
                     // If no command was specified, treat it like the gui command
-                    if (ParallelTowns.get().getPlayerTown(player) == null) {
+                    if (!ParallelTowns.get().isPlayerInTown(player)) {
                         ParallelChat.sendParallelMessageTo(player, "You are not in a town! Use /town create to create one!");
                     }
                     else {

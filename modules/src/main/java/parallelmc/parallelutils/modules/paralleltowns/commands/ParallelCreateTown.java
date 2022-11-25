@@ -22,7 +22,7 @@ public class ParallelCreateTown extends TownCommand {
             player.sendMessage(USAGE);
             return false;
         }
-        if (ParallelTowns.get().getPlayerTown(player) != null) {
+        if (ParallelTowns.get().isPlayerInTown(player)) {
             ParallelChat.sendParallelMessageTo(player, "You are already in a town!");
         }
         else {
