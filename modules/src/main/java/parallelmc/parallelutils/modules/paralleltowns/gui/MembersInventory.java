@@ -16,11 +16,9 @@ import parallelmc.parallelutils.modules.paralleltowns.Town;
 import parallelmc.parallelutils.modules.paralleltowns.TownMember;
 import parallelmc.parallelutils.modules.paralleltowns.TownRank;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class MembersInventory extends GUIInventory {
 
@@ -52,7 +50,12 @@ public class MembersInventory extends GUIInventory {
     public void onOpen(Player player) {
         // load player skulls in gui when opened
         Town town = ParallelTowns.get().getPlayerTown(player);
-        HashSet<UUID> members = town.getMembers();
+        // sure hope this is somewhat efficient
+        List<UUID> members = town.getMembers()
+                .entrySet().stream()
+                .sorted(Comparator.comparingInt(x -> x.getValue().getTownRank()))
+                .map(Map.Entry::getKey)
+                .toList();
         int slot = 9;
         for (UUID member : members) {
             OfflinePlayer p = Bukkit.getOfflinePlayer(member);

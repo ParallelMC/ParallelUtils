@@ -33,7 +33,7 @@ public abstract class GUIInventory {
 
     public abstract void onSlotClicked(Player player, int slotNum, ItemStack itemClicked);
 
-    public Component getComponentForRank(TownRank rank) {
+    public Component getComponentForRank(short rank) {
         if (rank == TownRank.LEADER)
             return Component.text("Town Leader", NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false);
         else if (rank == TownRank.OFFICIAL)

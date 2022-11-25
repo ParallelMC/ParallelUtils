@@ -11,6 +11,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
+import parallelmc.parallelutils.modules.paralleltowns.Town;
 import parallelmc.parallelutils.modules.paralleltowns.TownMember;
 import parallelmc.parallelutils.modules.paralleltowns.TownRank;
 
@@ -121,9 +122,12 @@ public class MemberOptionsInventory extends GUIInventory {
 
     @Override
     public void onSlotClicked(Player player, int slotNum, ItemStack itemClicked) {
-        // TODO: implement other buttons
-        if (slotNum == 15) {
-            ParallelTowns.get().guiManager.openMembersMenuForPlayer(player);
+        Town town = ParallelTowns.get().getPlayerTown(player);
+        switch (slotNum) {
+            case 11 -> ParallelTowns.get().guiManager.openTownMemberConfirmationForPlayer(player, town, townMember, ConfirmationAction.PROMOTE);
+            case 12 -> ParallelTowns.get().guiManager.openTownMemberConfirmationForPlayer(player, town, townMember, ConfirmationAction.DEMOTE);
+            case 14 -> ParallelTowns.get().guiManager.openTownMemberConfirmationForPlayer(player, town, townMember, ConfirmationAction.EVICT);
+            case 15 -> ParallelTowns.get().guiManager.openMembersMenuForPlayer(player);
         }
     }
 }
