@@ -20,6 +20,9 @@ import java.util.logging.Level;
 
 public class MemberOptionsInventory extends GUIInventory {
 
+    private static final int PROMOTE_INDEX = 11;
+    private static final int DEMOTE_INDEX = 12;
+
     // the town member that this menu is modifying
     private final OfflinePlayer townMember;
 
@@ -111,8 +114,8 @@ public class MemberOptionsInventory extends GUIInventory {
             meta.lore(lore);
             demote.setItemMeta(meta);
 
-            inventory.setItem(11, promote);
-            inventory.setItem(12, demote);
+            inventory.setItem(PROMOTE_INDEX, promote);
+            inventory.setItem(DEMOTE_INDEX, demote);
         }
     }
 

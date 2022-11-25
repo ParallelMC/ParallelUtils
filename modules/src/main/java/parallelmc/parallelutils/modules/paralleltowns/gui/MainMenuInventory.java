@@ -6,13 +6,16 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
 import parallelmc.parallelutils.modules.paralleltowns.Town;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class MainMenuInventory extends GUIInventory {
 
@@ -83,14 +86,29 @@ public class MainMenuInventory extends GUIInventory {
 
     @Override
     public void onOpen(Player player) {
-        // TODO: Get town data
-        inventory.setItem(MAP_INDEX, CreateTownItemSlot(new Town("Test", player.getUniqueId())));
+        Town town = ParallelTowns.get().getPlayerTown(player);
+        if (town == null) {
+            ParallelUtils.log(Level.SEVERE, "Attempted to get town for player who is not in a town!");
+            return;
+        }
+        inventory.setItem(MAP_INDEX, CreateTownItemSlot(town));
     }
 
     @Override
     public void onSlotClicked(Player player, int slotNum, ItemStack itemClicked) {
         switch (slotNum) {
             case 3 -> ParallelTowns.get().guiManager.openMembersMenuForPlayer(player);
+            case 4 -> {
+                player.closeInventory();
+                // TODO: make this the town charter
+                ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
+                BookMeta meta = (BookMeta)book.getItemMeta();
+                meta.setTitle("Town Charter");
+                meta.setAuthor("Parallel");
+                meta.addPages(Component.empty());
+                book.setItemMeta(meta);
+                player.openBook(book);
+            }
             case 5 -> ParallelTowns.get().guiManager.openOptionsMenuForPlayer(player);
             case 6 -> player.closeInventory();
             default -> {

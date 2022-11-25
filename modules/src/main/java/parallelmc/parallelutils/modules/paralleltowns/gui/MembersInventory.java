@@ -24,7 +24,8 @@ import java.util.logging.Level;
 
 public class MembersInventory extends GUIInventory {
 
-
+    private static final int MAP_INDEX = 4;
+    private static final int EXIT_INDEX = 49;
 
     public MembersInventory() {
         super(54, Component.text("Town Members", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
@@ -43,8 +44,8 @@ public class MembersInventory extends GUIInventory {
         meta.displayName(Component.text("Back to Town GUI", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
         exit.setItemMeta(meta);
 
-        inventory.setItem(4, map);
-        inventory.setItem(49, exit);
+        inventory.setItem(MAP_INDEX, map);
+        inventory.setItem(EXIT_INDEX, exit);
     }
 
     @Override
@@ -99,7 +100,6 @@ public class MembersInventory extends GUIInventory {
                 ParallelTowns.get().guiManager.openMemberOptionsMenuForPlayer(player, meta.getOwningPlayer());
             }
         }
-        // TODO: handle when skulls are clicked
         if (slotNum == 49) {
             ParallelTowns.get().guiManager.openMainMenuForPlayer(player);
         }

@@ -17,6 +17,8 @@ import java.util.List;
 
 public class OptionsInventory extends GUIInventory {
 
+    private static final int DELETE_INDEX = 3;
+
     public OptionsInventory() {
         super(9, Component.text("Town Options", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
 
@@ -54,7 +56,7 @@ public class OptionsInventory extends GUIInventory {
             loreText.add(Component.text("your town!", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
             meta.lore(loreText);
             delete.setItemMeta(meta);
-            inventory.setItem(3, delete);
+            inventory.setItem(DELETE_INDEX, delete);
         }
     }
 
