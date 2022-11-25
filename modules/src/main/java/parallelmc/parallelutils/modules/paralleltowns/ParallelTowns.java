@@ -33,7 +33,7 @@ public class ParallelTowns extends ParallelModule {
 
     private final HashMap<String, Town> towns = new HashMap<>();
 
-    private final HashMap<UUID, String> playersInTown = new HashMap<>();
+    private final HashMap<UUID, TownMember> playersInTown = new HashMap<>();
 
     private static ParallelTowns Instance;
 
@@ -84,7 +84,8 @@ public class ParallelTowns extends ParallelModule {
 
     public void addTown(Player founder, String townName) {
         towns.put(townName, new Town(townName, founder.getUniqueId()));
-        addPlayerToTown(founder, townName);
+        addPlayerToTown(founder, new TownMember(townName, TownRank.LEADER, true));
+        ParallelUtils.log(Level.INFO, getPlayerTownStatus(founder).getTownRank().toString());
     }
 
     public Town getTown(String townName) {
@@ -92,11 +93,25 @@ public class ParallelTowns extends ParallelModule {
     }
 
     public Town getPlayerTown(Player player) {
-        return towns.get(playersInTown.get(player.getUniqueId()));
+        return towns.get(playersInTown.get(player.getUniqueId()).getTownName());
     }
 
-    public void addPlayerToTown(Player player, String townName) {
-        playersInTown.put(player.getUniqueId(), townName);
+    public TownMember getPlayerTownStatus(Player player) {
+        return playersInTown.get(player.getUniqueId());
+    }
+
+    public boolean isPlayerInTown(Player player) {
+        return getPlayerTownStatus(player) != null;
+    }
+
+    public void addPlayerToTown(Player player, TownMember townMember) {
+        playersInTown.put(player.getUniqueId(), townMember);
+    }
+
+    public void deleteTown(String townName) {
+        towns.remove(townName);
+        // remove all players in the town being deleted
+        playersInTown.entrySet().removeIf(x -> x.getValue().getTownName().equals(townName));
     }
 
     public static ParallelTowns get() { return Instance; }
