@@ -1,14 +1,16 @@
 package parallelmc.parallelutils.modules.paralleltowns;
 
+import com.mojang.brigadier.Command;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
+import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.UUID;
 
 public class Town {
@@ -56,7 +58,17 @@ public class Town {
         return members.get(player).promote();
     }
 
+    // TODO: disallow demoting a leader if only one exists (i.e. there should be at least one leader at all times)
     public boolean demoteMember(UUID player) {
         return members.get(player).demote();
+    }
+
+    public void sendMessage(String message, NamedTextColor color) {
+        Component msg = Component.text("[" + Name + "]: ", NamedTextColor.GOLD).append(Component.text(message, color));
+        for (UUID uuid : members.keySet()) {
+            Player player = ParallelChat.get().getPlugin().getServer().getPlayer(uuid);
+            if (player != null)
+                player.sendMessage(msg);
+        }
     }
 }

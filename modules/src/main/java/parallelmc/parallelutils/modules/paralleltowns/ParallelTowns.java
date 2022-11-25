@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.paralleltowns;
 
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -9,9 +10,8 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
-import parallelmc.parallelutils.modules.paralleltowns.commands.ParallelCreateTown;
-import parallelmc.parallelutils.modules.paralleltowns.commands.ParallelTownGUI;
-import parallelmc.parallelutils.modules.paralleltowns.commands.TownCommands;
+import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
+import parallelmc.parallelutils.modules.paralleltowns.commands.*;
 import parallelmc.parallelutils.modules.paralleltowns.events.OnMenuInteract;
 
 import java.util.HashMap;
@@ -36,6 +36,8 @@ public class ParallelTowns extends ParallelModule {
     private final HashMap<String, Town> towns = new HashMap<>();
 
     private final HashMap<UUID, String> playersInTown = new HashMap<>();
+
+    private final HashMap<UUID, String> pendingInvites = new HashMap<>();
 
     private static ParallelTowns Instance;
 
@@ -69,6 +71,8 @@ public class ParallelTowns extends ParallelModule {
         puPlugin.getCommand("town").setExecutor(townCommands);
         townCommands.addCommand("gui", new ParallelTownGUI());
         townCommands.addCommand("create", new ParallelCreateTown());
+        townCommands.addCommand("invite", new ParallelTownInvite());
+        townCommands.addCommand("accept", new ParallelTownAcceptInvite());
 
         Instance = this;
     }
@@ -108,11 +112,34 @@ public class ParallelTowns extends ParallelModule {
     public void addPlayerToTown(Player player, Town town) {
         town.addMember(player.getUniqueId());
         playersInTown.put(player.getUniqueId(), town.getName());
+        town.sendMessage(player.getName() + " has joined the town!", NamedTextColor.GREEN);
     }
 
     public void removePlayerFromTown(UUID player, Town town) {
         town.removeMember(player);
         playersInTown.remove(player);
+    }
+
+    public void invitePlayerToTown(Player inviter, Player invitee) {
+        Town town = getPlayerTown(inviter);
+        this.pendingInvites.put(invitee.getUniqueId(), town.getName());
+        ParallelChat.sendParallelMessageTo(invitee, "You have been invited to join the town " + town.getName() + " by " + inviter.getName() + ". Type /town accept to accept!");
+        inviter.getServer().getScheduler().runTaskLater(puPlugin, () -> {
+            if (hasPendingInvite(invitee)) {
+                this.pendingInvites.remove(invitee.getUniqueId());
+                ParallelChat.sendParallelMessageTo(invitee, "Town invitation has expired.");
+                ParallelChat.sendParallelMessageTo(inviter, "Town invitation has expired.");
+            }
+        }, 600L);
+    }
+
+    public void acceptTownInvite(Player player) {
+        addPlayerToTown(player, towns.get(this.pendingInvites.get(player.getUniqueId())));
+        this.pendingInvites.remove(player.getUniqueId());
+    }
+
+    public boolean hasPendingInvite(Player player) {
+        return pendingInvites.get(player.getUniqueId()) != null;
     }
 
     public void deleteTown(String townName) {
