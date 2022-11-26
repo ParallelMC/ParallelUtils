@@ -100,14 +100,8 @@ public class MainMenuInventory extends GUIInventory {
             case 3 -> ParallelTowns.get().guiManager.openMembersMenuForPlayer(player);
             case 4 -> {
                 player.closeInventory();
-                // TODO: make this the town charter
-                ItemStack book = new ItemStack(Material.WRITTEN_BOOK);
-                BookMeta meta = (BookMeta)book.getItemMeta();
-                meta.setTitle("Town Charter");
-                meta.setAuthor("Parallel");
-                meta.addPages(Component.empty());
-                book.setItemMeta(meta);
-                player.openBook(book);
+                Town town = ParallelTowns.get().getPlayerTown(player);
+                player.openBook(town.getCharter());
             }
             case 5 -> ParallelTowns.get().guiManager.openOptionsMenuForPlayer(player);
             case 6 -> player.closeInventory();

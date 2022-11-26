@@ -18,7 +18,6 @@ import parallelmc.parallelutils.modules.paralleltowns.TownRank;
 
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class MembersInventory extends GUIInventory {
 

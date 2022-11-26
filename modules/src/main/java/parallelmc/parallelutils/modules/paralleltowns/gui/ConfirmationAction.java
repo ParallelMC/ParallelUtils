@@ -4,5 +4,8 @@ public enum ConfirmationAction {
     PROMOTE,
     DEMOTE,
     EVICT,
-    DELETE
+    DELETE,
+    LEAVE,
+    CHARTER,
+    RETIRE
 }

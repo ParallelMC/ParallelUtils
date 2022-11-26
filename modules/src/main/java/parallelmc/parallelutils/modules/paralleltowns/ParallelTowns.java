@@ -148,5 +148,7 @@ public class ParallelTowns extends ParallelModule {
         playersInTown.entrySet().removeIf(x -> x.getValue().equals(townName));
     }
 
+    public ParallelUtils getPlugin() { return puPlugin; }
+
     public static ParallelTowns get() { return Instance; }
 }

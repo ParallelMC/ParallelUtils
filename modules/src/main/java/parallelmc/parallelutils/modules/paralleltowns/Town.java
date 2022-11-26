@@ -1,9 +1,10 @@
 package parallelmc.parallelutils.modules.paralleltowns;
 
-import com.mojang.brigadier.Command;
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
 import java.time.Instant;
@@ -11,6 +12,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class Town {
@@ -21,10 +23,14 @@ public class Town {
     // the town's members
     private final HashMap<UUID, TownMember> members = new HashMap<>();
 
+    // the town charter
+    private Book charter;
+
     public Town(String name, Player founder) {
         Name = name;
         dateFounded = System.currentTimeMillis();
         members.put(founder.getUniqueId(), new TownMember(TownRank.LEADER, true));
+        charter = Book.book(Component.text("Town Charter"), Component.text("Parallel"), Component.empty());
     }
 
     public String getName() { return Name; }
@@ -63,10 +69,16 @@ public class Town {
         return members.get(player).demote();
     }
 
+    public Book getCharter() { return charter; }
+
+    public void setCharter(List<Component> pages) {
+        charter = Book.book(Component.text("Town Charter"), Component.text("Parallel"), pages);
+    }
+
     public void sendMessage(String message, NamedTextColor color) {
         Component msg = Component.text("[" + Name + "]: ", NamedTextColor.GOLD).append(Component.text(message, color));
         for (UUID uuid : members.keySet()) {
-            Player player = ParallelChat.get().getPlugin().getServer().getPlayer(uuid);
+            Player player = ParallelTowns.get().getPlugin().getServer().getPlayer(uuid);
             if (player != null)
                 player.sendMessage(msg);
         }
