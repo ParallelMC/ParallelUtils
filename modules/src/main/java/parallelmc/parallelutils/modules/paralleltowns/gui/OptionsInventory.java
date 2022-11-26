@@ -89,6 +89,12 @@ public class OptionsInventory extends GUIInventory {
         switch (slotNum) {
             case 2 -> {
                 Town town = ParallelTowns.get().getPlayerTown(player);
+                // there must be at least one leader in the town
+                if (town.getMembers().values().stream().filter(x -> x.getTownRank() == TownRank.LEADER).count() == 1) {
+                    player.closeInventory();
+                    ParallelChat.sendParallelMessageTo(player, "You cannot leave, you are the only leader!");
+                    return;
+                }
                 ParallelTowns.get().guiManager.openTownConfirmationForPlayer(player, town, ConfirmationAction.LEAVE);
             }
             case 3 -> {

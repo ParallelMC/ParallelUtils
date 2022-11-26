@@ -162,6 +162,13 @@ public class MemberOptionsInventory extends GUIInventory {
                     ParallelChat.sendParallelMessageTo(player, "You cannot evict yourself! Use the leave button in the options menu to leave.");
                     return;
                 }
+                TownMember pl = town.getMember(player);
+                TownMember member = town.getMember(townMember.getUniqueId());
+                if (pl.getTownRank() <= member.getTownRank()) {
+                    player.closeInventory();
+                    ParallelChat.sendParallelMessageTo(player, "You can only evict players that are a lower rank than you!");
+                    return;
+                }
                 ParallelTowns.get().guiManager.openTownMemberConfirmationForPlayer(player, town, townMember, ConfirmationAction.EVICT);
             }
             case 15 -> ParallelTowns.get().guiManager.openMembersMenuForPlayer(player);
