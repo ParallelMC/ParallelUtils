@@ -148,8 +148,9 @@ public class MemberOptionsInventory extends GUIInventory {
                 ParallelTowns.get().guiManager.openTownMemberConfirmationForPlayer(player, town, townMember, ConfirmationAction.DEMOTE);
             }
             case 13 -> {
+                TownMember member = town.getMember(player);
                 // there must be at least one leader in the town
-                if (town.getMembers().values().stream().filter(x -> x.getTownRank() == TownRank.LEADER).count() == 1) {
+                if (member.getTownRank() == TownRank.LEADER && town.getMembers().values().stream().filter(x -> x.getTownRank() == TownRank.LEADER).count() == 1) {
                     player.closeInventory();
                     ParallelChat.sendParallelMessageTo(player, "You cannot retire, you are the only leader!");
                     return;
