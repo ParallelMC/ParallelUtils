@@ -26,7 +26,10 @@ public class ParallelCreateTown extends TownCommand {
             ParallelChat.sendParallelMessageTo(player, "You are already in a town!");
         }
         else {
-            // TODO: check if a town exists
+            if (ParallelTowns.get().doesTownExist(args[1])) {
+                ParallelChat.sendParallelMessageTo(player, "A town with that name already exists!");
+                return true;
+            }
             ParallelTowns.get().addTown(player, args[1]);
             ParallelChat.sendParallelMessageTo(player, "Created new town: " + args[1]);
         }

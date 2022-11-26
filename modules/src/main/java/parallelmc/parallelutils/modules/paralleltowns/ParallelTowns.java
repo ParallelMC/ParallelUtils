@@ -1,11 +1,18 @@
 package parallelmc.parallelutils.modules.paralleltowns;
 
+import net.kyori.adventure.inventory.Book;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
@@ -14,10 +21,11 @@ import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltowns.commands.*;
 import parallelmc.parallelutils.modules.paralleltowns.events.OnMenuInteract;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import javax.json.Json;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
@@ -40,6 +48,8 @@ public class ParallelTowns extends ParallelModule {
     private final HashMap<UUID, String> pendingInvites = new HashMap<>();
 
     private static ParallelTowns Instance;
+
+    private static Path jsonPath;
 
     @Override
     public void onLoad() { }
@@ -74,11 +84,17 @@ public class ParallelTowns extends ParallelModule {
         townCommands.addCommand("invite", new ParallelTownInvite());
         townCommands.addCommand("accept", new ParallelTownAcceptInvite());
 
+        jsonPath = Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/towns.json");
+
+        loadTownsFromFile();
+
         Instance = this;
     }
 
     @Override
-    public void onDisable() {}
+    public void onDisable() {
+        saveTownsToFile();
+    }
 
     @Override
     public void onUnload() {}
@@ -86,6 +102,10 @@ public class ParallelTowns extends ParallelModule {
     @Override
     public @NotNull String getName() {
         return "ParallelTowns";
+    }
+
+    public boolean doesTownExist(String townName) {
+        return towns.get(townName) != null;
     }
 
     public void addTown(Player founder, String townName) {
@@ -146,6 +166,76 @@ public class ParallelTowns extends ParallelModule {
         towns.remove(townName);
         // remove all players in the town being deleted
         playersInTown.entrySet().removeIf(x -> x.getValue().equals(townName));
+    }
+
+    public void loadTownsFromFile() {
+        if (!jsonPath.toFile().exists()) {
+            ParallelUtils.log(Level.WARNING, "Towns JSON file does not exist, skipping loading.");
+            return;
+        }
+        String data;
+        try {
+            data = Files.readString(jsonPath);
+            JSONParser parser = new JSONParser();
+            JSONArray arr = (JSONArray)parser.parse(data);
+            for (Object o : arr) {
+                JSONObject json = (JSONObject)o;
+                HashMap<UUID, TownMember> members = new HashMap<>();
+                ArrayList<Component> charterPages = new ArrayList<>();
+                String name = (String)json.get("name");
+                long founded = (long)json.get("founded");
+                for (Object p : (JSONArray)json.get("charter")) {
+                    charterPages.add(LegacyComponentSerializer.legacyAmpersand().deserialize((String)p));
+                }
+                Book book = Book.book(Component.text("Town Charter"), Component.text("Parallel"), charterPages);
+                for (Object m : (JSONArray)json.get("members")) {
+                    JSONObject member = (JSONObject)m;
+                    UUID uuid = UUID.fromString((String)member.get("uuid"));
+                    short rank = (short)((long)member.get("rank"));
+                    boolean isFounder = (boolean)member.get("founder");
+                    members.put(uuid, new TownMember(rank, isFounder));
+                    playersInTown.put(uuid, name);
+                }
+                towns.put(name, new Town(name, founded, members, book));
+            }
+            ParallelUtils.log(Level.INFO, "Loaded " + towns.size() + " existing towns.");
+        } catch (IOException e) {
+            ParallelUtils.log(Level.SEVERE, "Failed to load towns!\n" + e.getMessage());
+        } catch (ParseException e) {
+            ParallelUtils.log(Level.SEVERE, "Failed to parse town data!\n" + e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public void saveTownsToFile() {
+        JSONArray json = new JSONArray();
+        for (Map.Entry<String, Town> e : towns.entrySet()) {
+            Town t = e.getValue();
+            JSONObject entry = new JSONObject();
+            entry.put("name", t.getName());
+            entry.put("founded", t.getUnformattedFoundedDate());
+            JSONArray charter = new JSONArray();
+            t.getCharter().pages().forEach(x -> {
+                charter.add(LegacyComponentSerializer.legacyAmpersand().serialize(x));
+            });
+            entry.put("charter", charter);
+            JSONArray members = new JSONArray();
+            t.getMembers().forEach((u, m) -> {
+                JSONObject member = new JSONObject();
+                member.put("uuid", u.toString());
+                member.put("rank", m.getTownRank());
+                member.put("founder", m.getIsFounder());
+                members.add(member);
+            });
+            entry.put("members", members);
+            json.add(entry);
+        }
+        try {
+            Files.writeString(jsonPath, json.toJSONString());
+            ParallelUtils.log(Level.INFO, "Saved " + towns.size() + " towns.");
+        } catch (IOException e) {
+            ParallelUtils.log(Level.SEVERE, "Failed to save towns!\n" + e.getMessage());
+        }
     }
 
     public ParallelUtils getPlugin() { return puPlugin; }

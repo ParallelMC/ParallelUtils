@@ -21,7 +21,7 @@ public class Town {
     // unix timestamp of founding date
     private final long dateFounded;
     // the town's members
-    private final HashMap<UUID, TownMember> members = new HashMap<>();
+    private HashMap<UUID, TownMember> members = new HashMap<>();
 
     // the town charter
     private Book charter;
@@ -33,7 +33,17 @@ public class Town {
         charter = Book.book(Component.text("Town Charter"), Component.text("Parallel"), Component.empty());
     }
 
+    /** Constructor used when loading town data from json, do not use! **/
+    public Town(String name, long dateFounded, HashMap<UUID, TownMember> members, Book charter) {
+        this.Name = name;
+        this.dateFounded = dateFounded;
+        this.members = members;
+        this.charter = charter;
+    }
+
     public String getName() { return Name; }
+
+    public long getUnformattedFoundedDate() { return dateFounded; }
 
     public String getFoundedDate() {
         OffsetDateTime time = OffsetDateTime.ofInstant(Instant.ofEpochMilli(dateFounded), ZoneId.of("America/New_York"));
@@ -64,7 +74,6 @@ public class Town {
         return members.get(player).promote();
     }
 
-    // TODO: disallow demoting a leader if only one exists (i.e. there should be at least one leader at all times)
     public boolean demoteMember(UUID player) {
         return members.get(player).demote();
     }
