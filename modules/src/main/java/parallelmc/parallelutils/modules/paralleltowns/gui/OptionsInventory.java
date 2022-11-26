@@ -19,23 +19,36 @@ import java.util.List;
 public class OptionsInventory extends GUIInventory {
 
     private static final int DELETE_INDEX = 3;
+    private static final int CHARTER_INDEX = 5;
 
     public OptionsInventory() {
         super(9, Component.text("Town Options", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
 
+        ItemStack leave = new ItemStack(Material.RED_DYE);
+        ItemMeta meta = leave.getItemMeta();
+        meta.displayName(Component.text("Leave Town", NamedTextColor.DARK_RED, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+        List<Component> loreText = new ArrayList<>();
+        loreText.add(Component.text("Click here to ", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false)
+                .append(Component.text("leave", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false)));
+        loreText.add(Component.text("your town!", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        meta.lore(loreText);
+        leave.setItemMeta(meta);
+
+
         ItemStack exit = new ItemStack(Material.BARRIER);
-        ItemMeta meta = exit.getItemMeta();
+        meta = exit.getItemMeta();
         meta.displayName(Component.text("Back to Town GUI", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
         exit.setItemMeta(meta);
+
 
         inventory.setContents(new ItemStack[]{
                         PLACEHOLDER,
                         PLACEHOLDER,
-                        PLACEHOLDER,
+                        leave,
+                        new ItemStack(Material.AIR),
                         new ItemStack(Material.AIR),
                         new ItemStack(Material.AIR),
                         exit,
-                        PLACEHOLDER,
                         PLACEHOLDER,
                         PLACEHOLDER
                 }
@@ -45,7 +58,7 @@ public class OptionsInventory extends GUIInventory {
 
     @Override
     public void onOpen(Player player) {
-        // only display delete button to leaders
+        // only display delete and update charter button to leaders
         TownMember member = ParallelTowns.get().getPlayerTownStatus(player);
         if (member.getTownRank() == TownRank.LEADER) {
             ItemStack delete = new ItemStack(Material.REDSTONE_BLOCK);
@@ -58,23 +71,48 @@ public class OptionsInventory extends GUIInventory {
             meta.lore(loreText);
             delete.setItemMeta(meta);
             inventory.setItem(DELETE_INDEX, delete);
+
+            ItemStack charter = new ItemStack(Material.WRITABLE_BOOK);
+            meta = charter.getItemMeta();
+            meta.displayName(Component.text("Update Town Charter", NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+            loreText.clear();
+            loreText.add(Component.text("Click here to update", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+            loreText.add(Component.text("the town charter!", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+            meta.lore(loreText);
+            charter.setItemMeta(meta);
+            inventory.setItem(CHARTER_INDEX, charter);
         }
     }
 
     @Override
     public void onSlotClicked(Player player, int slotNum, ItemStack itemClicked) {
         switch (slotNum) {
+            case 2 -> {
+                Town town = ParallelTowns.get().getPlayerTown(player);
+                ParallelTowns.get().guiManager.openTownConfirmationForPlayer(player, town, ConfirmationAction.LEAVE);
+            }
             case 3 -> {
                 Town town = ParallelTowns.get().getPlayerTown(player);
                 if (town.getMember(player).getTownRank() == TownRank.LEADER) {
-                    ParallelTowns.get().guiManager.openDeletionConfirmationForPlayer(player, town);
+                    ParallelTowns.get().guiManager.openTownConfirmationForPlayer(player, town, ConfirmationAction.DELETE);
                 }
                 else {
                     // this message should never display but sanity check anyway
                     ParallelChat.sendParallelMessageTo(player, "You must be a leader in order to delete the town!");
                 }
             }
-            case 5 -> ParallelTowns.get().guiManager.openMainMenuForPlayer(player);
+            case 5 -> {
+                Town town = ParallelTowns.get().getPlayerTown(player);
+                ItemStack hand = player.getInventory().getItemInMainHand();
+                if (hand.getType() != Material.WRITABLE_BOOK) {
+                    player.closeInventory();
+                    ParallelChat.sendParallelMessageTo(player, "You must be holding a book and quill to update the town charter.");
+                }
+                else {
+                    ParallelTowns.get().guiManager.openTownConfirmationForPlayer(player, town, ConfirmationAction.CHARTER);
+                }
+            }
+            case 6 -> ParallelTowns.get().guiManager.openMainMenuForPlayer(player);
             default -> {
             }
         }

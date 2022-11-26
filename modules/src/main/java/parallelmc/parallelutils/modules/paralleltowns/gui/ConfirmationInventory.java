@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
@@ -34,8 +35,11 @@ public class ConfirmationInventory extends GUIInventory {
         this.town = town;
         this.action = action;
 
-        if (action == ConfirmationAction.DELETE) {
-            ParallelUtils.log(Level.SEVERE, "Attempted to initialize a Confirmation with an invalid action! (DELETE)");
+        if (action == ConfirmationAction.DELETE ||
+                action == ConfirmationAction.LEAVE ||
+                action == ConfirmationAction.CHARTER ||
+                action == ConfirmationAction.RETIRE) {
+            ParallelUtils.log(Level.SEVERE, "Attempted to initialize a Confirmation with an invalid action! (" + action + ")");
             return;
         }
 
@@ -75,7 +79,10 @@ public class ConfirmationInventory extends GUIInventory {
         this.town = town;
         this.action = action;
 
-        if (action != ConfirmationAction.DELETE) {
+        if (action != ConfirmationAction.DELETE &&
+                action != ConfirmationAction.LEAVE &&
+                action != ConfirmationAction.CHARTER &&
+                action != ConfirmationAction.RETIRE) {
             ParallelUtils.log(Level.SEVERE, "Attempted to initialize a Confirmation with an invalid action! (" + action + ")");
             return;
         }
@@ -92,7 +99,14 @@ public class ConfirmationInventory extends GUIInventory {
 
         ItemStack paper = new ItemStack(Material.PAPER);
         meta = paper.getItemMeta();
-        meta.displayName(Component.text("Are you sure you want to delete the town?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        if (action == ConfirmationAction.LEAVE)
+            meta.displayName(Component.text("Are you sure you want to leave the town?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        else if (action == ConfirmationAction.CHARTER)
+            meta.displayName(Component.text("Are you sure you want to update the town charter?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        else if (action == ConfirmationAction.RETIRE)
+            meta.displayName(Component.text("Are you sure you want to retire from your position?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        else
+            meta.displayName(Component.text("Are you sure you want to delete the town?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
         paper.setItemMeta(meta);
 
         ItemStack air = new ItemStack(Material.AIR);
@@ -142,13 +156,33 @@ public class ConfirmationInventory extends GUIInventory {
                     }
                     case EVICT -> {
                         ParallelTowns.get().removePlayerFromTown(townMember.getUniqueId(), town);
-                        ParallelChat.sendParallelMessageTo(player, townMember.getName() + " was evicted from the town!");
+                        ParallelChat.sendParallelMessageTo(player, townMember.getName() + " was successfully evicted!");
                         town.sendMessage(townMember.getName() + " was evicted by " + player.getName() + ".", NamedTextColor.RED);
                     }
                     case DELETE -> {
                         town.sendMessage("The town has been deleted by " + player.getName() + ".", NamedTextColor.RED);
                         ParallelTowns.get().deleteTown(town.getName());
                         ParallelChat.sendParallelMessageTo(player, "Town " + town.getName() + " was deleted.");
+                    }
+                    case LEAVE -> {
+                        town.sendMessage(player.getName() + " has left the town.", NamedTextColor.RED);
+                        ParallelTowns.get().removePlayerFromTown(player.getUniqueId(), town);
+                    }
+                    case CHARTER -> {
+                        ItemStack item = player.getInventory().getItemInMainHand();
+                        if (item.getType() != Material.WRITABLE_BOOK) {
+                            ParallelUtils.log(Level.SEVERE, "Attempted to accept a town charter update while the player was not holding a book!");
+                            return;
+                        }
+                        town.sendMessage("The town charter has been updated by " + player.getName() + "!", NamedTextColor.YELLOW);
+                        BookMeta meta = (BookMeta)item.getItemMeta();
+                        town.setCharter(meta.pages());
+                        item.setAmount(0);
+                    }
+                    case RETIRE -> {
+                        String rank = town.getMember(player).getTownRankStr();
+                        town.demoteMember(player.getUniqueId());
+                        town.sendMessage(player.getName() + " has retired from their position of " + rank + "!", NamedTextColor.YELLOW);
                     }
                 }
             }
