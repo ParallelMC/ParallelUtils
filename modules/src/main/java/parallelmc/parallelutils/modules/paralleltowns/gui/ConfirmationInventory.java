@@ -177,7 +177,6 @@ public class ConfirmationInventory extends GUIInventory {
                         town.sendMessage("The town charter has been updated by " + player.getName() + "!", NamedTextColor.YELLOW);
                         BookMeta meta = (BookMeta)item.getItemMeta();
                         town.setCharter(meta.pages());
-                        item.setAmount(0);
                     }
                     case RETIRE -> {
                         String rank = town.getMember(player).getTownRankStr();
