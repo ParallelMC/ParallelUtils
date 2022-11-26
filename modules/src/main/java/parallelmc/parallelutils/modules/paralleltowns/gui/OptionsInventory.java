@@ -78,6 +78,10 @@ public class OptionsInventory extends GUIInventory {
             loreText.clear();
             loreText.add(Component.text("Click here to update", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
             loreText.add(Component.text("the town charter!", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+            loreText.add(Component.empty());
+            loreText.add(Component.text("You must be holding a", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+            loreText.add(Component.text("book and quill", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+            loreText.add(Component.text("to update the town charter!", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
             meta.lore(loreText);
             charter.setItemMeta(meta);
             inventory.setItem(CHARTER_INDEX, charter);
@@ -89,10 +93,11 @@ public class OptionsInventory extends GUIInventory {
         switch (slotNum) {
             case 2 -> {
                 Town town = ParallelTowns.get().getPlayerTown(player);
+                TownMember member = town.getMember(player);
                 // there must be at least one leader in the town
-                if (town.getMembers().values().stream().filter(x -> x.getTownRank() == TownRank.LEADER).count() == 1) {
+                if (member.getTownRank() == TownRank.LEADER && town.getMembers().values().stream().filter(x -> x.getTownRank() == TownRank.LEADER).count() == 1) {
                     player.closeInventory();
-                    ParallelChat.sendParallelMessageTo(player, "You cannot leave, you are the only leader!");
+                    ParallelChat.sendParallelMessageTo(player, "You cannot retire, you are the only leader!");
                     return;
                 }
                 ParallelTowns.get().guiManager.openTownConfirmationForPlayer(player, town, ConfirmationAction.LEAVE);

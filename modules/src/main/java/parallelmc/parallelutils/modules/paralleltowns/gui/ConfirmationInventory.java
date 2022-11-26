@@ -155,6 +155,11 @@ public class ConfirmationInventory extends GUIInventory {
                         }
                     }
                     case EVICT -> {
+                        if (townMember.isOnline()) {
+                            // warning can be ignored, isOnline() checks for this
+                            townMember.getPlayer().sendMessage(Component.text("[" + town.getName() + "]: ", NamedTextColor.GOLD)
+                                    .append(Component.text("You have been evicted from the town!", NamedTextColor.RED)));
+                        }
                         ParallelTowns.get().removePlayerFromTown(townMember.getUniqueId(), town);
                         ParallelChat.sendParallelMessageTo(player, townMember.getName() + " was successfully evicted!");
                         town.sendMessage(townMember.getName() + " was evicted by " + player.getName() + ".", NamedTextColor.RED);

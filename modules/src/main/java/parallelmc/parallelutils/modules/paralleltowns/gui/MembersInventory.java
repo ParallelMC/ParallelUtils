@@ -54,7 +54,6 @@ public class MembersInventory extends GUIInventory {
                 .entrySet().stream()
                 .sorted(Comparator.comparingInt(x -> x.getValue().getTownRank()))
                 .map(Map.Entry::getKey)
-                .sorted(Comparator.reverseOrder())
                 .toList();
         int slot = 9;
         // since sorted() sorts ascending and reversed() causes issues, we get to loop through the list backwards
