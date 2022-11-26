@@ -23,7 +23,7 @@ public class TownMember {
 
     public String getTownRankStr() {
         return switch (townRank) {
-            case 1 -> "Officer";
+            case 1 -> "Official";
             case 2 -> "Leader";
             default -> "Member";
         };

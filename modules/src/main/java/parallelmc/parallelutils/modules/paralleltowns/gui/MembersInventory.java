@@ -54,9 +54,12 @@ public class MembersInventory extends GUIInventory {
                 .entrySet().stream()
                 .sorted(Comparator.comparingInt(x -> x.getValue().getTownRank()))
                 .map(Map.Entry::getKey)
+                .sorted(Comparator.reverseOrder())
                 .toList();
         int slot = 9;
-        for (UUID member : members) {
+        // since sorted() sorts ascending and reversed() causes issues, we get to loop through the list backwards
+        for (int i = members.size() - 1; i >= 0; i--) {
+            UUID member = members.get(i);
             OfflinePlayer p = Bukkit.getOfflinePlayer(member);
             if (p.getName() == null) {
                 ParallelUtils.log(Level.WARNING, "Could not get name for UUID " + member + " when querying town " + town.getName());
@@ -96,7 +99,7 @@ public class MembersInventory extends GUIInventory {
     public void onSlotClicked(Player player, int slotNum, ItemStack itemClicked) {
         if (itemClicked.getType() == Material.PLAYER_HEAD) {
             TownMember member = ParallelTowns.get().getPlayerTownStatus(player);
-            // only leaders and officers can open the member options gui
+            // only leaders and officials can open the member options gui
             if (member.getTownRank() != TownRank.MEMBER) {
                 SkullMeta meta = (SkullMeta) itemClicked.getItemMeta();
                 ParallelTowns.get().guiManager.openMemberOptionsMenuForPlayer(player, meta.getOwningPlayer());
