@@ -256,6 +256,7 @@ public class ParallelChat extends ParallelModule {
         puPlugin.getCommand("colors").setExecutor(new ParallelColors());
         puPlugin.getCommand("formats").setExecutor(new ParallelFormats());
         puPlugin.getCommand("dnd").setExecutor(new ParallelDoNotDisturb());
+        puPlugin.getCommand("reloademojis").setExecutor(new ParallelReloadEmojis());
 
         this.chatroomCommands = new ChatroomCommands();
         addChatRoomCommand("create", new ParallelCreateChatroom());
