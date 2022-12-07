@@ -38,6 +38,10 @@ public class GUIManager {
         openInventoryForPlayer(player, new ConfirmationInventory(town, townMember, action));
     }
 
+    public void openTownListMenuForPlayer(Player player) {
+        openInventoryForPlayer(player, new TownListInventory());
+    }
+
     private void openInventoryForPlayer(Player player, GUIInventory type) {
         type.onOpen(player);
         player.openInventory(type.inventory);

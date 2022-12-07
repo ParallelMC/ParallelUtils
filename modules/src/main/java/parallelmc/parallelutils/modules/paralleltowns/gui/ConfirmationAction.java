@@ -7,5 +7,7 @@ public enum ConfirmationAction {
     DELETE,
     LEAVE,
     CHARTER,
-    RETIRE
+    RETIRE,
+    DISPLAY,
+    STATUS
 }

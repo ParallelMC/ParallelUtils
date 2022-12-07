@@ -1,0 +1,90 @@
+package parallelmc.parallelutils.modules.paralleltowns.gui;
+
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import parallelmc.parallelutils.ParallelUtils;
+import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
+import parallelmc.parallelutils.modules.paralleltowns.Town;
+
+import java.util.*;
+import java.util.logging.Level;
+
+public class TownListInventory  extends GUIInventory {
+
+    private static final int MAP_INDEX = 4;
+    private static final int EXIT_INDEX = 49;
+
+    public TownListInventory() {
+        super(54, Component.text("Town List", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
+
+        ItemStack map = new ItemStack(Material.MAP);
+        ItemMeta meta = map.getItemMeta();
+        meta.displayName(Component.text("Town List", NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.text("View all of the existing", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        lore.add(Component.text("towns below!", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        meta.lore(lore);
+        map.setItemMeta(meta);
+
+        ItemStack exit = new ItemStack(Material.BARRIER);
+        meta = exit.getItemMeta();
+        meta.displayName(Component.text("Exit GUI", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+        exit.setItemMeta(meta);
+
+        inventory.setItem(MAP_INDEX, map);
+        inventory.setItem(EXIT_INDEX, exit);
+    }
+
+    @Override
+    public void onOpen(Player player) {
+        List<Town> towns = ParallelTowns.get().getAllTowns();
+        int slot = 9;
+        for (Town town : towns) {
+            var findFounder = town.getMembers().entrySet().stream().filter(x -> x.getValue().getIsFounder()).findFirst();
+            if (findFounder.isPresent()) {
+                UUID uuid = findFounder.get().getKey();
+                OfflinePlayer founder = Bukkit.getOfflinePlayer(uuid);
+                if (founder.getName() == null) {
+                    ParallelUtils.log(Level.WARNING, "Could not get name for UUID " + uuid + " when querying town founder for " + town.getName());
+                    continue;
+                }
+                ItemStack item = new ItemStack(town.getDisplayItem());
+                ItemMeta meta = item.getItemMeta();
+                meta.displayName(Component.text(town.getName(), NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+                List<Component> lore = new ArrayList<>();
+                // TODO: handle when a town has no founder
+                lore.add(Component.text("Founded By:", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
+                lore.add(Component.text(founder.getName(), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+                lore.add(Component.text("Town Status:", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
+                if (town.isOpen())
+                    lore.add(Component.text("Open", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
+                else
+                    lore.add(Component.text("Invite Only", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+                meta.lore(lore);
+                item.setItemMeta(meta);
+                inventory.setItem(slot, item);
+            }
+            slot++;
+            // TODO: add pagination when necessary
+            if (slot >= 44) {
+                break;
+            }
+        }
+    }
+
+    @Override
+    public void onSlotClicked(Player player, int slotNum, ItemStack itemClicked) {
+        if (slotNum == EXIT_INDEX) {
+            player.closeInventory();
+        }
+        // TODO: Allow users to click on an open town to join it
+    }
+}
