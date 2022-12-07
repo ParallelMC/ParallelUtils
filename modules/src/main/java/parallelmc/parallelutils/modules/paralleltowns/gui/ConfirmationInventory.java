@@ -9,12 +9,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.checkerframework.checker.units.qual.C;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
 import parallelmc.parallelutils.modules.paralleltowns.Town;
 import parallelmc.parallelutils.modules.paralleltowns.TownMember;
 
+import java.util.EnumSet;
 import java.util.logging.Level;
 
 
@@ -29,16 +31,16 @@ public class ConfirmationInventory extends GUIInventory {
     // the action that this confirmation will execute if the confirmation is accepted
     private final ConfirmationAction action;
 
+    private static final EnumSet<ConfirmationAction> townActions = EnumSet.of(ConfirmationAction.DELETE, ConfirmationAction.LEAVE,
+            ConfirmationAction.CHARTER, ConfirmationAction.RETIRE, ConfirmationAction.DISPLAY, ConfirmationAction.STATUS);
+
     public ConfirmationInventory(Town town, OfflinePlayer member, ConfirmationAction action) {
         super(9, Component.text("Confirmation", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
         this.townMember = member;
         this.town = town;
         this.action = action;
 
-        if (action == ConfirmationAction.DELETE ||
-                action == ConfirmationAction.LEAVE ||
-                action == ConfirmationAction.CHARTER ||
-                action == ConfirmationAction.RETIRE) {
+        if (townActions.contains(action)) {
             ParallelUtils.log(Level.SEVERE, "Attempted to initialize a Confirmation with an invalid action! (" + action + ")");
             return;
         }
@@ -79,10 +81,7 @@ public class ConfirmationInventory extends GUIInventory {
         this.town = town;
         this.action = action;
 
-        if (action != ConfirmationAction.DELETE &&
-                action != ConfirmationAction.LEAVE &&
-                action != ConfirmationAction.CHARTER &&
-                action != ConfirmationAction.RETIRE) {
+        if (!townActions.contains(action)) {
             ParallelUtils.log(Level.SEVERE, "Attempted to initialize a Confirmation with an invalid action! (" + action + ")");
             return;
         }
@@ -99,14 +98,18 @@ public class ConfirmationInventory extends GUIInventory {
 
         ItemStack paper = new ItemStack(Material.PAPER);
         meta = paper.getItemMeta();
-        if (action == ConfirmationAction.LEAVE)
-            meta.displayName(Component.text("Are you sure you want to leave the town?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
-        else if (action == ConfirmationAction.CHARTER)
-            meta.displayName(Component.text("Are you sure you want to update the town charter?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
-        else if (action == ConfirmationAction.RETIRE)
-            meta.displayName(Component.text("Are you sure you want to retire from your position?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
-        else
-            meta.displayName(Component.text("Are you sure you want to delete the town?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+        switch (action) {
+            case LEAVE -> meta.displayName(Component.text("Are you sure you want to leave the town?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+            case CHARTER -> meta.displayName(Component.text("Are you sure you want to update the town charter?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+            case RETIRE -> meta.displayName(Component.text("Are you sure you want to retire from your position?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+            case DISPLAY -> meta.displayName(Component.text("Are you sure you want to update the town list item?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+            case STATUS -> meta.displayName(Component.text("Are you sure you want to toggle the town status?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+            case DELETE ->  meta.displayName(Component.text("Are you sure you want to delete the town?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+            default -> {
+                ParallelUtils.log(Level.SEVERE, "Unhandled action in confirmation: " + action);
+                return;
+            }
+        }
         paper.setItemMeta(meta);
 
         ItemStack air = new ItemStack(Material.AIR);
@@ -182,6 +185,20 @@ public class ConfirmationInventory extends GUIInventory {
                         town.sendMessage("The town charter has been updated by " + player.getName() + "!", NamedTextColor.YELLOW);
                         BookMeta meta = (BookMeta)item.getItemMeta();
                         town.setCharter(meta.pages());
+                    }
+                    case DISPLAY -> {
+                        ItemStack item = player.getInventory().getItemInMainHand();
+                        if (item.getType() == Material.AIR) {
+                            ParallelUtils.log(Level.SEVERE, "Attempted to accept a town list item update while the player was not holding an item!");
+                            return;
+                        }
+                        town.sendMessage("The town display item has been updated by " + player.getName() + " to a " + item.getType() + "!", NamedTextColor.YELLOW);
+                        town.setDisplayItem(item.getType());
+                    }
+                    case STATUS -> {
+                        boolean status = !town.isOpen();
+                        town.setIsOpen(status);
+                        town.sendMessage("The town status has been set to " + (status ? "Open" : "Invite Only") + " by " + player.getName() + "!", NamedTextColor.YELLOW);
                     }
                     case RETIRE -> {
                         String rank = town.getMember(player).getTownRankStr();

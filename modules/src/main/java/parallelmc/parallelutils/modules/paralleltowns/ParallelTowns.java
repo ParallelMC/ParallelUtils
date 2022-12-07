@@ -5,6 +5,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -83,6 +84,7 @@ public class ParallelTowns extends ParallelModule {
         townCommands.addCommand("create", new ParallelCreateTown());
         townCommands.addCommand("invite", new ParallelTownInvite());
         townCommands.addCommand("accept", new ParallelTownAcceptInvite());
+        townCommands.addCommand("list", new ParallelTownList());
 
         jsonPath = Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/towns.json");
 
@@ -103,6 +105,8 @@ public class ParallelTowns extends ParallelModule {
     public @NotNull String getName() {
         return "ParallelTowns";
     }
+
+    public List<Town> getAllTowns() { return towns.values().stream().toList(); }
 
     public boolean doesTownExist(String townName) {
         return towns.get(townName) != null;
@@ -196,7 +200,9 @@ public class ParallelTowns extends ParallelModule {
                     members.put(uuid, new TownMember(rank, isFounder));
                     playersInTown.put(uuid, name);
                 }
-                towns.put(name, new Town(name, founded, members, book));
+                Material material = Material.valueOf((String)json.get("display"));
+                boolean open = (boolean)json.get("open");
+                towns.put(name, new Town(name, founded, members, book, material, open));
             }
             ParallelUtils.log(Level.INFO, "Loaded " + towns.size() + " existing towns.");
         } catch (IOException e) {
@@ -228,6 +234,8 @@ public class ParallelTowns extends ParallelModule {
                 members.add(member);
             });
             entry.put("members", members);
+            entry.put("display", t.getDisplayItem().toString());
+            entry.put("open", t.isOpen());
             json.add(entry);
         }
         try {

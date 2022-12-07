@@ -3,6 +3,7 @@ package parallelmc.parallelutils.modules.paralleltowns;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
@@ -22,23 +23,30 @@ public class Town {
     private final long dateFounded;
     // the town's members
     private HashMap<UUID, TownMember> members = new HashMap<>();
-
     // the town charter
     private Book charter;
+    // the item that is displayed in the town list
+    private Material displayItem;
+    // if the town is open or invite only
+    private boolean isOpen;
 
     public Town(String name, Player founder) {
         Name = name;
         dateFounded = System.currentTimeMillis();
         members.put(founder.getUniqueId(), new TownMember(TownRank.LEADER, true));
         charter = Book.book(Component.text("Town Charter"), Component.text("Parallel"), Component.empty());
+        displayItem = Material.BOOK;
+        isOpen = false;
     }
 
     /** Constructor used when loading town data from json, do not use! **/
-    public Town(String name, long dateFounded, HashMap<UUID, TownMember> members, Book charter) {
+    public Town(String name, long dateFounded, HashMap<UUID, TownMember> members, Book charter, Material material, boolean open) {
         this.Name = name;
         this.dateFounded = dateFounded;
         this.members = members;
         this.charter = charter;
+        this.displayItem = material;
+        this.isOpen = open;
     }
 
     public String getName() { return Name; }
@@ -80,8 +88,20 @@ public class Town {
 
     public Book getCharter() { return charter; }
 
+    public Material getDisplayItem() { return displayItem; }
+
+    public boolean isOpen() { return isOpen; }
+
     public void setCharter(List<Component> pages) {
         charter = Book.book(Component.text("Town Charter"), Component.text("Parallel"), pages);
+    }
+
+    public void setDisplayItem(Material material) {
+        displayItem = material;
+    }
+
+    public void setIsOpen(boolean value) {
+        isOpen = value;
     }
 
     public void sendMessage(String message, NamedTextColor color) {
