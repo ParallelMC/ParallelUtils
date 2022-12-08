@@ -202,9 +202,10 @@ public class ParallelTowns extends ParallelModule {
                     members.put(uuid, new TownMember(rank, isFounder));
                     playersInTown.put(uuid, name);
                 }
-                Material material = Material.valueOf((String)json.get("display"));
+                Material material = Material.valueOf((String)json.get("material"));
+                int modelData = (int)json.get("modeldata");
                 boolean open = (boolean)json.get("open");
-                towns.put(name, new Town(name, founded, members, book, material, open));
+                towns.put(name, new Town(name, founded, members, book, new DisplayItem(material, modelData), open));
             }
             ParallelUtils.log(Level.INFO, "Loaded " + towns.size() + " existing towns.");
         } catch (IOException e) {
@@ -236,7 +237,8 @@ public class ParallelTowns extends ParallelModule {
                 members.add(member);
             });
             entry.put("members", members);
-            entry.put("display", t.getDisplayItem().toString());
+            entry.put("material", t.getDisplayItem().getMaterial());
+            entry.put("modeldata", t.getDisplayItem().getModelData());
             entry.put("open", t.isOpen());
             json.add(entry);
         }

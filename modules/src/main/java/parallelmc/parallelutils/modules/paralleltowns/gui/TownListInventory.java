@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
+import parallelmc.parallelutils.modules.paralleltowns.DisplayItem;
 import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
 import parallelmc.parallelutils.modules.paralleltowns.Town;
 
@@ -62,8 +63,12 @@ public class TownListInventory  extends GUIInventory {
                     ParallelUtils.log(Level.WARNING, "Could not get name for UUID " + uuid + " when querying town founder for " + town.getName());
                     continue;
                 }
-                ItemStack item = new ItemStack(town.getDisplayItem());
+                DisplayItem display = town.getDisplayItem();
+                ItemStack item = new ItemStack(display.getMaterial());
                 ItemMeta meta = item.getItemMeta();
+                if (display.getModelData() != -1) {
+                    meta.setCustomModelData(display.getModelData());
+                }
                 meta.displayName(Component.text(town.getName(), NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
                 List<Component> lore = new ArrayList<>();
                 // TODO: handle when a town has no founder

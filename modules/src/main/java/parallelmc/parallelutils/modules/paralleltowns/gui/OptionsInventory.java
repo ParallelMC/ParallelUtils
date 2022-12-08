@@ -7,11 +7,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import oshi.hardware.Display;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
-import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
-import parallelmc.parallelutils.modules.paralleltowns.Town;
-import parallelmc.parallelutils.modules.paralleltowns.TownMember;
-import parallelmc.parallelutils.modules.paralleltowns.TownRank;
+import parallelmc.parallelutils.modules.paralleltowns.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,8 +103,12 @@ public class OptionsInventory extends GUIInventory {
             charter.setItemMeta(meta);
             inventory.setItem(CHARTER_INDEX, charter);
 
-            ItemStack display = new ItemStack(town.getDisplayItem());
+            DisplayItem item = town.getDisplayItem();
+            ItemStack display = new ItemStack(item.getMaterial());
             meta = display.getItemMeta();
+            if (item.getModelData() != -1) {
+                meta.setCustomModelData(item.getModelData());
+            }
             meta.displayName(Component.text("Update List Item", NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
             loreText.clear();
             loreText.add(Component.text("Click here to update", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));

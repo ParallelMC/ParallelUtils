@@ -26,7 +26,7 @@ public class Town {
     // the town charter
     private Book charter;
     // the item that is displayed in the town list
-    private Material displayItem;
+    private DisplayItem displayItem;
     // if the town is open or invite only
     private boolean isOpen;
 
@@ -35,17 +35,17 @@ public class Town {
         dateFounded = System.currentTimeMillis();
         members.put(founder.getUniqueId(), new TownMember(TownRank.LEADER, true));
         charter = Book.book(Component.text("Town Charter"), Component.text("Parallel"), Component.empty());
-        displayItem = Material.BOOK;
+        displayItem = new DisplayItem(Material.BOOK);
         isOpen = false;
     }
 
     /** Constructor used when loading town data from json, do not use! **/
-    public Town(String name, long dateFounded, HashMap<UUID, TownMember> members, Book charter, Material material, boolean open) {
+    public Town(String name, long dateFounded, HashMap<UUID, TownMember> members, Book charter, DisplayItem displayItem, boolean open) {
         this.Name = name;
         this.dateFounded = dateFounded;
         this.members = members;
         this.charter = charter;
-        this.displayItem = material;
+        this.displayItem = displayItem;
         this.isOpen = open;
     }
 
@@ -88,7 +88,7 @@ public class Town {
 
     public Book getCharter() { return charter; }
 
-    public Material getDisplayItem() { return displayItem; }
+    public DisplayItem getDisplayItem() { return displayItem; }
 
     public boolean isOpen() { return isOpen; }
 
@@ -96,8 +96,8 @@ public class Town {
         charter = Book.book(Component.text("Town Charter"), Component.text("Parallel"), pages);
     }
 
-    public void setDisplayItem(Material material) {
-        displayItem = material;
+    public void setDisplayItem(Material material, int modelData) {
+        displayItem = new DisplayItem(material, modelData);
     }
 
     public void setIsOpen(boolean value) {
