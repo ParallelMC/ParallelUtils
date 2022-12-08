@@ -3,14 +3,15 @@ package parallelmc.parallelutils.modules.paralleltowns.gui;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 import parallelmc.parallelutils.ParallelUtils;
+import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
 import parallelmc.parallelutils.modules.paralleltowns.Town;
 
@@ -21,6 +22,8 @@ public class TownListInventory  extends GUIInventory {
 
     private static final int MAP_INDEX = 4;
     private static final int EXIT_INDEX = 49;
+
+    private final List<Integer> openSlots;
 
     public TownListInventory() {
         super(54, Component.text("Town List", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
@@ -41,6 +44,9 @@ public class TownListInventory  extends GUIInventory {
 
         inventory.setItem(MAP_INDEX, map);
         inventory.setItem(EXIT_INDEX, exit);
+
+        // keep track of which slots house an "open" town
+        openSlots = new ArrayList<>();
     }
 
     @Override
@@ -64,8 +70,10 @@ public class TownListInventory  extends GUIInventory {
                 lore.add(Component.text("Founded By:", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
                 lore.add(Component.text(founder.getName(), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
                 lore.add(Component.text("Town Status:", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
-                if (town.isOpen())
+                if (town.isOpen()) {
                     lore.add(Component.text("Open", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
+                    openSlots.add(slot);
+                }
                 else
                     lore.add(Component.text("Invite Only", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
                 meta.lore(lore);
@@ -85,6 +93,19 @@ public class TownListInventory  extends GUIInventory {
         if (slotNum == EXIT_INDEX) {
             player.closeInventory();
         }
-        // TODO: Allow users to click on an open town to join it
+        if (openSlots.contains(slotNum)) {
+            if (ParallelTowns.get().isPlayerInTown(player)) {
+                player.closeInventory();
+                ParallelChat.sendParallelMessageTo(player, "You are already in a town!");
+                return;
+            }
+            String townName = PlainTextComponentSerializer.plainText().serialize(itemClicked.displayName());
+            Town town = ParallelTowns.get().getTownByName(townName);
+            if (town == null) {
+                ParallelUtils.log(Level.SEVERE, "Failed to get town with name " + townName);
+                return;
+            }
+            ParallelTowns.get().guiManager.openTownConfirmationForPlayer(player, town, ConfirmationAction.JOIN);
+        }
     }
 }

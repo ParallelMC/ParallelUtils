@@ -108,6 +108,8 @@ public class ParallelTowns extends ParallelModule {
 
     public List<Town> getAllTowns() { return towns.values().stream().toList(); }
 
+    public Town getTownByName(String name) { return towns.get(name); }
+
     public boolean doesTownExist(String townName) {
         return towns.get(townName) != null;
     }

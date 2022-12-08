@@ -5,6 +5,7 @@ public enum ConfirmationAction {
     DEMOTE,
     EVICT,
     DELETE,
+    JOIN,
     LEAVE,
     CHARTER,
     RETIRE,
