@@ -197,7 +197,12 @@ public class ConfirmationInventory extends GUIInventory {
                             return;
                         }
                         town.sendMessage("The town display item has been updated by " + player.getName() + " to a " + item.getType() + "!", NamedTextColor.YELLOW);
-                        town.setDisplayItem(item.getType());
+                        int modelData = -1;
+                        ItemMeta meta = item.getItemMeta();
+                        if (meta.hasCustomModelData()) {
+                            modelData = meta.getCustomModelData();
+                        }
+                        town.setDisplayItem(item.getType(), modelData);
                     }
                     case STATUS -> {
                         boolean status = !town.isOpen();
