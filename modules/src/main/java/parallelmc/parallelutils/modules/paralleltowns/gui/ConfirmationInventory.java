@@ -32,7 +32,7 @@ public class ConfirmationInventory extends GUIInventory {
     private final ConfirmationAction action;
 
     private static final EnumSet<ConfirmationAction> townActions = EnumSet.of(ConfirmationAction.DELETE, ConfirmationAction.LEAVE,
-            ConfirmationAction.CHARTER, ConfirmationAction.RETIRE, ConfirmationAction.DISPLAY, ConfirmationAction.STATUS);
+            ConfirmationAction.CHARTER, ConfirmationAction.RETIRE, ConfirmationAction.DISPLAY, ConfirmationAction.STATUS, ConfirmationAction.JOIN);
 
     public ConfirmationInventory(Town town, OfflinePlayer member, ConfirmationAction action) {
         super(9, Component.text("Confirmation", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
@@ -99,6 +99,7 @@ public class ConfirmationInventory extends GUIInventory {
         ItemStack paper = new ItemStack(Material.PAPER);
         meta = paper.getItemMeta();
         switch (action) {
+            case JOIN -> meta.displayName(Component.text("Are you sure you want to join this town?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
             case LEAVE -> meta.displayName(Component.text("Are you sure you want to leave the town?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
             case CHARTER -> meta.displayName(Component.text("Are you sure you want to update the town charter?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
             case RETIRE -> meta.displayName(Component.text("Are you sure you want to retire from your position?", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
@@ -171,6 +172,9 @@ public class ConfirmationInventory extends GUIInventory {
                         town.sendMessage("The town has been deleted by " + player.getName() + ".", NamedTextColor.RED);
                         ParallelTowns.get().deleteTown(town.getName());
                         ParallelChat.sendParallelMessageTo(player, "Town " + town.getName() + " was deleted.");
+                    }
+                    case JOIN -> {
+                        ParallelTowns.get().addPlayerToTown(player, town);
                     }
                     case LEAVE -> {
                         town.sendMessage(player.getName() + " has left the town.", NamedTextColor.RED);
