@@ -55,6 +55,14 @@ public class TownListInventory  extends GUIInventory {
         List<Town> towns = ParallelTowns.get().getAllTowns();
         int slot = 9;
         for (Town town : towns) {
+            DisplayItem display = town.getDisplayItem();
+            ItemStack item = new ItemStack(display.getMaterial());
+            ItemMeta meta = item.getItemMeta();
+            if (display.getModelData() != -1) {
+                meta.setCustomModelData(display.getModelData());
+            }
+            meta.displayName(Component.text(town.getName(), NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+            List<Component> lore = new ArrayList<>();
             var findFounder = town.getMembers().entrySet().stream().filter(x -> x.getValue().getIsFounder()).findFirst();
             if (findFounder.isPresent()) {
                 UUID uuid = findFounder.get().getKey();
@@ -63,28 +71,19 @@ public class TownListInventory  extends GUIInventory {
                     ParallelUtils.log(Level.WARNING, "Could not get name for UUID " + uuid + " when querying town founder for " + town.getName());
                     continue;
                 }
-                DisplayItem display = town.getDisplayItem();
-                ItemStack item = new ItemStack(display.getMaterial());
-                ItemMeta meta = item.getItemMeta();
-                if (display.getModelData() != -1) {
-                    meta.setCustomModelData(display.getModelData());
-                }
-                meta.displayName(Component.text(town.getName(), NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
-                List<Component> lore = new ArrayList<>();
-                // TODO: handle when a town has no founder
                 lore.add(Component.text("Founded By:", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
                 lore.add(Component.text(founder.getName(), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
-                lore.add(Component.text("Town Status:", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
-                if (town.isOpen()) {
-                    lore.add(Component.text("Open", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
-                    openSlots.add(slot);
-                }
-                else
-                    lore.add(Component.text("Invite Only", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
-                meta.lore(lore);
-                item.setItemMeta(meta);
-                inventory.setItem(slot, item);
             }
+            lore.add(Component.text("Town Status:", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
+            if (town.isOpen()) {
+                lore.add(Component.text("Open", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
+                openSlots.add(slot);
+            }
+            else
+                lore.add(Component.text("Invite Only", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+            meta.lore(lore);
+            item.setItemMeta(meta);
+            inventory.setItem(slot, item);
             slot++;
             // TODO: add pagination when necessary
             if (slot >= 44) {
