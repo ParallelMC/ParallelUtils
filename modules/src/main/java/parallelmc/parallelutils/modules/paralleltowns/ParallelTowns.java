@@ -203,7 +203,7 @@ public class ParallelTowns extends ParallelModule {
                     playersInTown.put(uuid, name);
                 }
                 Material material = Material.valueOf((String)json.get("material"));
-                int modelData = (int)json.get("modeldata");
+                int modelData = Math.toIntExact((long)json.get("modeldata"));
                 boolean open = (boolean)json.get("open");
                 towns.put(name, new Town(name, founded, members, book, new DisplayItem(material, modelData), open));
             }
@@ -237,7 +237,7 @@ public class ParallelTowns extends ParallelModule {
                 members.add(member);
             });
             entry.put("members", members);
-            entry.put("material", t.getDisplayItem().getMaterial());
+            entry.put("material", t.getDisplayItem().getMaterial().toString());
             entry.put("modeldata", t.getDisplayItem().getModelData());
             entry.put("open", t.isOpen());
             json.add(entry);
