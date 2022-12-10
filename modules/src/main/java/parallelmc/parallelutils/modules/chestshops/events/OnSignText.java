@@ -74,6 +74,11 @@ public class OnSignText implements Listener {
                         ParallelChat.sendParallelMessageTo(player, "Please place the item to sell in the first slot of the chest.");
                         return;
                     }
+                    if (inv.firstEmpty() == -1) {
+                        event.setCancelled(true);
+                        ParallelChat.sendParallelMessageTo(player, "There must be at least one empty slot in the chest.");
+                        return;
+                    }
                     if (sell.getType() == Material.DIAMOND || sell.getType() == Material.DIAMOND_BLOCK) {
                         event.setCancelled(true);
                         ParallelChat.sendParallelMessageTo(player, "You cannot sell diamonds!");
