@@ -2,7 +2,9 @@ package parallelmc.parallelutils.modules.chestshops.events;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,7 +27,13 @@ public class OnShopInteract implements Listener {
         Player player = (Player)event.getWhoClicked();
         ShopperData data = ChestShops.get().getShoppingData(player);
         Inventory inv = event.getClickedInventory();
-        if (data != null && data.fakeInv().equals(inv) && event.getCurrentItem() != null) {
+        if (data != null && data.fakeInv().equals(event.getInventory()) && event.getCurrentItem() != null) {
+            event.setCancelled(true);
+            // if the clicked inventory is not the ChestShop inventory (the player's inventory usually)
+            // then do nothing
+            if (!data.fakeInv().equals(event.getClickedInventory())) {
+                return;
+            }
             if (!inv.containsAtLeast(event.getCurrentItem(), data.shop().sellAmt())) {
                 ParallelChat.sendParallelMessageTo(player, "Shop is out of stock!");
                 player.closeInventory();
@@ -95,7 +103,12 @@ public class OnShopInteract implements Listener {
                 name = give.getItemMeta().displayName();
             }
             ParallelChat.sendParallelMessageTo(player, Component.text("You bought " + data.shop().sellAmt() + "x ", NamedTextColor.GREEN).append(name));
-            event.setCancelled(true);
+            OfflinePlayer owner = Bukkit.getOfflinePlayer(data.shop().owner());
+            if (owner.isOnline()) {
+                ParallelChat.sendParallelMessageTo(owner.getPlayer(), Component.text(player.getName() + " bought " + data.shop().sellAmt() + "x ", NamedTextColor.GREEN)
+                        .append(name)
+                        .append(Component.text(" from your ChestShop!", NamedTextColor.GREEN)));
+            }
         }
     }
 
