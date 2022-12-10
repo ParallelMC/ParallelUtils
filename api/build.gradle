@@ -205,6 +205,10 @@ bukkit {
             description = 'Reloads all tutorials'
             usage = '/reloadtutorials'
         }
+        reloademojis {
+            description = 'Reloads all emojis'
+            usage = '/reloademojis'
+        }
         leavetutorial {
             description = 'Exit the tutorial you are currently in'
             usage = '/leavetutorial'
@@ -314,6 +318,9 @@ bukkit {
         }
         'parallelutils.reloadtutorials' {
             description = 'Gives access to reloadtutorials command'
+        }
+        'parallelutils.reloademojis' {
+            description = 'Gives access to reloademojis command'
         }
         'parallelutils.tutorialinfo' {
             description = 'Gives access to tutorialinfo command'
