@@ -484,11 +484,7 @@ public class ParallelTutorial extends ParallelModule {
     private void forceSpectate(Player player, int entityId) {
         PacketContainer packet = protManager.createPacket(PacketType.Play.Server.CAMERA);
         packet.getIntegers().write(0, entityId);
-        try {
-            protManager.sendServerPacket(player, packet);
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+        protManager.sendServerPacket(player, packet);
     }
 
     private Vector lookAt(ArmorStand stand, Vector block) {
