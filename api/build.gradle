@@ -27,7 +27,7 @@ dependencies {
     compileOnly fileTree('libs') { include '*.jar' }
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.7'
     implementation 'mysql:mysql-connector-java:8.0.29'
-    compileOnly 'com.comphenix.protocol:ProtocolLib:4.8.0'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:5.0.0-SNAPSHOT'
     compileOnly 'dev.esophose:playerparticles:7.25'
     implementation 'org.reflections:reflections:0.10.2'
 }
