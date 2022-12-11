@@ -51,8 +51,8 @@ public class EmojiManager {
             return false;
         }
         for (String key : emoteConfig.getKeys(false)) {
-            String id = emoteConfig.getString("id");
-            String replacement = emoteConfig.getString("replacement");
+            String id = emoteConfig.getString(key + ".id");
+            String replacement = emoteConfig.getString(key + ".replacement");
             if (id == null || replacement == null) {
                 ParallelUtils.log(Level.WARNING, "Invalid format for emoji key " + key + ", skipping!");
                 continue;
