@@ -85,6 +85,7 @@ public class ParallelTowns extends ParallelModule {
         townCommands.addCommand("invite", new ParallelTownInvite());
         townCommands.addCommand("accept", new ParallelTownAcceptInvite());
         townCommands.addCommand("list", new ParallelTownList());
+        townCommands.addCommand("announce", new ParallelTownAnnounce());
 
         jsonPath = Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/towns.json");
 
