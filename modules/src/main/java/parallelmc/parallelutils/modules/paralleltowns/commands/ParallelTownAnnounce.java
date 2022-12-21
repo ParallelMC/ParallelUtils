@@ -11,6 +11,7 @@ import parallelmc.parallelutils.modules.paralleltowns.TownMember;
 import parallelmc.parallelutils.modules.paralleltowns.TownRank;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ParallelTownAnnounce extends TownCommand {
@@ -22,10 +23,13 @@ public class ParallelTownAnnounce extends TownCommand {
 
     @Override
     public boolean execute(@NotNull Player player, @NotNull Command command, String[] args) {
-        if (args.length != 2) {
+        if (args.length < 2) {
             player.sendMessage(USAGE);
             return false;
         }
+        // tee hee v2
+        args[0] = "";
+        String msg = ParallelChat.getStringArg(args);
         Town town = ParallelTowns.get().getPlayerTown(player);
         TownMember member = town.getMember(player);
         if (member.getTownRank() == TownRank.MEMBER) {
@@ -34,7 +38,7 @@ public class ParallelTownAnnounce extends TownCommand {
         }
         else {
             // TODO: possibly allow selecting the color of the announcement
-            town.sendMessage("Announcement from " + player.getName() + ": " + args[1], NamedTextColor.GOLD);
+            town.sendMessage("Announcement from " + player.getName() + ": " + msg, NamedTextColor.GOLD);
         }
         return true;
     }
