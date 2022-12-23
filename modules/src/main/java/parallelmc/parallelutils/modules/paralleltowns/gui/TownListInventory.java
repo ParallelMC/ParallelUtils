@@ -71,9 +71,14 @@ public class TownListInventory  extends GUIInventory {
                     ParallelUtils.log(Level.WARNING, "Could not get name for UUID " + uuid + " when querying town founder for " + town.getName());
                     continue;
                 }
+                lore.add(Component.empty());
                 lore.add(Component.text("Founded By:", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
                 lore.add(Component.text(founder.getName(), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
             }
+            lore.add(Component.empty());
+            lore.add(Component.text("Members:", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
+            lore.add(Component.text(town.getMembers().size(), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+            lore.add(Component.empty());
             lore.add(Component.text("Town Status:", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
             if (town.isOpen()) {
                 lore.add(Component.text("Open", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
@@ -104,6 +109,10 @@ public class TownListInventory  extends GUIInventory {
                 return;
             }
             String townName = PlainTextComponentSerializer.plainText().serialize(itemClicked.displayName());
+            // PlainTextComponentSerializer converts bold text to brackets
+            // i.e. <bold>Hello --> [Hello]
+            // so we have to remove them here
+            townName = townName.substring(1, townName.length() - 2);
             Town town = ParallelTowns.get().getTownByName(townName);
             if (town == null) {
                 ParallelUtils.log(Level.SEVERE, "Failed to get town with name " + townName);

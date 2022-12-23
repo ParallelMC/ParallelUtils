@@ -11,7 +11,6 @@ import parallelmc.parallelutils.modules.paralleltowns.TownMember;
 import parallelmc.parallelutils.modules.paralleltowns.TownRank;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ParallelTownAnnounce extends TownCommand {
@@ -27,18 +26,22 @@ public class ParallelTownAnnounce extends TownCommand {
             player.sendMessage(USAGE);
             return false;
         }
+        Town town = ParallelTowns.get().getPlayerTown(player);
+        if (town == null) {
+            ParallelChat.sendParallelMessageTo(player, "You are not in a town!");
+            return true;
+        }
+        TownMember member = town.getMember(player);
         // tee hee v2
         args[0] = "";
         String msg = ParallelChat.getStringArg(args);
-        Town town = ParallelTowns.get().getPlayerTown(player);
-        TownMember member = town.getMember(player);
         if (member.getTownRank() == TownRank.MEMBER) {
             ParallelChat.sendParallelMessageTo(player, "You must be an Official or higher to send town announcements!");
             return true;
         }
         else {
             // TODO: possibly allow selecting the color of the announcement
-            town.sendMessage("Announcement from " + player.getName() + ": " + msg, NamedTextColor.GOLD);
+            town.sendMessage("Announcement from " + player.getName() + ":" + msg, NamedTextColor.AQUA);
         }
         return true;
     }
