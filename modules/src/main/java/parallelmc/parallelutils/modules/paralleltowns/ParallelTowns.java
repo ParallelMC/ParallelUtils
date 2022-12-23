@@ -19,6 +19,7 @@ import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
+import parallelmc.parallelutils.modules.parallelchat.commands.chatrooms.ChatroomCommand;
 import parallelmc.parallelutils.modules.paralleltowns.commands.*;
 import parallelmc.parallelutils.modules.paralleltowns.events.OnMenuInteract;
 
@@ -86,6 +87,7 @@ public class ParallelTowns extends ParallelModule {
         townCommands.addCommand("accept", new ParallelTownAcceptInvite());
         townCommands.addCommand("list", new ParallelTownList());
         townCommands.addCommand("announce", new ParallelTownAnnounce());
+        townCommands.addCommand("help", new ParallelTownHelp());
 
         jsonPath = Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/towns.json");
 
@@ -150,7 +152,7 @@ public class ParallelTowns extends ParallelModule {
     public void invitePlayerToTown(Player inviter, Player invitee) {
         Town town = getPlayerTown(inviter);
         this.pendingInvites.put(invitee.getUniqueId(), town.getName());
-        ParallelChat.sendParallelMessageTo(invitee, "You have been invited to join the town " + town.getName() + " by " + inviter.getName() + ". Type /town accept to accept!");
+        ParallelChat.sendParallelMessageTo(invitee, "You have been invited to join the town " + town.getName() + " by " + inviter.getName() + ". Type \"/town accept\" to accept!");
         inviter.getServer().getScheduler().runTaskLater(puPlugin, () -> {
             if (hasPendingInvite(invitee)) {
                 this.pendingInvites.remove(invitee.getUniqueId());
@@ -249,6 +251,10 @@ public class ParallelTowns extends ParallelModule {
         } catch (IOException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to save towns!\n" + e.getMessage());
         }
+    }
+
+    public Map<String, TownCommand> getTownCommands() {
+        return townCommands.getTownCommands();
     }
 
     public ParallelUtils getPlugin() { return puPlugin; }

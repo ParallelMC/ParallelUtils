@@ -35,6 +35,10 @@ public class TownCommands implements CommandExecutor, TabCompleter {
         return true;
     }
 
+    public HashMap<String, TownCommand> getTownCommands() {
+        return commandMap;
+    }
+
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         // only players can run town commands
