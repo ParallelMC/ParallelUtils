@@ -78,7 +78,7 @@ public class MainMenuInventory extends GUIInventory {
         List<Component> loreText = new ArrayList<>();
         loreText.add(Component.text("Town Name: ", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false).append(Component.text(town.getName(), NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
         loreText.add(Component.text("Members: ", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false).append(Component.text(town.getMembers().size(), NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
-        loreText.add(Component.text("Founded: ", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false).append(Component.text(town.getFoundedDate(), NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
+        loreText.add(Component.text("Founded: ", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false).append(Component.text(town.getFoundedDate() + "ET", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)));
         meta.lore(loreText);
         item.setItemMeta(meta);
         return item;
