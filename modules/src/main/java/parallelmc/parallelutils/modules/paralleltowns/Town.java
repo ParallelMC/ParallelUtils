@@ -105,7 +105,11 @@ public class Town {
     }
 
     public void sendMessage(String message, NamedTextColor color) {
-        Component msg = Component.text("[" + Name + "]: ", NamedTextColor.GOLD).append(Component.text(message, color));
+        sendMessage(Component.text(message, color));
+    }
+
+    public void sendMessage(Component message) {
+        Component msg = Component.text("[" + Name + "]: ", NamedTextColor.GOLD).append(message);
         for (UUID uuid : members.keySet()) {
             Player player = ParallelTowns.get().getPlugin().getServer().getPlayer(uuid);
             if (player != null)
