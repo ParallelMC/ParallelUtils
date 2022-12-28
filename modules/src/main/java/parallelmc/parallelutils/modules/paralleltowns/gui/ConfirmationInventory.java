@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.checkerframework.checker.units.qual.C;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
@@ -196,7 +195,8 @@ public class ConfirmationInventory extends GUIInventory {
                             ParallelUtils.log(Level.SEVERE, "Attempted to accept a town list item update while the player was not holding an item!");
                             return;
                         }
-                        town.sendMessage("The town display item has been updated by " + player.getName() + " to a " + item.getType() + "!", NamedTextColor.YELLOW);
+                        town.sendMessage(Component.text("The town display item has been updated by " + player.getName() + " to a ", NamedTextColor.YELLOW)
+                                .append(item.displayName()));
                         int modelData = -1;
                         ItemMeta meta = item.getItemMeta();
                         if (meta.hasCustomModelData()) {
