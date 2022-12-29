@@ -83,7 +83,7 @@ public class ParallelTutorial extends ParallelModule {
         this.puPlugin = (ParallelUtils) plugin;
 
         if (!puPlugin.registerModule(this)) {
-            ParallelUtils.log(Level.SEVERE, "Unable to register module ParallelChat! " +
+            ParallelUtils.log(Level.SEVERE, "Unable to register module ParallelTutorial! " +
                     "Module may already be registered. Quitting...");
             return;
         }
@@ -484,7 +484,12 @@ public class ParallelTutorial extends ParallelModule {
     private void forceSpectate(Player player, int entityId) {
         PacketContainer packet = protManager.createPacket(PacketType.Play.Server.CAMERA);
         packet.getIntegers().write(0, entityId);
-        protManager.sendServerPacket(player, packet);
+
+        try {
+            protManager.sendServerPacket(player, packet);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private Vector lookAt(ArmorStand stand, Vector block) {

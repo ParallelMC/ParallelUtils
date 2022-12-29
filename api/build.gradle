@@ -85,6 +85,11 @@ bukkit {
             permissionMessage = 'You do not have permission'
             aliases = ['cr',]
         }
+        town {
+            description = 'Base command for all Town commands'
+            usage = '/town'
+            permissionMessage = 'You do not have permission'
+        }
         depositexp {
             description = 'Deposit exp into the player\' s ender chest '
             usage = '/depositexp <amount | all>'
