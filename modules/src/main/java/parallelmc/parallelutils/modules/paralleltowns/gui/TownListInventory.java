@@ -112,7 +112,7 @@ public class TownListInventory  extends GUIInventory {
             // PlainTextComponentSerializer converts bold text to brackets
             // i.e. <bold>Hello --> [Hello]
             // so we have to remove them here
-            townName = townName.substring(1, townName.length() - 2);
+            townName = townName.substring(1, townName.length() - 1);
             Town town = ParallelTowns.get().getTownByName(townName);
             if (town == null) {
                 ParallelUtils.log(Level.SEVERE, "Failed to get town with name " + townName);
