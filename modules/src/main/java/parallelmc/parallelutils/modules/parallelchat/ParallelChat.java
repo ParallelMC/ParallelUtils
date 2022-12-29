@@ -259,6 +259,7 @@ public class ParallelChat extends ParallelModule {
         puPlugin.getCommand("reloademojis").setExecutor(new ParallelReloadEmojis());
 
         this.chatroomCommands = new ChatroomCommands();
+        puPlugin.getCommand("chatroom").setExecutor(chatroomCommands);
         addChatRoomCommand("create", new ParallelCreateChatroom());
         addChatRoomCommand("leave", new ParallelLeaveChatroom());
         addChatRoomCommand("join", new ParallelJoinChatroom());
