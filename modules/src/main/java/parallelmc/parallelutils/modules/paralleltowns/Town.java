@@ -56,7 +56,7 @@ public class Town {
     public String getFoundedDate() {
         OffsetDateTime time = OffsetDateTime.ofInstant(Instant.ofEpochMilli(dateFounded), ZoneId.of("America/New_York"));
         // returns as, for example, 3:00 PM, December 2, 2022
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a, MMM d, y");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a z, MMM d, y");
         return time.format(formatter);
     }
 

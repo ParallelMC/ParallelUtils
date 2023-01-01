@@ -218,7 +218,12 @@ public class ConfirmationInventory extends GUIInventory {
                     }
                 }
             }
-            case 6 -> ParallelTowns.get().guiManager.openMainMenuForPlayer(player);
+            case 6 -> {
+                if (action == ConfirmationAction.JOIN)
+                    ParallelTowns.get().guiManager.openTownListMenuForPlayer(player);
+                else
+                    ParallelTowns.get().guiManager.openMainMenuForPlayer(player);
+            } 
             default -> { }
         }
     }
