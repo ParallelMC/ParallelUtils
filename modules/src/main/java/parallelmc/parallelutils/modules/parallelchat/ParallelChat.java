@@ -64,7 +64,6 @@ public class ParallelChat extends ParallelModule {
 
     private final FileConfiguration bannedWordsConfig = new YamlConfiguration();
     public List<String> bannedWords = new ArrayList<>();
-    public List<String> allowedWords = new ArrayList<>();
 
     public List<Component> autoMessages = new ArrayList<>();
 
@@ -176,7 +175,6 @@ public class ParallelChat extends ParallelModule {
         }
 
         this.bannedWords = bannedWordsConfig.getStringList("Banned-Words");
-        this.allowedWords = bannedWordsConfig.getStringList("Whitelisted-Words");
         ParallelUtils.log(Level.INFO, "ParallelChat: Loaded " + bannedWords.size() + " banned words.");
 
         ConfigurationSection groups = puPlugin.getConfig().getConfigurationSection("group-formats");
@@ -223,8 +221,8 @@ public class ParallelChat extends ParallelModule {
 
 
         try {
-            this.chatLogWriter = Files.newBufferedWriter(Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/chat_log.txt"), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
-            this.cmdLogWriter = Files.newBufferedWriter(Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/command_log.txt"), StandardCharsets.UTF_8, StandardOpenOption.WRITE);
+            this.chatLogWriter = Files.newBufferedWriter(Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/chat_log.txt"), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+            this.cmdLogWriter = Files.newBufferedWriter(Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/command_log.txt"), StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
         }
         catch (IOException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to open writer to loggers!");
@@ -257,6 +255,8 @@ public class ParallelChat extends ParallelModule {
         puPlugin.getCommand("formats").setExecutor(new ParallelFormats());
         puPlugin.getCommand("dnd").setExecutor(new ParallelDoNotDisturb());
         puPlugin.getCommand("reloademojis").setExecutor(new ParallelReloadEmojis());
+        puPlugin.getCommand("banword").setExecutor(new ParallelBanWord());
+        puPlugin.getCommand("allowword").setExecutor(new ParallelAllowWord());
 
         this.chatroomCommands = new ChatroomCommands();
         puPlugin.getCommand("chatroom").setExecutor(chatroomCommands);
@@ -316,6 +316,15 @@ public class ParallelChat extends ParallelModule {
 
         // save chatrooms
         chatRoomManager.saveChatroomsToFile();
+
+        // save banned words list in case any words were added or removed
+        bannedWordsConfig.set("Banned-Words", bannedWords);
+        try {
+            bannedWordsConfig.save(new File(puPlugin.getDataFolder(), "bannedwords.yml"));
+        } catch (IOException e) {
+            ParallelUtils.log(Level.SEVERE, "Failed to save banned words to file!");
+            e.printStackTrace();
+        }
     }
 
     @Override
