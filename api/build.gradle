@@ -214,6 +214,14 @@ bukkit {
             description = 'Reloads all emojis'
             usage = '/reloademojis'
         }
+        banword {
+            description = 'Adds a word to the banned words list'
+            usage = '/banword (word)'
+        }
+        allowword {
+            description = 'Remove a word from the banned words list'
+            usage = '/allowword (word)'
+        }
         leavetutorial {
             description = 'Exit the tutorial you are currently in'
             usage = '/leavetutorial'
@@ -283,6 +291,14 @@ bukkit {
         }
         'parallelutils.fakelogin' {
             description = 'Gives access to fakejoin and fakeleave commands'
+            setDefault('FALSE')
+        }
+        'parallelutils.banword' {
+            description = 'Gives access to banword command'
+            setDefault('FALSE')
+        }
+        'parallelutils.allowword' {
+            description = 'Gives access to allowword command'
             setDefault('FALSE')
         }
         'parallelutils.staffchat' {
