@@ -3,6 +3,7 @@ package parallelmc.parallelutils.modules.beehiveinspector.events;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.block.data.type.Beehive;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,7 +28,9 @@ public class BeehiveBroken implements Listener {
         if (block.getType().equals(Material.BEEHIVE) || block.getType().equals(Material.BEE_NEST))
         {
             // if the block doesn't have any drops for some reason, then do nothing
-            if (block.getDrops().isEmpty())
+            Player player = event.getPlayer();
+            ItemStack heldItem = player.getInventory().getItemInMainHand();
+            if (block.getDrops(heldItem, player).isEmpty())
                 return;
 
             ParallelUtils.log(Level.INFO, "Dropping");
@@ -54,7 +57,7 @@ public class BeehiveBroken implements Listener {
 
             // more beautiful code
             // since a beehive usually only drops itself or nothing, we can hardcode this index
-            ItemStack item = (ItemStack)block.getDrops().toArray()[0];
+            ItemStack item = (ItemStack)block.getDrops(heldItem, player).toArray()[0];
             List<Component> lore = new ArrayList<>();
             // add the lore with the hive information
             lore.add(Component.text("Bees: " + bees, NamedTextColor.GRAY));
