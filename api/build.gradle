@@ -277,6 +277,10 @@ bukkit {
             description = 'Gives access to giving ParallelItems.'
             setDefault('FALSE')
         }
+        'parallelutils.enchant' {
+            description = 'Gives access to using ParallelItems enchants'
+            setDefault('FALSE')
+        }
         'parallelutils.test' {
             description = 'Gives access to the test command'
             setDefault('FALSE')
