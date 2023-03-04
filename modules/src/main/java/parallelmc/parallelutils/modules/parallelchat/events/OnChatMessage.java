@@ -78,6 +78,9 @@ public class OnChatMessage implements Listener {
         catch (IOException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to log chat message!");
         }
+        catch (NullPointerException e) {
+            ParallelUtils.log(Level.SEVERE, "Failed to log chat message! chatLogWriter was null!");
+        }
 
         // @ Mention check
         // have to use strings to figure out the player names
