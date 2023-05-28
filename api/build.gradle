@@ -234,6 +234,14 @@ bukkit {
             description = 'Toggles PVP on or off'
             usage = '/togglepvp'
         }
+        createparkour {
+            description = 'Begin creating a new parkour layout'
+            usage = '/createparkour (name)'
+        }
+        endparkour {
+            description = 'Ends a parkour run early'
+            usage = '/endparkour'
+        }
     }
 
     permissions {
@@ -271,6 +279,10 @@ bukkit {
         }
         'parallelutils.spawn.spawners.delete' {
             description = 'Gives access to deleting spawners.'
+            setDefault('FALSE')
+        }
+        'parallelutils.createparkour' {
+            description = 'Gives access to creating parkour layouts.'
             setDefault('FALSE')
         }
         'parallelutils.give' {
