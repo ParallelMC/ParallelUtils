@@ -25,6 +25,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -65,6 +66,26 @@ public class ParallelParkour extends ParallelModule {
             return;
         }
 
+        try (Connection conn = puPlugin.getDbConn()) {
+            if (conn == null) throw new SQLException("Unable to establish connection!");
+            Statement statement = conn.createStatement();
+            statement.setQueryTimeout(15);
+            statement.execute("""
+                    create table if not exists Leaderboard
+                    (
+                        UUID        varchar(36)  not null,
+                        Course      varchar(256) not null,
+                        Time        bigint       not null,
+                        constraint Leaderboard_UUID_index
+                            unique(UUID),
+                        PRIMARY KEY(UUID)
+                    );""");
+            conn.commit();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         manager.registerEvents(new OnPlayerInteract(), puPlugin);
         manager.registerEvents(new OnBlockPlace(), puPlugin);
 
@@ -91,6 +112,41 @@ public class ParallelParkour extends ParallelModule {
     @Override
     public @NotNull String getName() {
         return "ParallelParkour";
+    }
+
+    public long getBestTimeFor(Player player, ParkourLayout layout) {
+        try (Connection conn = puPlugin.getDbConn()) {
+            if (conn == null) throw new SQLException("Unable to establish connection!");
+            PreparedStatement statement = conn.prepareStatement("SELECT * FROM Leaderboard WHERE UUID = ? AND Course = ?");
+            statement.setString(1, player.getUniqueId().toString());
+            statement.setString(2, layout.name());
+            ResultSet result = statement.executeQuery();
+            if (result.next()) {
+                long time = result.getLong("Time");
+                statement.close();
+                return time;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public void saveBestTimeFor(Player player, ParkourPlayer pp) {
+        try (Connection conn = puPlugin.getDbConn()) {
+            if (conn == null) throw new SQLException("Unable to establish connection!");
+            PreparedStatement statement = conn.prepareStatement(
+                    "INSERT INTO Leaderboard (UUID, Course, Time) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE Time = ?");
+            statement.setString(1, player.getUniqueId().toString());
+            statement.setString(2, pp.getLayout().name());
+            statement.setLong(3, pp.endTime);
+            statement.setLong(4, pp.endTime);
+            statement.execute();
+            conn.commit();
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     public @Nullable ParkourLayout getParkourCreation(Player player) {
@@ -130,7 +186,10 @@ public class ParallelParkour extends ParallelModule {
     }
 
     public void endParkourFor(Player player) {
-        playersInParkour.remove(player.getUniqueId());
+        UUID uuid = player.getUniqueId();
+        ParkourPlayer pp = playersInParkour.get(uuid);
+        saveBestTimeFor(player, pp);
+        playersInParkour.remove(uuid);
     }
 
     public void cancelParkourRunFor(Player player) {
