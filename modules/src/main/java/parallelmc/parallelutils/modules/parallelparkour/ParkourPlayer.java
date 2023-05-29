@@ -14,6 +14,7 @@ public class ParkourPlayer {
     private final Player player;
     private final BossBar bossBar;
     private final long startTime;
+    public long endTime;
     // TODO: implement best time
     private long bestTime;
     private int currentCheckpoint;
@@ -22,7 +23,7 @@ public class ParkourPlayer {
 
     private BukkitTask runnable;
 
-    private static final SimpleDateFormat timerFormat = new SimpleDateFormat("mm:ss:SSS");
+    private static final SimpleDateFormat timerFormat = new SimpleDateFormat("mm:ss:SS");
 
     public ParkourPlayer(Player player, ParkourLayout layout) {
         this.player = player;
@@ -31,10 +32,17 @@ public class ParkourPlayer {
         this.currentCheckpoint = 1;
         this.lastCheckpoint = layout.positions().size();
         this.startTime = System.currentTimeMillis();
+        this.endTime = -1;
         start();
     }
 
     private void start() {
+        ParallelChat.sendParallelMessageTo(player, "Starting parkour course: " + layout.name());
+        this.bestTime = ParallelParkour.get().getBestTimeFor(player, layout);
+        if (bestTime == 0)
+            ParallelChat.sendParallelMessageTo(player, "Your Best Time: None");
+        else
+            ParallelChat.sendParallelMessageTo(player, String.format("Your Best Time: %s", getTimeString(bestTime)));
         showBossbar();
         runnable = new BukkitRunnable() {
             @Override
@@ -46,9 +54,12 @@ public class ParkourPlayer {
 
     public void end() {
         hideBossbar();
+        this.endTime = System.currentTimeMillis();
         ParallelChat.sendParallelMessageTo(player, String.format("You finished the course in: %s", getTimeString()));
+        if (this.bestTime == 0 || this.endTime < this.bestTime) {
+            ParallelChat.sendParallelMessageTo(player, "New Personal Record!");
+        }
         runnable.cancel();
-        // TODO: handle post-finish stuff
     }
 
     public void cancel() {
@@ -62,7 +73,7 @@ public class ParkourPlayer {
     private BossBar createBossbar() {
         return BossBar.bossBar(
                 Component.text(String.format("Checkpoint %d/%d | Time: 00:00:00", 1, lastCheckpoint)),
-                0,
+                1f / lastCheckpoint,
                 BossBar.Color.RED,
                 BossBar.Overlay.PROGRESS
         );
@@ -75,6 +86,10 @@ public class ParkourPlayer {
                         this.lastCheckpoint,
                         getTimeString()))
         );
+    }
+
+    private String getTimeString(long time) {
+        return timerFormat.format(new Date(time));
     }
 
     private String getTimeString() {
