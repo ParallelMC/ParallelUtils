@@ -242,6 +242,10 @@ bukkit {
             description = 'Ends a parkour run early'
             usage = '/endparkour'
         }
+        leaderboard {
+            description = 'Shows the top scores for a parkour course'
+            usage = '/leaderboard (parkour name)'
+        }
     }
 
     permissions {
