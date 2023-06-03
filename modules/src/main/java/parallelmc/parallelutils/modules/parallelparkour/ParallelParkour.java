@@ -18,6 +18,7 @@ import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelCreateParkour;
 import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelEndParkour;
+import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelLeaderboard;
 import parallelmc.parallelutils.modules.parallelparkour.events.OnBlockPlace;
 import parallelmc.parallelutils.modules.parallelparkour.events.OnPlayerInteract;
 
@@ -26,7 +27,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.Date;
 import java.util.logging.Level;
 
 public class ParallelParkour extends ParallelModule {
@@ -39,6 +42,8 @@ public class ParallelParkour extends ParallelModule {
     private static Path jsonPath;
 
     public ParallelParkour(ParallelClassLoader classLoader, List<String> dependents) { super(classLoader, dependents); }
+
+    private static final SimpleDateFormat timerFormat = new SimpleDateFormat("mm:ss:SS");
 
     private static ParallelParkour Instance;
 
@@ -91,6 +96,7 @@ public class ParallelParkour extends ParallelModule {
 
         puPlugin.getCommand("createparkour").setExecutor(new ParallelCreateParkour());
         puPlugin.getCommand("endparkour").setExecutor(new ParallelEndParkour());
+        puPlugin.getCommand("leaderboard").setExecutor(new ParallelLeaderboard());
 
         jsonPath = Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/parkour.json");
 
@@ -112,6 +118,32 @@ public class ParallelParkour extends ParallelModule {
     @Override
     public @NotNull String getName() {
         return "ParallelParkour";
+    }
+
+
+    public List<ParkourTime> getTopTimesFor(String course, int amount) {
+        List<ParkourTime> times = new ArrayList<>();
+        if (!parkourNameExists(course)) {
+            ParallelUtils.log(Level.SEVERE, "Tried to get top times for a course that does not exist: " + course);
+            return times;
+        }
+        try (Connection dbConn = puPlugin.getDbConn()) {
+            if (dbConn == null) throw new SQLException("Unable to establish connection!");
+            PreparedStatement statement = dbConn.prepareStatement(
+                    "SELECT * FROM Leaderboard WHERE Course = ? ORDER BY Time ASC LIMIT ?"
+            );
+            statement.setQueryTimeout(30);
+            statement.setString(1, course);
+            statement.setInt(2, amount);
+            ResultSet result= statement.executeQuery();
+            while (result.next()) {
+                times.add(new ParkourTime(UUID.fromString(result.getString("UUID")), result.getLong("Time")));
+            }
+            statement.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return times;
     }
 
     public long getBestTimeFor(Player player, ParkourLayout layout) {
@@ -139,8 +171,8 @@ public class ParallelParkour extends ParallelModule {
                     "INSERT INTO Leaderboard (UUID, Course, Time) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE Time = ?");
             statement.setString(1, player.getUniqueId().toString());
             statement.setString(2, pp.getLayout().name());
-            statement.setLong(3, pp.endTime);
-            statement.setLong(4, pp.endTime);
+            statement.setLong(3, pp.getFinishTime());
+            statement.setLong(4, pp.getFinishTime());
             statement.execute();
             conn.commit();
             statement.close();
@@ -186,10 +218,7 @@ public class ParallelParkour extends ParallelModule {
     }
 
     public void endParkourFor(Player player) {
-        UUID uuid = player.getUniqueId();
-        ParkourPlayer pp = playersInParkour.get(uuid);
-        saveBestTimeFor(player, pp);
-        playersInParkour.remove(uuid);
+        playersInParkour.remove(player.getUniqueId());
     }
 
     public void cancelParkourRunFor(Player player) {
@@ -225,9 +254,9 @@ public class ParallelParkour extends ParallelModule {
                         ParallelUtils.log(Level.SEVERE, "Parkour course " + name + " has a position set in an unknown world: " + w);
                         return;
                     }
-                    int x = (int)position.get("x");
-                    int y = (int)position.get("y");
-                    int z = (int)position.get("z");
+                    int x = ((Long)position.get("x")).intValue();
+                    int y = ((Long)position.get("y")).intValue();
+                    int z = ((Long)position.get("z")).intValue();
                     positions.add(new Location(world, x, y, z));
                 }
                 parkourLayouts.put(name, new ParkourLayout(name, positions));
@@ -261,10 +290,14 @@ public class ParallelParkour extends ParallelModule {
         }
         try {
             Files.writeString(jsonPath, json.toJSONString());
-            ParallelUtils.log(Level.INFO, "Saved " + parkourLayouts + " parkour layouts.");
+            ParallelUtils.log(Level.INFO, "Saved " + parkourLayouts.size() + " parkour layouts.");
         } catch (IOException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to save parkour layouts!\n" + e.getMessage());
         }
+    }
+
+    public String getTimeString(long time) {
+        return timerFormat.format(new Date(time));
     }
 
     public boolean parkourNameExists(String name) { return parkourLayouts.get(name) != null; }

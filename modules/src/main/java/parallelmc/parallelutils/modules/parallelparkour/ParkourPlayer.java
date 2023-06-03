@@ -2,19 +2,18 @@ package parallelmc.parallelutils.modules.parallelparkour;
 
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 public class ParkourPlayer {
     private final Player player;
     private final BossBar bossBar;
     private final long startTime;
-    public long endTime;
+    private long endTime;
     // TODO: implement best time
     private long bestTime;
     private int currentCheckpoint;
@@ -23,26 +22,36 @@ public class ParkourPlayer {
 
     private BukkitTask runnable;
 
-    private static final SimpleDateFormat timerFormat = new SimpleDateFormat("mm:ss:SS");
-
     public ParkourPlayer(Player player, ParkourLayout layout) {
         this.player = player;
         this.layout = layout;
-        this.bossBar = createBossbar();
         this.currentCheckpoint = 1;
         this.lastCheckpoint = layout.positions().size();
+        this.bossBar = createBossbar();
         this.startTime = System.currentTimeMillis();
         this.endTime = -1;
         start();
     }
 
     private void start() {
+        // TODO: these database calls are really slow. Probably want to cache times on startup
         ParallelChat.sendParallelMessageTo(player, "Starting parkour course: " + layout.name());
+        var topTime = ParallelParkour.get().getTopTimesFor(layout.name(), 1);
+        if (topTime.size() == 0) {
+            ParallelChat.sendParallelMessageTo(player, "Top Time: None");
+        }
+        else {
+            ParkourTime time = topTime.get(0);
+            OfflinePlayer p = Bukkit.getOfflinePlayer(time.player());
+            ParallelChat.sendParallelMessageTo(player, String.format("Top Time: %s by %s",
+                    ParallelParkour.get().getTimeString(time.time()), p.getName()));
+        }
         this.bestTime = ParallelParkour.get().getBestTimeFor(player, layout);
         if (bestTime == 0)
             ParallelChat.sendParallelMessageTo(player, "Your Best Time: None");
         else
-            ParallelChat.sendParallelMessageTo(player, String.format("Your Best Time: %s", getTimeString(bestTime)));
+            ParallelChat.sendParallelMessageTo(player, String.format("Your Best Time: %s",
+                    ParallelParkour.get().getTimeString(bestTime)));
         showBossbar();
         runnable = new BukkitRunnable() {
             @Override
@@ -55,9 +64,11 @@ public class ParkourPlayer {
     public void end() {
         hideBossbar();
         this.endTime = System.currentTimeMillis();
-        ParallelChat.sendParallelMessageTo(player, String.format("You finished the course in: %s", getTimeString()));
-        if (this.bestTime == 0 || this.endTime < this.bestTime) {
+        ParallelChat.sendParallelMessageTo(player, String.format("You finished the course in: %s",
+                ParallelParkour.get().getTimeString(getFinishTime())));
+        if (this.bestTime == 0 || getFinishTime() < this.bestTime) {
             ParallelChat.sendParallelMessageTo(player, "New Personal Record!");
+            ParallelParkour.get().saveBestTimeFor(player, this);
         }
         runnable.cancel();
     }
@@ -84,21 +95,13 @@ public class ParkourPlayer {
                 Component.text(String.format("Checkpoint %d/%d | Time: %s",
                         this.currentCheckpoint,
                         this.lastCheckpoint,
-                        getTimeString()))
+                        ParallelParkour.get().getTimeString(System.currentTimeMillis() - startTime)))
         );
     }
 
-    private String getTimeString(long time) {
-        return timerFormat.format(new Date(time));
-    }
-
-    private String getTimeString() {
-        long now = System.currentTimeMillis();
-        return timerFormat.format(new Date(now - startTime));
-    }
-
     public void updateCheckpoint() {
-        ParallelChat.sendParallelMessageTo(player, String.format("Reached Checkpoint %d in %s!", this.currentCheckpoint, getTimeString()));
+        ParallelChat.sendParallelMessageTo(player, String.format("Reached Checkpoint %d in %s!", this.currentCheckpoint,
+                ParallelParkour.get().getTimeString(System.currentTimeMillis() - startTime)));
         this.currentCheckpoint++;
         this.bossBar.progress((float)this.currentCheckpoint / this.lastCheckpoint);
     }
@@ -116,4 +119,8 @@ public class ParkourPlayer {
     public int getCurrentCheckpoint() { return currentCheckpoint; }
 
     public int getLastCheckpoint() { return lastCheckpoint; }
+
+    public long getFinishTime() {
+        return this.endTime - this.startTime;
+    }
 }
