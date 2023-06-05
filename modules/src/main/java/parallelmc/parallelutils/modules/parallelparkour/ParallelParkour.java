@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.Date;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class ParallelParkour extends ParallelModule {
     private ParallelUtils puPlugin;
@@ -38,6 +39,7 @@ public class ParallelParkour extends ParallelModule {
     private final HashMap<String, ParkourLayout> parkourLayouts = new HashMap<>();
     private final HashMap<UUID, ParkourPlayer> playersInParkour = new HashMap<>();
     private final HashMap<UUID, ParkourLayout> creatingParkour = new HashMap<>();
+    private final HashMap<UUID, List<ParkourTime>> leaderboardCache = new HashMap<>();
 
     private static Path jsonPath;
 
@@ -78,12 +80,13 @@ public class ParallelParkour extends ParallelModule {
             statement.execute("""
                     create table if not exists Leaderboard
                     (
+                        Id          int          not null auto_increment,
                         UUID        varchar(36)  not null,
                         Course      varchar(256) not null,
                         Time        bigint       not null,
-                        constraint Leaderboard_UUID_index
-                            unique(UUID),
-                        PRIMARY KEY(UUID)
+                        constraint Leaderboard_Id_uindex
+                            unique (Id),
+                        PRIMARY KEY (Id)
                     );""");
             conn.commit();
             statement.close();
@@ -101,12 +104,14 @@ public class ParallelParkour extends ParallelModule {
         jsonPath = Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/parkour.json");
 
         loadParkourFromFile();
+        cacheLeaderboard();
 
         Instance = this;
     }
 
     @Override
     public void onDisable() {
+        uploadLeaderboardCache();
         saveParkourToFile();
     }
 
@@ -120,65 +125,86 @@ public class ParallelParkour extends ParallelModule {
         return "ParallelParkour";
     }
 
-
-    public List<ParkourTime> getTopTimesFor(String course, int amount) {
-        List<ParkourTime> times = new ArrayList<>();
-        if (!parkourNameExists(course)) {
-            ParallelUtils.log(Level.SEVERE, "Tried to get top times for a course that does not exist: " + course);
-            return times;
-        }
+    private void cacheLeaderboard() {
         try (Connection dbConn = puPlugin.getDbConn()) {
             if (dbConn == null) throw new SQLException("Unable to establish connection!");
-            PreparedStatement statement = dbConn.prepareStatement(
-                    "SELECT * FROM Leaderboard WHERE Course = ? ORDER BY Time ASC LIMIT ?"
-            );
-            statement.setQueryTimeout(30);
-            statement.setString(1, course);
-            statement.setInt(2, amount);
-            ResultSet result= statement.executeQuery();
+            Statement statement = dbConn.createStatement();
+            statement.setQueryTimeout(60);
+            ResultSet result = statement.executeQuery("SELECT * FROM Leaderboard");
             while (result.next()) {
-                times.add(new ParkourTime(UUID.fromString(result.getString("UUID")), result.getLong("Time")));
+                UUID uuid = UUID.fromString(result.getString("UUID"));
+                ParkourTime time = new ParkourTime(uuid, result.getString("Course"), result.getLong("Time"));
+                if (leaderboardCache.containsKey(uuid)) {
+                    leaderboardCache.get(uuid).add(time);
+                }
+                else {
+                    leaderboardCache.put(uuid, List.of(time));
+                }
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void uploadLeaderboardCache() {
+        try (Connection dbConn = puPlugin.getDbConn()) {
+            if (dbConn == null) throw new SQLException("Unable to establish connection!");
+            PreparedStatement statement = dbConn.prepareStatement("REPLACE INTO Leaderboard (UUID, Course, Time) VALUES (?, ?, ?)");
+            statement.setQueryTimeout(60);
+            leaderboardCache.forEach((u, v) -> {
+                v.forEach((t) -> {
+                    try {
+                        statement.setString(1, t.player().toString());
+                        statement.setString(2, t.course());
+                        statement.setLong(3, t.time());
+                        statement.addBatch();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                });
+            });
+            statement.executeBatch();
+            dbConn.commit();
             statement.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return times;
+    }
+
+    public List<ParkourTime> getTopTimesFor(String course, int amount) {
+        if (amount < 1 || amount > leaderboardCache.size()) {
+            ParallelUtils.log(Level.SEVERE, "Illegal amount passed into getTopTimesFor: " + amount);
+            return new ArrayList<>();
+        }
+        // thanks chatgpt
+        return leaderboardCache.values().stream()
+                .flatMap(List::stream)
+                .filter(x -> x.course().equals(course))
+                .sorted(Comparator.comparingLong(ParkourTime::time))
+                .toList()
+                .subList(0, amount);
     }
 
     public long getBestTimeFor(Player player, ParkourLayout layout) {
-        try (Connection conn = puPlugin.getDbConn()) {
-            if (conn == null) throw new SQLException("Unable to establish connection!");
-            PreparedStatement statement = conn.prepareStatement("SELECT * FROM Leaderboard WHERE UUID = ? AND Course = ?");
-            statement.setString(1, player.getUniqueId().toString());
-            statement.setString(2, layout.name());
-            ResultSet result = statement.executeQuery();
-            if (result.next()) {
-                long time = result.getLong("Time");
-                statement.close();
-                return time;
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return 0;
+        List<ParkourTime> times = leaderboardCache.get(player.getUniqueId());
+        if (times == null)
+            return 0L;
+        var time = times.stream()
+                .filter(x -> x.course().equals(layout.name()))
+                .min(Comparator.comparingLong(ParkourTime::time));
+        return time.map(ParkourTime::time).orElse(0L);
     }
 
     public void saveBestTimeFor(Player player, ParkourPlayer pp) {
-        try (Connection conn = puPlugin.getDbConn()) {
-            if (conn == null) throw new SQLException("Unable to establish connection!");
-            PreparedStatement statement = conn.prepareStatement(
-                    "INSERT INTO Leaderboard (UUID, Course, Time) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE Time = ?");
-            statement.setString(1, player.getUniqueId().toString());
-            statement.setString(2, pp.getLayout().name());
-            statement.setLong(3, pp.getFinishTime());
-            statement.setLong(4, pp.getFinishTime());
-            statement.execute();
-            conn.commit();
-            statement.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        UUID uuid = player.getUniqueId();
+        List<ParkourTime> times = leaderboardCache.computeIfAbsent(uuid, k -> new ArrayList<>());
+        // since ParkourTime is a record, remove all existing times for the map and re-add the best one
+        // this function is only run if the player got a new best time, so it should only replace the one existing time
+        times = times.stream()
+                .filter(x -> !x.course().equals(pp.getLayout().name()))
+                .collect(Collectors.toList());
+        times.add(new ParkourTime(player.getUniqueId(), pp.getLayout().name(), pp.getFinishTime()));
+        leaderboardCache.put(uuid, times);
     }
 
     public @Nullable ParkourLayout getParkourCreation(Player player) {
