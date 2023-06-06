@@ -34,7 +34,6 @@ public class ParkourPlayer {
     }
 
     private void start() {
-        // TODO: these database calls are really slow. Probably want to cache times on startup
         ParallelChat.sendParallelMessageTo(player, "Starting parkour course: " + layout.name());
         var topTime = ParallelParkour.get().getTopTimesFor(layout.name(), 1);
         if (topTime.size() == 0) {
