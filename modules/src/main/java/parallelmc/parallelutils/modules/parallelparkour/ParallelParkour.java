@@ -149,14 +149,30 @@ public class ParallelParkour extends ParallelModule {
     private void uploadLeaderboardCache() {
         try (Connection dbConn = puPlugin.getDbConn()) {
             if (dbConn == null) throw new SQLException("Unable to establish connection!");
-            PreparedStatement statement = dbConn.prepareStatement("REPLACE INTO Leaderboard (UUID, Course, Time) VALUES (?, ?, ?)");
+            PreparedStatement statement = dbConn.prepareStatement("""
+                    IF EXISTS (SELECT 1 FROM Leaderboard WHERE UUID = ? AND Course = ?)
+                        BEGIN
+                            UPDATE Leaderboard SET Time = ? WHERE UUID = ? AND Course = ?
+                        END
+                    ELSE
+                        BEGIN
+                            INSERT INTO Leaderboard (UUID, Course, Time) VALUES (?, ?, ?)
+                        END""");
             statement.setQueryTimeout(60);
             leaderboardCache.forEach((u, v) -> {
                 v.forEach((t) -> {
                     try {
-                        statement.setString(1, t.player().toString());
-                        statement.setString(2, t.course());
-                        statement.setLong(3, t.time());
+                        String p = t.player().toString();
+                        String c = t.course();
+                        long l = t.time();
+                        statement.setString(1, p);
+                        statement.setString(2, c);
+                        statement.setLong(3, l);
+                        statement.setString(4, p);
+                        statement.setString(5, c);
+                        statement.setString(6, p);
+                        statement.setString(7, c);
+                        statement.setLong(8, l);
                         statement.addBatch();
                     } catch (SQLException e) {
                         e.printStackTrace();
@@ -172,7 +188,7 @@ public class ParallelParkour extends ParallelModule {
     }
 
     public List<ParkourTime> getTopTimesFor(String course, int amount) {
-        if (amount < 1 || amount > leaderboardCache.size()) {
+        if (amount < 1) {
             ParallelUtils.log(Level.SEVERE, "Illegal amount passed into getTopTimesFor: " + amount);
             return new ArrayList<>();
         }
@@ -182,7 +198,7 @@ public class ParallelParkour extends ParallelModule {
                 .filter(x -> x.course().equals(course))
                 .sorted(Comparator.comparingLong(ParkourTime::time))
                 .toList()
-                .subList(0, amount);
+                .subList(0, Math.min(amount, leaderboardCache.size()));
     }
 
     public long getBestTimeFor(Player player, ParkourLayout layout) {
