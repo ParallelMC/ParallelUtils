@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.*;
-import org.bukkit.craftbukkit.v1_19_R1.command.ServerCommandSender;
+import org.bukkit.craftbukkit.v1_20_R1.command.ServerCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -220,7 +220,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 	 */
 	public static List<String> getTargetedBlockTabHelper(@NotNull Player player, int depth) {
 		ArrayList<String> list = new ArrayList<>();
-		Block targetedBlock = player.getTargetBlock(5);
+		Block targetedBlock = player.getTargetBlockExact(5);
 
 		if (targetedBlock != null && targetedBlock.isSolid()) {
 			// Autofill targeted coords
