@@ -1,8 +1,10 @@
 package parallelmc.parallelutils.modules.parallelparkour.events;
 
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -38,6 +40,18 @@ public class EndParkourEvents implements Listener {
         if (p != null) {
             p.cancel();
             ParallelParkour.get().endParkourFor(player);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerElytra(EntityToggleGlideEvent event) {
+        if (event.getEntityType() == EntityType.PLAYER) {
+            Player player = (Player)event.getEntity();
+            ParkourPlayer p = ParallelParkour.get().getParkourPlayer(player);
+            if (p != null) {
+                p.cancel();
+                ParallelParkour.get().endParkourFor(player);
+            }
         }
     }
 }
