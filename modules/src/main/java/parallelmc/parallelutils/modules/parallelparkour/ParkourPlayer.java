@@ -14,7 +14,6 @@ public class ParkourPlayer {
     private final BossBar bossBar;
     private final long startTime;
     private long endTime;
-    // TODO: implement best time
     private long bestTime;
     private int currentCheckpoint;
     private final int lastCheckpoint;

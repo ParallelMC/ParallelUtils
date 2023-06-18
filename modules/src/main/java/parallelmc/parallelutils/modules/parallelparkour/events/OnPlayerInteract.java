@@ -8,7 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.parallelparkour.ParallelParkour;
 import parallelmc.parallelutils.modules.parallelparkour.ParkourLayout;
 import parallelmc.parallelutils.modules.parallelparkour.ParkourPlayer;
@@ -16,7 +15,6 @@ import parallelmc.parallelutils.modules.parallelparkour.ParkourPlayer;
 public class OnPlayerInteract implements Listener {
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
-        // TODO: prevent spam from player standing still on a pressure plate
         if (event.getAction() == Action.PHYSICAL) {
             Block block = event.getClickedBlock();
             Player player = event.getPlayer();
@@ -34,8 +32,6 @@ public class OnPlayerInteract implements Listener {
                                 pp.end();
                                 ParallelParkour.get().endParkourFor(player);
                             }
-                        } else {
-                            ParallelChat.sendParallelMessageTo(player, "You already visited this checkpoint!");
                         }
                     } else {
                         ParkourLayout layout = ParallelParkour.get().getParkourStartingAt(pos);

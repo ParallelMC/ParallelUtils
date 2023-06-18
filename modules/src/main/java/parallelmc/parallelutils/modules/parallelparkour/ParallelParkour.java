@@ -19,6 +19,7 @@ import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelCreateParkour;
 import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelEndParkour;
 import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelLeaderboard;
+import parallelmc.parallelutils.modules.parallelparkour.events.EndParkourEvents;
 import parallelmc.parallelutils.modules.parallelparkour.events.OnBlockPlace;
 import parallelmc.parallelutils.modules.parallelparkour.events.OnPlayerInteract;
 
@@ -96,6 +97,7 @@ public class ParallelParkour extends ParallelModule {
 
         manager.registerEvents(new OnPlayerInteract(), puPlugin);
         manager.registerEvents(new OnBlockPlace(), puPlugin);
+        manager.registerEvents(new EndParkourEvents(), puPlugin);
 
         puPlugin.getCommand("createparkour").setExecutor(new ParallelCreateParkour());
         puPlugin.getCommand("endparkour").setExecutor(new ParallelEndParkour());
@@ -221,6 +223,16 @@ public class ParallelParkour extends ParallelModule {
                 .collect(Collectors.toList());
         times.add(new ParkourTime(player.getUniqueId(), pp.getLayout().name(), pp.getFinishTime()));
         leaderboardCache.put(uuid, times);
+        List<ParkourTime> leaderboard = getTopTimesFor(pp.getLayout().name(), 1);
+        if (leaderboard.size() > 0) {
+            ParkourTime best = leaderboard.get(0);
+            if (best.time() == pp.getFinishTime()) {
+                puPlugin.getServer().getOnlinePlayers().forEach(x -> {
+                    ParallelChat.sendParallelMessageTo(x, String.format("%s just set a new speedrun world record on %s with a time of %s!",
+                            player.getName(), pp.getLayout().name(), getTimeString(pp.getFinishTime())));
+                });
+            }
+        }
     }
 
     public @Nullable ParkourLayout getParkourCreation(Player player) {
