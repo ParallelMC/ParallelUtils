@@ -2,12 +2,17 @@ package parallelmc.parallelutils.modules.parallelparkour;
 
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
+
+import javax.annotation.Nullable;
 
 public class ParkourPlayer {
     private final Player player;
@@ -33,23 +38,24 @@ public class ParkourPlayer {
     }
 
     private void start() {
-        ParallelChat.sendParallelMessageTo(player, "Starting parkour course: " + layout.name());
+        ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize("<gold>Starting course: <yellow>" + layout.name()));
         var topTime = ParallelParkour.get().getTopTimesFor(layout.name(), 1);
         if (topTime.size() == 0) {
-            ParallelChat.sendParallelMessageTo(player, "Top Time: None");
+            ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize("<gold>Top Time: <yellow>None"));
         }
         else {
             ParkourTime time = topTime.get(0);
             OfflinePlayer p = Bukkit.getOfflinePlayer(time.player());
-            ParallelChat.sendParallelMessageTo(player, String.format("Top Time: %s by %s",
+            Component msg = MiniMessage.miniMessage().deserialize(String.format("<gold>Top Time: <green>%s <yellow>by %s",
                     ParallelParkour.get().getTimeString(time.time()), p.getName()));
+            ParallelChat.sendParallelMessageTo(player, msg);
         }
         this.bestTime = ParallelParkour.get().getBestTimeFor(player, layout);
         if (bestTime == 0)
-            ParallelChat.sendParallelMessageTo(player, "Your Best Time: None");
+            ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize("<gold>Your Best Time: <yellow>None"));
         else
-            ParallelChat.sendParallelMessageTo(player, String.format("Your Best Time: %s",
-                    ParallelParkour.get().getTimeString(bestTime)));
+            ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize(String.format("<gold>Your Best Time: <green>%s",
+                    ParallelParkour.get().getTimeString(bestTime))));
         showBossbar();
         runnable = new BukkitRunnable() {
             @Override
@@ -62,26 +68,29 @@ public class ParkourPlayer {
     public void end() {
         hideBossbar();
         this.endTime = System.currentTimeMillis();
-        ParallelChat.sendParallelMessageTo(player, String.format("You finished the course in: %s",
-                ParallelParkour.get().getTimeString(getFinishTime())));
+        ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize(String.format("<gold>You finished the course in: <green>%s",
+                ParallelParkour.get().getTimeString(getFinishTime()))));
         if (this.bestTime == 0 || getFinishTime() < this.bestTime) {
-            ParallelChat.sendParallelMessageTo(player, "New Personal Record!");
+            ParallelChat.sendParallelMessageTo(player, Component.text("New Personal Record!", NamedTextColor.YELLOW));
             ParallelParkour.get().saveBestTimeFor(player, this);
         }
         runnable.cancel();
     }
 
-    public void cancel() {
+    public void cancel(@Nullable String reason) {
         if (runnable != null) {
             runnable.cancel();
             hideBossbar();
-            ParallelChat.sendParallelMessageTo(player, "You ended the parkour early. Your time will not be saved!");
+            ParallelChat.sendParallelMessageTo(player, Component.text("You ended the parkour early. Your time will not be saved!", NamedTextColor.RED));
+            if (reason != null) {
+                ParallelChat.sendParallelMessageTo(player, Component.text("Reason: " + reason, NamedTextColor.RED));
+            }
         }
     }
 
     private BossBar createBossbar() {
         return BossBar.bossBar(
-                Component.text(String.format("Checkpoint %d/%d | Time: 00:00:00", 1, lastCheckpoint)),
+                Component.text(String.format("Checkpoint %d/%d | Time: 00:00:00", 1, lastCheckpoint), NamedTextColor.GREEN, TextDecoration.BOLD),
                 1f / lastCheckpoint,
                 BossBar.Color.RED,
                 BossBar.Overlay.PROGRESS
@@ -93,13 +102,15 @@ public class ParkourPlayer {
                 Component.text(String.format("Checkpoint %d/%d | Time: %s",
                         this.currentCheckpoint,
                         this.lastCheckpoint,
-                        ParallelParkour.get().getTimeString(System.currentTimeMillis() - startTime)))
+                        ParallelParkour.get().getTimeString(System.currentTimeMillis() - startTime)),
+                        NamedTextColor.GREEN, TextDecoration.BOLD)
         );
     }
 
     public void updateCheckpoint() {
-        ParallelChat.sendParallelMessageTo(player, String.format("Reached Checkpoint %d in %s!", this.currentCheckpoint,
+        Component msg = MiniMessage.miniMessage().deserialize(String.format("<gold>Reached checkpoint <yellow>%d <gold>in <green>%s!", this.currentCheckpoint,
                 ParallelParkour.get().getTimeString(System.currentTimeMillis() - startTime)));
+        ParallelChat.sendParallelMessageTo(player, msg);
         this.currentCheckpoint++;
         this.bossBar.progress((float)this.currentCheckpoint / this.lastCheckpoint);
     }

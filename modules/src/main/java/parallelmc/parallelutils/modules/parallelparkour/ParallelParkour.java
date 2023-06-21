@@ -1,5 +1,7 @@
 package parallelmc.parallelutils.modules.parallelparkour;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -227,9 +229,10 @@ public class ParallelParkour extends ParallelModule {
         if (leaderboard.size() > 0) {
             ParkourTime best = leaderboard.get(0);
             if (best.time() == pp.getFinishTime()) {
+                Component msg = MiniMessage.miniMessage().deserialize(String.format("<gold><bold>%s</bold><green> just set a new speedrun world record on <gold><bold>%s</bold><green> with a time of <gold><bold>%s!",
+                        player.getName(), pp.getLayout().name(), getTimeString(pp.getFinishTime())));
                 puPlugin.getServer().getOnlinePlayers().forEach(x -> {
-                    ParallelChat.sendParallelMessageTo(x, String.format("%s just set a new speedrun world record on %s with a time of %s!",
-                            player.getName(), pp.getLayout().name(), getTimeString(pp.getFinishTime())));
+                    ParallelChat.sendParallelMessageTo(x, msg);
                 });
             }
         }
@@ -282,7 +285,7 @@ public class ParallelParkour extends ParallelModule {
             ParallelChat.sendParallelMessageTo(player, "You are not in a parkour course right now!");
             return;
         }
-        pp.cancel();
+        pp.cancel(null);
         playersInParkour.remove(uuid);
     }
 
