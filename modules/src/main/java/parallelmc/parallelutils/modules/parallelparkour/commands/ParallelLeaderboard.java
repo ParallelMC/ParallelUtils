@@ -1,5 +1,7 @@
 package parallelmc.parallelutils.modules.parallelparkour.commands;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -24,12 +26,12 @@ public class ParallelLeaderboard implements CommandExecutor {
                 ParallelChat.sendParallelMessageTo(player, "A parkour with the name " + args[0] + " does not exist!");
             }
             List<ParkourTime> times = ParallelParkour.get().getTopTimesFor(args[0], 10);
-            ParallelChat.sendParallelMessageTo(player, "Leaderboard for Parkour Course: " + args[0]);
+            ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize("<u><gold>Speedrun Leaderboard for: <yellow>" + args[0]));
             for (int i = 0; i < Math.min(times.size(), 10); i++) {
                 ParkourTime time = times.get(i);
                 OfflinePlayer p = Bukkit.getOfflinePlayer(time.player());
-                ParallelChat.sendParallelMessageTo(player, String.format("%d. %s by %s", i + 1,
-                        ParallelParkour.get().getTimeString(time.time()), p.getName()));
+                Component msg = MiniMessage.miniMessage().deserialize(String.format("<gold>%d. <green>%s <yellow>by %s", i+1, ParallelParkour.get().getTimeString(time.time()), p.getName()));
+                ParallelChat.sendParallelMessageTo(player, msg);
             }
         }
         return true;

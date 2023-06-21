@@ -18,7 +18,7 @@ public class EndParkourEvents implements Listener {
         Player player = event.getPlayer();
         ParkourPlayer p = ParallelParkour.get().getParkourPlayer(player);
         if (p != null) {
-            p.cancel();
+            p.cancel("You left the game.");
             ParallelParkour.get().endParkourFor(player);
         }
     }
@@ -28,7 +28,7 @@ public class EndParkourEvents implements Listener {
         Player player = event.getPlayer();
         ParkourPlayer p = ParallelParkour.get().getParkourPlayer(player);
         if (p != null) {
-            p.cancel();
+            p.cancel("Died during the run.");
             ParallelParkour.get().endParkourFor(player);
         }
     }
@@ -38,7 +38,7 @@ public class EndParkourEvents implements Listener {
         Player player = event.getPlayer();
         ParkourPlayer p = ParallelParkour.get().getParkourPlayer(player);
         if (p != null) {
-            p.cancel();
+            p.cancel("Teleporting during a run is not allowed.");
             ParallelParkour.get().endParkourFor(player);
         }
     }
@@ -49,7 +49,7 @@ public class EndParkourEvents implements Listener {
             Player player = (Player)event.getEntity();
             ParkourPlayer p = ParallelParkour.get().getParkourPlayer(player);
             if (p != null) {
-                p.cancel();
+                p.cancel("Using an elytra during a run is not allowed.");
                 ParallelParkour.get().endParkourFor(player);
             }
         }
