@@ -18,8 +18,9 @@ import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
-import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelCreateParkour;
-import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelEndParkour;
+import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelCreateCourse;
+import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelDeleteCourse;
+import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelEndRun;
 import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelLeaderboard;
 import parallelmc.parallelutils.modules.parallelparkour.events.EndParkourEvents;
 import parallelmc.parallelutils.modules.parallelparkour.events.OnBlockPlace;
@@ -101,8 +102,9 @@ public class ParallelParkour extends ParallelModule {
         manager.registerEvents(new OnBlockPlace(), puPlugin);
         manager.registerEvents(new EndParkourEvents(), puPlugin);
 
-        puPlugin.getCommand("createparkour").setExecutor(new ParallelCreateParkour());
-        puPlugin.getCommand("endparkour").setExecutor(new ParallelEndParkour());
+        puPlugin.getCommand("createcourse").setExecutor(new ParallelCreateCourse());
+        puPlugin.getCommand("deletecourse").setExecutor(new ParallelDeleteCourse());
+        puPlugin.getCommand("endrun").setExecutor(new ParallelEndRun());
         puPlugin.getCommand("leaderboard").setExecutor(new ParallelLeaderboard());
 
         jsonPath = Path.of(puPlugin.getDataFolder().getAbsolutePath() + "/parkour.json");
@@ -229,7 +231,7 @@ public class ParallelParkour extends ParallelModule {
         if (leaderboard.size() > 0) {
             ParkourTime best = leaderboard.get(0);
             if (best.time() == pp.getFinishTime()) {
-                Component msg = MiniMessage.miniMessage().deserialize(String.format("<gold><bold>%s</bold><green> just set a new speedrun world record on <gold><bold>%s</bold><green> with a time of <gold><bold>%s!",
+                Component msg = MiniMessage.miniMessage().deserialize(String.format("<yellow>%s<gold> just set a new speedrun world record on <yellow>%s<gold> with a time of <green>%s!",
                         player.getName(), pp.getLayout().name(), getTimeString(pp.getFinishTime())));
                 puPlugin.getServer().getOnlinePlayers().forEach(x -> {
                     ParallelChat.sendParallelMessageTo(x, msg);
@@ -242,8 +244,8 @@ public class ParallelParkour extends ParallelModule {
         return creatingParkour.get(player.getUniqueId());
     }
 
-    public void startCreatingParkour(Player player, String name) {
-        creatingParkour.put(player.getUniqueId(), new ParkourLayout(name, new ArrayList<>()));
+    public void startCreatingParkour(Player player, String name, boolean allowEffects) {
+        creatingParkour.put(player.getUniqueId(), new ParkourLayout(name, new ArrayList<>(), allowEffects));
     }
 
     public void saveParkourCreation(Player player) {
@@ -268,6 +270,10 @@ public class ParallelParkour extends ParallelModule {
                 return l;
         }
         return null;
+    }
+
+    public void deleteParkour(String name) {
+        parkourLayouts.remove(name);
     }
 
     public void startParkourFor(Player player, ParkourLayout layout) {
@@ -316,7 +322,8 @@ public class ParallelParkour extends ParallelModule {
                     int z = ((Long)position.get("z")).intValue();
                     positions.add(new Location(world, x, y, z));
                 }
-                parkourLayouts.put(name, new ParkourLayout(name, positions));
+                boolean effects = (boolean)json.get("allow_effects");
+                parkourLayouts.put(name, new ParkourLayout(name, positions, effects));
             }
             ParallelUtils.log(Level.INFO, "Loaded " + parkourLayouts.size() + " parkour layouts.");
         } catch (IOException e) {
@@ -343,6 +350,7 @@ public class ParallelParkour extends ParallelModule {
                positions.add(position);
             });
             entry.put("positions", positions);
+            entry.put("allow_effects", p.allowEffects());
             json.add(entry);
         }
         try {

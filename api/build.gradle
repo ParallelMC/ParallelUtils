@@ -234,17 +234,21 @@ bukkit {
             description = 'Toggles PVP on or off'
             usage = '/togglepvp'
         }
-        createparkour {
-            description = 'Begin creating a new parkour layout'
-            usage = '/createparkour (name)'
+        createcourse {
+            description = 'Begin creating a new course layout'
+            usage = '/createcourse (name)'
         }
-        endparkour {
-            description = 'Ends a parkour run early'
-            usage = '/endparkour'
+        deletecourse {
+            description = 'Deletes and existing course layout'
+            usage = '/deletecourse (name)'
+        }
+        endrun {
+            description = 'Ends a speedrun early'
+            usage = '/endrun'
         }
         leaderboard {
-            description = 'Shows the top scores for a parkour course'
-            usage = '/leaderboard (parkour name)'
+            description = 'Shows the top scores for a course'
+            usage = '/leaderboard (course name)'
         }
     }
 
@@ -285,8 +289,12 @@ bukkit {
             description = 'Gives access to deleting spawners.'
             setDefault('FALSE')
         }
-        'parallelutils.createparkour' {
-            description = 'Gives access to creating parkour layouts.'
+        'parallelutils.createcourse' {
+            description = 'Gives access to creating course layouts.'
+            setDefault('FALSE')
+        }
+        'parallelutils.deletecourse' {
+            description = 'Gives access to deleting course layouts.'
             setDefault('FALSE')
         }
         'parallelutils.give' {
