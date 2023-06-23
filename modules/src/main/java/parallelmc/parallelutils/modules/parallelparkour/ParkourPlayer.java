@@ -3,7 +3,6 @@ package parallelmc.parallelutils.modules.parallelparkour;
 import net.kyori.adventure.bossbar.BossBar;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -23,7 +22,6 @@ public class ParkourPlayer {
     private int currentCheckpoint;
     private final int lastCheckpoint;
     private final ParkourLayout layout;
-
     private BukkitTask runnable;
 
     public ParkourPlayer(Player player, ParkourLayout layout) {
@@ -38,7 +36,7 @@ public class ParkourPlayer {
     }
 
     private void start() {
-        ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize("<gold>Starting course: <yellow>" + layout.name()));
+        ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize("<gold>Starting Course: <yellow>" + layout.name()));
         var topTime = ParallelParkour.get().getTopTimesFor(layout.name(), 1);
         if (topTime.size() == 0) {
             ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize("<gold>Top Time: <yellow>None"));
@@ -56,6 +54,7 @@ public class ParkourPlayer {
         else
             ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize(String.format("<gold>Your Best Time: <green>%s",
                     ParallelParkour.get().getTimeString(bestTime))));
+        ParallelChat.sendParallelMessageTo(player, Component.text("Note: You can use /endrun to end your run early.", NamedTextColor.YELLOW));
         showBossbar();
         runnable = new BukkitRunnable() {
             @Override
@@ -90,9 +89,9 @@ public class ParkourPlayer {
 
     private BossBar createBossbar() {
         return BossBar.bossBar(
-                Component.text(String.format("Checkpoint %d/%d | Time: 00:00:00", 1, lastCheckpoint), NamedTextColor.GREEN, TextDecoration.BOLD),
+                Component.text(String.format("Checkpoint %d/%d | Time: 00:00:00", 1, lastCheckpoint), NamedTextColor.GREEN),
                 1f / lastCheckpoint,
-                BossBar.Color.RED,
+                BossBar.Color.YELLOW,
                 BossBar.Overlay.PROGRESS
         );
     }
@@ -103,7 +102,7 @@ public class ParkourPlayer {
                         this.currentCheckpoint,
                         this.lastCheckpoint,
                         ParallelParkour.get().getTimeString(System.currentTimeMillis() - startTime)),
-                        NamedTextColor.GREEN, TextDecoration.BOLD)
+                        NamedTextColor.GREEN)
         );
     }
 

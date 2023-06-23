@@ -26,7 +26,7 @@ public class ParallelLeaderboard implements CommandExecutor {
                 ParallelChat.sendParallelMessageTo(player, "A parkour with the name " + args[0] + " does not exist!");
             }
             List<ParkourTime> times = ParallelParkour.get().getTopTimesFor(args[0], 10);
-            ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize("<u><gold>Speedrun Leaderboard for: <yellow>" + args[0]));
+            ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize("<gold>Speedrun Leaderboard for: <yellow>" + args[0]));
             for (int i = 0; i < Math.min(times.size(), 10); i++) {
                 ParkourTime time = times.get(i);
                 OfflinePlayer p = Bukkit.getOfflinePlayer(time.player());

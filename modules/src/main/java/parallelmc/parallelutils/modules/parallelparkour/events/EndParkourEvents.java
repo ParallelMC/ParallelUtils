@@ -12,7 +12,6 @@ import parallelmc.parallelutils.modules.parallelparkour.ParallelParkour;
 import parallelmc.parallelutils.modules.parallelparkour.ParkourPlayer;
 
 public class EndParkourEvents implements Listener {
-    // TODO: Implement: leaving, death, etc.
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
