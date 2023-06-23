@@ -361,6 +361,8 @@ public class ParallelParkour extends ParallelModule {
         }
     }
 
+    public List<String> getAllLayoutNames() { return parkourLayouts.keySet().stream().toList(); }
+
     public String getTimeString(long time) {
         return timerFormat.format(new Date(time));
     }
