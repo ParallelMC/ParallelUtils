@@ -34,7 +34,11 @@ public class OnPlayerInteract implements Listener {
                             ParallelParkour.get().endParkourFor(player);
                             return;
                         }
-                        Location next = pp.getLayout().positions().get(current);
+                        if (pos.equals(layout.positions().get(0))) {
+                            pp.restart();
+                            return;
+                        }
+                        Location next = layout.positions().get(current);
                         if (pos.equals(next)) {
                             pp.updateCheckpoint();
                             if (pp.getCurrentCheckpoint() == pp.getLastCheckpoint()) {
