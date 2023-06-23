@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
 public class ParkourPlayer {
     private final Player player;
     private final BossBar bossBar;
-    private final long startTime;
+    private long startTime;
     private long endTime;
     private long bestTime;
     private int currentCheckpoint;
@@ -62,6 +62,12 @@ public class ParkourPlayer {
                 updateBossbarText();
             }
         }.runTaskTimer(ParallelParkour.get().getPlugin(), 0, 1);
+    }
+
+    public void restart() {
+        this.startTime = System.currentTimeMillis();
+        this.currentCheckpoint = 1;
+        ParallelChat.sendParallelMessageTo(player, Component.text("Restarted the run!", NamedTextColor.YELLOW));
     }
 
     public void end() {
