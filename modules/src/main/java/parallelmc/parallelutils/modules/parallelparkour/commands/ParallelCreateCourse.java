@@ -16,7 +16,6 @@ import java.util.List;
 
 
 public class ParallelCreateCourse implements CommandExecutor, TabCompleter {
-    // TODO: make start pressure plate restart the run
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (commandSender instanceof Player player) {
