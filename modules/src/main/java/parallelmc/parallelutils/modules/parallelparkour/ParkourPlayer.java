@@ -67,6 +67,7 @@ public class ParkourPlayer {
     public void restart() {
         this.startTime = System.currentTimeMillis();
         this.currentCheckpoint = 1;
+        this.bossBar.progress((float)this.currentCheckpoint / this.lastCheckpoint);
         ParallelChat.sendParallelMessageTo(player, Component.text("Restarted the run!", NamedTextColor.YELLOW));
     }
 
