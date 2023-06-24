@@ -7,7 +7,7 @@ plugins {
 
 group = 'org.parallelmc'
 
-version = '3.4.0'
+version = '3.5.0'
 description = 'A set of utilities and features for use on the Parallel Minecraft server'
 
 java {
@@ -234,6 +234,22 @@ bukkit {
             description = 'Toggles PVP on or off'
             usage = '/togglepvp'
         }
+        createcourse {
+            description = 'Begin creating a new course layout'
+            usage = '/createcourse (name)'
+        }
+        deletecourse {
+            description = 'Deletes and existing course layout'
+            usage = '/deletecourse (name)'
+        }
+        endrun {
+            description = 'Ends a speedrun early'
+            usage = '/endrun'
+        }
+        leaderboard {
+            description = 'Shows the top scores for a course'
+            usage = '/leaderboard (course name)'
+        }
     }
 
     permissions {
@@ -271,6 +287,14 @@ bukkit {
         }
         'parallelutils.spawn.spawners.delete' {
             description = 'Gives access to deleting spawners.'
+            setDefault('FALSE')
+        }
+        'parallelutils.createcourse' {
+            description = 'Gives access to creating course layouts.'
+            setDefault('FALSE')
+        }
+        'parallelutils.deletecourse' {
+            description = 'Gives access to deleting course layouts.'
             setDefault('FALSE')
         }
         'parallelutils.give' {
