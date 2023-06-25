@@ -255,6 +255,7 @@ public class ParallelChat extends ParallelModule {
         puPlugin.getCommand("formats").setExecutor(new ParallelFormats());
         puPlugin.getCommand("dnd").setExecutor(new ParallelDoNotDisturb());
         puPlugin.getCommand("reloademojis").setExecutor(new ParallelReloadEmojis());
+        puPlugin.getCommand("emojis").setExecutor(new ParallelEmojis());
         puPlugin.getCommand("banword").setExecutor(new ParallelBanWord());
         puPlugin.getCommand("allowword").setExecutor(new ParallelAllowWord());
 
