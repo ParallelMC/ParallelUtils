@@ -26,7 +26,8 @@ public class ParallelLeaderboard implements CommandExecutor, TabCompleter {
             if (args.length == 0)
                 return false;
             if (!ParallelParkour.get().parkourNameExists(args[0])) {
-                ParallelChat.sendParallelMessageTo(player, "A parkour with the name " + args[0] + " does not exist!");
+                ParallelChat.sendParallelMessageTo(player, "A course with the name " + args[0] + " does not exist!");
+                return true;
             }
             List<ParkourTime> times = ParallelParkour.get().getTopTimesFor(args[0], 10);
             ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize("<gold>Speedrun Leaderboard for: <yellow>" + args[0]));

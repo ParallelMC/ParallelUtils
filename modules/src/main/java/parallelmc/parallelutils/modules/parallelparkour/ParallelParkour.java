@@ -156,14 +156,11 @@ public class ParallelParkour extends ParallelModule {
         try (Connection dbConn = puPlugin.getDbConn()) {
             if (dbConn == null) throw new SQLException("Unable to establish connection!");
             PreparedStatement statement = dbConn.prepareStatement("""
-                    IF EXISTS (SELECT 1 FROM Leaderboard WHERE UUID = ? AND Course = ?)
-                        BEGIN
-                            UPDATE Leaderboard SET Time = ? WHERE UUID = ? AND Course = ?
-                        END
+                    IF EXISTS (SELECT 1 FROM Leaderboard WHERE UUID = ? AND Course = ?) THEN
+                        UPDATE Leaderboard SET Time = ? WHERE UUID = ? AND Course = ?;
                     ELSE
-                        BEGIN
-                            INSERT INTO Leaderboard (UUID, Course, Time) VALUES (?, ?, ?)
-                        END""");
+                        INSERT INTO Leaderboard (UUID, Course, Time) VALUES (?, ?, ?);
+                    END IF;""");
             statement.setQueryTimeout(60);
             leaderboardCache.forEach((u, v) -> {
                 v.forEach((t) -> {
