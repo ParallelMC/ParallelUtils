@@ -7,7 +7,7 @@ plugins {
 
 group = 'org.parallelmc'
 
-version = '3.5.0'
+version = '3.5.1'
 description = 'A set of utilities and features for use on the Parallel Minecraft server'
 
 java {
@@ -213,6 +213,10 @@ bukkit {
         reloademojis {
             description = 'Reloads all emojis'
             usage = '/reloademojis'
+        }
+        emojis {
+            description = 'Lists all emojis'
+            usage = '/emojis'
         }
         banword {
             description = 'Adds a word to the banned words list'
