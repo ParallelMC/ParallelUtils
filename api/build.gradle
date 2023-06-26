@@ -214,6 +214,10 @@ bukkit {
             description = 'Reloads all emojis'
             usage = '/reloademojis'
         }
+        emojis {
+            description = 'Lists all emojis'
+            usage = '/emojis'
+        }
         banword {
             description = 'Adds a word to the banned words list'
             usage = '/banword (word)'
