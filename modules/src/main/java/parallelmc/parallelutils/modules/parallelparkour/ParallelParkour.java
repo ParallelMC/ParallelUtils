@@ -156,14 +156,11 @@ public class ParallelParkour extends ParallelModule {
         try (Connection dbConn = puPlugin.getDbConn()) {
             if (dbConn == null) throw new SQLException("Unable to establish connection!");
             PreparedStatement statement = dbConn.prepareStatement("""
-                    IF EXISTS (SELECT 1 FROM Leaderboard WHERE UUID = ? AND Course = ?)
-                        BEGIN
-                            UPDATE Leaderboard SET Time = ? WHERE UUID = ? AND Course = ?
-                        END
+                    IF EXISTS (SELECT 1 FROM Leaderboard WHERE UUID = ? AND Course = ?) THEN
+                        UPDATE Leaderboard SET Time = ? WHERE UUID = ? AND Course = ?;
                     ELSE
-                        BEGIN
-                            INSERT INTO Leaderboard (UUID, Course, Time) VALUES (?, ?, ?)
-                        END""");
+                        INSERT INTO Leaderboard (UUID, Course, Time) VALUES (?, ?, ?);
+                    END IF;""");
             statement.setQueryTimeout(60);
             leaderboardCache.forEach((u, v) -> {
                 v.forEach((t) -> {
@@ -199,12 +196,17 @@ public class ParallelParkour extends ParallelModule {
             return new ArrayList<>();
         }
         // thanks chatgpt
-        return leaderboardCache.values().stream()
+        // jk fuck you chatgpt
+        List<ParkourTime> filter = leaderboardCache.values().stream()
                 .flatMap(List::stream)
                 .filter(x -> x.course().equals(course))
                 .sorted(Comparator.comparingLong(ParkourTime::time))
-                .toList()
-                .subList(0, Math.min(amount, leaderboardCache.size()));
+                .toList();
+
+        if (filter.size() == 0)
+            return new ArrayList<>();
+
+        return filter.subList(0, Math.min(amount, leaderboardCache.size()));
     }
 
     public long getBestTimeFor(Player player, ParkourLayout layout) {
