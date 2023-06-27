@@ -203,10 +203,10 @@ public class ParallelParkour extends ParallelModule {
                 .sorted(Comparator.comparingLong(ParkourTime::time))
                 .toList();
 
-        if (filter.size() == 0)
+        if (filter.isEmpty())
             return new ArrayList<>();
 
-        return filter.subList(0, Math.min(amount, leaderboardCache.size()));
+        return filter.subList(0, Math.min(amount, filter.size()));
     }
 
     public long getBestTimeFor(Player player, ParkourLayout layout) {
