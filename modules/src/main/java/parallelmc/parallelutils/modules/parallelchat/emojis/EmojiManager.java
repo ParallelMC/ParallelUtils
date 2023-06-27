@@ -28,6 +28,14 @@ import java.util.logging.Level;
 public class EmojiManager {
     private final HashMap<String, Emoji> emojis = new HashMap<>();
     public EmojiManager() {
+        loadEmojis();
+    }
+
+    /***
+     * Loads emojis from their config file into memory
+     * @return If the emojis were successfully loaded
+     */
+    public boolean loadEmojis() {
         File emoteFile = new File(ParallelChat.get().getPlugin().getDataFolder(), "emojis.yml");
         FileConfiguration emoteConfig = new YamlConfiguration();
         try {
@@ -37,14 +45,14 @@ public class EmojiManager {
             emoteConfig.load(emoteFile);
         } catch (IOException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to create or read emojis.yml\n" + e);
-            return;
+            return false;
         } catch (Exception e) {
             ParallelUtils.log(Level.SEVERE, "Failed to load emojis.yml\n" + e);
-            return;
+            return false;
         }
         for (String key : emoteConfig.getKeys(false)) {
-            String id = emoteConfig.getString("id");
-            String replacement = emoteConfig.getString("replacement");
+            String id = emoteConfig.getString(key + ".id");
+            String replacement = emoteConfig.getString(key + ".replacement");
             if (id == null || replacement == null) {
                 ParallelUtils.log(Level.WARNING, "Invalid format for emoji key " + key + ", skipping!");
                 continue;
@@ -52,6 +60,7 @@ public class EmojiManager {
             emojis.put(id, new Emoji(key, id, replacement));
         }
         ParallelUtils.log(Level.WARNING, "Loaded " + emojis.size() + " emojis.");
+        return true;
     }
 
     public HashMap<String, Emoji> getEmojis() { return emojis; }

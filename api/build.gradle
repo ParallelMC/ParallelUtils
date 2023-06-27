@@ -7,7 +7,7 @@ plugins {
 
 group = 'org.parallelmc'
 
-version = '3.0.0'
+version = '3.5.2'
 description = 'A set of utilities and features for use on the Parallel Minecraft server'
 
 java {
@@ -20,15 +20,15 @@ processResources.filteringCharset = "UTF-8"
 
 
 dependencies {
-    implementation 'org.jetbrains:annotations:23.0.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    implementation 'net.dv8tion:JDA:4.4.0_350'
-    compileOnly 'me.clip:placeholderapi:2.11.2'
+    implementation 'org.jetbrains:annotations:24.0.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
+    implementation 'net.dv8tion:JDA:5.0.0-beta.10'
+    compileOnly 'me.clip:placeholderapi:2.11.3'
     compileOnly fileTree('libs') { include '*.jar' }
-    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.7'
-    implementation 'mysql:mysql-connector-java:8.0.29'
-    compileOnly 'com.comphenix.protocol:ProtocolLib:4.8.0'
-    compileOnly 'dev.esophose:playerparticles:7.25'
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.8'
+    implementation 'mysql:mysql-connector-java:8.0.33'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:5.0.0'
+    compileOnly 'dev.esophose:playerparticles:8.3'
     implementation 'org.reflections:reflections:0.10.2'
 }
 
@@ -67,7 +67,7 @@ bukkit {
 
     main = 'parallelmc.parallelutils.ParallelUtils'
 
-    apiVersion = '1.19'
+    apiVersion = '1.20'
 
     depend = ['PlaceholderAPI', 'ProtocolLib']
     softDepend = ['Multiverse-Core', 'FractalForest', 'WorldGuard', 'VoteParty', 'PlayerParticles', 'ProNouns']
@@ -84,6 +84,11 @@ bukkit {
             usage = '/cr'
             permissionMessage = 'You do not have permission'
             aliases = ['cr',]
+        }
+        town {
+            description = 'Base command for all Town commands'
+            usage = '/town'
+            permissionMessage = 'You do not have permission'
         }
         depositexp {
             description = 'Deposit exp into the player\' s ender chest '
@@ -205,6 +210,22 @@ bukkit {
             description = 'Reloads all tutorials'
             usage = '/reloadtutorials'
         }
+        reloademojis {
+            description = 'Reloads all emojis'
+            usage = '/reloademojis'
+        }
+        emojis {
+            description = 'Lists all emojis'
+            usage = '/emojis'
+        }
+        banword {
+            description = 'Adds a word to the banned words list'
+            usage = '/banword (word)'
+        }
+        allowword {
+            description = 'Remove a word from the banned words list'
+            usage = '/allowword (word)'
+        }
         leavetutorial {
             description = 'Exit the tutorial you are currently in'
             usage = '/leavetutorial'
@@ -216,6 +237,22 @@ bukkit {
         togglepvp {
             description = 'Toggles PVP on or off'
             usage = '/togglepvp'
+        }
+        createcourse {
+            description = 'Begin creating a new course layout'
+            usage = '/createcourse (name)'
+        }
+        deletecourse {
+            description = 'Deletes and existing course layout'
+            usage = '/deletecourse (name)'
+        }
+        endrun {
+            description = 'Ends a speedrun early'
+            usage = '/endrun'
+        }
+        leaderboard {
+            description = 'Shows the top scores for a course'
+            usage = '/leaderboard (course name)'
         }
     }
 
@@ -256,8 +293,20 @@ bukkit {
             description = 'Gives access to deleting spawners.'
             setDefault('FALSE')
         }
+        'parallelutils.createcourse' {
+            description = 'Gives access to creating course layouts.'
+            setDefault('FALSE')
+        }
+        'parallelutils.deletecourse' {
+            description = 'Gives access to deleting course layouts.'
+            setDefault('FALSE')
+        }
         'parallelutils.give' {
             description = 'Gives access to giving ParallelItems.'
+            setDefault('FALSE')
+        }
+        'parallelutils.enchant' {
+            description = 'Gives access to using ParallelItems enchants'
             setDefault('FALSE')
         }
         'parallelutils.test' {
@@ -274,6 +323,14 @@ bukkit {
         }
         'parallelutils.fakelogin' {
             description = 'Gives access to fakejoin and fakeleave commands'
+            setDefault('FALSE')
+        }
+        'parallelutils.banword' {
+            description = 'Gives access to banword command'
+            setDefault('FALSE')
+        }
+        'parallelutils.allowword' {
+            description = 'Gives access to allowword command'
             setDefault('FALSE')
         }
         'parallelutils.staffchat' {
@@ -314,6 +371,9 @@ bukkit {
         }
         'parallelutils.reloadtutorials' {
             description = 'Gives access to reloadtutorials command'
+        }
+        'parallelutils.reloademojis' {
+            description = 'Gives access to reloademojis command'
         }
         'parallelutils.tutorialinfo' {
             description = 'Gives access to tutorialinfo command'

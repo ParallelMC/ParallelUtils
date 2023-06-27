@@ -49,5 +49,8 @@ public class OnCommand implements Listener {
         catch (IOException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to log command!");
         }
+        catch (NullPointerException e) {
+            ParallelUtils.log(Level.SEVERE, "Failed to log chat message! chatLogWriter was null!");
+        }
     }
 }
