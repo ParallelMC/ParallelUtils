@@ -144,7 +144,9 @@ public class ParallelParkour extends ParallelModule {
                     leaderboardCache.get(uuid).add(time);
                 }
                 else {
-                    leaderboardCache.put(uuid, List.of(time));
+                    // Need this since the list must be modifiable
+                    //noinspection ArraysAsListWithZeroOrOneArgument
+                    leaderboardCache.put(uuid, Arrays.asList(time);
                 }
             }
         } catch (SQLException e) {
@@ -203,10 +205,10 @@ public class ParallelParkour extends ParallelModule {
                 .sorted(Comparator.comparingLong(ParkourTime::time))
                 .toList();
 
-        if (filter.size() == 0)
+        if (filter.isEmpty())
             return new ArrayList<>();
 
-        return filter.subList(0, Math.min(amount, leaderboardCache.size()));
+        return filter.subList(0, Math.min(amount, filter.size()));
     }
 
     public long getBestTimeFor(Player player, ParkourLayout layout) {
