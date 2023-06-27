@@ -144,7 +144,9 @@ public class ParallelParkour extends ParallelModule {
                     leaderboardCache.get(uuid).add(time);
                 }
                 else {
-                    leaderboardCache.put(uuid, List.of(time));
+                    // Need this since the list must be modifiable
+                    //noinspection ArraysAsListWithZeroOrOneArgument
+                    leaderboardCache.put(uuid, Arrays.asList(time);
                 }
             }
         } catch (SQLException e) {
