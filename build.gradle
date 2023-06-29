@@ -43,6 +43,6 @@ allprojects {
 
         compileOnly "io.papermc.paper:paper-api:1.20-R0.1-SNAPSHOT"
         compileOnly 'net.luckperms:api:5.4'
-        compileOnly 'dev.esophose:playerparticles:8.3'
+        compileOnly 'dev.esophose:playerparticles:8.2'
     }
 }
