@@ -15,12 +15,17 @@ public abstract class GUIInventory {
     // represents a placeholder item in a gui
     public static ItemStack PLACEHOLDER;
 
+    // represents air in a gui
+    public static ItemStack AIR;
+
     // initialize the placeholder on class load
     static {
         PLACEHOLDER = new ItemStack(Material.LIGHT_BLUE_STAINED_GLASS_PANE);
         ItemMeta meta = PLACEHOLDER.getItemMeta();
         meta.displayName(Component.text('-', NamedTextColor.AQUA));
         PLACEHOLDER.setItemMeta(meta);
+
+        AIR = new ItemStack(Material.AIR);
     }
 
     public GUIInventory(int size, Component name) {

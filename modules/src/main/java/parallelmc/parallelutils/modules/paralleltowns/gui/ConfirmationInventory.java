@@ -113,18 +113,17 @@ public class ConfirmationInventory extends GUIInventory {
         }
         paper.setItemMeta(meta);
 
-        ItemStack air = new ItemStack(Material.AIR);
 
         inventory.setContents(new ItemStack[] {
-                air,
-                air,
+                AIR,
+                AIR,
                 yes,
-                air,
+                AIR,
                 paper,
-                air,
+                AIR,
                 no,
-                air,
-                air
+                AIR,
+                AIR
         });
     }
 
