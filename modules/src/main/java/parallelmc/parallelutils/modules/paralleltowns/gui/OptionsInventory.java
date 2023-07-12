@@ -42,17 +42,16 @@ public class OptionsInventory extends GUIInventory {
 
 
         inventory.setContents(new ItemStack[]{
-                        PLACEHOLDER,
-                        leave,
-                        new ItemStack(Material.AIR),
-                        new ItemStack(Material.AIR),
-                        new ItemStack(Material.AIR),
-                        new ItemStack(Material.AIR),
-                        new ItemStack(Material.AIR),
-                        exit,
-                        PLACEHOLDER
-                }
-        );
+                PLACEHOLDER,
+                leave,
+                AIR,
+                AIR,
+                AIR,
+                AIR,
+                AIR,
+                exit,
+                PLACEHOLDER
+        });
     }
 
 
