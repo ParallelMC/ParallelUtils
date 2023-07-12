@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.net.URLClassLoader;
 import java.sql.*;
 import java.util.*;
 import java.util.jar.JarEntry;
@@ -42,7 +41,7 @@ public final class ParallelUtils extends JavaPlugin {
 
 	private HashMap<String, ParallelModule> registeredModules;
 
-	private HashMap<ParallelModule, ClassLoader> classloaders = new HashMap<>();
+	private final HashMap<ParallelModule, ClassLoader> classloaders = new HashMap<>();
 	private Commands commands;
 
 	private boolean loadedModules = false;
@@ -71,8 +70,8 @@ public final class ParallelUtils extends JavaPlugin {
 		config = this.getConfig();
 
 		config.options().copyDefaults(true);
-		config.options().copyHeader(true);
-		config.options().header(HEADER);
+		config.options().parseComments(true);
+		config.options().setHeader(List.of(HEADER));
 
 		// Read config
 		this.saveDefaultConfig();
@@ -140,7 +139,6 @@ public final class ParallelUtils extends JavaPlugin {
 				port = Integer.parseInt(portStr);
 			} catch (NumberFormatException e) {
 				log(Level.WARNING, "Invalid address string. Using default port");
-				port = 3306;
 			}
 		}
 
@@ -399,6 +397,7 @@ public final class ParallelUtils extends JavaPlugin {
 			ParallelModule module = modules.get(0).getDeclaredConstructor(ParallelClassLoader.class, List.class).newInstance(classLoader, dependents);
 
 			availableModules.put(module.getName(), module);
+			loadedList.add(module.getName());
 
 			currentlyLoading.remove(name);
 
