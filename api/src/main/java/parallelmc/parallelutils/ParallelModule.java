@@ -3,7 +3,6 @@ package parallelmc.parallelutils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
 
-import java.net.URLClassLoader;
 import java.util.List;
 
 public abstract class ParallelModule

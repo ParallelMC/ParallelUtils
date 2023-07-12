@@ -15,9 +15,9 @@ public class TimeTools {
 		HOURS(3, 20*60*60, "h"),
 		DAYS(4, 20*60*60*24, "d");
 
-		public int index;
-		public int ticks;
-		public String val;
+		public final int index;
+		public final int ticks;
+		public final String val;
 
 		/**
 		 * Create a new TimeUnit with a given index, ticks equivalent, and one character string representation
