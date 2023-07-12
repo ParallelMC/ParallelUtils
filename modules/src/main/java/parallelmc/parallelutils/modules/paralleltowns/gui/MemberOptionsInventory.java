@@ -15,6 +15,7 @@ import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
 import parallelmc.parallelutils.modules.paralleltowns.Town;
 import parallelmc.parallelutils.modules.paralleltowns.TownMember;
 import parallelmc.parallelutils.modules.paralleltowns.TownRank;
+import parallelmc.parallelutils.util.GUIInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class MemberOptionsInventory extends GUIInventory {
         smeta.setOwningPlayer(member);
         smeta.displayName(Component.text(member.getName(), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
         List<Component> lore = new ArrayList<>();
-        lore.add(getComponentForRank(tm.getTownRank()));
+        lore.add(ParallelTowns.getComponentForRank(tm.getTownRank()));
         if (tm.getIsFounder())
             lore.add(Component.text("Town Founder", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
         lore.add(Component.empty());
@@ -137,7 +138,7 @@ public class MemberOptionsInventory extends GUIInventory {
     public void onSlotClicked(Player player, int slotNum, ItemStack itemClicked) {
         Town town = ParallelTowns.get().getPlayerTown(player);
         switch (slotNum) {
-            case 11 -> ParallelTowns.get().guiManager.openTownMemberConfirmationForPlayer(player, town, townMember, ConfirmationAction.PROMOTE);
+            case 11 -> ParallelTowns.get().openTownMemberConfirmationForPlayer(player, town, townMember, ConfirmationAction.PROMOTE);
             case 12 -> {
                 TownMember member = town.getMember(townMember.getUniqueId());
                 if (member.getTownRank() == TownRank.LEADER) {
@@ -145,7 +146,7 @@ public class MemberOptionsInventory extends GUIInventory {
                     ParallelChat.sendParallelMessageTo(player, "You cannot demote other leaders!");
                     return;
                 }
-                ParallelTowns.get().guiManager.openTownMemberConfirmationForPlayer(player, town, townMember, ConfirmationAction.DEMOTE);
+                ParallelTowns.get().openTownMemberConfirmationForPlayer(player, town, townMember, ConfirmationAction.DEMOTE);
             }
             case 13 -> {
                 TownMember member = town.getMember(player);
@@ -155,7 +156,7 @@ public class MemberOptionsInventory extends GUIInventory {
                     ParallelChat.sendParallelMessageTo(player, "You cannot retire, you are the only leader!");
                     return;
                 }
-                ParallelTowns.get().guiManager.openTownConfirmationForPlayer(player, town, ConfirmationAction.RETIRE);
+                ParallelTowns.get().openTownConfirmationForPlayer(player, town, ConfirmationAction.RETIRE);
             }
             case 14 -> {
                 if (player.getUniqueId().equals(townMember.getUniqueId())) {
@@ -170,9 +171,9 @@ public class MemberOptionsInventory extends GUIInventory {
                     ParallelChat.sendParallelMessageTo(player, "You can only evict players that are a lower rank than you!");
                     return;
                 }
-                ParallelTowns.get().guiManager.openTownMemberConfirmationForPlayer(player, town, townMember, ConfirmationAction.EVICT);
+                ParallelTowns.get().openTownMemberConfirmationForPlayer(player, town, townMember, ConfirmationAction.EVICT);
             }
-            case 15 -> ParallelTowns.get().guiManager.openMembersMenuForPlayer(player);
+            case 15 -> ParallelTowns.get().openMembersMenuForPlayer(player);
         }
     }
 }
