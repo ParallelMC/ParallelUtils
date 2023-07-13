@@ -266,6 +266,8 @@ public class ParallelChat extends ParallelModule {
         puPlugin.getCommand("emojis").setExecutor(new ParallelEmojis());
         puPlugin.getCommand("banword").setExecutor(new ParallelBanWord());
         puPlugin.getCommand("allowword").setExecutor(new ParallelAllowWord());
+        puPlugin.getCommand("joinmessages").setExecutor(new ParallelJoinMessages());
+        puPlugin.getCommand("leavemessages").setExecutor(new ParallelLeaveMessages());
 
         this.chatroomCommands = new ChatroomCommands();
         puPlugin.getCommand("chatroom").setExecutor(chatroomCommands);
@@ -347,6 +349,10 @@ public class ParallelChat extends ParallelModule {
     @Override
     public @NotNull String getName() {
         return "ParallelChat";
+    }
+
+    public void openMainJoinLeaveInventory(Player player) {
+        GUIManager.get().openInventoryForPlayer(player, new JoinLeaveInventory());
     }
 
     public void openJoinMessageInventory(Player player) {
