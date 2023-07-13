@@ -25,6 +25,7 @@ import org.json.simple.parser.ParseException;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 
+import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,14 +37,16 @@ import java.util.logging.Level;
 
 public class CustomMessageManager {
     private final HashMap<String, JoinLeaveMessage> customJoinLeaveMessages = new HashMap<>();
-    private final HashMap<UUID, String> selectedJoinLeaveMessages = new HashMap<>();
+    // TODO: support selecting both join and leave message
+    // TODO: add commands
+    private final HashMap<UUID, CustomMessageSelection> selectedCustomMessages = new HashMap<>();
 
     public CustomMessageManager() {
         loadJoinLeaveMessages();
         loadSelectedJoinLeaveMessages();
     }
 
-    public boolean loadJoinLeaveMessages() {
+    public void loadJoinLeaveMessages() {
         File file = new File(ParallelChat.get().getPlugin().getDataFolder(), "joinleave.yml");
         FileConfiguration config = new YamlConfiguration();
         try {
@@ -53,10 +56,10 @@ public class CustomMessageManager {
             config.load(file);
         } catch (IOException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to create or read joinleave.yml\n" + e);
-            return false;
+            return;
         } catch (Exception e) {
             ParallelUtils.log(Level.SEVERE, "Failed to load joinleave.yml\n" + e);
-            return false;
+            return;
         }
 
         for (String key : config.getKeys(false)) {
@@ -74,7 +77,6 @@ public class CustomMessageManager {
             customJoinLeaveMessages.put(key, new JoinLeaveMessage(event, text, rank));
         }
         ParallelUtils.log(Level.WARNING, "Loaded " + customJoinLeaveMessages.size() + " custom join/leave messages.");
-        return true;
     }
 
     private void loadSelectedJoinLeaveMessages() {
@@ -90,14 +92,12 @@ public class CustomMessageManager {
             for (Object o : arr) {
                 JSONObject json = (JSONObject)o;
                 String uuid = (String)json.get("uuid");
-                String name = (String)json.get("message");
-                if (customJoinLeaveMessages.get(name) == null) {
-                    ParallelUtils.log(Level.WARNING, "Player has a non-existent custom join/leave message selected! Skipping...");
-                    continue;
-                }
-                selectedJoinLeaveMessages.put(UUID.fromString(uuid), name);
+                Object join = json.get("join");
+                Object leave = json.get("leave");
+                CustomMessageSelection sel = new CustomMessageSelection(join == null ? null : (String)join, leave == null ? null : (String)leave);
+                selectedCustomMessages.put(UUID.fromString(uuid), sel);
             }
-            ParallelUtils.log(Level.INFO, "Loaded " + selectedJoinLeaveMessages.size() + " join/leave message selections.");
+            ParallelUtils.log(Level.INFO, "Loaded " + selectedCustomMessages.size() + " custom message selections.");
         } catch (IOException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to load join/leave message selections!\n" + e.getMessage());
         } catch (ParseException e) {
@@ -107,33 +107,99 @@ public class CustomMessageManager {
 
 
     @SuppressWarnings("unchecked")
-    public void saveSelectedJoinLeaveMessages() {
+    public void saveSelectedCustomMessages() {
         JSONArray json = new JSONArray();
-        for (Map.Entry<UUID, String> e : selectedJoinLeaveMessages.entrySet()) {
+        for (Map.Entry<UUID, CustomMessageSelection> e : selectedCustomMessages.entrySet()) {
             JSONObject entry = new JSONObject();
+            CustomMessageSelection c = e.getValue();
             entry.put("uuid", e.getKey().toString());
-            entry.put("message", e.getValue());
+            entry.put("join", c.getJoinMessage());
+            entry.put("leave", c.getLeaveMessage());
             json.add(entry);
         }
         try {
             Path path = Path.of(ParallelChat.get().getPlugin().getDataFolder().getAbsolutePath() + "/messages.json");
             Files.writeString(path, json.toJSONString());
-            ParallelUtils.log(Level.INFO, "Saved " + selectedJoinLeaveMessages.size() + " selected join/leave messages.");
+            ParallelUtils.log(Level.INFO, "Saved " + selectedCustomMessages.size() + " selected custom messages.");
         } catch (IOException e) {
-            ParallelUtils.log(Level.SEVERE, "Failed to save custom join/leave selections!\n" + e.getMessage());
+            ParallelUtils.log(Level.SEVERE, "Failed to save custom message selections!\n" + e.getMessage());
         }
     }
 
-    public void selectJoinLeaveMessage(Player player, String name) {
+    public void selectJoinMessage(Player player, String name) {
         if (customJoinLeaveMessages.get(name) == null) {
-            ParallelUtils.log(Level.SEVERE, "A player tried to select a non-existent join/leave message. This shouldn't happen!");
+            ParallelUtils.log(Level.SEVERE, "A player tried to select a non-existent join message. This shouldn't happen!");
             return;
         }
-        selectedJoinLeaveMessages.put(player.getUniqueId(), name);
+        UUID uuid = player.getUniqueId();
+        CustomMessageSelection sel = selectedCustomMessages.get(uuid);
+        if (sel == null) {
+            selectedCustomMessages.put(uuid, new CustomMessageSelection(name, null));
+        }
+        else {
+            sel.setJoinMessage(name);
+        }
     }
 
-    public void disableJoinLeaveMessage(Player player) {
-        selectedJoinLeaveMessages.remove(player.getUniqueId());
+    public void selectLeaveMessage(Player player, String name) {
+        if (customJoinLeaveMessages.get(name) == null) {
+            ParallelUtils.log(Level.SEVERE, "A player tried to select a non-existent leave message. This shouldn't happen!");
+            return;
+        }
+        UUID uuid = player.getUniqueId();
+        CustomMessageSelection sel = selectedCustomMessages.get(uuid);
+        if (sel == null) {
+            selectedCustomMessages.put(uuid, new CustomMessageSelection(null, name));
+        }
+        else {
+            sel.setLeaveMessage(name);
+        }
+    }
+
+    public void disableJoinMessage(Player player) {
+        UUID uuid = player.getUniqueId();
+        CustomMessageSelection sel = selectedCustomMessages.get(uuid);
+        if (sel == null)
+            return;
+        sel.setJoinMessage(null);
+        if (sel.getJoinMessage() == null && sel.getLeaveMessage() == null)
+            selectedCustomMessages.remove(uuid);
+    }
+
+    public void disableLeaveMessage(Player player) {
+        UUID uuid = player.getUniqueId();
+        CustomMessageSelection sel = selectedCustomMessages.get(uuid);
+        if (sel == null)
+            return;
+        sel.setLeaveMessage(null);
+        if (sel.getJoinMessage() == null && sel.getLeaveMessage() == null)
+            selectedCustomMessages.remove(uuid);
+    }
+
+    @Nullable
+    public String getJoinMessageForPlayer(Player player) {
+        CustomMessageSelection sel = selectedCustomMessages.get(player.getUniqueId());
+        if (sel == null)
+            return null;
+        JoinLeaveMessage msg = customJoinLeaveMessages.get(sel.getJoinMessage());
+        if (msg == null) {
+            ParallelUtils.log(Level.SEVERE, "Tried to get a non-existent join message " + sel.getJoinMessage());
+            return null;
+        }
+        return msg.text().replace("PLAYER", player.getName());
+    }
+
+    @Nullable
+    public String getLeaveMessageForPlayer(Player player) {
+        CustomMessageSelection sel = selectedCustomMessages.get(player.getUniqueId());
+        if (sel == null)
+            return null;
+        JoinLeaveMessage msg = customJoinLeaveMessages.get(sel.getLeaveMessage());
+        if (msg == null) {
+            ParallelUtils.log(Level.SEVERE, "Tried to get a non-existent leave message " + sel.getLeaveMessage());
+            return null;
+        }
+        return msg.text().replace("PLAYER", player.getName());
     }
 
     public HashMap<String, JoinLeaveMessage> getCustomJoinLeaveMessages() { return customJoinLeaveMessages; }

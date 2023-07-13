@@ -327,7 +327,7 @@ public class ParallelChat extends ParallelModule {
         chatRoomManager.saveChatroomsToFile();
 
         // save player's custom message selections
-        customMessageManager.saveSelectedJoinLeaveMessages();
+        customMessageManager.saveSelectedCustomMessages();
 
         // save banned words list in case any words were added or removed
         bannedWordsConfig.set("Banned-Words", bannedWords);

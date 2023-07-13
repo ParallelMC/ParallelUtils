@@ -88,7 +88,10 @@ public class JoinLeaveSelectInventory extends GUIInventory {
         }
 
         if (slotNum == DISABLE_INDEX) {
-            ParallelChat.get().customMessageManager.disableJoinLeaveMessage(player);
+            if (EVENT.equalsIgnoreCase("join"))
+                ParallelChat.get().customMessageManager.disableJoinMessage(player);
+            else
+                ParallelChat.get().customMessageManager.disableLeaveMessage(player);
             ParallelChat.sendParallelMessageTo(player, "Disabled your custom " + EVENT + " message!");
             return;
         }
@@ -98,7 +101,10 @@ public class JoinLeaveSelectInventory extends GUIInventory {
         // i.e. <bold>Hello --> [Hello]
         // so we have to remove them here
         name = name.substring(1, name.length() - 1);
-        ParallelChat.get().customMessageManager.selectJoinLeaveMessage(player, name);
+        if (EVENT.equalsIgnoreCase("join"))
+            ParallelChat.get().customMessageManager.selectJoinMessage(player, name);
+        else
+            ParallelChat.get().customMessageManager.selectLeaveMessage(player, name);
         ParallelChat.sendParallelMessageTo(player, "Enabled the " + name + " " + EVENT + " message!");
         player.closeInventory();
     }
