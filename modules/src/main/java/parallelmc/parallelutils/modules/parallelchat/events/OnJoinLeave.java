@@ -1,6 +1,7 @@
 package parallelmc.parallelutils.modules.parallelchat.events;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
@@ -15,6 +16,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.discordintegration.JoinQuitSuppressorListener;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
+import parallelmc.parallelutils.modules.parallelchat.messages.CustomMessageSelection;
 
 public class OnJoinLeave implements Listener {
 
@@ -33,7 +35,13 @@ public class OnJoinLeave implements Listener {
         ParallelChat.get().chatRoomManager.removeActiveChatroom(player);
         event.quitMessage(null);
 
-        Component leave = MiniMessage.miniMessage().deserialize("<yellow><player> left the game", TagResolver.resolver(Placeholder.parsed("player", player.getName())));
+        String customMsg = ParallelChat.get().customMessageManager.getLeaveMessageForPlayer(player);
+
+        Component leave;
+        if (customMsg == null)
+            leave = MiniMessage.miniMessage().deserialize("<yellow><player> left the game", TagResolver.resolver(Placeholder.parsed("player", player.getName())));
+        else
+            leave = Component.text(customMsg, NamedTextColor.YELLOW);
 
         if (puPlugin.getModule("DiscordIntegration") != null) {
             synchronized (JoinQuitSuppressorListener.hiddenUsersLock) { // NOTE: This MIGHT cause lag problems. It shouldn't, but beware
@@ -63,7 +71,14 @@ public class OnJoinLeave implements Listener {
         Server server = player.getServer();
         event.joinMessage(null);
 
-        Component join = MiniMessage.miniMessage().deserialize("<yellow><player> joined the game", TagResolver.resolver(Placeholder.parsed("player", player.getName())));
+        String customMsg = ParallelChat.get().customMessageManager.getJoinMessageForPlayer(player);
+
+        Component join;
+        if (customMsg == null)
+            join = MiniMessage.miniMessage().deserialize("<yellow><player> joined the game", TagResolver.resolver(Placeholder.parsed("player", player.getName())));
+        else
+            join = Component.text(customMsg, NamedTextColor.YELLOW);
+        
         if (!player.hasPlayedBefore()) {
             Component welcome = MiniMessage.miniMessage().deserialize("\n<dark_aqua><strikethrough>⎯⎯⎯⎯</strikethrough> Welcome to <white><bold>Parallel</bold><dark_aqua>, <player>! <strikethrough>⎯⎯⎯⎯", TagResolver.resolver(Placeholder.parsed("player", player.getName())));
 
