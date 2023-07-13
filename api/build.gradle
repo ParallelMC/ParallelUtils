@@ -254,6 +254,14 @@ bukkit {
             description = 'Shows the top scores for a course'
             usage = '/leaderboard (course name)'
         }
+        joinmessages {
+            description = 'Opens the join/leave message GUI'
+            usage = '/joinmessages'
+        }
+        leavemessages {
+            description = 'Opens the join/leave message GUI'
+            usage = '/leavemessages'
+        }
     }
 
     permissions {
