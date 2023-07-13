@@ -101,6 +101,11 @@ public class JoinLeaveSelectInventory extends GUIInventory {
         // i.e. <bold>Hello --> [Hello]
         // so we have to remove them here
         name = name.substring(1, name.length() - 1);
+        String rank = ParallelChat.get().customMessageManager.getRequiredRankForMessage(name);
+        if (!player.hasPermission("groups." + rank)) {
+            ParallelChat.sendParallelMessageTo(player, "You need " + rank.toUpperCase() + " rank to unlock this " + EVENT + " message!");
+            return;
+        }
         if (EVENT.equalsIgnoreCase("join"))
             ParallelChat.get().customMessageManager.selectJoinMessage(player, name);
         else

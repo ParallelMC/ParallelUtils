@@ -126,6 +126,10 @@ public class CustomMessageManager {
         }
     }
 
+    public String getRequiredRankForMessage(String message) {
+        return customJoinLeaveMessages.get(message).requiredRank();
+    }
+
     public void selectJoinMessage(Player player, String name) {
         if (customJoinLeaveMessages.get(name) == null) {
             ParallelUtils.log(Level.SEVERE, "A player tried to select a non-existent join message. This shouldn't happen!");
