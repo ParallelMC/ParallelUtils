@@ -24,13 +24,13 @@ public class JoinLeaveSelectInventory extends GUIInventory {
     private final String EVENT;
 
     public JoinLeaveSelectInventory(String event) {
-        super(54, Component.text(event + "Message Selection", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
+        super(54, Component.text(event + " Message Selection", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
 
         EVENT = event;
 
         ItemStack map = new ItemStack(Material.MAP);
         ItemMeta meta = map.getItemMeta();
-        meta.displayName(Component.text(event + " Messages"));
+        meta.displayName(Component.text(event + " Messages",  NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
         List<Component> lore = new ArrayList<>();
         lore.add(Component.text("Click a " + event + " message", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
         lore.add(Component.text("to enable it!", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
@@ -39,12 +39,12 @@ public class JoinLeaveSelectInventory extends GUIInventory {
 
         ItemStack disable = new ItemStack(Material.NAME_TAG);
         meta = disable.getItemMeta();
-        meta.displayName(Component.text("Disable" + event + " Message", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+        meta.displayName(Component.text("Disable " + event + " Message", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
         disable.setItemMeta(meta);
 
         ItemStack exit = new ItemStack(Material.BARRIER);
         meta = exit.getItemMeta();
-        meta.displayName(Component.text("Exit GUI", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+        meta.displayName(Component.text("Return to Main Menu", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
         exit.setItemMeta(meta);
 
         inventory.setItem(MAP_INDEX, map);
@@ -83,7 +83,7 @@ public class JoinLeaveSelectInventory extends GUIInventory {
             return;
 
         if (slotNum == EXIT_INDEX) {
-            player.closeInventory();
+            ParallelChat.get().openMainJoinLeaveInventory(player);
             return;
         }
 
@@ -93,6 +93,7 @@ public class JoinLeaveSelectInventory extends GUIInventory {
             else
                 ParallelChat.get().customMessageManager.disableLeaveMessage(player);
             ParallelChat.sendParallelMessageTo(player, "Disabled your custom " + EVENT + " message!");
+            player.closeInventory();
             return;
         }
 
