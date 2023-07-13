@@ -187,7 +187,6 @@ public class CustomMessageManager {
             return null;
         JoinLeaveMessage msg = customJoinLeaveMessages.get(sel.getJoinMessage());
         if (msg == null) {
-            ParallelUtils.log(Level.SEVERE, "Tried to get a non-existent join message " + sel.getJoinMessage());
             return null;
         }
         return msg.text().replace("PLAYER", player.getName());
@@ -200,7 +199,6 @@ public class CustomMessageManager {
             return null;
         JoinLeaveMessage msg = customJoinLeaveMessages.get(sel.getLeaveMessage());
         if (msg == null) {
-            ParallelUtils.log(Level.SEVERE, "Tried to get a non-existent leave message " + sel.getLeaveMessage());
             return null;
         }
         return msg.text().replace("PLAYER", player.getName());
