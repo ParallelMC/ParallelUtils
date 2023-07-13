@@ -37,10 +37,7 @@ import java.util.logging.Level;
 
 public class CustomMessageManager {
     private final HashMap<String, JoinLeaveMessage> customJoinLeaveMessages = new HashMap<>();
-    // TODO: support selecting both join and leave message
-    // TODO: add commands
     private final HashMap<UUID, CustomMessageSelection> selectedCustomMessages = new HashMap<>();
-
     public CustomMessageManager() {
         loadJoinLeaveMessages();
         loadSelectedJoinLeaveMessages();
