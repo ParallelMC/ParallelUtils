@@ -66,9 +66,9 @@ public class JoinLeaveSelectInventory extends GUIInventory {
         int slot = 9;
         String selected;
         if (EVENT.equalsIgnoreCase("join"))
-            selected = ParallelChat.get().customMessageManager.getJoinMessageForPlayer(player);
+            selected = ParallelChat.get().customMessageManager.getJoinMessageNameForPlayer(player);
         else
-            selected = ParallelChat.get().customMessageManager.getLeaveMessageForPlayer(player);
+            selected = ParallelChat.get().customMessageManager.getLeaveMessageNameForPlayer(player);
         for (Map.Entry<String, JoinLeaveMessage> m : messages.entrySet().stream().filter(x -> x.getValue().event().equalsIgnoreCase(EVENT)).toList()) {
             ItemStack item = new ItemStack(Material.PAPER);
             ItemMeta meta = item.getItemMeta();
@@ -81,7 +81,7 @@ public class JoinLeaveSelectInventory extends GUIInventory {
             lore.add(Component.text("Text: ", NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false)
                     .append(Component.text(msg.text(), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)));
             // if this message is selected by the player, make it glow
-            if (selected != null && selected.equalsIgnoreCase(m.getKey())) {
+            if (selected != null && selected.equalsIgnoreCase(msg.name())) {
                 meta.addEnchant(Enchantment.VANISHING_CURSE, 1, false);
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 lore.add(Component.empty());
