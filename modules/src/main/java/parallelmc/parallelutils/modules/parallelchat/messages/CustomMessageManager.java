@@ -206,5 +206,29 @@ public class CustomMessageManager {
         return msg.text().replace("PLAYER", player.getName());
     }
 
+    @Nullable
+    public String getJoinMessageNameForPlayer(Player player) {
+        CustomMessageSelection sel = selectedCustomMessages.get(player.getUniqueId());
+        if (sel == null)
+            return null;
+        JoinLeaveMessage msg = customJoinLeaveMessages.get(sel.getJoinMessage());
+        if (msg == null) {
+            return null;
+        }
+        return msg.name();
+    }
+
+    @Nullable
+    public String getLeaveMessageNameForPlayer(Player player) {
+        CustomMessageSelection sel = selectedCustomMessages.get(player.getUniqueId());
+        if (sel == null)
+            return null;
+        JoinLeaveMessage msg = customJoinLeaveMessages.get(sel.getLeaveMessage());
+        if (msg == null) {
+            return null;
+        }
+        return msg.name();
+    }
+
     public HashMap<String, JoinLeaveMessage> getCustomJoinLeaveMessages() { return customJoinLeaveMessages; }
 }
