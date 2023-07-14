@@ -5,9 +5,14 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.parallelchat.messages.JoinLeaveMessage;
 import parallelmc.parallelutils.util.GUIInventory;
@@ -16,12 +21,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 
 public class JoinLeaveSelectInventory extends GUIInventory {
     private static final int MAP_INDEX = 4;
     private static final int DISABLE_INDEX = 48;
     private static final int EXIT_INDEX = 50;
     private final String EVENT;
+
+    private static final NamespacedKey KEY = new NamespacedKey("parallelutils", "MessageID");
 
     public JoinLeaveSelectInventory(String event) {
         super(54, Component.text(event + " Message Selection", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
@@ -56,16 +64,29 @@ public class JoinLeaveSelectInventory extends GUIInventory {
     public void onOpen(Player player) {
         HashMap<String, JoinLeaveMessage> messages = ParallelChat.get().customMessageManager.getCustomJoinLeaveMessages();
         int slot = 9;
+        String selected;
+        if (EVENT.equalsIgnoreCase("join"))
+            selected = ParallelChat.get().customMessageManager.getJoinMessageForPlayer(player);
+        else
+            selected = ParallelChat.get().customMessageManager.getLeaveMessageForPlayer(player);
         for (Map.Entry<String, JoinLeaveMessage> m : messages.entrySet().stream().filter(x -> x.getValue().event().equalsIgnoreCase(EVENT)).toList()) {
             ItemStack item = new ItemStack(Material.PAPER);
             ItemMeta meta = item.getItemMeta();
-            meta.displayName(Component.text(m.getKey(), NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
             JoinLeaveMessage msg = m.getValue();
+            meta.displayName(Component.text(msg.name(), NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+            meta.getPersistentDataContainer().set(KEY, PersistentDataType.STRING, m.getKey());
             List<Component> lore = new ArrayList<>();
             lore.add(Component.text("Required Rank: " + msg.requiredRank().toUpperCase(), NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false));
             lore.add(Component.empty());
             lore.add(Component.text("Text: ", NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false)
                     .append(Component.text(msg.text(), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)));
+            // if this message is selected by the player, make it glow
+            if (selected != null && selected.equalsIgnoreCase(m.getKey())) {
+                meta.addEnchant(Enchantment.VANISHING_CURSE, 1, false);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                lore.add(Component.empty());
+                lore.add(Component.text("SELECTED", NamedTextColor.GREEN, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+            }
             meta.lore(lore);
             item.setItemMeta(meta);
             inventory.setItem(slot, item);
@@ -102,15 +123,22 @@ public class JoinLeaveSelectInventory extends GUIInventory {
         // i.e. <bold>Hello --> [Hello]
         // so we have to remove them here
         name = name.substring(1, name.length() - 1);
-        String rank = ParallelChat.get().customMessageManager.getRequiredRankForMessage(name);
+
+        String id = itemClicked.getItemMeta().getPersistentDataContainer().get(KEY, PersistentDataType.STRING);
+        if (id == null) {
+            ParallelUtils.log(Level.SEVERE, "Clicked custom message has no message id NBT!");
+            player.closeInventory();
+            return;
+        }
+        String rank = ParallelChat.get().customMessageManager.getRequiredRankForMessage(id);
         if (!player.hasPermission("group." + rank)) {
             ParallelChat.sendParallelMessageTo(player, "You need " + rank.toUpperCase() + " rank to unlock this " + EVENT + " message!");
             return;
         }
         if (EVENT.equalsIgnoreCase("join"))
-            ParallelChat.get().customMessageManager.selectJoinMessage(player, name);
+            ParallelChat.get().customMessageManager.selectJoinMessage(player, id);
         else
-            ParallelChat.get().customMessageManager.selectLeaveMessage(player, name);
+            ParallelChat.get().customMessageManager.selectLeaveMessage(player, id);
         ParallelChat.sendParallelMessageTo(player, "Enabled the " + name + " " + EVENT + " message!");
         player.closeInventory();
     }

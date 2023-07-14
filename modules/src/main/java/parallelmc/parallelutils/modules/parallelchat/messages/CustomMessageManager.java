@@ -60,6 +60,11 @@ public class CustomMessageManager {
         }
 
         for (String key : config.getKeys(false)) {
+            String name = config.getString(key + ".name");
+            if (name == null) {
+                ParallelUtils.log(Level.WARNING, "Invalid or missing value for 'name' in join/leave message " + key + ", skipping!");
+                continue;
+            }
             String event = config.getString(key + ".event");
             if (event == null || (!event.equalsIgnoreCase("join") && !event.equalsIgnoreCase("leave"))) {
                 ParallelUtils.log(Level.WARNING, "Invalid or missing value for 'event' in join/leave message " + key + ", skipping!");
@@ -71,7 +76,7 @@ public class CustomMessageManager {
                 ParallelUtils.log(Level.WARNING, "Invalid or missing value(s) in join/leave message " + key + ", skipping!");
                 continue;
             }
-            customJoinLeaveMessages.put(key, new JoinLeaveMessage(event, text, rank));
+            customJoinLeaveMessages.put(key, new JoinLeaveMessage(name, event, text, rank));
         }
         ParallelUtils.log(Level.WARNING, "Loaded " + customJoinLeaveMessages.size() + " custom join/leave messages.");
     }
