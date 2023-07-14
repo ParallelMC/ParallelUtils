@@ -17,10 +17,7 @@ import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.parallelchat.messages.JoinLeaveMessage;
 import parallelmc.parallelutils.util.GUIInventory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Level;
 
 public class JoinLeaveSelectInventory extends GUIInventory {
@@ -69,7 +66,8 @@ public class JoinLeaveSelectInventory extends GUIInventory {
             selected = ParallelChat.get().customMessageManager.getJoinMessageNameForPlayer(player);
         else
             selected = ParallelChat.get().customMessageManager.getLeaveMessageNameForPlayer(player);
-        for (Map.Entry<String, JoinLeaveMessage> m : messages.entrySet().stream().filter(x -> x.getValue().event().equalsIgnoreCase(EVENT)).toList()) {
+        for (Map.Entry<String, JoinLeaveMessage> m :
+                messages.entrySet().stream().filter(x -> x.getValue().event().equalsIgnoreCase(EVENT)).sorted(new RankComparator()).toList()) {
             ItemStack item = new ItemStack(Material.PAPER);
             ItemMeta meta = item.getItemMeta();
             JoinLeaveMessage msg = m.getValue();
