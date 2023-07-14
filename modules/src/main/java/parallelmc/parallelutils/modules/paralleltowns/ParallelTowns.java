@@ -3,9 +3,11 @@ package parallelmc.parallelutils.modules.paralleltowns;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -19,17 +21,17 @@ import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
-import parallelmc.parallelutils.modules.parallelchat.commands.chatrooms.ChatroomCommand;
 import parallelmc.parallelutils.modules.paralleltowns.commands.*;
-import parallelmc.parallelutils.modules.paralleltowns.events.OnMenuInteract;
+import parallelmc.parallelutils.events.OnMenuInteract;
+import parallelmc.parallelutils.modules.paralleltowns.gui.*;
+import parallelmc.parallelutils.util.GUIInventory;
+import parallelmc.parallelutils.util.GUIManager;
 
-import javax.json.Json;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class ParallelTowns extends ParallelModule {
 
@@ -38,8 +40,6 @@ public class ParallelTowns extends ParallelModule {
     public ParallelTowns(ParallelClassLoader classLoader, List<String> dependents) {
         super(classLoader, dependents);
     }
-
-    public GUIManager guiManager;
 
     private TownCommands townCommands;
 
@@ -74,10 +74,6 @@ public class ParallelTowns extends ParallelModule {
                     "Module may already be registered. Quitting...");
             return;
         }
-
-        guiManager = new GUIManager();
-
-        manager.registerEvents(new OnMenuInteract(), puPlugin);
 
         townCommands = new TownCommands();
         puPlugin.getCommand("town").setExecutor(townCommands);
@@ -251,6 +247,37 @@ public class ParallelTowns extends ParallelModule {
         } catch (IOException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to save towns!\n" + e.getMessage());
         }
+    }
+
+    public void openMainMenuForPlayer(Player player) {
+        openTownInventoryForPlayer(player, new MainMenuInventory());
+    }
+
+    public void openOptionsMenuForPlayer(Player player) {
+        openTownInventoryForPlayer(player, new OptionsInventory());
+    }
+
+    public void openMembersMenuForPlayer(Player player) {
+        openTownInventoryForPlayer(player, new MembersInventory());
+    }
+
+    public void openMemberOptionsMenuForPlayer(Player player, OfflinePlayer edit) { openTownInventoryForPlayer(player, new MemberOptionsInventory(edit)); }
+
+    public void openTownConfirmationForPlayer(Player player, Town town, ConfirmationAction action) { openTownInventoryForPlayer(player, new ConfirmationInventory(town, action)); }
+
+    public void openTownMemberConfirmationForPlayer(Player player, Town town, OfflinePlayer townMember, ConfirmationAction action) { openTownInventoryForPlayer(player, new ConfirmationInventory(town, townMember, action)); }
+
+    public void openTownListMenuForPlayer(Player player) { openTownInventoryForPlayer(player, new TownListInventory()); }
+
+    private void openTownInventoryForPlayer(Player player, GUIInventory inventory) { GUIManager.get().openInventoryForPlayer(player, inventory); }
+
+    public static Component getComponentForRank(short rank) {
+        if (rank == TownRank.LEADER)
+            return Component.text("Town Leader", NamedTextColor.LIGHT_PURPLE).decoration(TextDecoration.ITALIC, false);
+        else if (rank == TownRank.OFFICIAL)
+            return Component.text("Town Official", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false);
+        else
+            return Component.text("Member", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false);
     }
 
     public Map<String, TownCommand> getTownCommands() {
