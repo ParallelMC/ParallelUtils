@@ -6,6 +6,9 @@ import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.*;
+import parallelmc.parallelutils.events.OnMenuInteract;
+import parallelmc.parallelutils.util.BukkitTools;
+import parallelmc.parallelutils.util.GUIManager;
 import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
 import javax.annotation.Nullable;
@@ -171,7 +174,7 @@ public final class ParallelUtils extends JavaPlugin {
 		getCommand("pu").setExecutor(commands);
 		getCommand("pu").setTabCompleter(commands);
 
-
+		Bukkit.getPluginManager().registerEvents(new OnMenuInteract(), this);
 
 		// Setup modules
 

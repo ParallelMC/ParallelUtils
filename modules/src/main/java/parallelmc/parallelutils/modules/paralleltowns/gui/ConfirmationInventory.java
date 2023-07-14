@@ -14,6 +14,7 @@ import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
 import parallelmc.parallelutils.modules.paralleltowns.Town;
 import parallelmc.parallelutils.modules.paralleltowns.TownMember;
+import parallelmc.parallelutils.util.GUIInventory;
 
 import java.util.EnumSet;
 import java.util.logging.Level;
@@ -112,18 +113,17 @@ public class ConfirmationInventory extends GUIInventory {
         }
         paper.setItemMeta(meta);
 
-        ItemStack air = new ItemStack(Material.AIR);
 
         inventory.setContents(new ItemStack[] {
-                air,
-                air,
+                AIR,
+                AIR,
                 yes,
-                air,
+                AIR,
                 paper,
-                air,
+                AIR,
                 no,
-                air,
-                air
+                AIR,
+                AIR
         });
     }
 
@@ -218,7 +218,7 @@ public class ConfirmationInventory extends GUIInventory {
                     }
                 }
             }
-            case 6 -> ParallelTowns.get().guiManager.openMainMenuForPlayer(player);
+            case 6 -> ParallelTowns.get().openMainMenuForPlayer(player);
             default -> { }
         }
     }
