@@ -50,7 +50,7 @@ public class TownCommands implements CommandExecutor, TabCompleter {
                         ParallelChat.sendParallelMessageTo(player, "You are not in a town! Use /town create to create one!");
                     }
                     else {
-                        ParallelTowns.get().guiManager.openMainMenuForPlayer(player);
+                        ParallelTowns.get().openMainMenuForPlayer(player);
                     }
                 }
                 else {

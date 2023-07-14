@@ -15,6 +15,7 @@ import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltowns.DisplayItem;
 import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
 import parallelmc.parallelutils.modules.paralleltowns.Town;
+import parallelmc.parallelutils.util.GUIInventory;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -118,7 +119,7 @@ public class TownListInventory  extends GUIInventory {
                 ParallelUtils.log(Level.SEVERE, "Failed to get town with name " + townName);
                 return;
             }
-            ParallelTowns.get().guiManager.openTownConfirmationForPlayer(player, town, ConfirmationAction.JOIN);
+            ParallelTowns.get().openTownConfirmationForPlayer(player, town, ConfirmationAction.JOIN);
         }
     }
 }
