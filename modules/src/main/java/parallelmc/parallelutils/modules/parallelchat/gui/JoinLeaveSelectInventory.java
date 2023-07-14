@@ -29,7 +29,7 @@ public class JoinLeaveSelectInventory extends GUIInventory {
     private static final int EXIT_INDEX = 50;
     private final String EVENT;
 
-    private static final NamespacedKey KEY = new NamespacedKey("parallelutils", "MessageID");
+    private static final NamespacedKey KEY = new NamespacedKey("parallelutils", "message_id");
 
     public JoinLeaveSelectInventory(String event) {
         super(54, Component.text(event + " Message Selection", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
