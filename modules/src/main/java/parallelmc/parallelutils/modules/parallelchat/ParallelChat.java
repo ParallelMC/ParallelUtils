@@ -31,6 +31,10 @@ import parallelmc.parallelutils.modules.parallelchat.events.*;
 import parallelmc.parallelutils.modules.parallelchat.events.OnChatMessage;
 import parallelmc.parallelutils.modules.parallelchat.commands.ParallelFakeJoin;
 import parallelmc.parallelutils.modules.parallelchat.commands.ParallelFakeLeave;
+import parallelmc.parallelutils.modules.parallelchat.gui.JoinLeaveInventory;
+import parallelmc.parallelutils.modules.parallelchat.gui.JoinLeaveSelectInventory;
+import parallelmc.parallelutils.modules.parallelchat.messages.CustomMessageManager;
+import parallelmc.parallelutils.util.GUIManager;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -84,6 +88,8 @@ public class ParallelChat extends ParallelModule {
     public ChatRoomManager chatRoomManager;
 
     public EmojiManager emojiManager;
+
+    public CustomMessageManager customMessageManager;
 
     private final Random rand = new Random();
 
@@ -232,6 +238,8 @@ public class ParallelChat extends ParallelModule {
 
         this.emojiManager = new EmojiManager();
 
+        this.customMessageManager = new CustomMessageManager();
+
         manager.registerEvents(new OnBookEdit(), puPlugin);
         manager.registerEvents(new OnChatMessage(), puPlugin);
         manager.registerEvents(new OnJoinLeave(puPlugin), puPlugin);
@@ -258,6 +266,8 @@ public class ParallelChat extends ParallelModule {
         puPlugin.getCommand("emojis").setExecutor(new ParallelEmojis());
         puPlugin.getCommand("banword").setExecutor(new ParallelBanWord());
         puPlugin.getCommand("allowword").setExecutor(new ParallelAllowWord());
+        puPlugin.getCommand("joinmessages").setExecutor(new ParallelJoinMessages());
+        puPlugin.getCommand("leavemessages").setExecutor(new ParallelLeaveMessages());
 
         this.chatroomCommands = new ChatroomCommands();
         puPlugin.getCommand("chatroom").setExecutor(chatroomCommands);
@@ -318,6 +328,9 @@ public class ParallelChat extends ParallelModule {
         // save chatrooms
         chatRoomManager.saveChatroomsToFile();
 
+        // save player's custom message selections
+        customMessageManager.saveSelectedCustomMessages();
+
         // save banned words list in case any words were added or removed
         bannedWordsConfig.set("Banned-Words", bannedWords);
         try {
@@ -336,6 +349,18 @@ public class ParallelChat extends ParallelModule {
     @Override
     public @NotNull String getName() {
         return "ParallelChat";
+    }
+
+    public void openMainJoinLeaveInventory(Player player) {
+        GUIManager.get().openInventoryForPlayer(player, new JoinLeaveInventory());
+    }
+
+    public void openJoinMessageInventory(Player player) {
+        GUIManager.get().openInventoryForPlayer(player, new JoinLeaveSelectInventory("Join"));
+    }
+
+    public void openLeaveMessageInventory(Player player) {
+        GUIManager.get().openInventoryForPlayer(player, new JoinLeaveSelectInventory("Leave"));
     }
 
     /**
