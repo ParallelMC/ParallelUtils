@@ -15,6 +15,7 @@ import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
 import parallelmc.parallelutils.modules.paralleltowns.Town;
 import parallelmc.parallelutils.modules.paralleltowns.TownMember;
 import parallelmc.parallelutils.modules.paralleltowns.TownRank;
+import parallelmc.parallelutils.util.GUIInventory;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -74,7 +75,7 @@ public class MembersInventory extends GUIInventory {
             meta.setOwningPlayer(p);
             meta.displayName(Component.text(p.getName(), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
             List<Component> lore = new ArrayList<>();
-            lore.add(getComponentForRank(tm.getTownRank()));
+            lore.add(ParallelTowns.getComponentForRank(tm.getTownRank()));
             if (tm.getIsFounder())
                 lore.add(Component.text("Town Founder", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
             lore.add(Component.empty());
@@ -101,11 +102,11 @@ public class MembersInventory extends GUIInventory {
             // only leaders and officials can open the member options gui
             if (member.getTownRank() != TownRank.MEMBER) {
                 SkullMeta meta = (SkullMeta) itemClicked.getItemMeta();
-                ParallelTowns.get().guiManager.openMemberOptionsMenuForPlayer(player, meta.getOwningPlayer());
+                ParallelTowns.get().openMemberOptionsMenuForPlayer(player, meta.getOwningPlayer());
             }
         }
         if (slotNum == 49) {
-            ParallelTowns.get().guiManager.openMainMenuForPlayer(player);
+            ParallelTowns.get().openMainMenuForPlayer(player);
         }
     }
 }

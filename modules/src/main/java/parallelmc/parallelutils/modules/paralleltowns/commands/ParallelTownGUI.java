@@ -26,7 +26,7 @@ public class ParallelTownGUI extends TownCommand {
             ParallelChat.sendParallelMessageTo(player, "You are not in a town! Use /town create to create one!");
         }
         else {
-            ParallelTowns.get().guiManager.openMainMenuForPlayer(player);
+            ParallelTowns.get().openMainMenuForPlayer(player);
         }
         return true;
     }
