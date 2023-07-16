@@ -7,7 +7,7 @@ plugins {
 
 group = 'org.parallelmc'
 
-version = '4.1.0'
+version = '4.1.1'
 description = 'A set of utilities and features for use on the Parallel Minecraft server'
 
 java {
@@ -28,7 +28,7 @@ dependencies {
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.8'
     implementation 'mysql:mysql-connector-java:8.0.33'
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.0.0'
-    compileOnly 'dev.esophose:playerparticles:8.2'
+    compileOnly 'dev.esophose:playerparticles:8.4'
     implementation 'org.reflections:reflections:0.10.2'
 }
 
