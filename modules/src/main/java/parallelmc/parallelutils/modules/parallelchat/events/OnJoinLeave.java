@@ -33,6 +33,9 @@ public class OnJoinLeave implements Listener {
         ParallelChat.get().removeFromStaffChat(player);
         ParallelChat.get().removeFromLoreChat(player);
         ParallelChat.get().chatRoomManager.removeActiveChatroom(player);
+
+        boolean canSend = true;
+
         event.quitMessage(null);
 
         String customMsg = ParallelChat.get().customMessageManager.getLeaveMessageForPlayer(player);
@@ -46,8 +49,8 @@ public class OnJoinLeave implements Listener {
         if (puPlugin.getModule("DiscordIntegration") != null) {
             synchronized (JoinQuitSuppressorListener.hiddenUsersLock) { // NOTE: This MIGHT cause lag problems. It shouldn't, but beware
                 if (JoinQuitSuppressorListener.hiddenUsers.contains(player.getName().strip())) {
-                    event.quitMessage(Component.text((""))); // This might need to change, but it needs to be tested
-                    return;
+                    event.quitMessage(null); // This might need to change, but it needs to be tested
+                    canSend = false;
                 }
             }
         } else {
@@ -60,18 +63,23 @@ public class OnJoinLeave implements Listener {
             }
         }
 
-        for (Player p : player.getServer().getOnlinePlayers()) {
-            p.sendMessage(leave);
+        if (canSend) {
+            for (Player p : player.getServer().getOnlinePlayers()) {
+                p.sendMessage(leave);
+            }
         }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerJoin(PlayerJoinEvent event) {
+        // TODO: Refactor this function please. It's a mess
         Player player = event.getPlayer();
         Server server = player.getServer();
         event.joinMessage(null);
 
         String customMsg = ParallelChat.get().customMessageManager.getJoinMessageForPlayer(player);
+
+        boolean canSend = true;
 
         Component join;
         if (customMsg == null)
@@ -99,7 +107,9 @@ public class OnJoinLeave implements Listener {
             if (puPlugin.getModule("DiscordIntegration") != null) {
                 synchronized (JoinQuitSuppressorListener.hiddenUsersLock) { // NOTE: This MIGHT cause lag problems. It shouldn't, but beware
                     if (JoinQuitSuppressorListener.hiddenUsers.contains(player.getName().strip())) {
-                        event.joinMessage(Component.text("")); // This might need to change, but it needs to be tested
+                        event.joinMessage(null); // This might need to change, but it needs to be tested
+                        canSend = false;
+
 
                         if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
                             return;
@@ -115,8 +125,10 @@ public class OnJoinLeave implements Listener {
                 }
             }
 
-            for (Player p : player.getServer().getOnlinePlayers()) {
-                p.sendMessage(join);
+            if (canSend) {
+                for (Player p : player.getServer().getOnlinePlayers()) {
+                    p.sendMessage(join);
+                }
             }
 
             // private welcome info
