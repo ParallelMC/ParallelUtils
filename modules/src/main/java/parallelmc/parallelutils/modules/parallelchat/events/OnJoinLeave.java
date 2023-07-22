@@ -40,11 +40,11 @@ public class OnJoinLeave implements Listener {
 
         String customMsg = ParallelChat.get().customMessageManager.getLeaveMessageForPlayer(player);
 
-        Component leave;
+        Component leave = MiniMessage.miniMessage().deserialize("<dark_gray>[<red>-<dark_gray>] ");
         if (customMsg == null)
-            leave = MiniMessage.miniMessage().deserialize("<yellow><player> left the game", TagResolver.resolver(Placeholder.parsed("player", player.getName())));
+            leave = leave.append(MiniMessage.miniMessage().deserialize("<yellow><player> left the game", TagResolver.resolver(Placeholder.parsed("player", player.getName()))));
         else
-            leave = Component.text(customMsg, NamedTextColor.YELLOW);
+            leave = leave.append(Component.text(customMsg, NamedTextColor.YELLOW));
 
         if (puPlugin.getModule("DiscordIntegration") != null) {
             synchronized (JoinQuitSuppressorListener.hiddenUsersLock) { // NOTE: This MIGHT cause lag problems. It shouldn't, but beware
@@ -81,15 +81,14 @@ public class OnJoinLeave implements Listener {
 
         boolean canSend = true;
 
-        Component join;
+        Component join = MiniMessage.miniMessage().deserialize("<dark_gray>[<green>+<dark_gray>] ");
         if (customMsg == null)
-            join = MiniMessage.miniMessage().deserialize("<yellow><player> joined the game", TagResolver.resolver(Placeholder.parsed("player", player.getName())));
+            join = join.append(MiniMessage.miniMessage().deserialize("<yellow><player> joined the game", TagResolver.resolver(Placeholder.parsed("player", player.getName()))));
         else
-            join = Component.text(customMsg, NamedTextColor.YELLOW);
+            join = join.append(Component.text(customMsg, NamedTextColor.YELLOW));
         
         if (!player.hasPlayedBefore()) {
             Component welcome = MiniMessage.miniMessage().deserialize("\n<dark_aqua><strikethrough>⎯⎯⎯⎯</strikethrough> Welcome to <white><bold>Parallel</bold><dark_aqua>, <player>! <strikethrough>⎯⎯⎯⎯", TagResolver.resolver(Placeholder.parsed("player", player.getName())));
-
             join = join.append(welcome);
             for (Player p : server.getOnlinePlayers()) {
                 p.sendMessage(join);
