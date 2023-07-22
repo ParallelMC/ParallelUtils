@@ -40,6 +40,8 @@ public class ParallelResources extends ParallelModule {
 			return;
 		}
 
+		ResourceServer server = new ResourceServer();
+
 		try {
 			// Create resources directory if it does not exist
 			File resourcesDir = new File(puPlugin.getDataFolder(), "resources/");
@@ -48,12 +50,13 @@ public class ParallelResources extends ParallelModule {
 				Files.createDirectory(resourcesDir.toPath());
 			}
 
-
-
 		} catch (IOException e) {
 			e.printStackTrace();
 			ParallelUtils.log(Level.SEVERE, "IOException while loading ParallelResources! Quitting...");
 		}
+
+		Thread serverThread = new Thread(server);
+		serverThread.start();
 	}
 
 	@Override
