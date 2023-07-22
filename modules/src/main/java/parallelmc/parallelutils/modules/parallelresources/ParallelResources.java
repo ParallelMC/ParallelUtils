@@ -19,6 +19,9 @@ public class ParallelResources extends ParallelModule {
 
 	public static ParallelUtils puPlugin;
 
+	private ResourceServer server;
+	private Thread serverThread;
+
 	public ParallelResources(ParallelClassLoader classLoader, List<String> dependents) {
 		super(classLoader, dependents);
 	}
@@ -40,7 +43,7 @@ public class ParallelResources extends ParallelModule {
 			return;
 		}
 
-		ResourceServer server = new ResourceServer();
+		server = new ResourceServer();
 
 		try {
 			// Create resources directory if it does not exist
@@ -55,7 +58,7 @@ public class ParallelResources extends ParallelModule {
 			ParallelUtils.log(Level.SEVERE, "IOException while loading ParallelResources! Quitting...");
 		}
 
-		Thread serverThread = new Thread(server);
+		serverThread = new Thread(server);
 		serverThread.start();
 	}
 
@@ -71,7 +74,10 @@ public class ParallelResources extends ParallelModule {
 
 	@Override
 	public void onUnload() {
-
+		serverThread.interrupt();
+		serverThread = null;
+		server.destruct();
+		server = null;
 	}
 
 	@Override

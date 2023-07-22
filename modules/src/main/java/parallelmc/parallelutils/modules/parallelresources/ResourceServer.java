@@ -1,9 +1,9 @@
 package parallelmc.parallelutils.modules.parallelresources;
 
-import com.sun.net.httpserver.HttpContext;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.ParallelUtils;
 
 import java.io.*;
@@ -36,7 +36,7 @@ public class ResourceServer implements Runnable{
 		resourceMap = null;
 	}
 
-	public boolean addResource(String world, File pack) {
+	public boolean addResource(@NotNull String world, @NotNull File pack) {
 
 		if (resourceMap.containsKey(world)) {
 			return false;
@@ -49,7 +49,7 @@ public class ResourceServer implements Runnable{
 		return true;
 	}
 
-	public void updateResource(String world, File pack) {
+	public void updateResource(@NotNull String world, @NotNull File pack) {
 		resourceMap.put(world, pack);
 
 		server.createContext("/" + pack.getName(), new ServerHandler(resourceMap));
@@ -72,7 +72,7 @@ public class ResourceServer implements Runnable{
 
 		private final HashMap<String, File> resourceMap;
 
-		public ServerHandler(HashMap<String, File> resourceMap) {
+		public ServerHandler(@NotNull HashMap<String, File> resourceMap) {
 			this.resourceMap = resourceMap;
 		}
 
