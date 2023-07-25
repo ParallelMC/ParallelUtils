@@ -13,10 +13,22 @@ import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.net.URI;
+import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
+
+import static java.nio.file.FileVisitResult.CONTINUE;
 
 public class ParallelResources extends ParallelModule {
 
@@ -87,13 +99,45 @@ public class ParallelResources extends ParallelModule {
 			String base_url = https_head + domain + ":" + port + "/";
 
 			// Load resources
-			
 
+			File base_zip = new File(resourcesDir, "base.zip");
 
+			if (!base_zip.exists()) {
+				ParallelUtils.log(Level.WARNING, "Base zip does not exist! Will not continue");
+				return;
+			}
+
+			File[] files = resourcesDir.listFiles();
+
+			ArrayList<File> resourceMods = new ArrayList<>();
+
+			if (files != null) {
+				for (File f : files) {
+					if (f.isDirectory()) {
+						// This is now treated as a resource pack
+						resourceMods.add(f);
+					}
+				}
+			}
+
+			File outDir = new File(resourcesDir, "generated/");
+
+			if (!outDir.exists()) {
+				Files.createDirectory(outDir.toPath());
+			}
+
+			List<File> packs = generatePacks(outDir, base_zip, resourceMods);
+
+			server.addResource("base", base_zip);
+
+			for (File f : packs) {
+				server.addResource(f.getName().split("\\.")[0], f);
+			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
 			ParallelUtils.log(Level.SEVERE, "IOException while loading ParallelResources! Quitting...");
+			return;
 		} catch (InvalidConfigurationException e) {
 			throw new RuntimeException(e);
 		}
@@ -125,4 +169,76 @@ public class ParallelResources extends ParallelModule {
 	public @NotNull String getName() {
 		return "ParallelResources";
 	}
+
+	@NotNull
+	public List<File> generatePacks(@NotNull File outDir, @NotNull File base_zip, @NotNull List<File> mods) throws IOException {
+		// Load base into memory
+		ArrayList<File> files = new ArrayList<>();
+
+		for (File f : mods) {
+			File out = generatePack(outDir, base_zip, f);
+
+			if (out == null) {
+				ParallelUtils.log(Level.WARNING, "Unable to generate pack for mod " + f.getName());
+			} else {
+				files.add(out);
+			}
+		}
+
+		return files;
+	}
+
+	@Nullable
+	public File generatePack(@NotNull File outDir, @NotNull File base, @NotNull File mod) throws IOException {
+
+		// Copy base to a new file
+		String outName = mod.getName() + ".zip";
+		Path outPath = new File(outDir, outName).toPath();
+		Files.copy(base.toPath(), outPath);
+
+		// In future ops, catch IOException to delete generated file
+		try {
+			// Open zip file as a file system, so we can edit files in it
+			URI uri = URI.create("jar:" + outPath.toUri());
+
+			Path mod_path = mod.toPath();
+
+			try (FileSystem fs = FileSystems.newFileSystem(uri, new HashMap<>())) {
+
+				Path target = fs.getPath("");
+
+				// Walk the file tree of the mod, creating relative paths and copying files into the zip file system
+				Files.walkFileTree(mod_path, new SimpleFileVisitor<>() {
+					@Override
+					public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
+							throws IOException
+					{
+						Path targetdir = target.resolve(mod_path.relativize(dir));
+						try {
+							Files.copy(dir, targetdir);
+						} catch (FileAlreadyExistsException e) {
+							if (!Files.isDirectory(targetdir))
+								throw e;
+						}
+						return CONTINUE;
+					}
+
+					@Override
+					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
+							throws IOException
+					{
+						Files.copy(file, target.resolve(mod_path.relativize(file)));
+						return CONTINUE;
+					}
+				});
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			Files.delete(outPath);
+			return null;
+		}
+
+		return outPath.toFile();
+	}
+
 }
