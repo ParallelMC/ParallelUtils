@@ -146,6 +146,11 @@ public class ResourceServer implements Runnable{
 			String path = t.getHttpContext().getPath();
 
 			File resource = resourceMap.get(path);
+
+			if (resource == null) {
+				resource = resourceMap.get("base");
+			}
+
 			Path pathObj = resource.toPath();
 
 			long resourceLen = Files.size(pathObj);
