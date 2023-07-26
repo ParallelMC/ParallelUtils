@@ -1,5 +1,8 @@
 package parallelmc.parallelutils.modules.parallelresources;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -11,14 +14,13 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
+import parallelmc.parallelutils.modules.parallelresources.events.ResourcePackHandle;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.net.URI;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -32,13 +34,22 @@ import static java.nio.file.FileVisitResult.CONTINUE;
 
 public class ParallelResources extends ParallelModule {
 
+	private static final String DEFAULT_WARNING = """
+					<bold><yellow>Warning!</bold>
+					<white>Parallel requires that you accept the resource pack to join the server.
+					If you choose to reject this, you will be disconnected from the server.""";
+
 	public static ParallelUtils puPlugin;
 
-
+	private ResourcePackHandle handler;
 	private ResourceServer server;
 	private Thread serverThread;
 
+	private String base_url = "";
+
 	private YamlConfiguration resourcesConfig = new YamlConfiguration();
+
+	private final HashMap<String, byte[]> resourceHashes = new HashMap<>();
 
 	public ParallelResources(ParallelClassLoader classLoader, List<String> dependents) {
 		super(classLoader, dependents);
@@ -79,6 +90,7 @@ public class ParallelResources extends ParallelModule {
 				resourcesConfig.set("https", false);
 				resourcesConfig.set("https_keystore", null);
 				resourcesConfig.set("https_keystore_pass", null);
+				resourcesConfig.set("warning_message", DEFAULT_WARNING);
 				resourcesConfig.save(resourcesFile);
 			} else {
 				resourcesConfig.load(resourcesFile);
@@ -91,12 +103,14 @@ public class ParallelResources extends ParallelModule {
 			boolean https = resourcesConfig.getBoolean("https", false);
 			String keystore = resourcesConfig.getString("https_keystore", null);
 			String keystore_pass = resourcesConfig.getString("https_keystore_pass", null);
+			String warning_message = resourcesConfig.getString("warning_message", DEFAULT_WARNING);
+			Component warning_component = MiniMessage.miniMessage().deserialize(warning_message, TagResolver.standard());
 
 			server = new ResourceServer(port, https, keystore != null ? new File(resourcesDir, keystore) : null, keystore_pass);
 
 			String https_head = https ? "https://" : "http://";
 
-			String base_url = https_head + domain + ":" + port + "/";
+			base_url = https_head + domain + ":" + port + "/";
 
 			// Load resources
 
@@ -129,16 +143,19 @@ public class ParallelResources extends ParallelModule {
 			List<File> packs = generatePacks(outDir, base_zip, resourceMods);
 
 			server.addResource("base", base_zip);
+			resourceHashes.put("base", createSha1(base_zip));
 
 			for (File f : packs) {
 				server.addResource(f.getName().split("\\.")[0], f);
 			}
 
+			handler = new ResourcePackHandle(puPlugin, this, warning_component);
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			ParallelUtils.log(Level.SEVERE, "IOException while loading ParallelResources! Quitting...");
 			return;
-		} catch (InvalidConfigurationException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 
@@ -153,7 +170,7 @@ public class ParallelResources extends ParallelModule {
 
 	@Override
 	public void onDisable() {
-
+		handler.disable();
 	}
 
 	@Override
@@ -163,6 +180,7 @@ public class ParallelResources extends ParallelModule {
 		server.destruct();
 		server = null;
 		resourcesConfig = null;
+		handler = null;
 	}
 
 	@Override
@@ -171,7 +189,7 @@ public class ParallelResources extends ParallelModule {
 	}
 
 	@NotNull
-	public List<File> generatePacks(@NotNull File outDir, @NotNull File base_zip, @NotNull List<File> mods) throws IOException {
+	public List<File> generatePacks(@NotNull File outDir, @NotNull File base_zip, @NotNull List<File> mods) throws Exception {
 		// Load base into memory
 		ArrayList<File> files = new ArrayList<>();
 
@@ -189,11 +207,12 @@ public class ParallelResources extends ParallelModule {
 	}
 
 	@Nullable
-	public File generatePack(@NotNull File outDir, @NotNull File base, @NotNull File mod) throws IOException {
+	public File generatePack(@NotNull File outDir, @NotNull File base, @NotNull File mod) throws Exception {
 
 		// Copy base to a new file
 		String outName = mod.getName() + ".zip";
-		Path outPath = new File(outDir, outName).toPath();
+		File outFile = new File(outDir, outName);
+		Path outPath = outFile.toPath();
 		Files.copy(base.toPath(), outPath);
 
 		// In future ops, catch IOException to delete generated file
@@ -232,13 +251,42 @@ public class ParallelResources extends ParallelModule {
 					}
 				});
 			}
+
+
 		} catch (IOException e) {
 			e.printStackTrace();
 			Files.delete(outPath);
 			return null;
 		}
 
+		resourceHashes.put(mod.getName(), createSha1(outFile));
+
 		return outPath.toFile();
+	}
+
+	private byte[] createSha1(File file) throws Exception  {
+		MessageDigest digest = MessageDigest.getInstance("SHA-1");
+		try (InputStream fis = new FileInputStream(file)) {
+			int n = 0;
+			byte[] buffer = new byte[8192];
+			while (n != -1) {
+				n = fis.read(buffer);
+				if (n > 0) {
+					digest.update(buffer, 0, n);
+				}
+			}
+		}
+		return digest.digest();
+	}
+
+	@NotNull
+	public String getResourceUrl(@NotNull String world) {
+		return base_url + world;
+	}
+
+	@Nullable
+	public byte[] getHash(@NotNull String world) {
+		return resourceHashes.get(world);
 	}
 
 }
