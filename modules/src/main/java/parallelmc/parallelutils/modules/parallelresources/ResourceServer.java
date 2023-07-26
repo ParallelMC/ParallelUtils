@@ -148,6 +148,7 @@ public class ResourceServer implements Runnable{
 			File resource = resourceMap.get(path);
 
 			if (resource == null) {
+				ParallelUtils.log(Level.INFO, "Tried getting pack for " + path + ", but was null. Defaulting to base.");
 				resource = resourceMap.get("base");
 			}
 
