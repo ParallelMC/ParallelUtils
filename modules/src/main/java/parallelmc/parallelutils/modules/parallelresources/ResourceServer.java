@@ -21,55 +21,8 @@ public class ResourceServer implements Runnable{
 
 	private HttpServer server;
 
-	private final int port;
-	private final boolean https;
-
-	@Nullable
-	private final File keystore;
-
-	@Nullable
-	private final String keystore_pass;
-
 	public ResourceServer(int port, boolean https, @Nullable File keystore, @Nullable String keystore_pass) {
-		this.port = port;
-		this.https = https;
-		this.keystore = keystore;
-		this.keystore_pass = keystore_pass;
-	}
 
-	public ResourceServer() {
-		this(8005, false, null, null);
-	}
-
-	public void destruct() {
-		server.stop(0);
-
-		server = null;
-		resourceMap = null;
-	}
-
-	public boolean addResource(@NotNull String world, @NotNull File pack) {
-
-		if (resourceMap.containsKey(world)) {
-			return false;
-		}
-
-		resourceMap.put(world, pack);
-
-		server.createContext("/" + pack.getName(), new ServerHandler(resourceMap));
-
-		return true;
-	}
-
-	public void updateResource(@NotNull String world, @NotNull File pack) {
-		resourceMap.put(world, pack);
-
-		server.createContext("/" + pack.getName(), new ServerHandler(resourceMap));
-	}
-
-	@Override
-	public void run() {
-		ParallelUtils.log(Level.INFO, "Starting resources server...");
 		try {
 			if (https) {
 				if (keystore == null) {
@@ -122,14 +75,50 @@ public class ResourceServer implements Runnable{
 				server = HttpServer.create(new InetSocketAddress(port), 0);
 			}
 			server.setExecutor(null);
-			server.start();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (NoSuchAlgorithmException | UnrecoverableKeyException | CertificateException | KeyStoreException |
 		         KeyManagementException e) {
 			throw new RuntimeException(e);
 		}
-		ParallelUtils.log(Level.WARNING, "Resources Server Started");
+	}
+
+	public ResourceServer() {
+		this(8005, false, null, null);
+	}
+
+	public void destruct() {
+		server.stop(0);
+
+		server = null;
+		resourceMap = null;
+	}
+
+	public boolean addResource(@NotNull String world, @NotNull File pack) {
+
+		if (resourceMap.containsKey(world)) {
+			return false;
+		}
+
+		resourceMap.put(world, pack);
+
+		server.createContext("/" + pack.getName(), new ServerHandler(resourceMap));
+
+		return true;
+	}
+
+	public void updateResource(@NotNull String world, @NotNull File pack) {
+		resourceMap.put(world, pack);
+
+		server.createContext("/" + pack.getName(), new ServerHandler(resourceMap));
+	}
+
+	@Override
+	public void run() {
+		ParallelUtils.log(Level.INFO, "Starting resources server...");
+		server.start();
+		ParallelUtils.log(Level.WARNING, "Resources Server started at " + server.getAddress().toString());
 	}
 
 	static class ServerHandler implements HttpHandler {
@@ -143,7 +132,7 @@ public class ResourceServer implements Runnable{
 
 		@Override
 		public void handle(HttpExchange t) throws IOException {
-			String path = t.getHttpContext().getPath();
+			String path = t.getHttpContext().getPath().replace(".zip", "").replace("/", "");
 
 			File resource = resourceMap.get(path);
 

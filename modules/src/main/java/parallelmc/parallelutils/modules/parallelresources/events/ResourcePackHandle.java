@@ -70,13 +70,15 @@ public class ResourcePackHandle implements Listener {
 
 		String worldName = world.getName();
 
-		String resourceUrl = resources.getResourceUrl(worldName);
-
 		byte[] hash = resources.getHash(worldName);
 
 		if (hash == null) {
+			ParallelUtils.log(Level.INFO, "Tried to get pack for invalid world. Defaulting to base");
+			worldName = "base";
 			hash = resources.getHash("base");
 		}
+
+		String resourceUrl = resources.getResourceUrl(worldName);
 
 		player.setResourcePack(resourceUrl, hash, warningMessage, true);
 
