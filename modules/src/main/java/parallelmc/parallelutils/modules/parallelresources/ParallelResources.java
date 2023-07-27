@@ -39,6 +39,8 @@ public class ParallelResources extends ParallelModule {
 					<white>Parallel requires that you accept the resource pack to join the server.
 					If you choose to reject this, you will be disconnected from the server.""";
 
+	private static final List<String> DISALLOWED_WORLDS = List.of("base", "generated");
+
 	public static ParallelUtils puPlugin;
 
 	private ResourcePackHandle handler;
@@ -128,8 +130,10 @@ public class ParallelResources extends ParallelModule {
 			if (files != null) {
 				for (File f : files) {
 					if (f.isDirectory()) {
-						// This is now treated as a resource pack
-						resourceMods.add(f);
+						if (!DISALLOWED_WORLDS.contains(f.getName())) {
+							// This is now treated as a resource pack
+							resourceMods.add(f);
+						}
 					}
 				}
 			}
@@ -138,6 +142,8 @@ public class ParallelResources extends ParallelModule {
 
 			if (!outDir.exists()) {
 				Files.createDirectory(outDir.toPath());
+			} else {
+				purgeDirectory(outDir);
 			}
 
 			List<File> packs = generatePacks(outDir, base_zip, resourceMods);
@@ -146,17 +152,23 @@ public class ParallelResources extends ParallelModule {
 			resourceHashes.put("base", createSha1(base_zip));
 
 			for (File f : packs) {
-				server.addResource(f.getName().split("\\.")[0], f);
+				String trimmed_name = f.getName().replace(".zip", "");
+				server.addResource(trimmed_name, f);
+				resourceHashes.put(trimmed_name, createSha1(f));
 			}
 
 			handler = new ResourcePackHandle(puPlugin, this, warning_component);
+
+
 
 		} catch (IOException e) {
 			e.printStackTrace();
 			ParallelUtils.log(Level.SEVERE, "IOException while loading ParallelResources! Quitting...");
 			return;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			e.printStackTrace();
+			ParallelUtils.log(Level.SEVERE, "Exception while loading ParallelResources! Quitting...");
+			return;
 		}
 
 		serverThread = new Thread(server);
@@ -165,6 +177,8 @@ public class ParallelResources extends ParallelModule {
 
 	@Override
 	public void onEnable() {
+
+		Bukkit.getPluginManager().registerEvents(handler, puPlugin);
 
 	}
 
@@ -213,7 +227,7 @@ public class ParallelResources extends ParallelModule {
 		String outName = mod.getName() + ".zip";
 		File outFile = new File(outDir, outName);
 		Path outPath = outFile.toPath();
-		Files.copy(base.toPath(), outPath);
+		Files.copy(base.toPath(), outPath, StandardCopyOption.REPLACE_EXISTING);
 
 		// In future ops, catch IOException to delete generated file
 		try {
@@ -232,7 +246,7 @@ public class ParallelResources extends ParallelModule {
 					public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs)
 							throws IOException
 					{
-						Path targetdir = target.resolve(mod_path.relativize(dir));
+						Path targetdir = target.resolve("/" + mod_path.relativize(dir));
 						try {
 							Files.copy(dir, targetdir);
 						} catch (FileAlreadyExistsException e) {
@@ -246,7 +260,7 @@ public class ParallelResources extends ParallelModule {
 					public FileVisitResult visitFile(Path file, BasicFileAttributes attrs)
 							throws IOException
 					{
-						Files.copy(file, target.resolve(mod_path.relativize(file)));
+						Files.copy(file, target.resolve("/" + mod_path.relativize(file)), StandardCopyOption.REPLACE_EXISTING);
 						return CONTINUE;
 					}
 				});
@@ -279,9 +293,23 @@ public class ParallelResources extends ParallelModule {
 		return digest.digest();
 	}
 
+	private void purgeDirectory(@NotNull File dir) {
+		File[] files = dir.listFiles();
+
+		if (files == null) return;
+
+		for (File file: files) {
+			if (file.isDirectory())
+				purgeDirectory(file);
+			if (!file.delete()) {
+				ParallelUtils.log(Level.WARNING, "Failed to delete pack " + file.getName());
+			}
+		}
+	}
+
 	@NotNull
 	public String getResourceUrl(@NotNull String world) {
-		return base_url + world;
+		return base_url + world + ".zip";
 	}
 
 	@Nullable
