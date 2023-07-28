@@ -18,6 +18,7 @@ import parallelmc.parallelutils.modules.parallelresources.events.ResourcePackHan
 
 import java.io.*;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.security.MessageDigest;
@@ -27,6 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
@@ -39,7 +41,11 @@ public class ParallelResources extends ParallelModule {
 					<white>Parallel requires that you accept the resource pack to join the server.
 					If you choose to reject this, you will be disconnected from the server.""";
 
-	private static final List<String> DISALLOWED_WORLDS = List.of("base", "generated");
+	private static final List<String> DISALLOWED_WORLDS = List.of("base", "generated", "pre-squash");
+
+	private File squashOut;
+
+	private File modOut;
 
 	public static ParallelUtils puPlugin;
 
@@ -50,6 +56,12 @@ public class ParallelResources extends ParallelModule {
 	private String base_url = "";
 
 	private YamlConfiguration resourcesConfig = new YamlConfiguration();
+
+	@Nullable
+	private File packSquash = null;
+
+	@Nullable
+	private File packSquashConfig = null;
 
 	private final HashMap<String, byte[]> resourceHashes = new HashMap<>();
 
@@ -83,6 +95,9 @@ public class ParallelResources extends ParallelModule {
 				Files.createDirectory(resourcesDir.toPath());
 			}
 
+			squashOut = new File(resourcesDir, "generated/");
+			modOut = new File(resourcesDir, "pre-squash/");
+
 			File resourcesFile = new File(resourcesDir, "parallelresources.yml");
 
 			// Set defaults
@@ -114,6 +129,36 @@ public class ParallelResources extends ParallelModule {
 
 			base_url = https_head + domain + ":" + port + "/";
 
+			// Try loading packsquash
+
+			File packSquashTemp = new File(resourcesDir, "packsquash");
+
+			boolean hasSquash = false;
+
+			if (packSquashTemp.exists() && !packSquashTemp.isDirectory()) {
+				hasSquash = true;
+			} else {
+				packSquashTemp = new File(resourcesDir, "packsquash.exe");
+
+				if (packSquashTemp.exists() && !packSquashTemp.isDirectory()) {
+					hasSquash = true;
+				} else {
+					ParallelUtils.log(Level.WARNING, "packsquash binary not found in ParallelUtils/resources directory. Will not use");
+				}
+			}
+
+			if (hasSquash) {
+				File packSquashConfigTemp = new File(resourcesDir, "packsquash.toml");
+
+				if (packSquashConfigTemp.exists()) {
+					packSquash = packSquashTemp;
+					packSquashConfig = packSquashConfigTemp;
+				} else {
+					ParallelUtils.log(Level.WARNING, "packsquash.toml not found in ParallelUtils/resources directory. Will not use");
+				}
+			}
+
+
 			// Load resources
 
 			File base_zip = new File(resourcesDir, "base.zip");
@@ -138,18 +183,40 @@ public class ParallelResources extends ParallelModule {
 				}
 			}
 
-			File outDir = new File(resourcesDir, "generated/");
-
-			if (!outDir.exists()) {
-				Files.createDirectory(outDir.toPath());
+			if (!squashOut.exists()) {
+				Files.createDirectory(squashOut.toPath());
 			} else {
-				purgeDirectory(outDir);
+				purgeDirectory(squashOut);
 			}
 
-			List<File> packs = generatePacks(outDir, base_zip, resourceMods);
+			if (!modOut.exists()) {
+				Files.createDirectory(modOut.toPath());
+			} else {
+				purgeDirectory(modOut);
+			}
 
-			server.addResource("base", base_zip);
-			resourceHashes.put("base", createSha1(base_zip));
+			List<File> packs;
+
+			if (packSquash != null) {
+
+				List<File> packsTemp = generatePacks(modOut, base_zip, resourceMods);
+				// Copy the base pack here to get squashed
+				File base_temp = new File(modOut, base_zip.getName());
+				Files.copy(base_zip.toPath(), base_temp.toPath());
+
+				packsTemp.add(base_temp);
+
+				// Squash all the files
+				packs = squashFiles(packsTemp, resourcesDir, squashOut);
+			} else {
+				// Just put them right in the final output directory
+				packs = generatePacks(squashOut, base_zip, resourceMods);
+
+				// Copy the base pack to its final location
+				File base_final = new File(modOut, base_zip.getName());
+				Files.copy(base_zip.toPath(), base_final.toPath());
+				packs.add(base_final);
+			}
 
 			for (File f : packs) {
 				String trimmed_name = f.getName().replace(".zip", "");
@@ -158,8 +225,6 @@ public class ParallelResources extends ParallelModule {
 			}
 
 			handler = new ResourcePackHandle(puPlugin, this, warning_component);
-
-
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -177,9 +242,7 @@ public class ParallelResources extends ParallelModule {
 
 	@Override
 	public void onEnable() {
-
 		Bukkit.getPluginManager().registerEvents(handler, puPlugin);
-
 	}
 
 	@Override
@@ -276,6 +339,193 @@ public class ParallelResources extends ParallelModule {
 		resourceHashes.put(mod.getName(), createSha1(outFile));
 
 		return outPath.toFile();
+	}
+
+	@NotNull
+	private List<File> squashFiles(@NotNull List<File> inFiles, @NotNull File resourcesDir, @NotNull File outDir) throws IOException {
+		Path tempDir = Files.createTempDirectory(resourcesDir.toPath(), "resource-");
+
+		ArrayList<File> squashed = new ArrayList<>();
+
+		if (packSquash == null || packSquashConfig == null) return squashed;
+
+		// Only read settings once
+		byte[] settings;
+		try (FileInputStream fis = new FileInputStream(packSquashConfig)) {
+			settings = fis.readAllBytes();
+		}
+
+		for (File f : inFiles) {
+			File out = squash(f, tempDir, outDir, settings);
+
+			if (out == null) {
+				ParallelUtils.log(Level.WARNING, "Unable to squash pack " + f.getName() + ". Using unsquashed version");
+				out = new File(outDir, f.getName());
+				Files.copy(f.toPath(), out.toPath());
+			}
+			squashed.add(f);
+		}
+
+		purgeDirectory(tempDir.toFile());
+		Files.deleteIfExists(tempDir);
+
+		return squashed;
+	}
+
+	/**
+	 * Adapted from <a href="https://gist.github.com/AlexTMjugador/7049bdecfe94c893c457d78084e0dfd6">...</a>
+	 * Note! This is in fact blocking and takes time! We just need to deal with it. It's technically possible to do this
+	 * in a separate thread, but it's not worth doing right now. This will just increase server start time.
+	 * @param infile The input resource pack to squash as a .zip file
+	 * @param tempDir The temp directory used to store unzipped packs
+	 * @param outDir The final output directory for squashed packs
+	 * @param settingsStream The stream of packsquash.toml settings
+	 * @return The squashed pack, or null if a problem occurred
+	 */
+	@Nullable
+	private File squash(@NotNull File infile, @NotNull Path tempDir, @NotNull File outDir, @NotNull byte[] settingsStream) {
+		if (packSquash == null || packSquashConfig == null) return null;
+
+		final ProcessBuilder processBuilder = new ProcessBuilder(packSquash.getAbsolutePath());
+
+		// Create directory to unzip to
+		Path unzipPack;
+		try {
+			unzipPack = Files.createTempDirectory(tempDir, infile.getName());
+
+			unzipFile(infile, unzipPack.toFile());
+		} catch (IOException e) {
+			ParallelUtils.log(Level.WARNING, "Unable to create temp directory for squashing file");
+			return null;
+		}
+
+		// Set working directory to the unzipped file
+		processBuilder.directory(unzipPack.toFile());
+
+		// Redirect input, output, and errors, so we can handle it
+		processBuilder.redirectInput(ProcessBuilder.Redirect.PIPE);
+		processBuilder.redirectOutput(ProcessBuilder.Redirect.PIPE);
+		processBuilder.redirectErrorStream(true);
+
+		final Process packSquashProcess;
+		try {
+			packSquashProcess = processBuilder.start();
+		} catch (final Exception exc) {
+			ParallelUtils.log(Level.WARNING, "- An error occurred while starting the PackSquash process:");
+			exc.printStackTrace();
+
+			return null;
+		}
+
+		File outFile = new File(outDir, infile.getName());
+
+		try (OutputStream packSquashInputStream = packSquashProcess.getOutputStream()) {
+
+			// Working directory
+			packSquashInputStream.write(
+					("pack_directory = '.'" + System.lineSeparator()).getBytes(StandardCharsets.UTF_8)
+			);
+
+			// Output file
+			packSquashInputStream.write(
+					("output_file_path = '" + outFile.getAbsolutePath() + "'" + System.lineSeparator()).getBytes(StandardCharsets.UTF_8)
+			);
+
+			// Write remaining settings
+			packSquashInputStream.write(settingsStream);
+		} catch (IOException e) {
+			ParallelUtils.log(Level.WARNING, "- An error occurred while communicating with the PackSquash process:");
+			e.printStackTrace();
+			return null;
+		}
+
+
+		// Get output
+		//ParallelUtils.log(Level.INFO, "- PackSquash process output:");
+		try (InputStream packSquashOutputStream = new BufferedInputStream(packSquashProcess.getInputStream())) {
+			int outputByte;
+			//noinspection StatementWithEmptyBody
+			while ((outputByte = packSquashOutputStream.read()) != -1) {
+				//System.out.write(outputByte);
+			}
+		} catch (final IOException exc) {
+			// The pipe is broken. This may happen if the process gets killed or finishes without
+			// signaling EOF in its output stream.
+			// Even if that happens, it could be treated as a normal EOF, but here we print
+			// the exception anyway
+			ParallelUtils.log(Level.WARNING, "- An error occurred while reading the PackSquash process output:");
+			exc.printStackTrace();
+			return null;
+		}
+
+		try {
+			ParallelUtils.log(Level.INFO, "- PackSquash finished with code " + packSquashProcess.waitFor());
+		} catch (final InterruptedException exc) {
+			ParallelUtils.log(Level.WARNING, "- Thread interrupted while waiting for PackSquash to finish!");
+			exc.printStackTrace();
+			return null;
+		}
+
+		return outFile;
+
+	}
+
+	/**
+	 * Adapted from <a href="https://www.baeldung.com/java-compress-and-uncompress">...</a>
+	 * @param sourceZip The source zip to unzip
+	 * @param outputDir The output directory
+	 * @throws IOException if there is an error while unzipping
+	 */
+	private void unzipFile(@NotNull File sourceZip, @NotNull File outputDir) throws IOException {
+		if (!sourceZip.exists() || sourceZip.isDirectory()) return;
+		if (!outputDir.exists()) {
+			Files.createDirectory(outputDir.toPath());
+		}
+		if (!outputDir.isDirectory()) return;
+
+		byte[] buffer = new byte[1024];
+		ZipInputStream zis = new ZipInputStream(new FileInputStream(sourceZip));
+		ZipEntry zipEntry = zis.getNextEntry();
+		while (zipEntry != null) {
+			while (zipEntry != null) {
+				File newFile = createFile(outputDir, zipEntry);
+				if (zipEntry.isDirectory()) {
+					if (!newFile.isDirectory() && !newFile.mkdirs()) {
+						throw new IOException("Failed to create directory " + newFile);
+					}
+				} else {
+					// fix for Windows-created archives
+					File parent = newFile.getParentFile();
+					if (!parent.isDirectory() && !parent.mkdirs()) {
+						throw new IOException("Failed to create directory " + parent);
+					}
+
+					// write file content
+					FileOutputStream fos = new FileOutputStream(newFile);
+					int len;
+					while ((len = zis.read(buffer)) > 0) {
+						fos.write(buffer, 0, len);
+					}
+					fos.close();
+				}
+				zipEntry = zis.getNextEntry();
+			}
+		}
+		zis.closeEntry();
+		zis.close();
+	}
+
+	private static File createFile(File destinationDir, ZipEntry zipEntry) throws IOException {
+		File destFile = new File(destinationDir, zipEntry.getName());
+
+		String destDirPath = destinationDir.getCanonicalPath();
+		String destFilePath = destFile.getCanonicalPath();
+
+		if (!destFilePath.startsWith(destDirPath + File.separator)) {
+			throw new IOException("Entry is outside of the target dir: " + zipEntry.getName());
+		}
+
+		return destFile;
 	}
 
 	private byte[] createSha1(File file) throws Exception  {
