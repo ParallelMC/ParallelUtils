@@ -185,9 +185,8 @@ public class ParallelResources extends ParallelModule {
 
 			if (!squashOut.exists()) {
 				Files.createDirectory(squashOut.toPath());
-			} else {
-				purgeDirectory(squashOut);
 			}
+			// Don't delete files so packsquash can cache
 
 			if (!modOut.exists()) {
 				Files.createDirectory(modOut.toPath());
@@ -459,7 +458,7 @@ public class ParallelResources extends ParallelModule {
 		}
 
 		try {
-			ParallelUtils.log(Level.INFO, "- PackSquash finished with code " + packSquashProcess.waitFor());
+			ParallelUtils.log(Level.INFO, "- PackSquash finished squashing " + infile.getName() + " with code " + packSquashProcess.waitFor());
 		} catch (final InterruptedException exc) {
 			ParallelUtils.log(Level.WARNING, "- Thread interrupted while waiting for PackSquash to finish!");
 			exc.printStackTrace();
