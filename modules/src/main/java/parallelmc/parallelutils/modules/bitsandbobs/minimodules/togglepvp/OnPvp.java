@@ -3,6 +3,7 @@ package parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -43,6 +44,35 @@ public class OnPvp implements Listener {
             else {
                 attacker.sendMessage(hasDisabled);
                 event.setCancelled(true);
+            }
+        }
+        if (event.getDamager() instanceof Firework firework && event.getEntity() instanceof Player victim) {
+            if (firework.getShooter() instanceof Player shooter) {
+                UUID sid = shooter.getUniqueId();
+                UUID vid = victim.getUniqueId();
+                Component cantAttack = MiniMessage.miniMessage().deserialize("<red>You cannot attack players with PVP disabled!");
+                Component hasDisabled = MiniMessage.miniMessage().deserialize("<red>" + victim.getName() + " has PVP disabled!");
+                if (TogglePvpManager.pvpToggles.containsKey(sid)) {
+                    if (!TogglePvpManager.pvpToggles.containsKey(sid)) {
+                        shooter.sendMessage(cantAttack);
+                        event.setCancelled(true);
+                    }
+                }
+                else {
+                    shooter.sendMessage(cantAttack);
+                    event.setCancelled(true);
+                }
+                if (TogglePvpManager.pvpToggles.containsKey(vid)) {
+                    if (!TogglePvpManager.pvpToggles.get(vid)) {
+                        shooter.sendMessage(hasDisabled);
+                        event.setCancelled(true);
+                    }
+                }
+                // PVP is off by default
+                else {
+                    shooter.sendMessage(hasDisabled);
+                    event.setCancelled(true);
+                }
             }
         }
     }
