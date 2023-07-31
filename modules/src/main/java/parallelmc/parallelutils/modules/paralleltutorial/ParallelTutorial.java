@@ -29,9 +29,9 @@ import parallelmc.parallelutils.modules.paralleltutorial.handlers.OnJoinAfterOnL
 import parallelmc.parallelutils.modules.paralleltutorial.handlers.OnLeaveDuringTutorial;
 import parallelmc.parallelutils.modules.paralleltutorial.handlers.OnSpectatorTeleport;
 import parallelmc.parallelutils.modules.paralleltutorial.scripting.Instruction;
+import io.papermc.paper.math.FinePosition;
 
 import java.io.*;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -110,7 +110,7 @@ public class ParallelTutorial extends ParallelModule {
         // if anyone is in a tutorial take them out of it
         runningTutorials.forEach((p, t) -> {
             t.cancel();
-            endTutorialFor(p, false);
+            handleShutdown(p);
         });
         runningTutorials.clear();
     }
@@ -119,8 +119,6 @@ public class ParallelTutorial extends ParallelModule {
     public void onUnload() {
 
     }
-
-
 
     @Override
     public @NotNull String getName() {
@@ -227,6 +225,8 @@ public class ParallelTutorial extends ParallelModule {
         return tutorials.containsKey(tutorial.toLowerCase());
     }
 
+    // FinePosition is currently experimental, although all it does is hold a block position as doubles, which we want anyway
+    @SuppressWarnings("UnstableApiUsage")
     public void RunTutorialFor(@NotNull Player player, @NotNull String tutorial, boolean debug) {
         final World world = player.getWorld();
         // TIL entities can't be spawned in async runnables
@@ -312,7 +312,7 @@ public class ParallelTutorial extends ParallelModule {
                                                         Vector look = lookAt(stand, lookAt);
                                                         if (debug) ParallelUtils.log(Level.WARNING, "Calculated look vector: " + look.getX() + " " + look.getY());
                                                         point.setYaw((float) look.getX());
-                                                        point.setPitch((float) look.getY());
+                                                        point.setPitch((float)look.getY());
                                                     }
                                                     else {
                                                         point.setYaw((float) lookAt.getX());
@@ -359,7 +359,8 @@ public class ParallelTutorial extends ParallelModule {
                                     }.runTaskTimer(puPlugin, 0L, 2L);
                                 }
                                 case "LOOKAT" -> {
-                                    lookAt = new Vector(Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
+                                    FinePosition p = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2])).toCenter();
+                                    lookAt = new Vector(p.x(), p.y(), p.z());
                                     isBlock = true;
                                     instructionFinished = true;
                                 }
@@ -439,6 +440,26 @@ public class ParallelTutorial extends ParallelModule {
                 }
             }.runTaskLater(puPlugin, 10L);
         }
+    }
+
+    /*
+        Since we can't start runnables during shutdown we have to do this
+        This may still result in Player moved too quickly errors, testing is needed
+        This will also be unable to check if the armor stand is truly despawned
+     */
+    public void handleShutdown(Player player) {
+        Location endPoint = startPoints.get(player);
+        ArmorStand stand = armorStands.get(player);
+        player.teleport(endPoint);
+        forceSpectate(player, player.getEntityId());
+        if (stand != null) {
+            stand.remove();
+            armorStands.remove(player);
+        }
+        player.setGameMode(GameMode.SURVIVAL);
+        player.setFlySpeed(0.1F);
+        startPoints.remove(player);
+        runningTutorials.remove(player);
     }
 
     public void handleDisconnectedPlayer(Player player, boolean debug) {
