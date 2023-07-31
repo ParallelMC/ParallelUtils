@@ -14,7 +14,7 @@ public class ParallelFormats implements CommandExecutor {
               <white>&k = <obfuscated>Obfuscated</obfuscated>
               <white>&l = <bold>Bold</bold>
               <white>&m = <strikethrough>Strikethrough</strikethrough>
-              <white>&n = <underline>underline</underline>
+              <white>&n = <underlined>underline</underlined>
               <white>&o = <italic>Italic</italic>
               <white>&r = Reset
               
