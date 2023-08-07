@@ -19,6 +19,9 @@ public class OnPvp implements Listener {
     @EventHandler
     public void onPVP(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Player victim) {
+            if (attacker == victim) {
+                return;
+            }
             UUID aid = attacker.getUniqueId();
             UUID vid = victim.getUniqueId();
             Component cantAttack = MiniMessage.miniMessage().deserialize("<red>You cannot attack players with PVP disabled!");
