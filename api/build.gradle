@@ -246,6 +246,10 @@ bukkit {
             description = 'Deletes and existing course layout'
             usage = '/deletecourse (name)'
         }
+        cancelcourse {
+            description = 'Cancels a course layout creation'
+            usage = '/cancelcourse'
+        }
         endrun {
             description = 'Ends a speedrun early'
             usage = '/endrun'
@@ -307,6 +311,10 @@ bukkit {
         }
         'parallelutils.deletecourse' {
             description = 'Gives access to deleting course layouts.'
+            setDefault('FALSE')
+        }
+        'parallelutils.cancelcourse' {
+            description = 'Gives access to cancelling a course layout.'
             setDefault('FALSE')
         }
         'parallelutils.give' {
