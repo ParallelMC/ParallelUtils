@@ -34,8 +34,10 @@ public class ParallelCreateCourse implements CommandExecutor, TabCompleter {
             }
             else {
                 boolean allowEffects = args.length <= 1 || !args[1].equalsIgnoreCase("false");
-                ParallelChat.sendParallelMessageTo(player, "Now creating course named " + args[0] + "! Place down a Gold Pressure Plate to get started!");
-                ParallelParkour.get().startCreatingParkour(player, args[0], allowEffects);
+                ParallelChat.sendParallelMessageTo(player, "Now creating course named " + args[0] + "! The course respawn point has been set at your current position.");
+                ParallelChat.sendParallelMessageTo(player, "Place down a Gold Pressure Plate to set the start point!");
+                ParallelChat.sendParallelMessageTo(player, "To cancel course creation, type /cancelcourse");
+                ParallelParkour.get().startCreatingParkour(player, args[0], allowEffects, player.getLocation());
             }
         }
         return true;
