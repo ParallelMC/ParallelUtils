@@ -193,6 +193,10 @@ bukkit {
             description = 'View all chat formats'
             usage = '/formats'
         }
+        chatcommands {
+            description = 'View all chat commands'
+            usage = '/chatcommands'
+        }
         dnd {
             description = 'Toggles Do Not Disturb mode'
             usage = '/dnd'

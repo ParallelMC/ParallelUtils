@@ -268,6 +268,7 @@ public class ParallelChat extends ParallelModule {
         puPlugin.getCommand("allowword").setExecutor(new ParallelAllowWord());
         puPlugin.getCommand("joinmessages").setExecutor(new ParallelJoinMessages());
         puPlugin.getCommand("leavemessages").setExecutor(new ParallelLeaveMessages());
+        puPlugin.getCommand("chatcommands").setExecutor(new ParallelChatCommands());
 
         this.chatroomCommands = new ChatroomCommands();
         puPlugin.getCommand("chatroom").setExecutor(chatroomCommands);
