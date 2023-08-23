@@ -2,13 +2,12 @@ package parallelmc.parallelutils;
 
 import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.*;
 import parallelmc.parallelutils.events.OnMenuInteract;
-import parallelmc.parallelutils.util.BukkitTools;
-import parallelmc.parallelutils.util.GUIManager;
+import parallelmc.parallelutils.util.EconomyManager;
 import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
 import javax.annotation.Nullable;
@@ -17,8 +16,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.logging.Level;
@@ -46,8 +49,9 @@ public final class ParallelUtils extends JavaPlugin {
 
 	private final HashMap<ParallelModule, ClassLoader> classloaders = new HashMap<>();
 	private Commands commands;
-
 	private boolean loadedModules = false;
+
+	private EconomyManager economyManager;
 
 	@Override
 	public void onLoad() {
@@ -192,8 +196,9 @@ public final class ParallelUtils extends JavaPlugin {
 				e.printStackTrace();
 			}
 		}
-	}
 
+		economyManager = new EconomyManager();
+	}
 	@Override
 	public void onDisable() {
 		// Plugin shutdown logic
