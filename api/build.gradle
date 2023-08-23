@@ -270,6 +270,10 @@ bukkit {
             description = 'Opens the join/leave message GUI'
             usage = '/leavemessages'
         }
+        openmaggieshop {
+            description = 'Opens Maggies Shop'
+            usage = '/openmaggieshop (player)'
+        }
     }
 
     permissions {
