@@ -8,6 +8,7 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
+import parallelmc.parallelutils.modules.npcshops.commands.OpenMaggieShop;
 import parallelmc.parallelutils.modules.npcshops.maggieshop.MaggieShop;
 
 import java.util.List;
@@ -42,6 +43,8 @@ public class NPCShops extends ParallelModule {
             ParallelUtils.log(Level.SEVERE, "Unable to register module NPCShops! Module may already be registered. Quitting...");
             return;
         }
+
+        puPlugin.getCommand("openmaggieshop").setExecutor(new OpenMaggieShop());
 
         maggieShop = new MaggieShop(puPlugin);
 

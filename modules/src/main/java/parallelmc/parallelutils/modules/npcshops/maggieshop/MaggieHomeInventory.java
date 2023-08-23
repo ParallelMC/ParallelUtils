@@ -29,7 +29,7 @@ public class MaggieHomeInventory extends GUIInventory {
         for (int i = 0; i < 27; i++)
             inventory.setItem(i, PLACEHOLDER_YELLOW);
 
-        String url = "basehead-eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTA4OWY0ODU0YzczYTg4Yjg1ODQ3NWM5MTg2MzNjYjgxZWIyODJkYThlNzVhMTdkM2Y2ODAwODBjNThiNjVmNSJ9fX0=";
+        String url = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTA4OWY0ODU0YzczYTg4Yjg1ODQ3NWM5MTg2MzNjYjgxZWIyODJkYThlNzVhMTdkM2Y2ODAwODBjNThiNjVmNSJ9fX0=";
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta headMeta = (SkullMeta)head.getItemMeta();
         CraftPlayerProfile profile = new CraftPlayerProfile(UUID.randomUUID(), null);
@@ -37,7 +37,7 @@ public class MaggieHomeInventory extends GUIInventory {
         headMeta.setPlayerProfile(profile);
         head.setItemMeta(headMeta);
 
-        inventory.setItem(14, head);
+        inventory.setItem(11, head);
 
         ItemStack open = new ItemStack(Material.NAME_TAG);
         ItemMeta meta = open.getItemMeta();
@@ -49,7 +49,7 @@ public class MaggieHomeInventory extends GUIInventory {
         meta.lore(lore);
         open.setItemMeta(meta);
 
-        inventory.setItem(16, open);
+        inventory.setItem(14, open);
 
         ItemStack ranked = new ItemStack(Material.NAME_TAG);
         meta = ranked.getItemMeta();
@@ -62,20 +62,20 @@ public class MaggieHomeInventory extends GUIInventory {
         meta.lore(lore);
         ranked.setItemMeta(meta);
 
-        inventory.setItem(17, ranked);
+        inventory.setItem(15, ranked);
 
         ItemStack remover = new ItemStack(Material.PAPER);
         meta = remover.getItemMeta();
-        meta.displayName(Component.text("Charm Remover").decoration(TextDecoration.ITALIC, false));
+        meta.displayName(Component.text("Charm Remover", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
         lore.clear();
         lore.add(Component.text("Costs ", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false)
                 .append(Component.text("20 riftcoins", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false)));
         lore.add(Component.text("Remove your charms with this handy item!"));
-        remover.lore(lore);
+        meta.lore(lore);
         meta.setCustomModelData(1000000);
         remover.setItemMeta(meta);
 
-        inventory.setItem(18, remover);
+        inventory.setItem(16, remover);
 
         this.puPlugin = puPlugin;
     }
@@ -86,13 +86,13 @@ public class MaggieHomeInventory extends GUIInventory {
     @Override
     public void onSlotClicked(Player player, int slotNum, ItemStack itemClicked) {
         switch(slotNum) {
-            case 16 -> {
+            case 14 -> {
                 NPCShops.get().getMaggieShop().openOpenShopFor(player);
             }
-            case 17 -> {
+            case 15 -> {
                 NPCShops.get().getMaggieShop().openRankedShopFor(player);
             }
-            case 18 -> {
+            case 16 -> {
                 if (EconomyManager.get().getBalance(player) < 20) {
                     ParallelChat.sendParallelMessageTo(player, Component.text("You don't have enough riftcoins!", NamedTextColor.RED));
                 }

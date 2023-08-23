@@ -1,3 +1,5 @@
 package parallelmc.parallelutils.modules.npcshops.maggieshop;
 
-public record ShopCharm(String charmId, String charmName, String[] lore, int price, String requiredRank) { }
+import java.util.List;
+
+public record ShopCharm(String charmId, String charmName, List<String> lore, int price, String requiredRank) { }
