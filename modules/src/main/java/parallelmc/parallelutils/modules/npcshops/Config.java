@@ -9,7 +9,7 @@ import java.util.List;
 public class Config implements parallelmc.parallelutils.Config {
 	@Override
 	public @NotNull List<String> getHardDepends() {
-		return Arrays.asList("ParallelChat");
+		return Arrays.asList("ParallelChat", "Charms");
 	}
 
 	@Override

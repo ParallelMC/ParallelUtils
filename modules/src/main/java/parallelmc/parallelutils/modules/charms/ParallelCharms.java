@@ -362,6 +362,8 @@ public class ParallelCharms extends ParallelModule {
 		return null;
 	}
 
+	public @Nullable CharmOptions getCharmById(String id) { return charmOptions.get(id); }
+
 	// NOTE: Yes, this looks weird. Yes, it's correct
 	// No idea why I programmed it like this but the implementation should work so whatever
 	public ArrayList<Charm> removeAllCharms(@NotNull Player player) {
