@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.eclipse.sisu.inject.Legacy;
 import parallelmc.parallelutils.modules.npcshops.NPCShops;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.util.EconomyManager;
@@ -49,11 +50,12 @@ public class MaggieRankedInventory extends GUIInventory {
             ShopCharm c = charms.get(i);
             lore.clear();
             lore.add(Component.text(c.charmName(), NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
-            for (String s : c.lore()) {
-                lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(s));
-            }
+            lore.addAll(c.lore());
             lore.add(Component.text("Costs ", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false)
                     .append(Component.text(c.price() + " riftcoins", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false)));
+            lore.add(Component.text("You must have a donator rank of ", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+                    .append(getFormattingFromPermission(c.requiredRank())));
+            lore.add(Component.text("or higher to purchase this charm!", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
             meta.lore(lore);
             charm.setItemMeta(meta);
             inventory.setItem(i, charm);
@@ -78,10 +80,23 @@ public class MaggieRankedInventory extends GUIInventory {
             }
             else {
                 EconomyManager.get().removeRiftcoins(player, charm.price());
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("pu givecharm %s %s", player.getName(), charm.charmId()));
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("pu givecharm %s %s", player.getName(), charm.charmName()));
                 ParallelChat.sendParallelMessageTo(player,
                         MiniMessage.miniMessage().deserialize(String.format("<aqua>You bought a <yellow>Charm Applicator <aqua>(%s) for <orange> %d riftcoins!", charm.charmName(), charm.price())));
             }
         }
+    }
+
+    private Component getFormattingFromPermission(String permission) {
+        return switch (permission.split("\\.")[2]) {
+            case "bronze" -> MiniMessage.miniMessage().deserialize("<bold><#cd7f32>Bronze");
+            case "silver" -> MiniMessage.miniMessage().deserialize("<bold><#dbdbdb>Silver");
+            case "gold" -> MiniMessage.miniMessage().deserialize("<bold><gold>Gold");
+            case "diamond" -> MiniMessage.miniMessage().deserialize("<bold><aqua>Diamond");
+            case "rift_master" ->
+                // really don't want to convert this lol
+                    LegacyComponentSerializer.legacySection().deserialize("&x&5&B&1&6&D&B&lR&x&6&4&1&8&D&C&li&x&6&B&1&B&D&C&lf&x&7&3&1&D&D&D&lt &x&7&A&2&0&D&D&lM&x&8&1&2&3&D&E&la&x&8&7&2&6&D&E&ls&x&8&D&2&9&D&F&lt&x&9&3&2&C&D&F&le&x&9&9&2&F&E&0&lr");
+            default -> Component.empty();
+        };
     }
 }

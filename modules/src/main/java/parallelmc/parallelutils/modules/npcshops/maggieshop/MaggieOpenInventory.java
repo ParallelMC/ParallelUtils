@@ -4,7 +4,6 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -49,9 +48,7 @@ public class MaggieOpenInventory extends GUIInventory {
             ShopCharm c = charms.get(i);
             lore.clear();
             lore.add(Component.text(c.charmName(), NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
-            for (String s : c.lore()) {
-                lore.add(LegacyComponentSerializer.legacyAmpersand().deserialize(s));
-            }
+            lore.addAll(c.lore());
             lore.add(Component.text("Costs ", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false)
                     .append(Component.text(c.price() + " riftcoins", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false)));
             meta.lore(lore);
@@ -75,7 +72,7 @@ public class MaggieOpenInventory extends GUIInventory {
             }
             else {
                 EconomyManager.get().removeRiftcoins(player, charm.price());
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("pu givecharm %s %s", player.getName(), charm.charmId()));
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("pu givecharm %s %s", player.getName(), charm.charmName()));
                 ParallelChat.sendParallelMessageTo(player,
                         MiniMessage.miniMessage().deserialize(String.format("<aqua>You bought a <yellow>Charm Applicator <aqua>(%s) for <orange> %d riftcoins!", charm.charmName(), charm.price())));
             }
