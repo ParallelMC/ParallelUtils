@@ -51,8 +51,6 @@ public final class ParallelUtils extends JavaPlugin {
 	private Commands commands;
 	private boolean loadedModules = false;
 
-	private EconomyManager economyManager;
-
 	@Override
 	public void onLoad() {
 		registeredModules = new HashMap<>();
@@ -196,9 +194,8 @@ public final class ParallelUtils extends JavaPlugin {
 				e.printStackTrace();
 			}
 		}
-
-		economyManager = new EconomyManager();
 	}
+
 	@Override
 	public void onDisable() {
 		// Plugin shutdown logic

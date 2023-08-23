@@ -10,6 +10,14 @@ import parallelmc.parallelutils.ParallelUtils;
 import java.util.logging.Level;
 
 public class EconomyManager {
+    private static EconomyManager Instance;
+
+    public static EconomyManager get() {
+        if (Instance == null)
+            Instance = new EconomyManager();
+        return Instance;
+    }
+
     private Economy economy = null;
 
     public EconomyManager() {
