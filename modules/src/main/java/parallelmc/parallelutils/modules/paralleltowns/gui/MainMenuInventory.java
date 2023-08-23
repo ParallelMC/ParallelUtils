@@ -56,15 +56,15 @@ public class MainMenuInventory extends GUIInventory {
         exit.setItemMeta(meta);
 
         inventory.setContents(new ItemStack[]{
-                        PLACEHOLDER,
-                        PLACEHOLDER,
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE,
                         new ItemStack(Material.MAP),
                         members,
                         charter,
                         options,
                         exit,
-                        PLACEHOLDER,
-                        PLACEHOLDER
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE
                 }
         );
     }

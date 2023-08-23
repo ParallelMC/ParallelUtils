@@ -74,24 +74,24 @@ public class MemberOptionsInventory extends GUIInventory {
         exit.setItemMeta(meta);
 
         inventory.setContents(new ItemStack[] {
-                PLACEHOLDER,
-                PLACEHOLDER,
-                PLACEHOLDER,
-                PLACEHOLDER,
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE,
                 head,
-                PLACEHOLDER,
-                PLACEHOLDER,
-                PLACEHOLDER,
-                PLACEHOLDER,
-                PLACEHOLDER,
-                PLACEHOLDER,
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE,
                 AIR,
                 AIR,
                 AIR,
                 evict,
                 exit,
-                PLACEHOLDER,
-                PLACEHOLDER
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE
         });
     }
 
