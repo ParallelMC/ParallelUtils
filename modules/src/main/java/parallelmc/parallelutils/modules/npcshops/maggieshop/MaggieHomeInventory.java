@@ -26,8 +26,9 @@ public class MaggieHomeInventory extends GUIInventory {
     public MaggieHomeInventory(ParallelUtils puPlugin) {
         super(27, Component.text("Maggie's Charms", NamedTextColor.YELLOW));
 
-        for (int i = 0; i < 27; i++)
+        for (int i = 0; i < 27; i++) {
             inventory.setItem(i, PLACEHOLDER_YELLOW);
+        }
 
         String url = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTA4OWY0ODU0YzczYTg4Yjg1ODQ3NWM5MTg2MzNjYjgxZWIyODJkYThlNzVhMTdkM2Y2ODAwODBjNThiNjVmNSJ9fX0=";
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);

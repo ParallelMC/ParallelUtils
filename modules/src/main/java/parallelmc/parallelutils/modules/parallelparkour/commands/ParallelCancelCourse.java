@@ -13,8 +13,9 @@ public class ParallelCancelCourse implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (commandSender instanceof Player player) {
-            if (!player.hasPermission("parallelutils.cancelcourse"))
+            if (!player.hasPermission("parallelutils.cancelcourse")) {
                 return true;
+            }
 
             ParkourLayout layout = ParallelParkour.get().getParkourCreation(player);
             if (layout == null) {

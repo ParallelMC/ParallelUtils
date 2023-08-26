@@ -5,22 +5,24 @@ import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.ParallelUtils;
 
 import java.util.logging.Level;
 
 public class EconomyManager {
-    private static EconomyManager Instance;
+    private static EconomyManager instance;
 
     public static EconomyManager get() {
-        if (Instance == null)
-            Instance = new EconomyManager();
-        return Instance;
+        if (instance == null) {
+            instance = new EconomyManager();
+        }
+        return instance;
     }
 
     private Economy economy = null;
 
-    public EconomyManager() {
+    private EconomyManager() {
         if (Bukkit.getPluginManager().getPlugin("Vault") == null) {
             ParallelUtils.log(Level.SEVERE, "Vault not found, skipping loading economy!");
             return;
@@ -33,11 +35,13 @@ public class EconomyManager {
         economy = rsp.getProvider();
     }
 
+    @Nullable
     public Economy getEconomy() { return economy; }
 
     public boolean addRiftcoins(Player player, double amount) {
-        if (economy == null)
+        if (economy == null) {
             return false;
+        }
         EconomyResponse response = economy.depositPlayer(player, amount);
         if (response.transactionSuccess()) {
             ParallelUtils.log(Level.INFO, String.format("[EconomyManager] Gave %f riftcoins to %s", amount, player.getName()));

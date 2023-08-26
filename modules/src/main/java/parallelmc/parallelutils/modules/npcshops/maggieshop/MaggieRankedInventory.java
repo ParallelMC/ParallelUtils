@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.eclipse.sisu.inject.Legacy;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.npcshops.NPCShops;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.util.EconomyManager;
@@ -18,6 +19,7 @@ import parallelmc.parallelutils.util.GUIInventory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class MaggieRankedInventory extends GUIInventory {
 
@@ -69,6 +71,10 @@ public class MaggieRankedInventory extends GUIInventory {
         }
         else {
             ShopCharm charm = NPCShops.get().getMaggieShop().getRankedCharm(slotNum);
+            if (charm == null) {
+                ParallelUtils.log(Level.WARNING, "Charm is null!");
+                return;
+            }
             if (!player.hasPermission(charm.requiredRank())) {
                 ParallelChat.sendParallelMessageTo(player, Component.text("You are missing the required rank for this charm!", NamedTextColor.RED));
             }
