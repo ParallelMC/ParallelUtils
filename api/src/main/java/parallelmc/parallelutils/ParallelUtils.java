@@ -247,6 +247,7 @@ public final class ParallelUtils extends JavaPlugin {
 		name = name.toLowerCase();
 
 		if (currentlyLoading.contains(name)) {
+			ParallelUtils.log(Level.WARNING, "Loading loop detected!");
 			return null; // Avoid loops
 		}
 
@@ -338,13 +339,13 @@ public final class ParallelUtils extends JavaPlugin {
 
 				// Try loading hard depends
 				for (String hardDep : hardDepends) {
-					if (currentlyLoading.contains(hardDep)) {
+					if (currentlyLoading.contains(hardDep.toLowerCase())) {
 						ParallelUtils.log(Level.WARNING, "Circular dependency found in module " + name +
 								"Module depends on module that is already loading!");
 						continue;
 					}
 
-					ParallelModule out = loadModule(hardDep);
+					ParallelModule out = loadModule(hardDep.toLowerCase());
 
 					// If a module was loaded, get its jar and classes and load them
 
@@ -370,18 +371,18 @@ public final class ParallelUtils extends JavaPlugin {
 						}
 					}
 
-					dependents.add(hardDep);
+					dependents.add(hardDep.toLowerCase());
 				}
 
 				// Try loading soft dependencies
 				for (String softDep : softDepends) {
-					if (currentlyLoading.contains(softDep)) {
+					if (currentlyLoading.contains(softDep.toLowerCase())) {
 						ParallelUtils.log(Level.WARNING, "Circular dependency found in module " + name +
 								"Module depends on module that is already loading!");
 						continue;
 					}
 
-					ParallelModule out = loadModule(softDep);
+					ParallelModule out = loadModule(softDep.toLowerCase());
 
 					if (out == null) {
 						ParallelUtils.log(Level.WARNING, "Unable to load soft dependency for " + name);
@@ -402,7 +403,7 @@ public final class ParallelUtils extends JavaPlugin {
 								return null;
 							}
 						}
-						dependents.add(softDep);
+						dependents.add(softDep.toLowerCase());
 					}
 				}
 
@@ -410,7 +411,7 @@ public final class ParallelUtils extends JavaPlugin {
 
 			ParallelModule module = modules.get(0).getDeclaredConstructor(ParallelClassLoader.class, List.class).newInstance(classLoader, dependents);
 
-			availableModules.put(module.getName(), module);
+			availableModules.put(module.getName().toLowerCase(), module);
 			loadedList.add(module.getName());
 
 			currentlyLoading.remove(name);
@@ -428,6 +429,8 @@ public final class ParallelUtils extends JavaPlugin {
 	private final List<String> currentlyUnloading = new ArrayList<>();
 
 	public boolean unloadModule(String name) {
+		name = name.toLowerCase();
+
 		if (currentlyUnloading.contains(name)) return true;
 
 		ParallelModule module = availableModules.get(name);
@@ -489,7 +492,7 @@ public final class ParallelUtils extends JavaPlugin {
 	}
 
 	public boolean isLoaded(String name) {
-		return availableModules.containsKey(name);
+		return availableModules.containsKey(name.toLowerCase());
 	}
 
 
