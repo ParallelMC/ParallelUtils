@@ -357,7 +357,7 @@ public class ParallelParkour extends ParallelModule {
                 parkourLayouts.put(name, new ParkourLayout(name, positions, effects, spawnPos));
             }
             ParallelUtils.log(Level.INFO, "Loaded " + parkourLayouts.size() + " parkour layouts.");
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to load parkour layouts!\n" + e.getMessage());
         } catch (ParseException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to parse parkour layout data!\n" + e.getMessage());
