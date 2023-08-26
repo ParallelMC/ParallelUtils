@@ -6,6 +6,8 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.charms.ParallelCharms;
 import parallelmc.parallelutils.modules.charms.data.CharmOptions;
@@ -88,18 +90,21 @@ public class MaggieShop {
         ParallelUtils.log(Level.WARNING, "Loaded " + openCharms.size() + " open charms and " + rankedCharms.size() + " ranked charms");
     }
 
+    @Nullable
     public ShopCharm getOpenCharm(int index) {
         return openCharms.get(index);
     }
 
+    @Nullable
     public ShopCharm getRankedCharm(int index) {
         return rankedCharms.get(index);
     }
 
+    @NotNull
     public List<ShopCharm> getAllOpenCharms() { return openCharms; }
 
+    @NotNull
     public List<ShopCharm> getAllRankedCharms() { return rankedCharms; }
-
 
     public void openShopFor(Player player) {
         GUIManager.get().openInventoryForPlayer(player, new MaggieHomeInventory(puPlugin));
