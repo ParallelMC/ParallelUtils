@@ -244,7 +244,17 @@ public final class ParallelUtils extends JavaPlugin {
 	// A lot of this was inspired by the PlayerParticles Particle Pack loading system.
 	// Check it out here! https://github.com/Rosewood-Development/PlayerParticles/blob/master/src/main/java/dev/esophose/playerparticles/manager/ParticlePackManager.java#L135
 	public @Nullable ParallelModule loadModule(String name) {
-		String formatted = name.toLowerCase() + ".jar";
+		name = name.toLowerCase();
+
+		if (currentlyLoading.contains(name)) {
+			return null; // Avoid loops
+		}
+
+		if (availableModules.containsKey(name)) {
+			return availableModules.get(name); // Return the already loaded module
+		}
+
+		String formatted = name + ".jar";
 
 		File modulesPath = new File(this.getDataFolder(), "modules");
 
@@ -333,7 +343,6 @@ public final class ParallelUtils extends JavaPlugin {
 								"Module depends on module that is already loading!");
 						continue;
 					}
-
 
 					ParallelModule out = loadModule(hardDep);
 
