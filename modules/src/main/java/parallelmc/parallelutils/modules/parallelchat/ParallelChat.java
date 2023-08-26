@@ -410,6 +410,7 @@ public class ParallelChat extends ParallelModule {
                 p.sendMessage(text);
             }
         }
+        sender.getServer().getConsoleSender().sendMessage(text);
         ParallelUtils.log(Level.INFO, LegacyComponentSerializer.legacyAmpersand().serialize(text));
     }
 
@@ -427,6 +428,7 @@ public class ParallelChat extends ParallelModule {
                 p.sendMessage(text);
             }
         }
+        sender.getServer().getConsoleSender().sendMessage(text);
         ParallelUtils.log(Level.INFO, LegacyComponentSerializer.legacyAmpersand().serialize(text));
     }
 
@@ -444,6 +446,7 @@ public class ParallelChat extends ParallelModule {
                 p.sendMessage(text);
             }
         }
+        sender.getServer().getConsoleSender().sendMessage(text);
         ParallelUtils.log(Level.INFO, LegacyComponentSerializer.legacyAmpersand().serialize(text));
     }
 
