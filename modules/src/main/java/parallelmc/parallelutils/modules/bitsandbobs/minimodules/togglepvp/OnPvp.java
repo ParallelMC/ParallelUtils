@@ -1,23 +1,28 @@
 package parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp;
 
+import com.destroystokyo.paper.event.entity.EntityRemoveFromWorldEvent;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.entity.*;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 public class OnPvp implements Listener {
+    private final HashMap<Integer, UUID> lingeringPotions = new HashMap<>();
 
     @EventHandler
     public void onPVP(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player attacker && event.getEntity() instanceof Player victim) {
+            if (attacker == victim) {
+                return;
+            }
             UUID aid = attacker.getUniqueId();
             UUID vid = victim.getUniqueId();
             Component cantAttack = MiniMessage.miniMessage().deserialize("<red>You cannot attack players with PVP disabled!");
@@ -43,6 +48,35 @@ public class OnPvp implements Listener {
             else {
                 attacker.sendMessage(hasDisabled);
                 event.setCancelled(true);
+            }
+        }
+        if (event.getDamager() instanceof Firework firework && event.getEntity() instanceof Player victim) {
+            if (firework.getShooter() instanceof Player shooter) {
+                UUID sid = shooter.getUniqueId();
+                UUID vid = victim.getUniqueId();
+                Component cantAttack = MiniMessage.miniMessage().deserialize("<red>You cannot attack players with PVP disabled!");
+                Component hasDisabled = MiniMessage.miniMessage().deserialize("<red>" + victim.getName() + " has PVP disabled!");
+                if (TogglePvpManager.pvpToggles.containsKey(sid)) {
+                    if (!TogglePvpManager.pvpToggles.containsKey(sid)) {
+                        shooter.sendMessage(cantAttack);
+                        event.setCancelled(true);
+                    }
+                }
+                else {
+                    shooter.sendMessage(cantAttack);
+                    event.setCancelled(true);
+                }
+                if (TogglePvpManager.pvpToggles.containsKey(vid)) {
+                    if (!TogglePvpManager.pvpToggles.get(vid)) {
+                        shooter.sendMessage(hasDisabled);
+                        event.setCancelled(true);
+                    }
+                }
+                // PVP is off by default
+                else {
+                    shooter.sendMessage(hasDisabled);
+                    event.setCancelled(true);
+                }
             }
         }
     }
@@ -111,6 +145,40 @@ public class OnPvp implements Listener {
                             thrower.sendMessage(attackerDisabled);
                             event.setIntensity(e, 0d);
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onLingeringPotionThrown(LingeringPotionSplashEvent event) {
+        if (event.getEntity().getShooter() instanceof Player thrower) {
+            lingeringPotions.put(event.getAreaEffectCloud().getEntityId(), thrower.getUniqueId());
+        }
+    }
+
+    @EventHandler
+    public void onEntityDespawn(EntityRemoveFromWorldEvent event) {
+        lingeringPotions.remove(event.getEntity().getEntityId());
+    }
+
+    @EventHandler
+    public void onLingeringPotionTick(AreaEffectCloudApplyEvent event) {
+        Component hasDisabled = MiniMessage.miniMessage().deserialize("<red>The lingering did not effect you since you have PVP disabled!");
+        for (LivingEntity e : event.getAffectedEntities()) {
+            if (e instanceof Player victim) {
+                UUID uuid = victim.getUniqueId();
+                if (lingeringPotions.containsKey(event.getEntity().getEntityId())) {
+                    if (victim.getUniqueId() == lingeringPotions.get(event.getEntity().getEntityId()))
+                        continue;
+                }
+                if (TogglePvpManager.pvpToggles.containsKey(uuid)) {
+                    // if the victim has pvp off, then prevent them from being splashed
+                    // let them know since this also cancels non-harmful potions
+                    if (!TogglePvpManager.pvpToggles.get(uuid)) {
+                        victim.sendMessage(hasDisabled);
+                        event.getAffectedEntities().remove(victim);
                     }
                 }
             }

@@ -122,6 +122,7 @@ public class ChestShops extends ParallelModule {
         manager.registerEvents(new OnBreakShop(), puPlugin);
         manager.registerEvents(new OnPreviewInteract(), puPlugin);
         manager.registerEvents(new OnShopInteract(), puPlugin);
+        manager.registerEvents(new OnSignEdit(), puPlugin);
 
         INSTANCE = this;
     }

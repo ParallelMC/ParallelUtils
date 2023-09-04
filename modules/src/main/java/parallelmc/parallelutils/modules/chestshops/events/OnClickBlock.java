@@ -49,27 +49,40 @@ public class OnClickBlock implements Listener {
                 }
             }
             else if (block.getType() == Material.CHEST || block.getType() == Material.BARREL) {
-                Container chest = (Container)block.getState();
-                Shop shop;
-                InventoryHolder holder = chest.getInventory().getHolder();
-                // check both sides of the double chest since each side is a separate block
-                if (holder instanceof DoubleChest dc) {
-                    Chest temp = (Chest)dc.getLeftSide();
-                    if (temp == null) {
-                        ParallelUtils.log(Level.WARNING, "OnClickBlock: getLeftSide() returned null!");
-                        return;
-                    }
-                    shop = ChestShops.get().getShopFromChestPos(temp.getLocation());
-                    if (shop == null) {
-                        temp = (Chest)dc.getRightSide();
+                if (block.getState() instanceof Container chest) {
+                    Shop shop;
+                    InventoryHolder holder = chest.getInventory().getHolder();
+                    // check both sides of the double chest since each side is a separate block
+                    if (holder instanceof DoubleChest dc) {
+                        Chest temp = (Chest) dc.getLeftSide();
                         if (temp == null) {
-                            ParallelUtils.log(Level.WARNING, "OnClickBlock: getRightSide() returned null!");
+                            ParallelUtils.log(Level.WARNING, "OnClickBlock: getLeftSide() returned null!");
                             return;
                         }
                         shop = ChestShops.get().getShopFromChestPos(temp.getLocation());
-                        if (shop == null)
-                            return;
+                        if (shop == null) {
+                            temp = (Chest) dc.getRightSide();
+                            if (temp == null) {
+                                ParallelUtils.log(Level.WARNING, "OnClickBlock: getRightSide() returned null!");
+                                return;
+                            }
+                            shop = ChestShops.get().getShopFromChestPos(temp.getLocation());
+                            if (shop == null)
+                                return;
+                        }
+                        if (!player.hasPermission("parallelutils.bypass.chestshops") && !shop.owner().equals(player.getUniqueId())) {
+                            event.setCancelled(true);
+                            ParallelChat.sendParallelMessageTo(player, "You cannot open this chest shop!");
+                        }
+                        if (ChestShops.get().isPlayerUsingShop(shop)) {
+                            event.setCancelled(true);
+                            ParallelChat.sendParallelMessageTo(player, "Please wait, a player is using this shop.");
+                        }
+                        return;
                     }
+                    shop = ChestShops.get().getShopFromChestPos(block.getLocation());
+                    if (shop == null)
+                        return;
                     if (!player.hasPermission("parallelutils.bypass.chestshops") && !shop.owner().equals(player.getUniqueId())) {
                         event.setCancelled(true);
                         ParallelChat.sendParallelMessageTo(player, "You cannot open this chest shop!");
@@ -78,18 +91,6 @@ public class OnClickBlock implements Listener {
                         event.setCancelled(true);
                         ParallelChat.sendParallelMessageTo(player, "Please wait, a player is using this shop.");
                     }
-                    return;
-                }
-                shop = ChestShops.get().getShopFromChestPos(block.getLocation());
-                if (shop == null)
-                    return;
-                if (!player.hasPermission("parallelutils.bypass.chestshops") && !shop.owner().equals(player.getUniqueId())) {
-                    event.setCancelled(true);
-                    ParallelChat.sendParallelMessageTo(player, "You cannot open this chest shop!");
-                }
-                if (ChestShops.get().isPlayerUsingShop(shop)) {
-                    event.setCancelled(true);
-                    ParallelChat.sendParallelMessageTo(player, "Please wait, a player is using this shop.");
                 }
             }
         }

@@ -7,9 +7,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import oshi.hardware.Display;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.paralleltowns.*;
+import parallelmc.parallelutils.util.GUIInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,17 +42,16 @@ public class OptionsInventory extends GUIInventory {
 
 
         inventory.setContents(new ItemStack[]{
-                        PLACEHOLDER,
-                        leave,
-                        new ItemStack(Material.AIR),
-                        new ItemStack(Material.AIR),
-                        new ItemStack(Material.AIR),
-                        new ItemStack(Material.AIR),
-                        new ItemStack(Material.AIR),
-                        exit,
-                        PLACEHOLDER
-                }
-        );
+                PLACEHOLDER_LIGHT_BLUE,
+                leave,
+                AIR,
+                AIR,
+                AIR,
+                AIR,
+                AIR,
+                exit,
+                PLACEHOLDER_LIGHT_BLUE
+        });
     }
 
 
@@ -135,12 +134,12 @@ public class OptionsInventory extends GUIInventory {
                     ParallelChat.sendParallelMessageTo(player, "You cannot leave, you are the only leader!");
                     return;
                 }
-                ParallelTowns.get().guiManager.openTownConfirmationForPlayer(player, town, ConfirmationAction.LEAVE);
+                ParallelTowns.get().openTownConfirmationForPlayer(player, town, ConfirmationAction.LEAVE);
             }
             case 2 -> {
                 Town town = ParallelTowns.get().getPlayerTown(player);
                 if (town.getMember(player).getTownRank() == TownRank.LEADER) {
-                    ParallelTowns.get().guiManager.openTownConfirmationForPlayer(player, town, ConfirmationAction.DELETE);
+                    ParallelTowns.get().openTownConfirmationForPlayer(player, town, ConfirmationAction.DELETE);
                 }
                 else {
                     // this message should never display but sanity check anyway
@@ -150,7 +149,7 @@ public class OptionsInventory extends GUIInventory {
             case 3 -> {
                 Town town = ParallelTowns.get().getPlayerTown(player);
                 if (town.getMember(player).getTownRank() == TownRank.LEADER) {
-                    ParallelTowns.get().guiManager.openTownConfirmationForPlayer(player, town, ConfirmationAction.STATUS);
+                    ParallelTowns.get().openTownConfirmationForPlayer(player, town, ConfirmationAction.STATUS);
                 }
                 else {
                     // this message should never display but sanity check anyway
@@ -165,7 +164,7 @@ public class OptionsInventory extends GUIInventory {
                     ParallelChat.sendParallelMessageTo(player, "You must be holding a book and quill to update the town charter.");
                 }
                 else {
-                    ParallelTowns.get().guiManager.openTownConfirmationForPlayer(player, town, ConfirmationAction.CHARTER);
+                    ParallelTowns.get().openTownConfirmationForPlayer(player, town, ConfirmationAction.CHARTER);
                 }
             }
             case 6 -> {
@@ -176,10 +175,10 @@ public class OptionsInventory extends GUIInventory {
                     ParallelChat.sendParallelMessageTo(player, "You must be holding an item to update the town list item.");
                 }
                 else {
-                    ParallelTowns.get().guiManager.openTownConfirmationForPlayer(player, town, ConfirmationAction.DISPLAY);
+                    ParallelTowns.get().openTownConfirmationForPlayer(player, town, ConfirmationAction.DISPLAY);
                 }
             }
-            case 7 -> ParallelTowns.get().guiManager.openMainMenuForPlayer(player);
+            case 7 -> ParallelTowns.get().openMainMenuForPlayer(player);
         }
     }
 }

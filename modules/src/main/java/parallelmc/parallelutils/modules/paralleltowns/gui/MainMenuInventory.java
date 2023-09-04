@@ -6,12 +6,12 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.paralleltowns.ParallelTowns;
 import parallelmc.parallelutils.modules.paralleltowns.Town;
+import parallelmc.parallelutils.util.GUIInventory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,15 +56,15 @@ public class MainMenuInventory extends GUIInventory {
         exit.setItemMeta(meta);
 
         inventory.setContents(new ItemStack[]{
-                        PLACEHOLDER,
-                        PLACEHOLDER,
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE,
                         new ItemStack(Material.MAP),
                         members,
                         charter,
                         options,
                         exit,
-                        PLACEHOLDER,
-                        PLACEHOLDER
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE
                 }
         );
     }
@@ -97,13 +97,13 @@ public class MainMenuInventory extends GUIInventory {
     @Override
     public void onSlotClicked(Player player, int slotNum, ItemStack itemClicked) {
         switch (slotNum) {
-            case 3 -> ParallelTowns.get().guiManager.openMembersMenuForPlayer(player);
+            case 3 -> ParallelTowns.get().openMembersMenuForPlayer(player);
             case 4 -> {
                 player.closeInventory();
                 Town town = ParallelTowns.get().getPlayerTown(player);
                 player.openBook(town.getCharter());
             }
-            case 5 -> ParallelTowns.get().guiManager.openOptionsMenuForPlayer(player);
+            case 5 -> ParallelTowns.get().openOptionsMenuForPlayer(player);
             case 6 -> player.closeInventory();
             default -> {
             }

@@ -442,6 +442,8 @@ public class CharmOptions {
 		return applicatorModelData;
 	}
 
+	public String[] getAllowedPermissions() { return allowedPermissions; }
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Charm: \n");

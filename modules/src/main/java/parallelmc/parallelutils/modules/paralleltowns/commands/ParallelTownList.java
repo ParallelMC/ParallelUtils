@@ -21,7 +21,7 @@ public class ParallelTownList extends TownCommand {
             player.sendMessage(USAGE);
             return false;
         }
-        ParallelTowns.get().guiManager.openTownListMenuForPlayer(player);
+        ParallelTowns.get().openTownListMenuForPlayer(player);
         return true;
     }
 

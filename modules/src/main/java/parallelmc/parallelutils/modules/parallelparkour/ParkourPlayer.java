@@ -54,6 +54,7 @@ public class ParkourPlayer {
         else
             ParallelChat.sendParallelMessageTo(player, MiniMessage.miniMessage().deserialize(String.format("<gold>Your Best Time: <green>%s",
                     ParallelParkour.get().getTimeString(bestTime))));
+        ParallelChat.sendParallelMessageTo(player, "Time Limit: 15 Minutes");
         ParallelChat.sendParallelMessageTo(player, Component.text("Note: You can use /endrun to end your run early.", NamedTextColor.YELLOW));
         showBossbar();
         runnable = new BukkitRunnable() {
@@ -104,11 +105,17 @@ public class ParkourPlayer {
     }
 
     public void updateBossbarText() {
+        long time = System.currentTimeMillis() - startTime;
+        if (time >= 900000) {
+            cancel("You ran out of time!");
+            ParallelParkour.get().endParkourFor(player);
+            return;
+        }
         this.bossBar.name(
                 Component.text(String.format("Checkpoint %d/%d | Time: %s",
                         this.currentCheckpoint,
                         this.lastCheckpoint,
-                        ParallelParkour.get().getTimeString(System.currentTimeMillis() - startTime)),
+                        ParallelParkour.get().getTimeString(time)),
                         NamedTextColor.GREEN)
         );
     }

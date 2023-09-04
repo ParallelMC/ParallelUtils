@@ -7,19 +7,19 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-public class ParallelFormats implements CommandExecutor {
-
+public class ParallelChatCommands implements CommandExecutor {
     private static final Component text = MiniMessage.miniMessage().deserialize("""
-            <red>=========================
-              <white>&k = <obfuscated>Obfuscated</obfuscated>
-              <white>&l = <bold>Bold</bold>
-              <white>&m = <strikethrough>Strikethrough</strikethrough>
-              <white>&n = <underlined>underline</underlined>
-              <white>&o = <italic>Italic</italic>
-              <white>&r = Reset
-              
-            <gray>Type /colors to view the Chat Colors.
-            <red>=========================""");
+                <red>=========================
+                  <white><bold>Chat Commands:</bold>
+                  /uwu
+                  /dab
+                  /shrug
+                  /wave
+                  /wut
+                  /hotsoup
+                  /vibecheck
+                  /gamermoment
+                <red>=========================""");
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, String[] args) {

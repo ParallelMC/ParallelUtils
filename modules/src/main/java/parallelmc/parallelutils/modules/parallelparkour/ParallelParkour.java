@@ -8,6 +8,7 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -18,10 +19,8 @@ import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
-import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelCreateCourse;
-import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelDeleteCourse;
-import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelEndRun;
-import parallelmc.parallelutils.modules.parallelparkour.commands.ParallelLeaderboard;
+import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
+import parallelmc.parallelutils.modules.parallelparkour.commands.*;
 import parallelmc.parallelutils.modules.parallelparkour.events.EndParkourEvents;
 import parallelmc.parallelutils.modules.parallelparkour.events.OnBlockPlace;
 import parallelmc.parallelutils.modules.parallelparkour.events.OnPlayerInteract;
@@ -104,6 +103,7 @@ public class ParallelParkour extends ParallelModule {
 
         puPlugin.getCommand("createcourse").setExecutor(new ParallelCreateCourse());
         puPlugin.getCommand("deletecourse").setExecutor(new ParallelDeleteCourse());
+        puPlugin.getCommand("cancelcourse").setExecutor(new ParallelCancelCourse());
         puPlugin.getCommand("endrun").setExecutor(new ParallelEndRun());
         puPlugin.getCommand("leaderboard").setExecutor(new ParallelLeaderboard());
 
@@ -144,9 +144,9 @@ public class ParallelParkour extends ParallelModule {
                     leaderboardCache.get(uuid).add(time);
                 }
                 else {
-                    // Need this since the list must be modifiable
-                    //noinspection ArraysAsListWithZeroOrOneArgument
-                    leaderboardCache.put(uuid, Arrays.asList(time));
+                    ArrayList<ParkourTime> ls = new ArrayList<>();
+                    ls.add(time);
+                    leaderboardCache.put(uuid, ls);
                 }
             }
         } catch (SQLException e) {
@@ -248,8 +248,12 @@ public class ParallelParkour extends ParallelModule {
         return creatingParkour.get(player.getUniqueId());
     }
 
-    public void startCreatingParkour(Player player, String name, boolean allowEffects) {
-        creatingParkour.put(player.getUniqueId(), new ParkourLayout(name, new ArrayList<>(), allowEffects));
+    public void cancelParkourCreation(Player player) {
+        creatingParkour.remove(player.getUniqueId());
+    }
+
+    public void startCreatingParkour(Player player, String name, boolean allowEffects, Location spawnPos) {
+        creatingParkour.put(player.getUniqueId(), new ParkourLayout(name, new ArrayList<>(), allowEffects, spawnPos));
     }
 
     public void saveParkourCreation(Player player) {
@@ -295,6 +299,21 @@ public class ParallelParkour extends ParallelModule {
             ParallelChat.sendParallelMessageTo(player, "You are not in a parkour course right now!");
             return;
         }
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Location pos = pp.getLayout().spawnPos();
+                if (pos == null) {
+                    ParallelUtils.log(Level.SEVERE, "Parkour course " + pp.getLayout().name() + " has no spawn pos!");
+                    this.cancel();
+                }
+                else {
+                    if (player.teleport(pos)) {
+                        this.cancel();
+                    }
+                }
+            }
+        }.runTaskTimer(puPlugin, 0L, 1L);
         pp.cancel(null);
         playersInParkour.remove(uuid);
     }
@@ -327,10 +346,18 @@ public class ParallelParkour extends ParallelModule {
                     positions.add(new Location(world, x, y, z));
                 }
                 boolean effects = (boolean)json.get("allow_effects");
-                parkourLayouts.put(name, new ParkourLayout(name, positions, effects));
+                JSONObject spawn = (JSONObject)json.get("spawn");
+                String w = (String)spawn.get("world");
+                World world = puPlugin.getServer().getWorld(w);
+                if (world == null) {
+                    ParallelUtils.log(Level.SEVERE, "Parkour course " + name + " has a spawn position set in an unknown world: " + w);
+                    return;
+                }
+                Location spawnPos = new Location(world, ((Long)spawn.get("x")).intValue(), ((Long)spawn.get("y")).intValue(), ((Long)spawn.get("z")).intValue());
+                parkourLayouts.put(name, new ParkourLayout(name, positions, effects, spawnPos));
             }
             ParallelUtils.log(Level.INFO, "Loaded " + parkourLayouts.size() + " parkour layouts.");
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to load parkour layouts!\n" + e.getMessage());
         } catch (ParseException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to parse parkour layout data!\n" + e.getMessage());
@@ -355,6 +382,13 @@ public class ParallelParkour extends ParallelModule {
             });
             entry.put("positions", positions);
             entry.put("allow_effects", p.allowEffects());
+            JSONObject spawn = new JSONObject();
+            Location s = p.spawnPos();
+            spawn.put("world", s.getWorld().getName());
+            spawn.put("x", s.getBlockX());
+            spawn.put("y", s.getBlockY());
+            spawn.put("z", s.getBlockZ());
+            entry.put("spawn", spawn);
             json.add(entry);
         }
         try {
