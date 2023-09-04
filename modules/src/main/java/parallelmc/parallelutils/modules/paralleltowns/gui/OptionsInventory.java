@@ -42,7 +42,7 @@ public class OptionsInventory extends GUIInventory {
 
 
         inventory.setContents(new ItemStack[]{
-                PLACEHOLDER,
+                PLACEHOLDER_LIGHT_BLUE,
                 leave,
                 AIR,
                 AIR,
@@ -50,7 +50,7 @@ public class OptionsInventory extends GUIInventory {
                 AIR,
                 AIR,
                 exit,
-                PLACEHOLDER
+                PLACEHOLDER_LIGHT_BLUE
         });
     }
 

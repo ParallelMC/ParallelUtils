@@ -41,15 +41,15 @@ public class JoinLeaveInventory extends GUIInventory {
         exit.setItemMeta(meta);
 
         inventory.setContents(new ItemStack[] {
-                PLACEHOLDER,
-                PLACEHOLDER,
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE,
                 join,
                 AIR,
                 leave,
                 AIR,
                 exit,
-                PLACEHOLDER,
-                PLACEHOLDER
+                PLACEHOLDER_LIGHT_BLUE,
+                PLACEHOLDER_LIGHT_BLUE
         });
     }
 

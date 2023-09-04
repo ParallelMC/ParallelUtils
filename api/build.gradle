@@ -7,7 +7,7 @@ plugins {
 
 group = 'org.parallelmc'
 
-version = '4.1.2'
+version = '4.2.0'
 description = 'A set of utilities and features for use on the Parallel Minecraft server'
 
 java {
@@ -193,6 +193,10 @@ bukkit {
             description = 'View all chat formats'
             usage = '/formats'
         }
+        chatcommands {
+            description = 'View all chat commands'
+            usage = '/chatcommands'
+        }
         dnd {
             description = 'Toggles Do Not Disturb mode'
             usage = '/dnd'
@@ -246,6 +250,10 @@ bukkit {
             description = 'Deletes and existing course layout'
             usage = '/deletecourse (name)'
         }
+        cancelcourse {
+            description = 'Cancels a course layout creation'
+            usage = '/cancelcourse'
+        }
         endrun {
             description = 'Ends a speedrun early'
             usage = '/endrun'
@@ -261,6 +269,10 @@ bukkit {
         leavemessages {
             description = 'Opens the join/leave message GUI'
             usage = '/leavemessages'
+        }
+        openmaggieshop {
+            description = 'Opens Maggies Shop'
+            usage = '/openmaggieshop (player)'
         }
     }
 
@@ -307,6 +319,10 @@ bukkit {
         }
         'parallelutils.deletecourse' {
             description = 'Gives access to deleting course layouts.'
+            setDefault('FALSE')
+        }
+        'parallelutils.cancelcourse' {
+            description = 'Gives access to cancelling a course layout.'
             setDefault('FALSE')
         }
         'parallelutils.give' {

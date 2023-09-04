@@ -2,13 +2,12 @@ package parallelmc.parallelutils;
 
 import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import com.mysql.cj.jdbc.MysqlDataSource;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelutils.commands.*;
 import parallelmc.parallelutils.events.OnMenuInteract;
-import parallelmc.parallelutils.util.BukkitTools;
-import parallelmc.parallelutils.util.GUIManager;
+import parallelmc.parallelutils.util.EconomyManager;
 import parallelmc.parallelutils.versionchecker.UpdateChecker;
 
 import javax.annotation.Nullable;
@@ -17,8 +16,12 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.logging.Level;
@@ -46,8 +49,9 @@ public final class ParallelUtils extends JavaPlugin {
 
 	private final HashMap<ParallelModule, ClassLoader> classloaders = new HashMap<>();
 	private Commands commands;
-
 	private boolean loadedModules = false;
+
+	private ParallelClassLoader parallelClassLoader = new ParallelClassLoader(new URL[]{}, this.getClass().getClassLoader());
 
 	@Override
 	public void onLoad() {
@@ -242,7 +246,18 @@ public final class ParallelUtils extends JavaPlugin {
 	// A lot of this was inspired by the PlayerParticles Particle Pack loading system.
 	// Check it out here! https://github.com/Rosewood-Development/PlayerParticles/blob/master/src/main/java/dev/esophose/playerparticles/manager/ParticlePackManager.java#L135
 	public @Nullable ParallelModule loadModule(String name) {
-		String formatted = name.toLowerCase() + ".jar";
+		name = name.toLowerCase();
+
+		if (currentlyLoading.contains(name)) {
+			ParallelUtils.log(Level.WARNING, "Loading loop detected!");
+			return null; // Avoid loops
+		}
+
+		if (availableModules.containsKey(name)) {
+			return availableModules.get(name); // Return the already loaded module
+		}
+
+		String formatted = name + ".jar";
 
 		File modulesPath = new File(this.getDataFolder(), "modules");
 
@@ -260,7 +275,10 @@ public final class ParallelUtils extends JavaPlugin {
 
 		try {
 			URL jar = file.toURI().toURL();
-			ParallelClassLoader classLoader = new ParallelClassLoader(new URL[]{jar}, this.getClass().getClassLoader());
+			// TODO: Change this back once I fix the rest of module dependencies
+			ParallelClassLoader classLoader = this.parallelClassLoader;
+			classLoader.addURL(jar);
+
 			List<String> matches = new ArrayList<>();
 			List<Class<? extends ParallelModule>> modules = new ArrayList<>();
 			List<Class<? extends Config>> configs = new ArrayList<>();
@@ -292,14 +310,14 @@ public final class ParallelUtils extends JavaPlugin {
 			if (modules.size() == 0) {
 				ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
 				ParallelUtils.log(Level.SEVERE, "MODULE " + file.getName() + " DOES NOT CONTAIN A ParallelModule CLASS");
-				classLoader.close();
+				//classLoader.close();
 				return null;
 			}
 
 			if (modules.size() > 1) {
 				ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
 				ParallelUtils.log(Level.SEVERE, "MODULE " + file.getName() + " CONTAINS MULTIPLE ParallelModule CLASSES");
-				classLoader.close();
+				//classLoader.close();
 				return null;
 			}
 
@@ -326,14 +344,18 @@ public final class ParallelUtils extends JavaPlugin {
 
 				// Try loading hard depends
 				for (String hardDep : hardDepends) {
-					if (currentlyLoading.contains(hardDep)) {
+					if (currentlyLoading.contains(hardDep.toLowerCase())) {
 						ParallelUtils.log(Level.WARNING, "Circular dependency found in module " + name +
 								"Module depends on module that is already loading!");
 						continue;
 					}
 
+					// If already loaded, just go to the next one
+					if (loadedList.contains(hardDep.toLowerCase())) {
+						continue;
+					}
 
-					ParallelModule out = loadModule(hardDep);
+					ParallelModule out = loadModule(hardDep.toLowerCase());
 
 					// If a module was loaded, get its jar and classes and load them
 
@@ -342,56 +364,72 @@ public final class ParallelUtils extends JavaPlugin {
 						return null;
 					}
 
+					/* TODO:
+					Basically the problem is that the module loading system does not properly link dependencies for modules.
+					Currently, each module loads its _own_ instance of its dependencies. This works fine for static
+					references, but when you need to work between modules, this no longer works.
+					 */
+
+
+					// Already loaded with modified loader
 					// Add URLs. This includes jar files for that module and any of its dependencies
-					URL[] depURL = out.getClassLoader().getURLs();
-					for (URL u : depURL) {
-						classLoader.addURL(u);
-					}
+//					URL[] depURL = out.getClassLoader().getURLs();
+//					for (URL u : depURL) {
+//						classLoader.addURL(u);
+//					}
+//
+//					// Load all of the classes
+//					for (String depClass : out.getClassLoader().getLoadedClasses()) {
+//						try {
+//							classLoader.loadClass(depClass);
+//						} catch (ClassNotFoundException e) {
+//							ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
+//							e.printStackTrace();
+//							return null;
+//						}
+//					}
 
-					// Load all of the classes
-					for (String depClass : out.getClassLoader().getLoadedClasses()) {
-						try {
-							classLoader.loadClass(depClass);
-						} catch (ClassNotFoundException e) {
-							ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
-							e.printStackTrace();
-							return null;
-						}
-					}
-
-					dependents.add(hardDep);
+					dependents.add(hardDep.toLowerCase());
 				}
 
 				// Try loading soft dependencies
 				for (String softDep : softDepends) {
-					if (currentlyLoading.contains(softDep)) {
+					if (currentlyLoading.contains(softDep.toLowerCase())) {
 						ParallelUtils.log(Level.WARNING, "Circular dependency found in module " + name +
 								"Module depends on module that is already loading!");
 						continue;
 					}
 
-					ParallelModule out = loadModule(softDep);
+					if (loadedList.contains(softDep.toLowerCase())) {
+						continue;
+					}
+
+					ParallelModule out = loadModule(softDep.toLowerCase());
+
+
 
 					if (out == null) {
 						ParallelUtils.log(Level.WARNING, "Unable to load soft dependency for " + name);
 					} else {
-						// Add URLs. This includes jar files for that module and any of its dependencies
-						URL[] depURL = out.getClassLoader().getURLs();
-						for (URL u : depURL) {
-							classLoader.addURL(u);
-						}
 
-						// Load all of the classes
-						for (String depClass : out.getClassLoader().getLoadedClasses()) {
-							try {
-								classLoader.loadClass(depClass);
-							} catch (ClassNotFoundException e) {
-								ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
-								e.printStackTrace();
-								return null;
-							}
-						}
-						dependents.add(softDep);
+						// Already loaded with modified loader
+//						// Add URLs. This includes jar files for that module and any of its dependencies
+//						URL[] depURL = out.getClassLoader().getURLs();
+//						for (URL u : depURL) {
+//							classLoader.addURL(u);
+//						}
+//
+//						// Load all of the classes
+//						for (String depClass : out.getClassLoader().getLoadedClasses()) {
+//							try {
+//								classLoader.loadClass(depClass);
+//							} catch (ClassNotFoundException e) {
+//								ParallelUtils.log(Level.SEVERE, "Error while loading module " + name);
+//								e.printStackTrace();
+//								return null;
+//							}
+//						}
+						dependents.add(softDep.toLowerCase());
 					}
 				}
 
@@ -399,7 +437,7 @@ public final class ParallelUtils extends JavaPlugin {
 
 			ParallelModule module = modules.get(0).getDeclaredConstructor(ParallelClassLoader.class, List.class).newInstance(classLoader, dependents);
 
-			availableModules.put(module.getName(), module);
+			availableModules.put(module.getName().toLowerCase(), module);
 			loadedList.add(module.getName());
 
 			currentlyLoading.remove(name);
@@ -417,56 +455,62 @@ public final class ParallelUtils extends JavaPlugin {
 	private final List<String> currentlyUnloading = new ArrayList<>();
 
 	public boolean unloadModule(String name) {
-		if (currentlyUnloading.contains(name)) return true;
+		ParallelUtils.log(Level.WARNING, "Disabling modules not currently supported due to a bug in the classloader system");
 
-		ParallelModule module = availableModules.get(name);
-
-		if (module == null) return false;
-
-		if (!module.canUnload()) {
-			ParallelUtils.log(Level.WARNING, "Module " + name + " not permitted to unload. Skipping...");
-			return false;
-		}
-
-		currentlyUnloading.add(name);
-		
-		List<String> dependents = module.getDependents();
-
-		for (String s : dependents) {
-			boolean depResult = unloadModule(s);
-			if (!depResult) {
-				ParallelUtils.log(Level.WARNING, "Cannot unload dependent module! Quitting...");
-				return false;
-			}
-		}
-
-		boolean result = true;
-
-		if (registeredModules.containsKey(name)) {
-			result = disableModule(name);
-		}
-
-		if (!result) {
-			ParallelUtils.log(Level.SEVERE, "Error occurred while unloading module " + name);
-			currentlyUnloading.remove(name);
-			return false;
-		}
-
-		try {
-			module.onUnload();
-			availableModules.remove(name);
-			registeredModules.remove(name); // Double check that it's removed from here
-
-			module.getClassLoader().close();
-		} catch (Exception e) {
-			ParallelUtils.log(Level.SEVERE, "Error occurred while unloading module " + name);
-			e.printStackTrace();
-			// Explicitly say it's unloaded since it's less likely to cause problems
-			availableModules.remove(name);
-		}
-
-		currentlyUnloading.remove(name);
-		return true;
+		return false;
+//
+//		name = name.toLowerCase();
+//
+//		if (currentlyUnloading.contains(name)) return true;
+//
+//		ParallelModule module = availableModules.get(name);
+//
+//		if (module == null) return false;
+//
+//		if (!module.canUnload()) {
+//			ParallelUtils.log(Level.WARNING, "Module " + name + " not permitted to unload. Skipping...");
+//			return false;
+//		}
+//
+//		currentlyUnloading.add(name);
+//
+//		List<String> dependents = module.getDependents();
+//
+//		for (String s : dependents) {
+//			boolean depResult = unloadModule(s);
+//			if (!depResult) {
+//				ParallelUtils.log(Level.WARNING, "Cannot unload dependent module! Quitting...");
+//				return false;
+//			}
+//		}
+//
+//		boolean result = true;
+//
+//		if (registeredModules.containsKey(name)) {
+//			result = disableModule(name);
+//		}
+//
+//		if (!result) {
+//			ParallelUtils.log(Level.SEVERE, "Error occurred while unloading module " + name);
+//			currentlyUnloading.remove(name);
+//			return false;
+//		}
+//
+//		try {
+//			module.onUnload();
+//			availableModules.remove(name);
+//			registeredModules.remove(name); // Double check that it's removed from here
+//
+//			module.getClassLoader().close();
+//		} catch (Exception e) {
+//			ParallelUtils.log(Level.SEVERE, "Error occurred while unloading module " + name);
+//			e.printStackTrace();
+//			// Explicitly say it's unloaded since it's less likely to cause problems
+//			availableModules.remove(name);
+//		}
+//
+//		currentlyUnloading.remove(name);
+//		return true;
 	}
 
 	public void unloadModules() {
@@ -478,7 +522,7 @@ public final class ParallelUtils extends JavaPlugin {
 	}
 
 	public boolean isLoaded(String name) {
-		return availableModules.containsKey(name);
+		return availableModules.containsKey(name.toLowerCase());
 	}
 
 
@@ -599,6 +643,7 @@ public final class ParallelUtils extends JavaPlugin {
 			registeredModules.remove(name);
 			return true;
 		}
+
 		return false;
 	}
 
