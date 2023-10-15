@@ -44,7 +44,7 @@ public class MaggieRankedInventory extends GUIInventory {
     public void onOpen(Player player) {
         ItemStack charm = new ItemStack(Material.NAME_TAG);
         ItemMeta meta = charm.getItemMeta();
-        meta.displayName(Component.text("Charm Applicator", NamedTextColor.YELLOW));
+        meta.displayName(Component.text("Charm Applicator", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
         meta.setCustomModelData(1000000);
         List<Component> lore = new ArrayList<>();
         List<ShopCharm> charms = NPCShops.get().getMaggieShop().getAllRankedCharms();
@@ -88,7 +88,7 @@ public class MaggieRankedInventory extends GUIInventory {
                 EconomyManager.get().removeRiftcoins(player, charm.price());
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("pu givecharm %s %s", player.getName(), charm.charmName()));
                 ParallelChat.sendParallelMessageTo(player,
-                        MiniMessage.miniMessage().deserialize(String.format("<aqua>You bought a <yellow>Charm Applicator <aqua>(%s) for <orange> %d riftcoins!", charm.charmName(), charm.price())));
+                        MiniMessage.miniMessage().deserialize(String.format("<aqua>You bought a <yellow>Charm Applicator <aqua>(%s) for <gold>%d riftcoins!", charm.charmName(), charm.price())));
             }
         }
     }
@@ -101,7 +101,7 @@ public class MaggieRankedInventory extends GUIInventory {
             case "diamond" -> MiniMessage.miniMessage().deserialize("<bold><aqua>Diamond");
             case "rift_master" ->
                 // really don't want to convert this lol
-                    LegacyComponentSerializer.legacySection().deserialize("&x&5&B&1&6&D&B&lR&x&6&4&1&8&D&C&li&x&6&B&1&B&D&C&lf&x&7&3&1&D&D&D&lt &x&7&A&2&0&D&D&lM&x&8&1&2&3&D&E&la&x&8&7&2&6&D&E&ls&x&8&D&2&9&D&F&lt&x&9&3&2&C&D&F&le&x&9&9&2&F&E&0&lr");
+                    LegacyComponentSerializer.legacyAmpersand().deserialize("&x&5&B&1&6&D&B&lR&x&6&4&1&8&D&C&li&x&6&B&1&B&D&C&lf&x&7&3&1&D&D&D&lt &x&7&A&2&0&D&D&lM&x&8&1&2&3&D&E&la&x&8&7&2&6&D&E&ls&x&8&D&2&9&D&F&lt&x&9&3&2&C&D&F&le&x&9&9&2&F&E&0&lr");
             default -> Component.empty();
         };
     }
