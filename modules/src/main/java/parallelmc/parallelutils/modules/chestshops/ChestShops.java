@@ -20,6 +20,8 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
+import parallelmc.parallelutils.modules.chestshops.commands.ChestShopCommands;
+import parallelmc.parallelutils.modules.chestshops.commands.ChestShopDebug;
 import parallelmc.parallelutils.modules.chestshops.events.*;
 
 import java.sql.*;
@@ -33,6 +35,8 @@ public class ChestShops extends ParallelModule {
     private final HashMap<UUID, ShopperData> shoppingPlayers = new HashMap<>();
 
     private ParallelUtils puPlugin;
+
+    private ChestShopCommands chestShopCommands;
 
     private static ChestShops INSTANCE;
 
@@ -86,6 +90,8 @@ public class ChestShops extends ParallelModule {
                         Item        varchar(50) not null,
                         SellAmt     int         not null,
                         BuyAmt      int         not null,
+                        Timestamp   timestamp   not null default current_timestamp
+                            on update current_timestamp,
                         constraint ChestShops_UUID_uindex
 					        unique (shopID),
 					    PRIMARY KEY (shopID)
@@ -116,6 +122,10 @@ public class ChestShops extends ParallelModule {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        this.chestShopCommands = new ChestShopCommands();
+        puPlugin.getCommand("chestshop").setExecutor(chestShopCommands);
+        chestShopCommands.addCommand("debug", new ChestShopDebug());
 
         manager.registerEvents(new OnSignText(), puPlugin);
         manager.registerEvents(new OnClickBlock(), puPlugin);
@@ -161,6 +171,16 @@ public class ChestShops extends ParallelModule {
             statement.executeBatch();
             conn.commit();
             statement.close();
+
+            // remove old chestshop entries that no longer exist on the server
+            // this helps fix conflicts where someone creates a shop where one recently existed (small edge case but good to patch)
+            // since existing chestshops have their timestamp updated automatically above, they shouldn't be touched by this
+            PreparedStatement cleanup = conn.prepareStatement("DELETE FROM ChestShops WHERE Timestamp < DATE_SUB(NOW(), INTERVAL 15 MINUTE)");
+            cleanup.setQueryTimeout(30);
+            cleanup.execute();
+            conn.commit();
+            cleanup.close();
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -194,6 +214,17 @@ public class ChestShops extends ParallelModule {
         shops.removeIf(x -> x.chestPos().equals(chestPos));
         if (shops.size() == 0)
             chestShops.remove(owner);
+    }
+
+    public List<Shop> getAllShopsFromSignPos(Location signPos) {
+        List<Shop> out = new ArrayList<>();
+        for (HashSet<Shop> s : chestShops.values()) {
+            List<Shop> r = s.stream().filter(x -> x.signPos().equals(signPos)).toList();
+            if (!r.isEmpty()) {
+                out.addAll(r);
+            }
+        }
+        return out;
     }
 
     // ugly but no real better way to do it without storing multiple instances of shops which is a recipe for disaster
