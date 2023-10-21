@@ -24,7 +24,10 @@ public class TogglePvpManager {
                     create table if not exists TogglePvp
                     (
                         UUID        varchar(36) not null,
-                        Pvp         tinyint     not null
+                        Pvp         tinyint     not null,
+                        constraint TogglePvp_UUID_uindex
+                            unique (UUID),
+                        PRIMARY KEY (UUID)
                     );""");
             conn.commit();
             statement.close();

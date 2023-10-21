@@ -90,6 +90,11 @@ bukkit {
             usage = '/town'
             permissionMessage = 'You do not have permission'
         }
+        chestshop {
+            description = 'Base command for all ChestShop debug commands'
+            usage = '/chestshop'
+            permissionMessage = 'You do not have permission'
+        }
         depositexp {
             description = 'Deposit exp into the player\' s ender chest '
             usage = '/depositexp <amount | all>'
@@ -461,6 +466,10 @@ bukkit {
         }
         'parallelutils.notify.antislur' {
             description = 'Be notified of swearing'
+        }
+        'parallelutils.chestshop.debug' {
+            description = 'Gives access to ChestShop debug commands'
+            setDefault('FALSE')
         }
     }
 }
