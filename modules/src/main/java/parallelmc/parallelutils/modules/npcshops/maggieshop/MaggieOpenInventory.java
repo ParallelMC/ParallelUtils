@@ -42,7 +42,7 @@ public class MaggieOpenInventory extends GUIInventory {
     public void onOpen(Player player) {
         ItemStack charm = new ItemStack(Material.NAME_TAG);
         ItemMeta meta = charm.getItemMeta();
-        meta.displayName(Component.text("Charm Applicator", NamedTextColor.YELLOW));
+        meta.displayName(Component.text("Charm Applicator", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
         meta.setCustomModelData(1000000);
         List<Component> lore = new ArrayList<>();
         List<ShopCharm> charms = NPCShops.get().getMaggieShop().getAllOpenCharms();
@@ -80,7 +80,7 @@ public class MaggieOpenInventory extends GUIInventory {
                 EconomyManager.get().removeRiftcoins(player, charm.price());
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("pu givecharm %s %s", player.getName(), charm.charmName()));
                 ParallelChat.sendParallelMessageTo(player,
-                        MiniMessage.miniMessage().deserialize(String.format("<aqua>You bought a <yellow>Charm Applicator <aqua>(%s) for <orange> %d riftcoins!", charm.charmName(), charm.price())));
+                        MiniMessage.miniMessage().deserialize(String.format("<aqua>You bought a <yellow>Charm Applicator <aqua>(%s) for <gold>%d riftcoins!", charm.charmName(), charm.price())));
             }
         }
     }
