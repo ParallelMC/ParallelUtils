@@ -172,15 +172,6 @@ public class ChestShops extends ParallelModule {
             conn.commit();
             statement.close();
 
-            // remove old chestshop entries that no longer exist on the server
-            // this helps fix conflicts where someone creates a shop where one recently existed (small edge case but good to patch)
-            // since existing chestshops have their timestamp updated automatically above, they shouldn't be touched by this
-            PreparedStatement cleanup = conn.prepareStatement("DELETE FROM ChestShops WHERE Timestamp < DATE_SUB(NOW(), INTERVAL 15 MINUTE)");
-            cleanup.setQueryTimeout(30);
-            cleanup.execute();
-            conn.commit();
-            cleanup.close();
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -212,8 +203,28 @@ public class ChestShops extends ParallelModule {
     public void removeShop(UUID owner, Location chestPos) {
         HashSet<Shop> shops = chestShops.get(owner);
         shops.removeIf(x -> x.chestPos().equals(chestPos));
+        removeShopFromDatabase(owner, chestPos);
         if (shops.size() == 0)
             chestShops.remove(owner);
+    }
+
+    private void removeShopFromDatabase(UUID owner, Location chestPos) {
+        Bukkit.getScheduler().runTaskAsynchronously(puPlugin, () -> {
+            try (Connection conn = puPlugin.getDbConn()) {
+                if (conn == null) throw new SQLException("Unable to establish connection!");
+                PreparedStatement statement = conn.prepareStatement("DELETE FROM ChestShops WHERE UUID = ? AND ChestX = ? AND ChestY = ? AND ChestZ = ?");
+                statement.setQueryTimeout(30);
+                statement.setString(1, owner.toString());
+                statement.setInt(1, chestPos.getBlockX());
+                statement.setInt(2, chestPos.getBlockY());
+                statement.setInt(3, chestPos.getBlockZ());
+                statement.execute();
+                conn.commit();
+                statement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     public List<Shop> getAllShopsFromSignPos(Location signPos) {
