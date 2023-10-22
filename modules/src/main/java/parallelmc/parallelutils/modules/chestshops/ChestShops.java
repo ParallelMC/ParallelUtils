@@ -222,6 +222,7 @@ public class ChestShops extends ParallelModule {
                 conn.commit();
                 statement.close();
             } catch (SQLException e) {
+                ParallelUtils.log(Level.WARNING, String.format("Failed to remove the following shop: %s (%d, %d, %d)", owner.toString(), chestPos.getBlockX(), chestPos.getBlockY(), chestPos.getBlockZ()));
                 e.printStackTrace();
             }
         });
