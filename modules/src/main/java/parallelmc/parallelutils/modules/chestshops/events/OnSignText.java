@@ -138,7 +138,7 @@ public class OnSignText implements Listener {
                     else {
                         event.line(3, Component.text(buyNum + " diamonds"));
                     }
-                    ChestShops.get().addShop(player.getUniqueId(), UUID.randomUUID(), attached.getLocation(), event.getBlock().getLocation(), sell.getType(), sellNum, buyNum);
+                    ChestShops.get().addShop(player.getUniqueId(), UUID.randomUUID(), attached.getLocation(), event.getBlock().getLocation(), sell.getType(), sellNum, buyNum, false);
                     ParallelChat.sendParallelMessageTo(player, "Chest shop created!");
                 }
                 else {

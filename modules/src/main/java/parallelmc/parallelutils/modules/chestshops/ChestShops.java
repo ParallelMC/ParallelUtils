@@ -117,7 +117,7 @@ public class ChestShops extends ParallelModule {
                 Material item = Material.getMaterial(results.getString("Item"));
                 int sellAmt = results.getInt("SellAmt");
                 int buyAmt = results.getInt("BuyAmt");
-                addShop(uuid, id, chestLoc, signLoc, item, sellAmt, buyAmt);
+                addShop(uuid, id, chestLoc, signLoc, item, sellAmt, buyAmt, true);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -187,7 +187,7 @@ public class ChestShops extends ParallelModule {
         return "ChestShops";
     }
 
-    public void addShop(UUID owner, UUID id, Location chestPos, Location signPos, Material item, int sellAmt, int buyAmt) {
+    public void addShop(UUID owner, UUID id, Location chestPos, Location signPos, Material item, int sellAmt, int buyAmt, boolean startup) {
         Shop shop = new Shop(owner, id, chestPos, signPos, item, sellAmt, buyAmt);
         if (chestShops.containsKey(owner)) {
             HashSet<Shop> shops = chestShops.get(owner);
@@ -198,7 +198,8 @@ public class ChestShops extends ParallelModule {
             shops.add(shop);
             chestShops.put(owner, shops);
         }
-        addShopToDatabase(owner, id, chestPos, signPos, item, sellAmt, buyAmt);
+        if (!startup)
+            addShopToDatabase(owner, id, chestPos, signPos, item, sellAmt, buyAmt);
     }
 
     public void removeShop(UUID owner, Location chestPos) {
@@ -213,6 +214,7 @@ public class ChestShops extends ParallelModule {
         Bukkit.getScheduler().runTaskAsynchronously(puPlugin, () -> {
             try (Connection conn = puPlugin.getDbConn()) {
                 if (conn == null) throw new SQLException("Unable to establish connection!");
+                // we don't use ON DUPLICATE KEY here because the shop shouldn't exist if its just being created
                 PreparedStatement statement = conn.prepareStatement("INSERT INTO ChestShops (shopID, UUID, World, ChestX, ChestY, ChestZ, SignX, SignY, SignZ, Item, SellAmt, BuyAmt) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
                 statement.setQueryTimeout(30);
