@@ -198,6 +198,7 @@ public class ChestShops extends ParallelModule {
             shops.add(shop);
             chestShops.put(owner, shops);
         }
+        addShopToDatabase(owner, id, chestPos, signPos, item, sellAmt, buyAmt);
     }
 
     public void removeShop(UUID owner, Location chestPos) {
@@ -208,6 +209,35 @@ public class ChestShops extends ParallelModule {
             chestShops.remove(owner);
     }
 
+    private void addShopToDatabase(UUID owner, UUID id, Location chestPos, Location signPos, Material item, int sellAmt, int buyAmt) {
+        Bukkit.getScheduler().runTaskAsynchronously(puPlugin, () -> {
+            try (Connection conn = puPlugin.getDbConn()) {
+                if (conn == null) throw new SQLException("Unable to establish connection!");
+                PreparedStatement statement = conn.prepareStatement("INSERT INTO ChestShops (shopID, UUID, World, ChestX, ChestY, ChestZ, SignX, SignY, SignZ, Item, SellAmt, BuyAmt) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                statement.setQueryTimeout(30);
+                statement.setString(1, id.toString());
+                statement.setString(2, owner.toString());
+                statement.setString(3,chestPos.getWorld().getName());
+                statement.setInt(4, chestPos.getBlockX());
+                statement.setInt(5, chestPos.getBlockY());
+                statement.setInt(6, chestPos.getBlockZ());
+                statement.setInt(7, signPos.getBlockX());
+                statement.setInt(8, signPos.getBlockY());
+                statement.setInt(9, signPos.getBlockZ());
+                statement.setString(10, item.toString());
+                statement.setInt(11, sellAmt);
+                statement.setInt(12, buyAmt);
+                statement.execute();
+                conn.commit();
+                statement.close();
+            } catch (SQLException e) {
+                ParallelUtils.log(Level.WARNING, String.format("Failed to add the following shop: %s (%d, %d, %d)", owner.toString(), chestPos.getBlockX(), chestPos.getBlockY(), chestPos.getBlockZ()));
+                e.printStackTrace();
+            }
+        });
+    }
+
     private void removeShopFromDatabase(UUID owner, Location chestPos) {
         Bukkit.getScheduler().runTaskAsynchronously(puPlugin, () -> {
             try (Connection conn = puPlugin.getDbConn()) {
@@ -215,9 +245,9 @@ public class ChestShops extends ParallelModule {
                 PreparedStatement statement = conn.prepareStatement("DELETE FROM ChestShops WHERE UUID = ? AND ChestX = ? AND ChestY = ? AND ChestZ = ?");
                 statement.setQueryTimeout(30);
                 statement.setString(1, owner.toString());
-                statement.setInt(1, chestPos.getBlockX());
-                statement.setInt(2, chestPos.getBlockY());
-                statement.setInt(3, chestPos.getBlockZ());
+                statement.setInt(2, chestPos.getBlockX());
+                statement.setInt(3, chestPos.getBlockY());
+                statement.setInt(4, chestPos.getBlockZ());
                 statement.execute();
                 conn.commit();
                 statement.close();

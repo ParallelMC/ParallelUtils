@@ -29,7 +29,7 @@ public class ChestShopDebug extends ChestShopCommand {
         }
 
         Block target = player.getTargetBlock(null, 6);
-        if (target instanceof Sign sign) {
+        if (target.getState() instanceof Sign sign) {
             List<Shop> shops = ChestShops.get().getAllShopsFromSignPos(sign.getLocation());
             if (shops.isEmpty()) {
                 ParallelChat.sendParallelMessageTo(player, "No ChestShop data found at this location! This sign is safe to delete.");
