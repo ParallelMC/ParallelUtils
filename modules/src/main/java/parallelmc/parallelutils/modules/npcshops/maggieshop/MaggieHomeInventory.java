@@ -33,6 +33,11 @@ public class MaggieHomeInventory extends GUIInventory {
         String url = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTA4OWY0ODU0YzczYTg4Yjg1ODQ3NWM5MTg2MzNjYjgxZWIyODJkYThlNzVhMTdkM2Y2ODAwODBjNThiNjVmNSJ9fX0=";
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
         SkullMeta headMeta = (SkullMeta)head.getItemMeta();
+        headMeta.displayName(Component.text("Maggie", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.text("Welcome to my charms shop!", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+        lore.add(Component.text("Spruce up your items here!", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+        headMeta.lore(lore);
         CraftPlayerProfile profile = new CraftPlayerProfile(UUID.randomUUID(), null);
         profile.setProperty("textures", new Property("textures", url));
         headMeta.setPlayerProfile(profile);
@@ -43,14 +48,14 @@ public class MaggieHomeInventory extends GUIInventory {
         ItemStack open = new ItemStack(Material.NAME_TAG);
         ItemMeta meta = open.getItemMeta();
         meta.displayName(Component.text("Open Charms Shop", NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
-        List<Component> lore = new ArrayList<>();
+        lore.clear();
         lore.add(Component.text("This shop is open to all ranks!", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
         lore.add(Component.empty());
         lore.add(Component.text("Click here to browse charms for sale!", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
         meta.lore(lore);
         open.setItemMeta(meta);
 
-        inventory.setItem(14, open);
+        inventory.setItem(13, open);
 
         ItemStack ranked = new ItemStack(Material.NAME_TAG);
         meta = ranked.getItemMeta();
@@ -63,7 +68,7 @@ public class MaggieHomeInventory extends GUIInventory {
         meta.lore(lore);
         ranked.setItemMeta(meta);
 
-        inventory.setItem(15, ranked);
+        inventory.setItem(14, ranked);
 
         ItemStack remover = new ItemStack(Material.PAPER);
         meta = remover.getItemMeta();
@@ -76,7 +81,7 @@ public class MaggieHomeInventory extends GUIInventory {
         meta.setCustomModelData(1000000);
         remover.setItemMeta(meta);
 
-        inventory.setItem(16, remover);
+        inventory.setItem(15, remover);
 
         this.puPlugin = puPlugin;
     }
@@ -103,7 +108,7 @@ public class MaggieHomeInventory extends GUIInventory {
                 else {
                     EconomyManager.get().removeRiftcoins(player, 20);
                     puPlugin.getServer().dispatchCommand(puPlugin.getServer().getConsoleSender(), "pu giveremover " + player.getName());
-                    ParallelChat.sendParallelMessageTo(player, Component.text("You purchased a ", NamedTextColor.AQUA)
+                    ParallelChat.sendParallelMessageTo(player, Component.text("You purchased a", NamedTextColor.AQUA)
                             .append(Component.text(" Charm Remover!", NamedTextColor.WHITE)));
                 }
             }

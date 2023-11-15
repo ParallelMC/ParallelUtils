@@ -471,9 +471,12 @@ bukkit {
             description = 'Gives access to ChestShop debug commands'
             setDefault('FALSE')
         }
+<<<<<<< HEAD
         'parallelutils.resources.unenforced' {
             description = 'Prevents being kicked from not accepting the resource pack'
             setDefault('FALSE')
         }
+=======
+>>>>>>> main
     }
 }
