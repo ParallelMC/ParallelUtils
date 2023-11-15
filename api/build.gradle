@@ -7,7 +7,7 @@ plugins {
 
 group = 'org.parallelmc'
 
-version = '4.2.0'
+version = '4.2.2'
 description = 'A set of utilities and features for use on the Parallel Minecraft server'
 
 java {
@@ -88,6 +88,11 @@ bukkit {
         town {
             description = 'Base command for all Town commands'
             usage = '/town'
+            permissionMessage = 'You do not have permission'
+        }
+        chestshop {
+            description = 'Base command for all ChestShop debug commands'
+            usage = '/chestshop'
             permissionMessage = 'You do not have permission'
         }
         depositexp {
@@ -461,6 +466,14 @@ bukkit {
         }
         'parallelutils.notify.antislur' {
             description = 'Be notified of swearing'
+        }
+        'parallelutils.chestshop.debug' {
+            description = 'Gives access to ChestShop debug commands'
+            setDefault('FALSE')
+        }
+        'parallelutils.resources.unenforced' {
+            description = 'Prevents being kicked from not accepting the resource pack'
+            setDefault('FALSE')
         }
     }
 }

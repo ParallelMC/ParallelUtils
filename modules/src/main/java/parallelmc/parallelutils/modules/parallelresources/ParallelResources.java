@@ -362,7 +362,7 @@ public class ParallelResources extends ParallelModule {
 				out = new File(outDir, f.getName());
 				Files.copy(f.toPath(), out.toPath());
 			}
-			squashed.add(f);
+			squashed.add(out);
 		}
 
 		purgeDirectory(tempDir.toFile());
