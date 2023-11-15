@@ -54,10 +54,12 @@ public class ResourcePackHandle implements Listener {
 
 		switch (status) {
 			case DECLINED -> {
+				if (event.getPlayer().hasPermission("parallelutils.resources.unenforced")) return;
 				ParallelUtils.log(Level.WARNING, "Event " + status.toString() + " occurred! Declining join");
 				event.getPlayer().kick(warningMessage);
 			}
 			case FAILED_DOWNLOAD -> {
+				if (event.getPlayer().hasPermission("parallelutils.resources.unenforced")) return;
 				ParallelUtils.log(Level.WARNING, "Event " + status.toString() + " occurred! Declining join");
 				event.getPlayer().kick(warningMessage.append(
 						Component.text("If you believe this was an error, please contact staff on Discord.")));
@@ -80,7 +82,7 @@ public class ResourcePackHandle implements Listener {
 
 		String resourceUrl = resources.getResourceUrl(worldName);
 
-		player.setResourcePack(resourceUrl, hash, warningMessage, true);
+        player.setResourcePack(resourceUrl, hash, warningMessage, !player.hasPermission("parallelutils.resources.unenforced"));
 
 		return true;
 	}
