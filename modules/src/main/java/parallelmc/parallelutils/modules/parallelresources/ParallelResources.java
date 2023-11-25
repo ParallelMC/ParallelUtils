@@ -104,6 +104,7 @@ public class ParallelResources extends ParallelModule {
 			if (!resourcesFile.exists()) {
 				resourcesConfig.set("domain", "resources.parallelmc.org");
 				resourcesConfig.set("port", 4444);
+				resourcesConfig.set("has_proxy", false);
 				resourcesConfig.set("https", false);
 				resourcesConfig.set("https_keystore", null);
 				resourcesConfig.set("https_keystore_pass", null);
@@ -117,6 +118,7 @@ public class ParallelResources extends ParallelModule {
 
 			// Initialize server
 			int port = resourcesConfig.getInt("port", 4444);
+			boolean has_proxy = resourcesConfig.getBoolean("has_proxy", false);
 			boolean https = resourcesConfig.getBoolean("https", false);
 			String keystore = resourcesConfig.getString("https_keystore", null);
 			String keystore_pass = resourcesConfig.getString("https_keystore_pass", null);
@@ -125,9 +127,15 @@ public class ParallelResources extends ParallelModule {
 
 			server = new ResourceServer(port, https, keystore != null ? new File(resourcesDir, keystore) : null, keystore_pass);
 
-			String https_head = https ? "https://" : "http://";
+			// Use HTTPS if there's a proxy
+			String https_head = (https|has_proxy) ? "https://" : "http://";
 
-			base_url = https_head + domain + ":" + port + "/";
+			// URL does not include port if there's a proxy
+			if (has_proxy) {
+				base_url = https_head + domain + "/";
+			} else {
+				base_url = https_head + domain + ":" + port + "/";
+			}
 
 			// Try loading packsquash
 

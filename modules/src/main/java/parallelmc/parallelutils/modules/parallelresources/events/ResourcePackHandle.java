@@ -74,13 +74,20 @@ public class ResourcePackHandle implements Listener {
 
 		byte[] hash = resources.getHash(worldName);
 
+		ParallelUtils.log(Level.INFO, "Applying pack for world " + worldName);
+
 		if (hash == null) {
 			ParallelUtils.log(Level.INFO, "Tried to get pack for invalid world. Defaulting to base");
 			worldName = "base";
 			hash = resources.getHash("base");
 		}
 
+		ParallelUtils.log(Level.INFO, "Found hash for world " + worldName);
+
+
 		String resourceUrl = resources.getResourceUrl(worldName);
+
+		ParallelUtils.log(Level.INFO, "Got resource URL  " + resourceUrl);
 
         player.setResourcePack(resourceUrl, hash, warningMessage, !player.hasPermission("parallelutils.resources.unenforced"));
 
