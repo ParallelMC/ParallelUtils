@@ -36,6 +36,14 @@ public class ResourcePackHandle implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 
+		if (!resources.doneLoading()) {
+			if (player.hasPermission("parallelutils.resources.unenforced")) {
+				return;
+			} else {
+				player.kick(Component.text("Server is still starting! Please check back in a minute."));
+			}
+		}
+
 		if (!applyPack(player, null)) {
 			ParallelUtils.log(Level.SEVERE, "UNABLE TO APPLY RESOURCE PACK!");
 		}
