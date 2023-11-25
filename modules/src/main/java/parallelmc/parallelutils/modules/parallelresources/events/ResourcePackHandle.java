@@ -10,9 +10,11 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelresources.ParallelResources;
 
+import java.util.Arrays;
 import java.util.logging.Level;
 
 public class ResourcePackHandle implements Listener {
@@ -34,7 +36,7 @@ public class ResourcePackHandle implements Listener {
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 
-		if (!applyPack(player)) {
+		if (!applyPack(player, null)) {
 			ParallelUtils.log(Level.SEVERE, "UNABLE TO APPLY RESOURCE PACK!");
 		}
 	}
@@ -43,7 +45,7 @@ public class ResourcePackHandle implements Listener {
 	public void onWorldChange(PlayerChangedWorldEvent event) {
 		Player player = event.getPlayer();
 
-		if (!applyPack(player)) {
+		if (!applyPack(player, event.getFrom())) {
 			ParallelUtils.log(Level.SEVERE, "UNABLE TO APPLY RESOURCE PACK!");
 		}
 	}
@@ -67,7 +69,7 @@ public class ResourcePackHandle implements Listener {
 		}
 	}
 
-	public boolean applyPack(@NotNull Player player) {
+	public boolean applyPack(@NotNull Player player, @Nullable World previousWorld) {
 		World world = player.getWorld();
 
 		String worldName = world.getName();
@@ -84,6 +86,20 @@ public class ResourcePackHandle implements Listener {
 
 		ParallelUtils.log(Level.INFO, "Found hash for world " + worldName);
 
+
+		if (previousWorld != null) {
+			String previousName = previousWorld.getName();
+			byte[] previousHash = resources.getHash(previousName);
+
+			if (previousHash == null) {
+				previousHash = resources.getHash("base");
+			}
+
+			// If the packs for each world are the same, just don't even apply the pack
+			if (Arrays.equals(previousHash, hash)) {
+				return true;
+			}
+		}
 
 		String resourceUrl = resources.getResourceUrl(worldName);
 
