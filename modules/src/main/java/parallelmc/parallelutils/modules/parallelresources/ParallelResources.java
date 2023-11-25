@@ -226,6 +226,8 @@ public class ParallelResources extends ParallelModule {
 					@Override
 					public void run() {
 						try {
+							handler = new ResourcePackHandle(puPlugin, resources, warning_component);
+
 							List<File> packs = squashFiles(packsTemp, resourcesDir, squashOut);
 
 							for (File f : packs) {
@@ -234,7 +236,7 @@ public class ParallelResources extends ParallelModule {
 								resourceHashes.put(trimmed_name, createSha1(f));
 							}
 
-							handler = new ResourcePackHandle(puPlugin, resources, warning_component);
+
 
 						} catch (Exception e) {
 							ParallelUtils.log(Level.SEVERE, "Exception while loading ParallelResources! Quitting...");
