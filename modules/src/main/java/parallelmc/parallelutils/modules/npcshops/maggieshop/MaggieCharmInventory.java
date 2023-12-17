@@ -5,12 +5,12 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.eclipse.sisu.inject.Legacy;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.npcshops.NPCShops;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
@@ -21,10 +21,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
-public class MaggieRankedInventory extends GUIInventory {
+public class MaggieCharmInventory extends GUIInventory {
+    private final ShopCategory shopCategory;
 
-    public MaggieRankedInventory() {
-        super(54, Component.text("Maggie's Charms: ", NamedTextColor.YELLOW).append(Component.text("Ranked Shop", NamedTextColor.LIGHT_PURPLE)));
+    public MaggieCharmInventory(ShopCategory category, String title) {
+        super(54, Component.text("Maggie's Charms: " + title, NamedTextColor.YELLOW));
+
+        this.shopCategory = category;
 
         inventory.setItem(45, PLACEHOLDER_YELLOW);
         inventory.setItem(46, PLACEHOLDER_YELLOW);
@@ -47,7 +50,7 @@ public class MaggieRankedInventory extends GUIInventory {
         meta.displayName(Component.text("Charm Applicator", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
         meta.setCustomModelData(1000000);
         List<Component> lore = new ArrayList<>();
-        List<ShopCharm> charms = NPCShops.get().getMaggieShop().getAllRankedCharms();
+        List<ShopCharm> charms = NPCShops.get().getMaggieShop().getShopCharmsByCategory(shopCategory);
         for (int i = 0; i < charms.size(); i++) {
             ShopCharm c = charms.get(i);
             lore.clear();
@@ -55,9 +58,13 @@ public class MaggieRankedInventory extends GUIInventory {
             lore.addAll(c.lore());
             lore.add(Component.text("Costs ", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false)
                     .append(Component.text(c.price() + " riftcoins", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false)));
-            lore.add(Component.text("You must have a donator rank of ", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
-                    .append(getFormattingFromPermission(c.requiredRank())));
-            lore.add(Component.text("or higher to purchase this charm!", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+            if (c.requiredRank() != null) {
+                if (!player.hasPermission(c.requiredRank()))
+                    charm.setType(Material.BARRIER);
+                lore.add(Component.text("You must have a donator rank of ", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false)
+                        .append(getFormattingFromPermission(c.requiredRank())));
+                lore.add(Component.text("or higher to purchase this charm!", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+            }
             meta.lore(lore);
             charm.setItemMeta(meta);
             inventory.setItem(i, charm);
@@ -70,26 +77,31 @@ public class MaggieRankedInventory extends GUIInventory {
             NPCShops.get().getMaggieShop().openShopFor(player);
         }
         else {
-            ShopCharm charm = NPCShops.get().getMaggieShop().getRankedCharm(slotNum);
-            if (charm == null) {
-                ParallelUtils.log(Level.WARNING, "Charm is null!");
+            if (!itemClicked.getItemMeta().hasLore()) {
+                ParallelUtils.log(Level.WARNING, "Charm has no lore!");
                 return;
             }
-            if (!player.hasPermission(charm.requiredRank())) {
+            String charmName = PlainTextComponentSerializer.plainText().serialize(itemClicked.getItemMeta().lore().get(0));
+            ShopCharm charm = NPCShops.get().getMaggieShop().getShopCharmByName(charmName);
+            if (charm == null) {
+                return;
+            }
+            if (charm.requiredRank() != null && !player.hasPermission(charm.requiredRank())) {
                 ParallelChat.sendParallelMessageTo(player, Component.text("You are missing the required rank for this charm!", NamedTextColor.RED));
+                return;
             }
             if (EconomyManager.get().getBalance(player) < charm.price()) {
                 ParallelChat.sendParallelMessageTo(player, Component.text("You don't have enough riftcoins!", NamedTextColor.RED));
+                return;
             }
-            else if (player.getInventory().firstEmpty() == -1) {
+            if (player.getInventory().firstEmpty() == -1) {
                 ParallelChat.sendParallelMessageTo(player, Component.text("You don't have enough inventory space!", NamedTextColor.RED));
+                return;
             }
-            else {
-                EconomyManager.get().removeRiftcoins(player, charm.price());
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("pu givecharm %s %s", player.getName(), charm.charmName()));
-                ParallelChat.sendParallelMessageTo(player,
-                        MiniMessage.miniMessage().deserialize(String.format("<aqua>You bought a <yellow>Charm Applicator <aqua>(%s) for <gold>%d riftcoins!", charm.charmName(), charm.price())));
-            }
+            EconomyManager.get().removeRiftcoins(player, charm.price());
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("pu givecharm %s %s", player.getName(), charm.charmName()));
+            ParallelChat.sendParallelMessageTo(player,
+                    MiniMessage.miniMessage().deserialize(String.format("<aqua>You bought a <yellow>Charm Applicator <aqua>(%s) for <gold>%d riftcoins!", charm.charmName(), charm.price())));
         }
     }
 

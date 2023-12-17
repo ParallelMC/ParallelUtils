@@ -5,10 +5,13 @@ import com.mojang.authlib.properties.Property;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.npcshops.NPCShops;
@@ -24,9 +27,9 @@ public class MaggieHomeInventory extends GUIInventory {
     private final ParallelUtils puPlugin;
 
     public MaggieHomeInventory(ParallelUtils puPlugin) {
-        super(27, Component.text("Maggie's Charms", NamedTextColor.YELLOW));
+        super(54, Component.text("Maggie's Charms", NamedTextColor.YELLOW));
 
-        for (int i = 0; i < 27; i++) {
+        for (int i = 0; i < 54; i++) {
             inventory.setItem(i, PLACEHOLDER_YELLOW);
         }
 
@@ -43,35 +46,10 @@ public class MaggieHomeInventory extends GUIInventory {
         headMeta.setPlayerProfile(profile);
         head.setItemMeta(headMeta);
 
-        inventory.setItem(11, head);
-
-        ItemStack open = new ItemStack(Material.NAME_TAG);
-        ItemMeta meta = open.getItemMeta();
-        meta.displayName(Component.text("Open Charms Shop", NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
-        lore.clear();
-        lore.add(Component.text("This shop is open to all ranks!", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
-        lore.add(Component.empty());
-        lore.add(Component.text("Click here to browse charms for sale!", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
-        meta.lore(lore);
-        open.setItemMeta(meta);
-
-        inventory.setItem(13, open);
-
-        ItemStack ranked = new ItemStack(Material.NAME_TAG);
-        meta = ranked.getItemMeta();
-        meta.displayName(Component.text("Ranked Charms Shop", NamedTextColor.LIGHT_PURPLE, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
-        lore.clear();
-        lore.add(Component.text("This shop is open to voter and", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
-        lore.add(Component.text("donor-ranked players only!", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
-        lore.add(Component.empty());
-        lore.add(Component.text("Click here to browse charms for sale!", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
-        meta.lore(lore);
-        ranked.setItemMeta(meta);
-
-        inventory.setItem(14, ranked);
+        inventory.setItem(12, head);
 
         ItemStack remover = new ItemStack(Material.PAPER);
-        meta = remover.getItemMeta();
+        ItemMeta meta = remover.getItemMeta();
         meta.displayName(Component.text("Charm Remover", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
         lore.clear();
         lore.add(Component.text("Costs ", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false)
@@ -81,7 +59,80 @@ public class MaggieHomeInventory extends GUIInventory {
         meta.setCustomModelData(1000000);
         remover.setItemMeta(meta);
 
-        inventory.setItem(15, remover);
+        inventory.setItem(14, remover);
+
+        ItemStack name = new ItemStack(Material.NAME_TAG);
+        meta = name.getItemMeta();
+        meta.displayName(Component.text("Item Name Styling Charms", NamedTextColor.WHITE, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+        lore.clear();
+        lore.add(Component.text("Click here to browse charms that", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        lore.add(Component.text("style the name of an item!", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        meta.lore(lore);
+        name.setItemMeta(meta);
+
+        inventory.setItem(30, name);
+
+        ItemStack kill = new ItemStack(Material.NETHERITE_SWORD);
+        meta = kill.getItemMeta();
+        meta.displayName(Component.text("Kill Message Styling Charms", NamedTextColor.RED, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+        lore.clear();
+        lore.add(Component.text("Click here to browse charms", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        lore.add(Component.text("that change kill messages!", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        meta.lore(lore);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        kill.setItemMeta(meta);
+
+        inventory.setItem(31, kill);
+
+        ItemStack particle = new ItemStack(Material.BLAZE_POWDER);
+        meta = particle.getItemMeta();
+        meta.displayName(Component.text("Particle Trail Charms", NamedTextColor.GOLD, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+        lore.clear();
+        lore.add(Component.text("Click here to browse charms that", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        lore.add(Component.text("add particle trails behind you!", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        meta.lore(lore);
+        particle.setItemMeta(meta);
+
+        inventory.setItem(32, particle);
+
+        ItemStack arrow = new ItemStack(Material.TIPPED_ARROW);
+        PotionMeta potMeta = (PotionMeta)arrow.getItemMeta();
+        potMeta.displayName(Component.text("Arrow Trail Charms", NamedTextColor.GREEN, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+        lore.clear();
+        lore.add(Component.text("Click here to browse charms that", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        lore.add(Component.text("add particle trails behind arrows!", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        potMeta.lore(lore);
+        potMeta.addItemFlags(ItemFlag.HIDE_ITEM_SPECIFICS);
+        potMeta.setColor(Color.GREEN);
+        arrow.setItemMeta(potMeta);
+
+        inventory.setItem(39, arrow);
+
+        ItemStack shaped = new ItemStack(Material.DIAMOND_CHESTPLATE);
+        meta = shaped.getItemMeta();
+        meta.displayName(Component.text("Shaped Particle Charms", NamedTextColor.AQUA, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+        lore.clear();
+        lore.add(Component.text("Click here to browse charms that", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        lore.add(Component.text("add particle effects on your person!", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        meta.lore(lore);
+        meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
+        shaped.setItemMeta(meta);
+
+        inventory.setItem(40, shaped);
+
+        ItemStack coming = new ItemStack(Material.PLAYER_HEAD);
+        headMeta = (SkullMeta)coming.getItemMeta();
+        headMeta.displayName(Component.text("???", NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+        lore.clear();
+        lore.add(Component.text("Coming soon!", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
+        headMeta.lore(lore);
+        profile = new CraftPlayerProfile(UUID.randomUUID(), null);
+        url = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmFkYzA0OGE3Y2U3OGY3ZGFkNzJhMDdkYTI3ZDg1YzA5MTY4ODFlNTUyMmVlZWQxZTNkYWYyMTdhMzhjMWEifX19";
+        profile.setProperty("textures", new Property("textures", url));
+        headMeta.setPlayerProfile(profile);
+        coming.setItemMeta(headMeta);
+
+        inventory.setItem(41, coming);
 
         this.puPlugin = puPlugin;
     }
@@ -93,12 +144,6 @@ public class MaggieHomeInventory extends GUIInventory {
     public void onSlotClicked(Player player, int slotNum, ItemStack itemClicked) {
         switch(slotNum) {
             case 14 -> {
-                NPCShops.get().getMaggieShop().openOpenShopFor(player);
-            }
-            case 15 -> {
-                NPCShops.get().getMaggieShop().openRankedShopFor(player);
-            }
-            case 16 -> {
                 if (EconomyManager.get().getBalance(player) < 20) {
                     ParallelChat.sendParallelMessageTo(player, Component.text("You don't have enough riftcoins!", NamedTextColor.RED));
                 }
@@ -112,6 +157,11 @@ public class MaggieHomeInventory extends GUIInventory {
                             .append(Component.text(" Charm Remover!", NamedTextColor.WHITE)));
                 }
             }
+            case 30 -> NPCShops.get().getMaggieShop().openCharmShopFor(player, ShopCategory.ITEM_NAME, "Item Name");
+            case 31 -> NPCShops.get().getMaggieShop().openCharmShopFor(player, ShopCategory.KILL_MESSAGE, "Kill Message");
+            case 32 -> NPCShops.get().getMaggieShop().openCharmShopFor(player, ShopCategory.PARTICLE_TRAIL, "Particle Trail");
+            case 39 -> NPCShops.get().getMaggieShop().openCharmShopFor(player, ShopCategory.ARROW_TRAIL, "Arrow Trail");
+            case 40 -> NPCShops.get().getMaggieShop().openCharmShopFor(player, ShopCategory.SHAPED_PARTICLE, "Shaped Particle");
         }
     }
 }

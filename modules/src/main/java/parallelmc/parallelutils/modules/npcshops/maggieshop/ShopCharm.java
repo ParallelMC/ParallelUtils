@@ -4,4 +4,4 @@ import net.kyori.adventure.text.Component;
 
 import java.util.List;
 
-public record ShopCharm(String charmName, List<Component> lore, int price, String requiredRank) { }
+public record ShopCharm(String charmName, List<Component> lore, ShopCategory category, int price, String requiredRank) { }

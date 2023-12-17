@@ -20,12 +20,12 @@ import parallelmc.parallelutils.util.GUIManager;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 
 // TODO: abstract this to allow other npc shops
 public class MaggieShop {
-    private final List<ShopCharm> openCharms = new ArrayList<>();
-    private final List<ShopCharm> rankedCharms = new ArrayList<>();
+    private final List<ShopCharm> shopCharms = new ArrayList<>();
     private final ParallelUtils puPlugin;
 
     public MaggieShop(ParallelUtils puPlugin) {
@@ -76,45 +76,49 @@ public class MaggieShop {
                 continue;
             }
             int price = config.getInt(key + ".price");
+            ShopCategory category = getCategoryFromString(config.getString(key + ".category"));
+            if (category == ShopCategory.UNKNOWN) {
+                ParallelUtils.log(Level.WARNING, "Unknown shop category for " + key + ", skipping!");
+                continue;
+            }
             boolean ranked = config.getBoolean(key + ".ranked");
-            if (ranked) {
-                String[] permissions = charm.getAllowedPermissions();
-                if (permissions.length > 0) {
-                    rankedCharms.add(new ShopCharm(name, lore, price, permissions[0]));
-                }
-            }
-            else {
-                openCharms.add(new ShopCharm(name, lore, price, null));
-            }
+            shopCharms.add(new ShopCharm(name, lore, category, price, ranked ? charm.getAllowedPermissions()[0] : null));
         }
-        ParallelUtils.log(Level.WARNING, "Loaded " + openCharms.size() + " open charms and " + rankedCharms.size() + " ranked charms");
+        ParallelUtils.log(Level.WARNING, "Loaded " + shopCharms.size() + " shop charms");
     }
 
-    @Nullable
-    public ShopCharm getOpenCharm(int index) {
-        return openCharms.get(index);
-    }
-
-    @Nullable
-    public ShopCharm getRankedCharm(int index) {
-        return rankedCharms.get(index);
+    private ShopCategory getCategoryFromString(String category) {
+        return switch (category) {
+            case "Item Name" -> ShopCategory.ITEM_NAME;
+            case "Kill Message" -> ShopCategory.KILL_MESSAGE;
+            case "Particle Trail" -> ShopCategory.PARTICLE_TRAIL;
+            case "Arrow Trail" -> ShopCategory.ARROW_TRAIL;
+            case "Shaped Particle" -> ShopCategory.SHAPED_PARTICLE;
+            default -> ShopCategory.UNKNOWN;
+        };
     }
 
     @NotNull
-    public List<ShopCharm> getAllOpenCharms() { return openCharms; }
+    public List<ShopCharm> getShopCharmsByCategory(ShopCategory category) {
+        return shopCharms.stream().filter(x -> x.category() == category).toList();
+    }
 
-    @NotNull
-    public List<ShopCharm> getAllRankedCharms() { return rankedCharms; }
+    @Nullable
+    public ShopCharm getShopCharmByName(String name) {
+        Optional<ShopCharm> c = shopCharms.stream().filter(x -> x.charmName().equalsIgnoreCase(name)).findFirst();
+        if (c.isPresent())
+            return c.get();
+        else {
+            ParallelUtils.log(Level.SEVERE, "No charm found with name " + name);
+            return null;
+        }
+    }
 
     public void openShopFor(Player player) {
         GUIManager.get().openInventoryForPlayer(player, new MaggieHomeInventory(puPlugin));
     }
 
-    public void openOpenShopFor(Player player) {
-        GUIManager.get().openInventoryForPlayer(player, new MaggieOpenInventory());
-    }
-
-    public void openRankedShopFor(Player player) {
-        GUIManager.get().openInventoryForPlayer(player, new MaggieRankedInventory());
+    public void openCharmShopFor(Player player, ShopCategory category, String title) {
+        GUIManager.get().openInventoryForPlayer(player, new MaggieCharmInventory(category, title));
     }
 }
