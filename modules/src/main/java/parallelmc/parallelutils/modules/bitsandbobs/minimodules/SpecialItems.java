@@ -47,9 +47,10 @@ public class SpecialItems implements Listener {
             if (item.getType() == Material.PAPER || item.getType() == Material.LEATHER_HORSE_ARMOR) {
                 // TODO: Try to change this code to use item.getItemMeta().getPersistentDataContainer()
                 // TODO: Make this 2-part check not jank - hopefully transition entirely to persistentdatacontainer
-                NamespacedKey hatKey = new NamespacedKey(plugin, "CustomHat");
+                NamespacedKey hatKeyOld = new NamespacedKey(plugin, "CustomHat");
+                NamespacedKey hatKey = new NamespacedKey(plugin, "ParallelHat");
                 PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
-                if (container.has(hatKey, PersistentDataType.INTEGER)) {
+                if (container.has(hatKeyOld, PersistentDataType.INTEGER) || container.has(hatKey, PersistentDataType.STRING)) {
                     preventedDrops.add(item);
                     continue;
                 }
@@ -112,11 +113,20 @@ public class SpecialItems implements Listener {
             if (itemMeta == null) {  // itemMeta could be null, so we have to check this
                 continue;
             }
-            NamespacedKey hatKey = new NamespacedKey(plugin, "CustomHat");
+            NamespacedKey hatKeyOld = new NamespacedKey(plugin, "CustomHat");
+            NamespacedKey hatKey = new NamespacedKey(plugin, "ParallelHat");
+            NamespacedKey dyeableKey = new NamespacedKey(plugin, "Dyeable");
             NamespacedKey modifyKey = new NamespacedKey(plugin, "NoModify");
             PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-            if (container.has(hatKey, PersistentDataType.INTEGER) || container.has(modifyKey, PersistentDataType.INTEGER)) {
-                ingredients.setResult(null); // Sets the crafting output to null if a CustomHat tag is found
+            // skip this item if it has the dyeableKey
+            if (container.has(dyeableKey, PersistentDataType.INTEGER)) {
+                continue;
+            }
+            // otherwise, if it's a hat or has the NoModify key, cancel the recipe
+            if (container.has(hatKeyOld, PersistentDataType.INTEGER)
+                    || container.has(hatKey, PersistentDataType.STRING)
+                    || container.has(modifyKey, PersistentDataType.INTEGER)) {
+                ingredients.setResult(null);
                 break;
             }
             // Now we have to use NMS if the item doesn't have a PersistentDataContainer
@@ -143,10 +153,19 @@ public class SpecialItems implements Listener {
                     if (item.getType() == Material.LEATHER_HORSE_ARMOR) {
                         ItemMeta itemMeta = item.getItemMeta();
                         if (itemMeta != null) {  // itemMeta could be null, so we have to check this
-                            NamespacedKey hatKey = new NamespacedKey(plugin, "CustomHat");
+                            NamespacedKey hatKeyOld = new NamespacedKey(plugin, "CustomHat");
+                            NamespacedKey hatKey = new NamespacedKey(plugin, "ParallelHat");
+                            NamespacedKey dyeableKey = new NamespacedKey(plugin, "Dyeable");
                             NamespacedKey modifyKey = new NamespacedKey(plugin, "NoModify");
                             PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-                            if (container.has(hatKey, PersistentDataType.INTEGER) || container.has(modifyKey, PersistentDataType.INTEGER)) {
+                            // skip this item if it has the dyeableKey
+                            if (container.has(dyeableKey, PersistentDataType.INTEGER)) {
+                                return;
+                            }
+                            // otherwise, if it's a hat or has the NoModify key, cancel the recipe
+                            if (container.has(hatKeyOld, PersistentDataType.INTEGER)
+                                    || container.has(hatKey, PersistentDataType.STRING)
+                                    || container.has(modifyKey, PersistentDataType.INTEGER)) {
                                 event.setCancelled(true);
                                 return;
                             }
