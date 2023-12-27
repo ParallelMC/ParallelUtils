@@ -40,6 +40,12 @@ public class QuestBoardInventory extends GUIInventory {
         for (int i = 45; i < 54; i++) {
             inventory.setItem(i, PLACEHOLDER_PURPLE);
         }
+        for (int i = 9; i < 45; i += 9) {
+            inventory.setItem(i, PLACEHOLDER_PURPLE);
+        }
+        for (int i = 17; i < 54; i += 9) {
+            inventory.setItem(i, PLACEHOLDER_PURPLE);
+        }
 
         this.puPlugin = puPlugin;
     }
@@ -83,6 +89,9 @@ public class QuestBoardInventory extends GUIInventory {
         for (ItemStack s : sorted) {
             inventory.setItem(currentSlot, s);
             currentSlot++;
+            if ((currentSlot + 1) % 9 == 0) {
+                currentSlot += 2;
+            }
         }
     }
 
