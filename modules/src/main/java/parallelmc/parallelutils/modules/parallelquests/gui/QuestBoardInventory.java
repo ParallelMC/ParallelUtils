@@ -47,6 +47,16 @@ public class QuestBoardInventory extends GUIInventory {
             inventory.setItem(i, PLACEHOLDER_PURPLE);
         }
 
+        ItemStack sign = new ItemStack(Material.OAK_SIGN);
+        ItemMeta meta = sign.getItemMeta();
+        meta.displayName(Component.text("Quest Board", NamedTextColor.DARK_PURPLE, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
+        meta.lore(List.of(
+           Component.text("Take on new quests and view", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false),
+           Component.text("active and old quests here!", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false)
+        ));
+        sign.setItemMeta(meta);
+        inventory.setItem(4, sign);
+
         this.puPlugin = puPlugin;
     }
 
