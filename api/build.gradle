@@ -283,6 +283,10 @@ bukkit {
             description = 'Opens the Quest Board'
             usage = '/openquestboard (player)'
         }
+        reloadquests {
+            description = 'Reloads quests from config'
+            usage = '/reloadquests'
+        }
     }
 
     permissions {

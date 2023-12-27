@@ -13,6 +13,7 @@ import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelquests.commands.OpenQuestBoard;
+import parallelmc.parallelutils.modules.parallelquests.commands.ReloadQuests;
 import parallelmc.parallelutils.modules.parallelquests.gui.QuestBoardInventory;
 import parallelmc.parallelutils.util.GUIManager;
 
@@ -55,10 +56,16 @@ public class ParallelQuests extends ParallelModule {
         }
 
         puPlugin.getCommand("openquestboard").setExecutor(new OpenQuestBoard());
+        puPlugin.getCommand("reloadquests").setExecutor(new ReloadQuests());
 
         loadQuests();
 
         Instance = this;
+    }
+
+    public void reloadQuests() {
+        quests.clear();
+        loadQuests();
     }
 
     private void loadQuests() {
