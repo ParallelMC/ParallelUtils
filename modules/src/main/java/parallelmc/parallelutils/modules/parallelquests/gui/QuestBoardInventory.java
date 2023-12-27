@@ -58,11 +58,11 @@ public class QuestBoardInventory extends GUIInventory {
 
             try {
                 if (q.available()) {
-                    if (BetonQuest.condition(profile, new ConditionID(pkg, "Parallel." + q.id() + ".isQuestDone"))) {
+                    if (BetonQuest.condition(profile, new ConditionID(pkg,q.id() + ".isQuestDone"))) {
                         items.add(getQuestBlock(q, "red"));
                     }
                     else {
-                        if (BetonQuest.condition(profile, new ConditionID(pkg, "Parallel." + q.id() + ".isQuestActive"))) {
+                        if (BetonQuest.condition(profile, new ConditionID(pkg, q.id() + ".isQuestActive"))) {
                             items.add(getQuestBlock(q, "yellow"));
                         }
                         else {

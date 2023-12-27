@@ -74,7 +74,7 @@ public class ParallelQuests extends ParallelModule {
             String name = config.getString(key + ".name");
             List<String> description = config.getStringList(key + ".description");
             boolean available = config.getBoolean(key + ".available");
-            quests.put(key, new QuestEntry(key, name, description, available));
+            quests.put(key, new QuestEntry("Parallel-" + key, name, description, available));
         }
         ParallelUtils.log(Level.WARNING, "Loaded " + quests.size() + " quest entries");
     }

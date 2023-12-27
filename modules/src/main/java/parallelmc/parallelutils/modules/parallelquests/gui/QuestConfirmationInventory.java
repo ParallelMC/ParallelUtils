@@ -70,14 +70,14 @@ public class QuestConfirmationInventory extends GUIInventory {
             }
             if (action == QuestConfirmationAction.START_QUEST) {
                 try {
-                    BetonQuest.event(profile, new EventID(pkg, "Parallel." + questID + ".startQuestFolder"));
+                    BetonQuest.event(profile, new EventID(pkg,questID + ".startQuestFolder"));
                 } catch (ObjectNotFoundException e) {
                     ParallelUtils.log(Level.SEVERE, "Failed to start quest with quest ID " + questID);
                 }
             }
             else if (action == QuestConfirmationAction.CANCEL_QUEST) {
                 try {
-                    BetonQuest.event(profile, new EventID(pkg, "Parallel." + questID + ".cancelQuest"));
+                    BetonQuest.event(profile, new EventID(pkg,questID + ".cancelQuest"));
                 } catch (ObjectNotFoundException e) {
                     ParallelUtils.log(Level.SEVERE, "Failed to cancel quest with quest ID " + questID);
                 }
