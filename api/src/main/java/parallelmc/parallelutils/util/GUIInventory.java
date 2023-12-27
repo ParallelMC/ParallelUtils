@@ -2,6 +2,7 @@ package parallelmc.parallelutils.util;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -9,12 +10,15 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.List;
+
 public abstract class GUIInventory {
     public Inventory inventory;
 
     // represents a placeholder item in a gui
     public static ItemStack PLACEHOLDER_LIGHT_BLUE;
     public static ItemStack PLACEHOLDER_YELLOW;
+    public static ItemStack PLACEHOLDER_PURPLE;
 
     // represents air in a gui
     public static ItemStack AIR;
@@ -31,6 +35,11 @@ public abstract class GUIInventory {
         meta.displayName(Component.text('-', NamedTextColor.YELLOW));
         PLACEHOLDER_YELLOW.setItemMeta(meta);
 
+        PLACEHOLDER_PURPLE = new ItemStack(Material.PURPLE_STAINED_GLASS_PANE);
+        meta = PLACEHOLDER_PURPLE.getItemMeta();
+        meta.displayName(Component.text('-', NamedTextColor.DARK_PURPLE));
+        PLACEHOLDER_PURPLE.setItemMeta(meta);
+
         AIR = new ItemStack(Material.AIR);
     }
 
@@ -41,5 +50,12 @@ public abstract class GUIInventory {
     public abstract void onOpen(Player player);
 
     public abstract void onSlotClicked(Player player, int slotNum, ItemStack itemClicked);
+
+    public static boolean isPlaceholderItem(Material material) {
+        return material == AIR.getType() ||
+                material == PLACEHOLDER_LIGHT_BLUE.getType() ||
+                material == PLACEHOLDER_YELLOW.getType() ||
+                material == PLACEHOLDER_PURPLE.getType();
+    }
 
 }

@@ -23,9 +23,8 @@ public class OnMenuInteract implements Listener {
             event.setCancelled(true);
             ItemStack item = event.getCurrentItem();
             // don't fire event for "placeholder" items
-            if (item == null || item.getType() == Material.AIR || item.getType() == Material.LIGHT_BLUE_STAINED_GLASS_PANE) {
+            if (item == null || GUIInventory.isPlaceholderItem(item.getType()))
                 return;
-            }
             inv.onSlotClicked(player, event.getRawSlot(), item);
         }
     }

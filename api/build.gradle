@@ -279,6 +279,10 @@ bukkit {
             description = 'Opens Maggies Shop'
             usage = '/openmaggieshop (player)'
         }
+        openquestboard {
+            description = 'Opens the Quest Board'
+            usage = '/openquestboard (player)'
+        }
     }
 
     permissions {
