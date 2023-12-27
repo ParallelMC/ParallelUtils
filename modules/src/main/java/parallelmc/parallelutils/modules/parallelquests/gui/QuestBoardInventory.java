@@ -32,7 +32,7 @@ public class QuestBoardInventory extends GUIInventory {
     private final ParallelUtils puPlugin;
 
     public QuestBoardInventory(ParallelUtils puPlugin) {
-        super(54, Component.text("Quest Board", NamedTextColor.DARK_PURPLE));
+        super(54, Component.text("Quest Board", NamedTextColor.DARK_PURPLE, TextDecoration.BOLD));
 
         for (int i = 0; i < 9; i++) {
             inventory.setItem(i, PLACEHOLDER_PURPLE);
@@ -112,14 +112,17 @@ public class QuestBoardInventory extends GUIInventory {
                 lore.add(Component.text("Quest Unavailable", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false));
             }
             case "red" -> {
+                item.setType(Material.RED_CONCRETE);
                 meta.displayName(Component.text(q.title(), NamedTextColor.DARK_RED, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
                 lore.add(Component.text("Quest Complete!", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
             }
             case "yellow" -> {
+                item.setType(Material.YELLOW_CONCRETE);
                 meta.displayName(Component.text(q.title(), NamedTextColor.YELLOW, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
                 lore.add(Component.text("Quest Active!", NamedTextColor.GOLD).decoration(TextDecoration.ITALIC, false));
             }
             case "green" -> {
+                item.setType(Material.GREEN_CONCRETE);
                 meta.displayName(Component.text(q.title(), NamedTextColor.DARK_GREEN, TextDecoration.BOLD).decoration(TextDecoration.ITALIC, false));
                 lore.add(Component.text("Quest Available!", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
             }
