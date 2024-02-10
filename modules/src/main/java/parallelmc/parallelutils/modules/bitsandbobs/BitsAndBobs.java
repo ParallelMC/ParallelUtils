@@ -74,7 +74,9 @@ public class BitsAndBobs extends ParallelModule {
         }
 
         cozyCampfires = new CozyCampfires();
-        plugin.getServer().getScheduler().runTaskTimer(plugin, () -> cozyCampfires.checkForCampfires(), 0, 80);
+        if (config.getBoolean("enable-cozy-campfires", false)) {
+            plugin.getServer().getScheduler().runTaskTimer(plugin, () -> cozyCampfires.checkForCampfires(), 0, 80);
+        }
 
     }
 
