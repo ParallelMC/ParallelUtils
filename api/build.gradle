@@ -7,7 +7,7 @@ plugins {
 
 group = 'org.parallelmc'
 
-version = '4.2.2'
+version = '4.3.0'
 description = 'A set of utilities and features for use on the Parallel Minecraft server'
 
 java {
@@ -22,11 +22,11 @@ processResources.filteringCharset = "UTF-8"
 dependencies {
     implementation 'org.jetbrains:annotations:24.0.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
-    implementation 'net.dv8tion:JDA:5.0.0-beta.10'
+    implementation 'net.dv8tion:JDA:5.0.0-beta.20'
     compileOnly 'me.clip:placeholderapi:2.11.3'
     compileOnly fileTree('libs') { include '*.jar' }
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.8'
-    implementation 'mysql:mysql-connector-java:8.0.33'
+    implementation 'com.mysql:mysql-connector-j:8.3.0'
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.0.0'
     compileOnly 'dev.esophose:playerparticles:8.4'
     implementation 'org.reflections:reflections:0.10.2'
