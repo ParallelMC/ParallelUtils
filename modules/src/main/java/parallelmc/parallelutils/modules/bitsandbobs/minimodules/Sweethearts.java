@@ -27,7 +27,8 @@ import java.util.logging.Level;
 public class Sweethearts implements Listener {
 
     private final HashMap<UUID, UUID> healthDonors = new HashMap<>();
-    private BukkitTask runnable = null;
+    private final HashMap<UUID, Integer> shiftingRunnables = new HashMap<>();
+    // private BukkitTask runnable = null;
     private final Plugin plugin;
 
     public Sweethearts() {
@@ -43,7 +44,7 @@ public class Sweethearts implements Listener {
     public void onPlayerShift(PlayerToggleSneakEvent event) {
         Player donor = event.getPlayer();
         if (event.isSneaking()) {
-            runnable = new BukkitRunnable() {
+            BukkitTask runnable = new BukkitRunnable() {
                 @Override
                 public void run() {
                     // If the donor is sneaking but not holding a poppy, return
@@ -92,8 +93,13 @@ public class Sweethearts implements Listener {
                     healthDonors.put(donorUUID, recipient.getUniqueId());
 
                     // Give 1 health from donor to recipient
+                    // If the recipient needs less than one heart, give them that
                     donor.damage(1);
-                    recipient.setHealth(recipientHealth + 1);
+                    if (recipientHealth + 1 > recipientMaxHealth) {
+                        recipient.setHealth(recipientMaxHealth);
+                    } else {
+                        recipient.setHealth(recipientHealth + 1);
+                    }
 
                     // Spawn particles (idk why picking the function with the right parameters is so finicky)
                     World world = donorLocation.getWorld();
@@ -104,13 +110,20 @@ public class Sweethearts implements Listener {
                 }
             }.runTaskTimer(plugin, 16L, 16L);
 
+            int taskID = runnable.getTaskId();
+            shiftingRunnables.put(donor.getUniqueId(),taskID);
         } else {
-            // if the runnable is running for the player, stop it
-            if (!runnable.isCancelled()) {
-                runnable.cancel();
+            // Check if donor health is greater than 0 to prevent clashes with the PlayerDeathEvent listener
+            if (donor.getHealth() > 0) {
+                // if the runnable is running for the player, stop it
+                if (shiftingRunnables.containsKey(donor.getUniqueId())) {
+                    int taskID = shiftingRunnables.get(donor.getUniqueId());
+                    Bukkit.getScheduler().cancelTask(taskID);
+                    shiftingRunnables.remove(donor.getUniqueId());
+                }
+                // Remove donor from the donor list
+                healthDonors.remove(donor.getUniqueId());
             }
-            // Remove donor from the donor list
-            healthDonors.remove(donor.getUniqueId());
         }
     }
 
@@ -121,8 +134,11 @@ public class Sweethearts implements Listener {
         // Check if the player was a donor, and if so, remove the player from the healthDonor list and
         // add a custom death message
         if (healthDonors.containsKey(donorUUID)) {
-            if (!runnable.isCancelled()) { // may be redundant because dying unshifts the player, but it's here just in case
-                runnable.cancel();
+            if (shiftingRunnables.containsKey(donorUUID)) { // may be redundant because dying unshifts the player, but it's here just in case
+                int taskID = shiftingRunnables.get(donorUUID);
+                Bukkit.getScheduler().cancelTask(taskID);
+                shiftingRunnables.remove(donorUUID);
+            }
             } else {
                 ParallelUtils.log(Level.WARNING, "Player " + donor.getName() +
                         " was listed as a healthDonor but they weren't actively donating health. Something is wrong!");
@@ -139,7 +155,7 @@ public class Sweethearts implements Listener {
             healthDonors.remove(donorUUID);
 
             // todo: give advancement and entityresurrectevent
-        }
+
     }
 
     public void onTotemUse(EntityResurrectEvent event) {
