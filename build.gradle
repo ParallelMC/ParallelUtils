@@ -36,8 +36,7 @@ allprojects {
         maven { url = 'https://repo.codemc.org/repository/maven-public/' }
         maven { url = 'https://repo.rosewooddev.io/repository/public/' }
         maven { url = 'https://jitpack.io' }
-        maven { url = 'https://betonquest.org/nexus/repository/betonquest/'}
-
+        maven { url = 'https://nexus.betonquest.org/repository/betonquest/'}
     }
 
     dependencies {
@@ -47,6 +46,6 @@ allprojects {
         compileOnly 'net.luckperms:api:5.4'
         compileOnly 'dev.esophose:playerparticles:8.4'
         compileOnly "com.github.MilkBowl:VaultAPI:1.7"
-        compileOnly "org.betonquest:betonquest:2.0.0-SNAPSHOT"
+        compileOnly "org.betonquest:betonquest:2.0.0"
     }
 }
