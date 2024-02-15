@@ -4,7 +4,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -87,9 +90,7 @@ public class Sweethearts implements Listener {
                         return;
                     }
 
-                    // Add donor and recipient to healthDonor list
-                    // The remove function does a check to see if the donor's in the list
-                    healthDonors.remove(donorUUID);
+                    // Add donor and recipient to healthDonor list - key gets overridden if it's already in there
                     healthDonors.put(donorUUID, recipient.getUniqueId());
 
                     // Give 1 health from donor to recipient
@@ -116,13 +117,14 @@ public class Sweethearts implements Listener {
             // Check if donor health is greater than 0 to prevent clashes with the PlayerDeathEvent listener
             if (donor.getHealth() > 0) {
                 // if the runnable is running for the player, stop it
-                if (shiftingRunnables.containsKey(donor.getUniqueId())) {
-                    int taskID = shiftingRunnables.get(donor.getUniqueId());
+                UUID donorUUID = donor.getUniqueId();
+                if (shiftingRunnables.containsKey(donorUUID)) {
+                    int taskID = shiftingRunnables.get(donorUUID);
                     Bukkit.getScheduler().cancelTask(taskID);
-                    shiftingRunnables.remove(donor.getUniqueId());
+                    shiftingRunnables.remove(donorUUID);
                 }
                 // Remove donor from the donor list
-                healthDonors.remove(donor.getUniqueId());
+                healthDonors.remove(donorUUID);
             }
         }
     }
@@ -131,35 +133,60 @@ public class Sweethearts implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player donor = event.getPlayer();
         UUID donorUUID = donor.getUniqueId();
-        // Check if the player was a donor, and if so, remove the player from the healthDonor list and
+        // Check if the player was a donor, and if so, remove the player from the healthDonor map and
         // add a custom death message
         if (healthDonors.containsKey(donorUUID)) {
-            if (shiftingRunnables.containsKey(donorUUID)) { // may be redundant because dying unshifts the player, but it's here just in case
+            // Remove the player from the shiftingRunnables map if they were shifting upon death
+            if (shiftingRunnables.containsKey(donorUUID)) {
                 int taskID = shiftingRunnables.get(donorUUID);
                 Bukkit.getScheduler().cancelTask(taskID);
                 shiftingRunnables.remove(donorUUID);
-            }
-            } else {
-                ParallelUtils.log(Level.WARNING, "Player " + donor.getName() +
-                        " was listed as a healthDonor but they weren't actively donating health. Something is wrong!");
             }
 
             // Build and send the death message text component
             UUID recipientUUID = healthDonors.get(donorUUID);
             Player recipient = Bukkit.getPlayer(recipientUUID);
             final TextComponent deathMessage = Component.text(donor.getName() + " was shot through the heart and " +
-                    recipient.getName() + " was to blame")
+                            recipient.getName() + " was to blame")
                             .color(NamedTextColor.WHITE);
             event.deathMessage(deathMessage);
 
+            // Remove the player from the healthDonor map
             healthDonors.remove(donorUUID);
 
-            // todo: give advancement and entityresurrectevent
-
+            // Award advancement
+            awardAdvancement(donor);
+        }
     }
 
+    @EventHandler
     public void onTotemUse(EntityResurrectEvent event) {
+        // Check if entity is being resurrected by a totem - if the event isn't cancelled, then they have a totem
+        if (!event.isCancelled()) {
+            Entity entity = event.getEntity();
+            // Check if entity is a player
+            if (entity instanceof Player) {
+                Player donor = (Player) entity;
+                // Check if entity is an active donor - if so, award the advancement
+                UUID donorUUID = donor.getUniqueId();
+                if (healthDonors.containsKey(donorUUID)) {
+                    awardAdvancement(donor);
+                }
+            }
+        }
+    }
 
+    public void awardAdvancement(Player donor) {
+        Advancement a = Bukkit.getAdvancement(new NamespacedKey(NamespacedKey.MINECRAFT,
+                "platy:exploration/flower_health_transfer_death"));
+        if (a != null) {
+            AdvancementProgress avp = donor.getAdvancementProgress(a);
+            if (!avp.isDone()) {
+                for (String criteria : avp.getRemainingCriteria()) {
+                    avp.awardCriteria(criteria);
+                }
+            }
+        }
     }
 
 }
