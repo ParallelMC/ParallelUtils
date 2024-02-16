@@ -27,9 +27,6 @@ import java.util.logging.Level;
 public class Sweethearts implements Listener {
 
     private final HashMap<UUID, UUID> healthDonors = new HashMap<>();
-    private final HashMap<UUID, Integer> shiftingRunnables = new HashMap<>();
-    // private BukkitTask runnable = null;
-    private final Plugin plugin;
 
     public Sweethearts() {
         PluginManager manager = Bukkit.getPluginManager();
@@ -37,7 +34,13 @@ public class Sweethearts implements Listener {
         if (plugin == null) {
             ParallelUtils.log(Level.SEVERE, "Unable to enable Sweethearts. Plugin " + Constants.PLUGIN_NAME
                     + " does not exist!");
+            return;
         }
+
+        // had some weird issues when checking for sneaking in an event
+        // so using a runnable seems to be the play
+
+        plugin.getServer().getScheduler().runTaskTimer(plugin, this::checkForDonors, 0L, 16L);
     }
 
     public void checkForDonors() {
@@ -121,13 +124,6 @@ public class Sweethearts implements Listener {
         // Check if the player was a donor, and if so, remove the player from the healthDonor map and
         // add a custom death message
         if (healthDonors.containsKey(donorUUID)) {
-            // Remove the player from the shiftingRunnables map if they were shifting upon death
-            if (shiftingRunnables.containsKey(donorUUID)) {
-                int taskID = shiftingRunnables.get(donorUUID);
-                Bukkit.getScheduler().cancelTask(taskID);
-                shiftingRunnables.remove(donorUUID);
-            }
-
             // Build and send the death message text component
             UUID recipientUUID = healthDonors.get(donorUUID);
             Player recipient = Bukkit.getPlayer(recipientUUID);
@@ -150,8 +146,7 @@ public class Sweethearts implements Listener {
         if (!event.isCancelled()) {
             Entity entity = event.getEntity();
             // Check if entity is a player
-            if (entity instanceof Player) {
-                Player donor = (Player) entity;
+            if (entity instanceof Player donor) {
                 // Check if entity is an active donor - if so, award the advancement
                 UUID donorUUID = donor.getUniqueId();
                 if (healthDonors.containsKey(donorUUID)) {
