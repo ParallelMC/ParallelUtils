@@ -129,7 +129,7 @@ public class Sweethearts implements Listener {
             Player recipient = Bukkit.getPlayer(recipientUUID);
             final TextComponent deathMessage = Component.text(donor.getName() + " was shot through the heart and " +
                             recipient.getName() + " was to blame")
-                            .color(NamedTextColor.WHITE);
+                    .color(NamedTextColor.WHITE);
             event.deathMessage(deathMessage);
 
             // Remove the player from the healthDonor map
