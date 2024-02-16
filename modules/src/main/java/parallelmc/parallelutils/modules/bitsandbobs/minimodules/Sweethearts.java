@@ -13,11 +13,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityResurrectEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelUtils;
 
@@ -36,95 +33,83 @@ public class Sweethearts implements Listener {
 
     public Sweethearts() {
         PluginManager manager = Bukkit.getPluginManager();
-        plugin = manager.getPlugin(Constants.PLUGIN_NAME);
+        Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
         if (plugin == null) {
             ParallelUtils.log(Level.SEVERE, "Unable to enable Sweethearts. Plugin " + Constants.PLUGIN_NAME
                     + " does not exist!");
         }
     }
 
-    @EventHandler
-    public void onPlayerShift(PlayerToggleSneakEvent event) {
-        Player donor = event.getPlayer();
-        if (event.isSneaking()) {
-            BukkitTask runnable = new BukkitRunnable() {
-                @Override
-                public void run() {
-                    // If the donor is sneaking but not holding a poppy, return
-                    if (!(donor.getInventory().getItemInMainHand().getType().equals(Material.POPPY) ||
+    public void checkForDonors() {
+        for (Player donor : Bukkit.getOnlinePlayers()) {
+            UUID donorUUID = donor.getUniqueId();
+            if (donor.isSneaking()) {
+                // If the donor is sneaking but not holding a poppy, return
+                if (!(donor.getInventory().getItemInMainHand().getType().equals(Material.POPPY) ||
                         donor.getInventory().getItemInOffHand().getType().equals(Material.POPPY))) {
-                        return;
-                    }
-                    // Get a list of all players in a 3-block radius (ty Paper for the epic function)
-                    Location donorLocation = donor.getLocation();
-                    Collection<Player> nearbyPlayersCollection =
-                            donor.getWorld().getNearbyEntitiesByType(Player.class, donorLocation, 3);
-                    ArrayList<Player> nearbyPlayers = new ArrayList<>(nearbyPlayersCollection);
-                    // Check if there are more players than just the donor themselves within a 3-block radius
-                    if (!(nearbyPlayers.size() > 1)) {
-                        return;
-                    }
+                    return;
+                }
+                // Get a list of all players in a 3-block radius (ty Paper for the epic function)
+                Location donorLocation = donor.getLocation();
+                Collection<Player> nearbyPlayersCollection =
+                        donor.getWorld().getNearbyEntitiesByType(Player.class, donorLocation, 3);
+                ArrayList<Player> nearbyPlayers = new ArrayList<>(nearbyPlayersCollection);
+                // Check if there are more players than just the donor themselves within a 3-block radius
+                if (!(nearbyPlayers.size() > 1)) {
+                    return;
+                }
 
-                    // Iterate over all players within the radius and find the closest player
-                    UUID donorUUID = donor.getUniqueId();
-                    double smallestDistance = Double.MAX_VALUE;
-                    Player recipient = null;
-                    Location recipientLocation = null;
+                // Iterate over all players within the radius and find the closest player
+                double smallestDistance = Double.MAX_VALUE;
+                Player recipient = null;
+                Location recipientLocation = null;
 
-                    for (Player player : nearbyPlayers) {
-                        if (!(player.getUniqueId().equals(donorUUID))) {
-                            Location playerLocation = player.getLocation();
-                            double distance = donorLocation.distanceSquared(playerLocation); // using distance squared to avoid expensive square roots
-                            if (distance < smallestDistance) {
-                                smallestDistance = distance;
-                                recipient = player;
-                                recipientLocation = player.getLocation();
-                            }
+                for (Player player : nearbyPlayers) {
+                    if (!(player.getUniqueId().equals(donorUUID))) {
+                        Location playerLocation = player.getLocation();
+                        double distance = donorLocation.distanceSquared(playerLocation); // using distance squared to avoid expensive square roots
+                        if (distance < smallestDistance) {
+                            smallestDistance = distance;
+                            recipient = player;
+                            recipientLocation = player.getLocation();
                         }
                     }
-
-                    // Check if recipient needs to be healed
-                    double recipientHealth = recipient.getHealth();
-                    double recipientMaxHealth = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
-                    if (!(recipientHealth < recipientMaxHealth)) {
-                        return;
-                    }
-
-                    // Add donor and recipient to healthDonor list - key gets overridden if it's already in there
-                    healthDonors.put(donorUUID, recipient.getUniqueId());
-
-                    // Give 1 health from donor to recipient
-                    // If the recipient needs less than one heart, give them that
-                    donor.damage(1);
-                    if (recipientHealth + 1 > recipientMaxHealth) {
-                        recipient.setHealth(recipientMaxHealth);
-                    } else {
-                        recipient.setHealth(recipientHealth + 1);
-                    }
-
-                    // Spawn particles (idk why picking the function with the right parameters is so finicky)
-                    World world = donorLocation.getWorld();
-                    world.spawnParticle(Particle.DAMAGE_INDICATOR, donorLocation.getX(), donorLocation.getY() + 2,
-                            donorLocation.getZ(), 5, 0, 0, 0, 0.255, null);
-                    world.spawnParticle(Particle.HEART, recipientLocation.getX(), recipientLocation.getY() + 2,
-                            recipientLocation.getZ(), 2, 0.2, 0.2, 0.2, 1, null);
                 }
-            }.runTaskTimer(plugin, 16L, 16L);
 
-            int taskID = runnable.getTaskId();
-            shiftingRunnables.put(donor.getUniqueId(),taskID);
-        } else {
-            // Check if donor health is greater than 0 to prevent clashes with the PlayerDeathEvent listener
-            if (donor.getHealth() > 0) {
-                // if the runnable is running for the player, stop it
-                UUID donorUUID = donor.getUniqueId();
-                if (shiftingRunnables.containsKey(donorUUID)) {
-                    int taskID = shiftingRunnables.get(donorUUID);
-                    Bukkit.getScheduler().cancelTask(taskID);
-                    shiftingRunnables.remove(donorUUID);
+                // Check if recipient needs to be healed
+                double recipientHealth = recipient.getHealth();
+                double recipientMaxHealth = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                if (!(recipientHealth < recipientMaxHealth)) {
+                    return;
                 }
-                // Remove donor from the donor list
-                healthDonors.remove(donorUUID);
+
+                // Add donor and recipient to healthDonor list - key gets overridden if it's already in there
+                healthDonors.put(donorUUID, recipient.getUniqueId());
+
+                // Give 1 health from donor to recipient
+                // If the recipient needs less than one heart, give them that
+                donor.damage(1);
+                if (recipientHealth + 1 > recipientMaxHealth) {
+                    recipient.setHealth(recipientMaxHealth);
+                } else {
+                    recipient.setHealth(recipientHealth + 1);
+                }
+
+                // Spawn particles (idk why picking the function with the right parameters is so finicky)
+                World world = donorLocation.getWorld();
+                world.spawnParticle(Particle.DAMAGE_INDICATOR, donorLocation.getX(), donorLocation.getY() + 2,
+                        donorLocation.getZ(), 5, 0, 0, 0, 0.255, null);
+                world.spawnParticle(Particle.HEART, recipientLocation.getX(), recipientLocation.getY() + 2,
+                        recipientLocation.getZ(), 2, 0.2, 0.2, 0.2, 1, null);
+            }
+            else {
+                if (healthDonors.containsKey(donorUUID)) {
+                    // Check if health > 0 to prevent clashing with the death event
+                    if (donor.getHealth() > 0) {
+                        // Remove donor from the donor list
+                        healthDonors.remove(donorUUID);
+                    }
+                }
             }
         }
     }
@@ -177,8 +162,8 @@ public class Sweethearts implements Listener {
     }
 
     public void awardAdvancement(Player donor) {
-        Advancement a = Bukkit.getAdvancement(new NamespacedKey(NamespacedKey.MINECRAFT,
-                "platy:exploration/flower_health_transfer_death"));
+        Advancement a = Bukkit.getAdvancement(new NamespacedKey("platy",
+                "exploration/flower_health_transfer_death"));
         if (a != null) {
             AdvancementProgress avp = donor.getAdvancementProgress(a);
             if (!avp.isDone()) {
@@ -188,5 +173,4 @@ public class Sweethearts implements Listener {
             }
         }
     }
-
 }
