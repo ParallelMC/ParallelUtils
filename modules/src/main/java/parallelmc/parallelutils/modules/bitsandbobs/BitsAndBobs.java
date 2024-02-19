@@ -70,6 +70,9 @@ public class BitsAndBobs extends ParallelModule {
         if (config.getBoolean("prevent-spawner-mining", false)) {
             manager.registerEvents(new PreventSpawnerMining(), plugin);
         }
+        if (config.getBoolean("enable-calling-bell", true)) {
+            manager.registerEvents(new CallingBell(), plugin);
+        }
     }
 
     @Override
