@@ -62,7 +62,6 @@ public class BitsAndBobs extends ParallelModule {
         manager.registerEvents(new OnPvp(), plugin);
         manager.registerEvents(new ShardLotto(), plugin);
         manager.registerEvents(new ChickenFeatherDrops(), plugin);
-        manager.registerEvents(new Sweethearts(), plugin);
 
         if (config.getBoolean("disable-ender-chests", false)) {
             manager.registerEvents(new DisableEnderChest(), plugin);
@@ -70,6 +69,10 @@ public class BitsAndBobs extends ParallelModule {
 
         if (config.getBoolean("prevent-spawner-mining", false)) {
             manager.registerEvents(new PreventSpawnerMining(), plugin);
+        }
+
+        if (config.getBoolean("enable-sweethearts", true)) {
+            manager.registerEvents(new Sweethearts(), plugin);
         }
     }
 

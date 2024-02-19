@@ -158,7 +158,7 @@ public class Sweethearts implements Listener {
 
     public void awardAdvancement(Player donor) {
         Advancement a = Bukkit.getAdvancement(new NamespacedKey("platy",
-                "exploration/flower_health_transfer_death"));
+                "forestry/sweethearts_death"));
         if (a != null) {
             AdvancementProgress avp = donor.getAdvancementProgress(a);
             if (!avp.isDone()) {
