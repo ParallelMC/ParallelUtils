@@ -131,4 +131,10 @@ public class EnchantGlow extends Enchantment {
 	public @NotNull NamespacedKey getKey() {
 		return key;
 	}
+
+	// TODO: get rid of this shit lol
+	@Override
+	public @NotNull String getTranslationKey() {
+		return null;
+	}
 }
