@@ -14,7 +14,6 @@ import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.OnPvp;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpCommand;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpManager;
 
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -69,6 +68,10 @@ public class BitsAndBobs extends ParallelModule {
 
         if (config.getBoolean("prevent-spawner-mining", false)) {
             manager.registerEvents(new PreventSpawnerMining(), plugin);
+        }
+
+        if (config.getBoolean("enable-ziprails", true)) {
+            manager.registerEvents(new Ziprails(), plugin);
         }
     }
 
