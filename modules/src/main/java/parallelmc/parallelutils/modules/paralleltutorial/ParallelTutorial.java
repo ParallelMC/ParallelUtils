@@ -18,6 +18,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.EulerAngle;
 import org.bukkit.util.Vector;
+import org.checkerframework.checker.units.qual.A;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
@@ -51,7 +52,7 @@ public class ParallelTutorial extends ParallelModule {
     // mostly for use in server crashes/shutdown
     public HashMap<Player, BukkitTask> runningTutorials = new HashMap<>();
 
-    public HashMap<Player, ArmorStand> armorStands = new HashMap<>();
+    public HashMap<Player, Display> displayEntities = new HashMap<>();
 
     public HashMap<Player, Location> startPoints = new HashMap<>();
 
@@ -243,11 +244,11 @@ public class ParallelTutorial extends ParallelModule {
                 if (debug) ParallelChat.sendParallelMessageTo(player, "Debug mode enabled! Please open console to view debug output.");
                 startPoints.put(player, player.getLocation());
                 loop = new BukkitRunnable() {
-                    ArmorStand stand;
+                    Display display;
                     @Override
                     public void run() {
-                        if (stand != null && player.getLocation().distanceSquared(stand.getLocation()) > 256) {
-                            Bukkit.getScheduler().runTask(puPlugin, () -> player.teleport(stand.getLocation()));
+                        if (display != null && player.getLocation().distanceSquared(display.getLocation()) > 256) {
+                            Bukkit.getScheduler().runTask(puPlugin, () -> player.teleport(display.getLocation()));
                         }
                         // only run the next instruction if the current one is finished
                         if (instructionFinished) {
@@ -257,25 +258,69 @@ public class ParallelTutorial extends ParallelModule {
                                 case "START" -> {
                                     Bukkit.getScheduler().runTask(puPlugin, () -> {
                                         Location start = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
-                                        stand = (ArmorStand)world.spawnEntity(start, EntityType.ARMOR_STAND, CreatureSpawnEvent.SpawnReason.COMMAND);
-                                        stand.setGravity(false);
-                                        stand.setVisible(false);
-                                        stand.setBasePlate(false);
-                                        stand.setInvulnerable(true);
-                                        stand.setHeadPose(EulerAngle.ZERO);
+                                        display = (Display)world.spawnEntity(start, EntityType.ITEM_DISPLAY, CreatureSpawnEvent.SpawnReason.COMMAND);
+                                        display.setRotation(0, 0);
                                         player.setGameMode(GameMode.SPECTATOR);
                                         player.setFlySpeed(0F);
-                                        // force player to spectate the armor stand
+                                        // force player to spectate the display
                                         // the player's actual model will be stuck back at the start
-                                        forceSpectate(player, stand.getEntityId());
-                                        armorStands.put(player, stand);
+                                        forceSpectate(player, display.getEntityId());
+                                        displayEntities.put(player, display);
                                         instructionFinished = true;
                                     });
                                 }
                                 case "MOVE" -> {
-                                    final Location a = stand.getLocation();
+                                    final Location a = display.getLocation();
                                     final Location b = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
-                                    final float duration = Float.parseFloat(i.args()[3]) * 20f;
+                                    final int secs = Integer.parseInt(i.args()[3]);
+                                    final ArrayList<Location> nodes = new ArrayList<>();
+                                    for (float l = 0; l < secs; l += 1f) {
+                                        float t = l / secs;
+                                        Location point = new Location(world,
+                                                a.getX() + (b.getX() - a.getX()) * t,
+                                                a.getY() + (b.getY() - a.getY()) * t,
+                                                a.getZ() + (b.getZ() - a.getZ()) * t);
+                                        lookAt(point, lookAt);
+                                        nodes.add(point);
+                                    }
+                                    lookAt(b, lookAt);
+                                    nodes.add(b);
+
+                                    display.teleport(nodes.get(0));
+                                    display.setTeleportDuration(20);
+                                    new BukkitRunnable() {
+                                        int index = 1;
+                                        @Override
+                                        public void run() {
+                                            display.teleport(nodes.get(index));
+                                            index++;
+                                            if (index >= nodes.size()) {
+                                                display.setTeleportDuration(0);
+                                                instructionFinished = true;
+                                                this.cancel();
+                                            }
+                                        }
+                                    }.runTaskTimer(puPlugin, 1L, 19L);
+                                    /*final float duration = Float.parseFloat(i.args()[3]) * 20f;
+                                    // if looking at a block, calculate the starting and end rotations and lerp between the two
+                                    float yA = 0f, yB = 0f, pA = 0f, pB = 0f;
+                                    if (lookAt != null) {
+                                        if (isBlock) {
+                                            Vector start = lookAt(a, lookAt);
+                                            Vector end = lookAt(b, lookAt);
+                                            yA = (float)start.getX();
+                                            yB = (float)end.getX();
+                                            pA = (float)start.getY();
+                                            pB = (float)end.getY();
+                                        }
+                                    }
+                                    display.set
+
+                                    // make the compiler happy
+                                    float yawA = yA;
+                                    float yawB = yB;
+                                    float pitchA = pA;
+                                    float pitchB = pB;
                                     new BukkitRunnable() {
                                         float steps = 0f;
                                         @Override
@@ -283,17 +328,15 @@ public class ParallelTutorial extends ParallelModule {
                                             if (steps == duration) {
                                                 if (lookAt != null) {
                                                     if (isBlock) {
-                                                        Vector look = lookAt(stand, lookAt);
-                                                        if (debug) ParallelUtils.log(Level.WARNING, "Calculated look vector: " + look.getX() + " " + look.getY());
-                                                        b.setYaw((float) look.getX());
-                                                        b.setPitch((float) look.getY());
+                                                        b.setYaw(yawB);
+                                                        b.setPitch(pitchA);
                                                     }
                                                     else {
                                                         b.setYaw((float) lookAt.getX());
                                                         b.setPitch((float) lookAt.getY());
                                                     }
                                                 }
-                                                stand.teleport(b);
+                                                display.teleport(b);
                                                 instructionFinished = true;
                                                 this.cancel();
                                             }
@@ -309,21 +352,19 @@ public class ParallelTutorial extends ParallelModule {
                                                         a.getZ() + (b.getZ() - a.getZ()) * t);
                                                 if (lookAt != null) {
                                                     if (isBlock) {
-                                                        Vector look = lookAt(stand, lookAt);
-                                                        if (debug) ParallelUtils.log(Level.WARNING, "Calculated look vector: " + look.getX() + " " + look.getY());
-                                                        point.setYaw((float) look.getX());
-                                                        point.setPitch((float)look.getY());
+                                                        point.setYaw(rotLerp(yawA, yawB, t));
+                                                        point.setPitch(rotLerp(pitchA, pitchB, t));
                                                     }
                                                     else {
                                                         point.setYaw((float) lookAt.getX());
                                                         point.setPitch((float) lookAt.getY());
                                                     }
                                                 }
-                                                stand.teleport(point);
+                                                display.teleport(point);
                                                 steps++;
                                             }
                                         }
-                                    }.runTaskTimer(puPlugin, 1L, 1L);
+                                    }.runTaskTimer(puPlugin, 1L, 1L); */
                                 }
                                 case "TELEPORT" -> {
                                     final Location newPoint = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
@@ -334,21 +375,18 @@ public class ParallelTutorial extends ParallelModule {
                                             if(player.teleport(newPoint)) {
                                                 if (lookAt != null) {
                                                     if (isBlock) {
-                                                        Vector look = lookAt(stand, lookAt);
-                                                        if (debug) ParallelUtils.log(Level.WARNING, "Calculated look vector: " + look.getX() + " " + look.getY());
-                                                        newPoint.setYaw((float) look.getX());
-                                                        newPoint.setPitch((float) look.getY());
+                                                        lookAt(newPoint, lookAt);
                                                     }
                                                     else {
                                                         newPoint.setYaw((float) lookAt.getX());
                                                         newPoint.setPitch((float) lookAt.getY());
                                                     }
                                                 }
-                                                if (stand.teleport(newPoint)) {
-                                                    forceSpectate(player, stand.getEntityId());
+                                                if (display.teleport(newPoint)) {
+                                                    forceSpectate(player, display.getEntityId());
                                                     if (debug) {
-                                                        ParallelUtils.log(Level.WARNING, "Armor Stand teleported!");
-                                                        ParallelUtils.log(Level.WARNING, "Armor Stand looking at: " + stand.getLocation().getYaw() + " " + stand.getLocation().getPitch());
+                                                        ParallelUtils.log(Level.WARNING, "Display teleported!");
+                                                        ParallelUtils.log(Level.WARNING, "Display looking at: " + display.getLocation().getYaw() + " " + display.getLocation().getPitch());
                                                         ParallelUtils.log(Level.WARNING, "Should be looking at: " + lookAt.getX() + " " + lookAt.getY());
                                                     }
                                                     instructionFinished = true;
@@ -403,7 +441,7 @@ public class ParallelTutorial extends ParallelModule {
 
     public void endTutorialFor(Player player, boolean debug) {
         Location endPoint = startPoints.get(player);
-        ArmorStand stand = armorStands.get(player);
+        Display display = displayEntities.get(player);
         if (debug) ParallelUtils.log(Level.WARNING, "Ending tutorial...");
         new BukkitRunnable() {
             @Override
@@ -414,11 +452,11 @@ public class ParallelTutorial extends ParallelModule {
                     if (debug) ParallelUtils.log(Level.WARNING, "Player teleported!");
                     // making the player spectate themselves brings them back to the start
                     forceSpectate(player, player.getEntityId());
-                    if (debug) ParallelUtils.log(Level.WARNING, "armorStands HashMap " + (stand != null ? "DOES" : "DOES NOT") + " contain the player before deletion.");
-                    if (stand != null) {
-                        if (debug) ParallelUtils.log(Level.WARNING, "Armor stand marked for removal");
-                        stand.remove();
-                        armorStands.remove(player);
+                    if (debug) ParallelUtils.log(Level.WARNING, "displayEntities HashMap " + (display != null ? "DOES" : "DOES NOT") + " contain the player before deletion.");
+                    if (display != null) {
+                        if (debug) ParallelUtils.log(Level.WARNING, "Display marked for removal");
+                        display.remove();
+                        displayEntities.remove(player);
                     }
                     player.setGameMode(GameMode.SURVIVAL);
                     player.setFlySpeed(0.1F);
@@ -429,14 +467,14 @@ public class ParallelTutorial extends ParallelModule {
             }
         }.runTaskTimer(puPlugin, 0L, 2L);
         if (debug) {
-            ParallelUtils.log(Level.WARNING, "Checking status of armor stand in a few ticks...");
+            ParallelUtils.log(Level.WARNING, "Checking status of display in a few ticks...");
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (stand.isDead() && !stand.isValid())
-                        ParallelUtils.log(Level.WARNING, "Armor Stand removed successfully!");
+                    if (display.isDead() && !display.isValid())
+                        ParallelUtils.log(Level.WARNING, "Display removed successfully!");
                     else
-                        ParallelUtils.log(Level.WARNING, "Armor Stand was NOT removed!");
+                        ParallelUtils.log(Level.WARNING, "Display was NOT removed!");
                 }
             }.runTaskLater(puPlugin, 10L);
         }
@@ -445,16 +483,16 @@ public class ParallelTutorial extends ParallelModule {
     /*
         Since we can't start runnables during shutdown we have to do this
         This may still result in Player moved too quickly errors, testing is needed
-        This will also be unable to check if the armor stand is truly despawned
+        This will also be unable to check if the display is truly despawned
      */
     public void handleShutdown(Player player) {
         Location endPoint = startPoints.get(player);
-        ArmorStand stand = armorStands.get(player);
+        Display display = displayEntities.get(player);
         player.teleport(endPoint);
         forceSpectate(player, player.getEntityId());
-        if (stand != null) {
-            stand.remove();
-            armorStands.remove(player);
+        if (display != null) {
+            display.remove();
+            displayEntities.remove(player);
         }
         player.setGameMode(GameMode.SURVIVAL);
         player.setFlySpeed(0.1F);
@@ -464,23 +502,23 @@ public class ParallelTutorial extends ParallelModule {
 
     public void handleDisconnectedPlayer(Player player, boolean debug) {
         if (debug) ParallelUtils.log(Level.WARNING, "Ending tutorial...");
-        ArmorStand stand = armorStands.get(player);
-        if (debug) ParallelUtils.log(Level.WARNING, "armorStands HashMap " + (stand != null ? "DOES" : "DOES NOT") + " contain the player before deletion.");
-        if (stand != null) {
-            if (debug) ParallelUtils.log(Level.WARNING, "Armor stand marked for removal");
-            stand.remove();
-            armorStands.remove(player);
+        Display display = displayEntities.get(player);
+        if (debug) ParallelUtils.log(Level.WARNING, "displayEntities HashMap " + (display != null ? "DOES" : "DOES NOT") + " contain the player before deletion.");
+        if (display != null) {
+            if (debug) ParallelUtils.log(Level.WARNING, "Display stand marked for removal");
+            display.remove();
+            displayEntities.remove(player);
         }
         runningTutorials.remove(player);
         if (debug) {
-            ParallelUtils.log(Level.WARNING, "Checking status of armor stand in a few ticks...");
+            ParallelUtils.log(Level.WARNING, "Checking status of display stand in a few ticks...");
             new BukkitRunnable() {
                 @Override
                 public void run() {
-                    if (stand.isDead() && !stand.isValid())
-                        ParallelUtils.log(Level.WARNING, "Armor Stand removed successfully!");
+                    if (display.isDead() && !display.isValid())
+                        ParallelUtils.log(Level.WARNING, "Display Stand removed successfully!");
                     else
-                        ParallelUtils.log(Level.WARNING, "Armor Stand was NOT removed!");
+                        ParallelUtils.log(Level.WARNING, "Display Stand was NOT removed!");
                 }
             }.runTaskLater(puPlugin, 10L);
         }
@@ -513,58 +551,32 @@ public class ParallelTutorial extends ParallelModule {
         }
     }
 
-    private Vector lookAt(ArmorStand stand, Vector block) {
-        Vector eyes = stand.getEyeLocation().toVector();
-        double d = block.getX() - eyes.getX();
-        double e = block.getY() - eyes.getY();
-        double f = block.getZ() - eyes.getZ();
+    private void lookAt(Location loc, Vector block) {
+        double d = block.getX() - loc.getX();
+        double e = block.getY() - loc.getY();
+        double f = block.getZ() - loc.getZ();
         double g = Math.sqrt(d * d + f * f);
-        return new Vector(Mth.wrapDegrees((float)(Mth.atan2(f, d) * 57.2957763671875) - 90.0F), Mth.wrapDegrees((float)(-(Mth.atan2(e, g) * 57.2957763671875))), 0);
+        Vector result = new Vector(Mth.wrapDegrees((float)(Mth.atan2(f, d) * 57.2957763671875) - 90.0F), Mth.wrapDegrees((float)(-(Mth.atan2(e, g) * 57.2957763671875))), 0);
+        loc.setYaw((float)result.getX());
+        loc.setPitch((float)result.getY());
     }
 
-    private Vector faceBlock(ArmorStand stand, Vector block) {
-        Vector eyes = stand.getEyeLocation().toVector();
-        Vector blockPos = new Vector(block.getX(), block.getY(), block.getZ());
-        double diffX = blockPos.getX() - eyes.getX();
-        double diffY = blockPos.getY() - eyes.getY();
-        double diffZ = blockPos.getZ() - eyes.getZ();
 
-        double diffXZ = Math.sqrt(diffX * diffX + diffZ * diffZ);
-
-        float yaw = (float)Math.toDegrees(Math.atan2(diffZ, diffX)) - 90F;
-        float pitch = (float)-Math.toDegrees(Math.atan2(diffY, diffXZ));
-        float prevYaw = stand.getLocation().getYaw();
-        float prevPitch = stand.getLocation().getPitch();
-        // use a rotational lerp to prevent snapping
-        return new Vector(rotLerp(prevYaw, yaw, 30f), rotLerp(prevPitch, pitch, 30f), 0);
-    }
-
-    private float rotLerp(float pSourceAngle, float pTargetAngle, float pMaximumChange)
+    private float rotLerp(float source, float target, float t)
     {
-        float f = Mth.wrapDegrees(pTargetAngle - pSourceAngle);
-
-        if (f > pMaximumChange)
-        {
-            f = pMaximumChange;
+        source += 180f;
+        target += 180f;
+        float diff = Math.abs(target - source);
+        if (diff > 180f) {
+            if (target > source)
+                source += 360f;
+            else
+                target += 360f;
         }
-
-        if (f < -pMaximumChange)
-        {
-            f = -pMaximumChange;
-        }
-
-        float f1 = pSourceAngle + f;
-
-        if (f1 < 0.0F)
-        {
-            f1 += 360.0F;
-        }
-        else if (f1 > 360.0F)
-        {
-            f1 -= 360.0F;
-        }
-
-        return f1;
+        float interp = source + (target - source) * t;
+        if (interp >= 0f && interp <= 360f)
+            return interp - 180f;
+        return interp % 360f - 180f;
     }
 
 }
