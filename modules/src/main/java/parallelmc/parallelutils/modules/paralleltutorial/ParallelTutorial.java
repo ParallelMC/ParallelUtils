@@ -272,10 +272,10 @@ public class ParallelTutorial extends ParallelModule {
                                 case "MOVE" -> {
                                     final Location a = display.getLocation();
                                     final Location b = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
-                                    final int secs = Integer.parseInt(i.args()[3]);
+                                    final int steps = Integer.parseInt(i.args()[3]);
                                     final ArrayList<Location> nodes = new ArrayList<>();
-                                    for (float l = 0; l < secs; l += 1f) {
-                                        float t = l / secs;
+                                    for (float l = 0; l < steps; l += 1f) {
+                                        float t = l / steps;
                                         Location point = new Location(world,
                                                 a.getX() + (b.getX() - a.getX()) * t,
                                                 a.getY() + (b.getY() - a.getY()) * t,
@@ -285,20 +285,24 @@ public class ParallelTutorial extends ParallelModule {
                                     }
                                     lookAt(b, lookAt);
                                     nodes.add(b);
+                                    ParallelUtils.log(Level.WARNING, "" + nodes.size());
 
                                     display.teleport(nodes.get(0));
-                                    display.setTeleportDuration(20);
+                                    ParallelUtils.log(Level.WARNING, "Teleporting to " + nodes.get(0));
+                                    display.setTeleportDuration(19);
                                     new BukkitRunnable() {
                                         int index = 1;
                                         @Override
                                         public void run() {
-                                            display.teleport(nodes.get(index));
-                                            index++;
                                             if (index >= nodes.size()) {
                                                 display.setTeleportDuration(0);
                                                 instructionFinished = true;
                                                 this.cancel();
+                                                return;
                                             }
+                                            display.teleport(nodes.get(index));
+                                            ParallelUtils.log(Level.WARNING, "Teleporting to " + nodes.get(index));
+                                            index++;
                                         }
                                     }.runTaskTimer(puPlugin, 1L, 19L);
                                     /*final float duration = Float.parseFloat(i.args()[3]) * 20f;
