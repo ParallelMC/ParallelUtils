@@ -280,15 +280,25 @@ public class ParallelTutorial extends ParallelModule {
                                                 a.getX() + (b.getX() - a.getX()) * t,
                                                 a.getY() + (b.getY() - a.getY()) * t,
                                                 a.getZ() + (b.getZ() - a.getZ()) * t);
-                                        lookAt(point, lookAt);
+                                        if (isBlock) {
+                                            lookAt(point, lookAt);
+                                        }
+                                        else {
+                                            point.setYaw((float)lookAt.getX());
+                                            point.setPitch((float)lookAt.getY());
+                                        }
                                         nodes.add(point);
                                     }
-                                    lookAt(b, lookAt);
+                                    if (isBlock)
+                                        lookAt(b, lookAt);
+                                    else  {
+                                        b.setYaw((float)lookAt.getX());
+                                        b.setPitch((float)lookAt.getY());
+                                    }
                                     nodes.add(b);
-                                    ParallelUtils.log(Level.WARNING, "" + nodes.size());
 
                                     display.teleport(nodes.get(0));
-                                    ParallelUtils.log(Level.WARNING, "Teleporting to " + nodes.get(0));
+                                    if (debug) ParallelUtils.log(Level.WARNING, "Teleporting to " + nodes.get(0));
                                     display.setTeleportDuration(19);
                                     new BukkitRunnable() {
                                         int index = 1;
@@ -301,74 +311,10 @@ public class ParallelTutorial extends ParallelModule {
                                                 return;
                                             }
                                             display.teleport(nodes.get(index));
-                                            ParallelUtils.log(Level.WARNING, "Teleporting to " + nodes.get(index));
+                                            if (debug) ParallelUtils.log(Level.WARNING, "Teleporting to " + nodes.get(index));
                                             index++;
                                         }
                                     }.runTaskTimer(puPlugin, 1L, 19L);
-                                    /*final float duration = Float.parseFloat(i.args()[3]) * 20f;
-                                    // if looking at a block, calculate the starting and end rotations and lerp between the two
-                                    float yA = 0f, yB = 0f, pA = 0f, pB = 0f;
-                                    if (lookAt != null) {
-                                        if (isBlock) {
-                                            Vector start = lookAt(a, lookAt);
-                                            Vector end = lookAt(b, lookAt);
-                                            yA = (float)start.getX();
-                                            yB = (float)end.getX();
-                                            pA = (float)start.getY();
-                                            pB = (float)end.getY();
-                                        }
-                                    }
-                                    display.set
-
-                                    // make the compiler happy
-                                    float yawA = yA;
-                                    float yawB = yB;
-                                    float pitchA = pA;
-                                    float pitchB = pB;
-                                    new BukkitRunnable() {
-                                        float steps = 0f;
-                                        @Override
-                                        public void run() {
-                                            if (steps == duration) {
-                                                if (lookAt != null) {
-                                                    if (isBlock) {
-                                                        b.setYaw(yawB);
-                                                        b.setPitch(pitchA);
-                                                    }
-                                                    else {
-                                                        b.setYaw((float) lookAt.getX());
-                                                        b.setPitch((float) lookAt.getY());
-                                                    }
-                                                }
-                                                display.teleport(b);
-                                                instructionFinished = true;
-                                                this.cancel();
-                                            }
-                                            else {
-                                                float t = steps / duration;
-                                                if (t < 0f)
-                                                    t = 0f;
-                                                else if (t > 1F)
-                                                    t = 1f;
-                                                Location point = new Location(world,
-                                                        a.getX() + (b.getX() - a.getX()) * t,
-                                                        a.getY() + (b.getY() - a.getY()) * t,
-                                                        a.getZ() + (b.getZ() - a.getZ()) * t);
-                                                if (lookAt != null) {
-                                                    if (isBlock) {
-                                                        point.setYaw(rotLerp(yawA, yawB, t));
-                                                        point.setPitch(rotLerp(pitchA, pitchB, t));
-                                                    }
-                                                    else {
-                                                        point.setYaw((float) lookAt.getX());
-                                                        point.setPitch((float) lookAt.getY());
-                                                    }
-                                                }
-                                                display.teleport(point);
-                                                steps++;
-                                            }
-                                        }
-                                    }.runTaskTimer(puPlugin, 1L, 1L); */
                                 }
                                 case "TELEPORT" -> {
                                     final Location newPoint = new Location(world, Double.parseDouble(i.args()[0]), Double.parseDouble(i.args()[1]), Double.parseDouble(i.args()[2]));
