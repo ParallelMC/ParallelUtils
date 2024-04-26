@@ -121,7 +121,7 @@ public class BlackjackInventory extends GUIInventory {
                 updatePlayerSkull(player);
                 checkShouldEndGame(player);
             }
-            else if (clicked == Material.NAME_TAG) {
+            else if (clicked == Material.RED_DYE || clicked == Material.YELLOW_DYE || clicked == Material.GREEN_DYE) {
                 inventory.setItem(29, DOUBLE_BUTTON);
                 inventory.setItem(30, HIT_BUTTON);
                 inventory.setItem(32, STAND_BUTTON);
@@ -186,10 +186,16 @@ public class BlackjackInventory extends GUIInventory {
         hidden.setItemMeta(hmeta);
         inventory.setItem(22, hidden);
 
-        if (currentPlayerValue() == 21) {
+        int dealer = currentDealerValue();
+        int play = currentPlayerValue();
+
+        if (dealer == 21 && play == 21) {
+            displayGameResult(BlackjackResult.PUSH, player);
+        }
+        else if (play == 21) {
             displayGameResult(BlackjackResult.PLAYER_BLACKJACK, player);
         }
-        else if (currentDealerValue() == 21) {
+        else if (dealer  == 21) {
             displayGameResult(BlackjackResult.DEALER_BLACKJACK, player);
         }
     }
@@ -257,42 +263,37 @@ public class BlackjackInventory extends GUIInventory {
 
     private void displayGameResult(BlackjackResult result, Player player) {
         showDealerCards();
-        ItemStack item = new ItemStack(Material.NAME_TAG);
-        ItemMeta meta = item.getItemMeta();
+        // -1 = dealer win | 0 = tie | 1 = player win
+        int winner;
         switch (result) {
-            case PLAYER_WIN -> {
-                meta.displayName(Component.text("Player Win", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-            }
-            case DEALER_WIN -> {
-                meta.displayName(Component.text("Dealer Win", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+            case PLAYER_WIN, PLAYER_BLACKJACK, DEALER_BUST -> winner = 1;
+            case DEALER_WIN, DEALER_BLACKJACK, PLAYER_BUST -> winner = -1;
+            default -> winner = 0;
+        }
+
+        ItemStack item;
+        ItemMeta meta;
+        switch (winner) {
+            case -1 -> {
+                item = new ItemStack(Material.RED_DYE);
+                meta = item.getItemMeta();
+                meta.displayName(Component.text(result.getName(), NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
                 player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1f, 1f);
             }
-            case DEALER_BUST -> {
-                meta.displayName(Component.text("Dealer Bust", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
+            case 1 -> {
+                item = new ItemStack(Material.LIME_DYE);
+                meta = item.getItemMeta();
+                meta.displayName(Component.text(result.getName(), NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
             }
-            case PLAYER_BUST -> {
-                meta.displayName(Component.text("Player Bust", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
-                player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1f, 1f);
-            }
-            case PUSH -> {
-                meta.displayName(Component.text("Push", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
-                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1f, 1f);
-            }
-            case PLAYER_BLACKJACK -> {
-                meta.displayName(Component.text("Player Blackjack", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-            }
-            case DEALER_BLACKJACK -> {
-                meta.displayName(Component.text("Dealer Blackjack", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
-                player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1f, 1f);
-            }
-            case FIVE_CARD_RULE -> {
-                meta.displayName(Component.text("Five Card Rule", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+            default -> {
+                item = new ItemStack(Material.YELLOW_DYE);
+                meta = item.getItemMeta();
+                meta.displayName(Component.text(result.getName(), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1f, 1f);
             }
         }
+
         meta.lore(List.of(Component.text("Click to play again!", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)));
         item.setItemMeta(meta);
         inventory.setItem(30, item);
@@ -328,15 +329,19 @@ public class BlackjackInventory extends GUIInventory {
         Suit suit = card.getSuit();
         ItemStack item;
         if (suit == Suit.HEART || suit == Suit.DIAMOND) {
-            item = new ItemStack(Material.RED_STAINED_GLASS_PANE);
+            item = new ItemStack(Material.RED_STAINED_GLASS_PANE, card.getValue());
             ItemMeta meta = item.getItemMeta();
             meta.displayName(Component.text(card.toString(), NamedTextColor.RED).decoration(TextDecoration.ITALIC ,false));
+            if (card.getRank() == Rank.ACE)
+                meta.lore(List.of(Component.text("Also counts as 1", NamedTextColor.DARK_GRAY)));
             item.setItemMeta(meta);
         }
         else {
-            item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+            item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, card.getValue());
             ItemMeta meta = item.getItemMeta();
             meta.displayName(Component.text(card.toString(), NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false));
+            if (card.getRank() == Rank.ACE)
+                meta.lore(List.of(Component.text("Also counts as 1", NamedTextColor.DARK_GRAY)));
             item.setItemMeta(meta);
         }
         inventory.setItem(slot, item);

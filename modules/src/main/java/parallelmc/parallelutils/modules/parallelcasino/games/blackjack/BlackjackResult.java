@@ -1,12 +1,22 @@
 package parallelmc.parallelutils.modules.parallelcasino.games.blackjack;
 
 public enum BlackjackResult {
-    PLAYER_WIN,
-    DEALER_WIN,
-    PLAYER_BUST,
-    DEALER_BUST,
-    PUSH,
-    PLAYER_BLACKJACK,
-    DEALER_BLACKJACK,
-    FIVE_CARD_RULE
+    PLAYER_WIN("Player Win"),
+    DEALER_WIN("Dealer Win"),
+    PLAYER_BUST("Player Bust"),
+    DEALER_BUST("Dealer Bust"),
+    PUSH("Push"),
+    PLAYER_BLACKJACK("Player Blackjack"),
+    DEALER_BLACKJACK("Dealer Blackjack"),
+    FIVE_CARD_RULE("Five Card Rule");
+
+    private final String name;
+
+    BlackjackResult(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
 }
