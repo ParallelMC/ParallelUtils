@@ -105,8 +105,9 @@ public class BlackjackInventory extends GUIInventory {
             if (clicked == Material.LIGHT_BLUE_CONCRETE) {
                 drawPlayerCard();
                 updatePlayerSkull(player);
-                checkShouldEndGame(player);
+                inventory.setItem(29, PLACEHOLDER_GREEN);
                 inventory.setItem(30, PLACEHOLDER_GREEN);
+                checkShouldEndGame(player);
             }
         }
         // hit or replay
@@ -295,7 +296,7 @@ public class BlackjackInventory extends GUIInventory {
         meta.lore(List.of(Component.text("Click to play again!", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)));
         item.setItemMeta(meta);
         inventory.setItem(30, item);
-
+        inventory.setItem(29, PLACEHOLDER_GREEN);
         inventory.setItem(32, LEAVE_BUTTON);
     }
 
