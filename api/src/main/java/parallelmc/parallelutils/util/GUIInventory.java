@@ -15,6 +15,7 @@ public abstract class GUIInventory {
     // represents a placeholder item in a gui
     public static ItemStack PLACEHOLDER_LIGHT_BLUE;
     public static ItemStack PLACEHOLDER_YELLOW;
+    public static ItemStack PLACEHOLDER_GREEN;
 
     // represents air in a gui
     public static ItemStack AIR;
@@ -30,6 +31,11 @@ public abstract class GUIInventory {
         meta = PLACEHOLDER_YELLOW.getItemMeta();
         meta.displayName(Component.text('-', NamedTextColor.YELLOW));
         PLACEHOLDER_YELLOW.setItemMeta(meta);
+
+        PLACEHOLDER_GREEN = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
+        meta = PLACEHOLDER_GREEN.getItemMeta();
+        meta.displayName(Component.text('-', NamedTextColor.DARK_GREEN));
+        PLACEHOLDER_GREEN.setItemMeta(meta);
 
         AIR = new ItemStack(Material.AIR);
     }

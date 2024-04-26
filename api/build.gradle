@@ -279,6 +279,10 @@ bukkit {
             description = 'Opens Maggies Shop'
             usage = '/openmaggieshop (player)'
         }
+        blackjack {
+            description = 'Opens Blackjack'
+            usage = '/blackjack'
+        }
     }
 
     permissions {
