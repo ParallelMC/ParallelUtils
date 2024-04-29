@@ -10,6 +10,7 @@ import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelcasino.commands.OpenBlackjack;
+import parallelmc.parallelutils.modules.parallelcasino.commands.OpenDeucesWild;
 import parallelmc.parallelutils.modules.parallelcasino.events.OnCloseInventory;
 
 import java.util.HashSet;
@@ -51,6 +52,7 @@ public class ParallelCasino extends ParallelModule {
         manager.registerEvents(new OnCloseInventory(), puPlugin);
 
         puPlugin.getCommand("blackjack").setExecutor(new OpenBlackjack());
+        puPlugin.getCommand("deuceswild").setExecutor(new OpenDeucesWild());
 
         Instance = this;
     }

@@ -283,6 +283,10 @@ bukkit {
             description = 'Opens Blackjack'
             usage = '/blackjack'
         }
+        deuceswild {
+            description = 'Opens Deuces Wild'
+            usage = '/deuceswild'
+        }
     }
 
     permissions {
