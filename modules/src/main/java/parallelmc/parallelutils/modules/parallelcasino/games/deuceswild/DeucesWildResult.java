@@ -11,7 +11,7 @@ public enum DeucesWildResult {
     FLUSH("Flush"),
     STRAIGHT("Straight"),
     THREE_OF_A_KIND("Three of a Kind"),
-    NO_WIN("Try Again!");
+    NO_WIN("No Hand");
 
     private final String name;
 
