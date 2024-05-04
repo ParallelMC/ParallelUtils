@@ -7,19 +7,26 @@ plugins {
 
 group = 'org.parallelmc'
 
-version = '4.3.0'
+version = '4.4.0'
 description = 'A set of utilities and features for use on the Parallel Minecraft server'
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
 processResources.filteringCharset = "UTF-8"
 
+repositories {
+    mavenCentral()
+    maven { url = "https://repo.papermc.io/repository/maven-public/" }
+}
 
 dependencies {
+    //compileOnly 'io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT'
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.20.6-R0.1-SNAPSHOT")
+
     implementation 'org.jetbrains:annotations:24.0.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
     implementation 'net.dv8tion:JDA:5.0.0-beta.20'
@@ -27,7 +34,7 @@ dependencies {
     compileOnly fileTree('libs') { include '*.jar' }
     compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.9'
     implementation 'com.mysql:mysql-connector-j:8.3.0'
-    compileOnly 'com.comphenix.protocol:ProtocolLib:5.2.0'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
     compileOnly 'dev.esophose:playerparticles:8.5'
     implementation 'org.reflections:reflections:0.10.2'
 }
@@ -49,7 +56,7 @@ tasks {
     compileJava {
         // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
         // See https://openjdk.java.net/jeps/247 for more information.
-        options.release.set(17)
+        options.release.set(21)
     }
 
     shadowJar {
@@ -67,7 +74,7 @@ bukkit {
 
     main = 'parallelmc.parallelutils.ParallelUtils'
 
-    apiVersion = '1.20'
+    apiVersion = '1.20.5'
 
     depend = ['PlaceholderAPI', 'ProtocolLib']
     softDepend = ['Multiverse-Core', 'FractalForest', 'WorldGuard', 'VoteParty', 'PlayerParticles', 'ProNouns']

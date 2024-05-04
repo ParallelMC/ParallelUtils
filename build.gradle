@@ -1,18 +1,17 @@
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id("io.papermc.paperweight.userdev") version "1.6.3"
-    id "xyz.jpenilla.run-paper" version "2.1.0"
+    id "io.papermc.paperweight.userdev" version "1.7.0"
+    id "xyz.jpenilla.run-paper" version "2.3.0"
     id 'net.minecrell.plugin-yml.bukkit' version '0.6.0'
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
 dependencies {
     paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.20.6-R0.1-SNAPSHOT")
-}
-
-
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 }
 
 compileJava.options.encoding = "UTF-8"
@@ -36,13 +35,13 @@ allprojects {
         maven { url = 'https://repo.codemc.org/repository/maven-public/' }
         maven { url = 'https://repo.rosewooddev.io/repository/public/' }
         maven { url = 'https://jitpack.io' }
-
     }
 
     dependencies {
         paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.20.6-R0.1-SNAPSHOT")
+        //paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT")
 
-        compileOnly "io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT"
+        //compileOnly "io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT"
         compileOnly 'net.luckperms:api:5.4'
         compileOnly 'dev.esophose:playerparticles:8.5'
         compileOnly "com.github.MilkBowl:VaultAPI:1.7"
