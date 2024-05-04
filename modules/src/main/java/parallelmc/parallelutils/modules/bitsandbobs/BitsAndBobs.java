@@ -70,6 +70,10 @@ public class BitsAndBobs extends ParallelModule {
         if (config.getBoolean("prevent-spawner-mining", false)) {
             manager.registerEvents(new PreventSpawnerMining(), plugin);
         }
+
+        if (config.getBoolean("enable-sweethearts", true)) {
+            manager.registerEvents(new Sweethearts(), plugin);
+        }
     }
 
     @Override
