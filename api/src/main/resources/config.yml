@@ -78,3 +78,4 @@ announcements:
 disable-ender-chests: false
 prevent-spawner-mining: false
 enable-calling-bell: true
+enable-sweethearts: true
