@@ -73,6 +73,14 @@ public class BitsAndBobs extends ParallelModule {
         if (config.getBoolean("enable-ziprails", true)) {
             manager.registerEvents(new Ziprails(), plugin);
         }
+      
+        if (config.getBoolean("enable-calling-bell", true)) {
+            manager.registerEvents(new CallingBell(), plugin);
+        }
+
+        if (config.getBoolean("enable-sweethearts", true)) {
+            manager.registerEvents(new Sweethearts(), plugin);
+        }
     }
 
     @Override
