@@ -90,9 +90,9 @@ public class CallingBell implements Listener {
         world.spawnEntity(bellLocation, EntityType.WANDERING_TRADER);
 
         // Add particles and sound
-        world.spawnParticle(Particle.VILLAGER_HAPPY,bellLocation.getX(), bellLocation.getY() + 0.5,
+        world.spawnParticle(Particle.HAPPY_VILLAGER,bellLocation.getX(), bellLocation.getY() + 0.5,
                 bellLocation.getZ(), 5, 0.3, 0.3, 0.3);
-        world.spawnParticle(Particle.SMOKE_LARGE, bellLocation.getX(), bellLocation.getY() + 1,
+        world.spawnParticle(Particle.LARGE_SMOKE, bellLocation.getX(), bellLocation.getY() + 1,
                 bellLocation.getZ(), 10, 0.25, 0.5, 0.25, 0);
         world.playSound(bellLocation, Sound.ENTITY_WANDERING_TRADER_REAPPEARED, SoundCategory.NEUTRAL,
                 1, 1);
