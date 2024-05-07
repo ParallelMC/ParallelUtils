@@ -134,7 +134,7 @@ public class CharmParticleHandler extends ICharmRunnableHandler {
 		// Data
 
 		switch (particle) {
-			case ITEM, BLOCK, DUST, FALLING_DUST, BLOCK_MARKER -> {
+			case ITEM, BLOCK, FALLING_DUST, BLOCK_MARKER -> {
 				// Takes Material as input
 
 				EncapsulatedType dataMatType = settingsMap.get("dataMaterial");
