@@ -231,7 +231,7 @@ public class BlackjackInventory extends GUIInventory {
     private int currentPlayerValue() {
         int value = 0;
         for (Card c : playerHand) {
-            if (c.getRank() == Rank.ACE) {
+            if (c.rank() == Rank.ACE) {
                 if (value + 11 > 21)
                     value += 1;
                 else
@@ -247,7 +247,7 @@ public class BlackjackInventory extends GUIInventory {
     private int currentDealerValue() {
         int value = 0;
         for (Card c : dealerHand) {
-            if (c.getRank() == Rank.ACE) {
+            if (c.rank() == Rank.ACE) {
                 if (value + 11 > 21)
                     value += 1;
                 else
@@ -326,13 +326,13 @@ public class BlackjackInventory extends GUIInventory {
     }
 
     private void setSlotToCard(int slot, Card card) {
-        Suit suit = card.getSuit();
+        Suit suit = card.suit();
         ItemStack item;
         if (suit == Suit.HEART || suit == Suit.DIAMOND) {
             item = new ItemStack(Material.RED_STAINED_GLASS_PANE, card.getValue());
             ItemMeta meta = item.getItemMeta();
             meta.displayName(Component.text(card.toString(), NamedTextColor.RED).decoration(TextDecoration.ITALIC ,false));
-            if (card.getRank() == Rank.ACE)
+            if (card.rank() == Rank.ACE)
                 meta.lore(List.of(Component.text("Also counts as 1", NamedTextColor.DARK_GRAY)));
             item.setItemMeta(meta);
         }
@@ -340,7 +340,7 @@ public class BlackjackInventory extends GUIInventory {
             item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, card.getValue());
             ItemMeta meta = item.getItemMeta();
             meta.displayName(Component.text(card.toString(), NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false));
-            if (card.getRank() == Rank.ACE)
+            if (card.rank() == Rank.ACE)
                 meta.lore(List.of(Component.text("Also counts as 1", NamedTextColor.DARK_GRAY)));
             item.setItemMeta(meta);
         }

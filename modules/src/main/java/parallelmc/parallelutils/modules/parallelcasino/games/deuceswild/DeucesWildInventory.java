@@ -1,6 +1,5 @@
 package parallelmc.parallelutils.modules.parallelcasino.games.deuceswild;
 
-import com.google.common.collect.Lists;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -105,8 +104,8 @@ public class DeucesWildInventory extends GUIInventory {
                         } else {
                             Card card = shoe.drawCard();
                             Card old = currentHand.get(i - 20);
-                            handHelper.put(old.getRank(), handHelper.get(old.getRank()) - 1);
-                            handHelper.put(card.getRank(), handHelper.get(card.getRank()) + 1);
+                            handHelper.put(old.rank(), handHelper.get(old.rank()) - 1);
+                            handHelper.put(card.rank(), handHelper.get(card.rank()) + 1);
                             currentHand.set(i - 20, card);
                             setSlotToCard(i, card);
                         }
@@ -156,7 +155,7 @@ public class DeucesWildInventory extends GUIInventory {
         for (int i = 20; i < 25; i++) {
             Card card = shoe.drawCard();
             currentHand.add(card);
-            handHelper.put(card.getRank(), handHelper.get(card.getRank()) + 1);
+            handHelper.put(card.rank(), handHelper.get(card.rank()) + 1);
             setSlotToCard(i, card);
         }
 
@@ -170,13 +169,13 @@ public class DeucesWildInventory extends GUIInventory {
         updatePlayerSkull(player, result);
     }
     private void setSlotToCard(int slot, Card card) {
-        Suit suit = card.getSuit();
+        Suit suit = card.suit();
         ItemStack item;
         if (suit == Suit.HEART || suit == Suit.DIAMOND) {
             item = new ItemStack(Material.RED_STAINED_GLASS_PANE, card.getValue());
             ItemMeta meta = item.getItemMeta();
             meta.displayName(Component.text(card.toString(), NamedTextColor.RED).decoration(TextDecoration.ITALIC ,false));
-            if (card.getRank() == Rank.TWO)
+            if (card.rank() == Rank.TWO)
                 meta.lore(List.of(Component.text("This card is WILD and counts as any card!", NamedTextColor.YELLOW)));
             item.setItemMeta(meta);
         }
@@ -184,7 +183,7 @@ public class DeucesWildInventory extends GUIInventory {
             item = new ItemStack(Material.GRAY_STAINED_GLASS_PANE, card.getValue());
             ItemMeta meta = item.getItemMeta();
             meta.displayName(Component.text(card.toString(), NamedTextColor.DARK_GRAY).decoration(TextDecoration.ITALIC, false));
-            if (card.getRank() == Rank.TWO)
+            if (card.rank() == Rank.TWO)
                 meta.lore(List.of(Component.text("This card is WILD and counts as any card!", NamedTextColor.YELLOW)));
             item.setItemMeta(meta);
         }
@@ -291,19 +290,19 @@ public class DeucesWildInventory extends GUIInventory {
         if (hasDeuces) {
             Suit lastSeen = null;
             for (Card c : hand) {
-                if (c.getRank() == Rank.TWO) continue;
+                if (c.rank() == Rank.TWO) continue;
                 if (lastSeen == null) {
-                    lastSeen = c.getSuit();
+                    lastSeen = c.suit();
                     continue;
                 }
-                if (c.getSuit() != lastSeen)
+                if (c.suit() != lastSeen)
                     return false;
             }
             return true;
         }
         else {
-            Suit suit = hand[0].getSuit();
-            return Arrays.stream(hand).allMatch(x -> x.getSuit() == suit);
+            Suit suit = hand[0].suit();
+            return Arrays.stream(hand).allMatch(x -> x.suit() == suit);
         }
     }
 
@@ -312,7 +311,7 @@ public class DeucesWildInventory extends GUIInventory {
         // we can just check if the next card is greater or a deuce
         // TODO: fix, does not work with deuces
         for (int i = 0; i < 4; i++) {
-            if (hand[i].getRank().ordinal() - 1 == hand[i + 1].getRank().ordinal() || hand[i].getRank() == Rank.TWO)
+            if (hand[i].rank().ordinal() - 1 == hand[i + 1].rank().ordinal() || hand[i].rank() == Rank.TWO)
                 continue;
             return false;
         }

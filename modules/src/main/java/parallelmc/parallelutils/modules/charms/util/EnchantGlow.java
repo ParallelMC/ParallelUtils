@@ -131,4 +131,9 @@ public class EnchantGlow extends Enchantment {
 	public @NotNull NamespacedKey getKey() {
 		return key;
 	}
+
+	@Override
+	public @NotNull String getTranslationKey() {
+		return "shut up";
+	}
 }
