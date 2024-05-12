@@ -286,6 +286,10 @@ bukkit {
             description = 'Opens Maggies Shop'
             usage = '/openmaggieshop (player)'
         }
+        points {
+            description = "View your advancement points"
+            usage = "/points"
+        }
     }
 
     permissions {
