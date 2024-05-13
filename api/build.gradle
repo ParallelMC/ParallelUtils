@@ -290,6 +290,12 @@ bukkit {
             description = "View your advancement points"
             usage = "/points"
         }
+        recalculatepoints {
+            description = "Recalculates advancement points for all players"
+            usage = "/recalculatepoints"
+            permissionMessage = "You do not have permission."
+            permission = "parallelutils.recalculatepoints"
+        }
     }
 
     permissions {
@@ -484,6 +490,10 @@ bukkit {
         }
         'parallelutils.resources.unenforced' {
             description = 'Prevents being kicked from not accepting the resource pack'
+            setDefault('FALSE')
+        }
+        'parallelutils.recalculatepoints' {
+            description = 'Gives access to the /recalculatepoints dev command'
             setDefault('FALSE')
         }
     }
