@@ -494,7 +494,6 @@ bukkit {
         }
         'parallelutils.recalculatepoints' {
             description = 'Gives access to the /recalculatepoints dev command'
-            setDefault('FALSE')
         }
     }
 }

@@ -165,7 +165,7 @@ public class Points extends ParallelModule {
         JSONArray json = new JSONArray();
         for (Map.Entry<UUID, Integer> e : playerPoints.entrySet()) {
             JSONObject entry = new JSONObject();
-            entry.put("uuid", e.getKey());
+            entry.put("uuid", e.getKey().toString());
             entry.put("points", e.getValue());
             json.add(entry);
         }
@@ -179,7 +179,15 @@ public class Points extends ParallelModule {
 
     public int recalculatePlayerPoints() {
         playerPoints.clear();
-        Path path = Path.of(puPlugin.getServer().getWorldContainer().getAbsolutePath() + "/advancements");
+        Path path;
+        try {
+            //path = Path.of(puPlugin.getServer().getWorldContainer().getCanonicalPath(), "world", "advancements");
+            path = Path.of(puPlugin.getServer().getWorldContainer().getCanonicalPath(), Constants.DEFAULT_WORLD, "advancements");
+            ParallelUtils.log(Level.INFO, "Using path: " + path);
+        } catch (IOException e) {
+            ParallelUtils.log(Level.SEVERE, "Failed to find path to advancements folder! \n" + e.getMessage());
+            return -1;
+        }
         File[] files = path.toFile().listFiles();
         if (files == null) {
             ParallelUtils.log(Level.SEVERE, "Failed to get files from advancements folder!");
@@ -213,6 +221,10 @@ public class Points extends ParallelModule {
                     Map.Entry<String, JSONObject> entry = (Map.Entry<String, JSONObject>) o;
 
                     String advancement = entry.getKey();
+                    // every advancement json file has the DataVersion at the very bottom
+                    // so treat this as the "terminator" of sorts
+                    if (advancement.equals("DataVersion"))
+                        break;
                     JSONObject value = entry.getValue();
 
                     int points = advancementMap.getOrDefault(advancement, -1);
