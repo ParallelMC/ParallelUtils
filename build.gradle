@@ -1,3 +1,5 @@
+import io.papermc.paperweight.userdev.ReobfArtifactConfiguration
+
 plugins {
     id 'java'
     id 'com.github.johnrengelman.shadow' version '8.1.1'
@@ -9,6 +11,8 @@ plugins {
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
+
+paperweight.reobfArtifactConfiguration = ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 
 dependencies {
     paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.20.6-R0.1-SNAPSHOT")

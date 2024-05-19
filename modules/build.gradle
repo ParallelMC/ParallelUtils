@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 import io.papermc.paperweight.tasks.RemapJar
+import io.papermc.paperweight.userdev.ReobfArtifactConfiguration
 
 group = 'org.parallelmc'
 
@@ -8,6 +9,8 @@ group = 'org.parallelmc'
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
+
+paperweight.reobfArtifactConfiguration = ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
@@ -74,23 +77,23 @@ names.each { mod ->
         // Figure out how to exclude META-INF
     }
 }
-
-names.each { mod ->
-    task "reobf-${mod}" (type: RemapJar) {
-        dependsOn "shadow-${mod}"
-        group = "ReobfMod"
-        description = "Remap the compiled module jar to Spigot's obfuscated runtime names"
-
-        fromNamespace = reobfJar.fromNamespace
-        toNamespace = reobfJar.toNamespace
-        mappingsFile = reobfJar.mappingsFile
-        remapClasspath.from(reobfJar.remapClasspath.getFrom())
-        remapper.from(reobfJar.project.configurations.named("remapper"))
-        remapperArgs = reobfJar.remapperArgs
-
-
-        inputJar.set(new File("$buildDir/libs/modules-shadow-${mod}.jar"))
-        //outputJar.set(new File("$buildDir/libs/${mod}-${project.version}.jar"))
-        outputJar.set(new File("$buildDir/libs/${mod}.jar"))
-    }
-}
+//
+//names.each { mod ->
+//    task "reobf-${mod}" (type: RemapJar) {
+//        dependsOn "shadow-${mod}"
+//        group = "ReobfMod"
+//        description = "Remap the compiled module jar to Spigot's obfuscated runtime names"
+//
+//        fromNamespace = reobfJar.fromNamespace
+//        toNamespace = reobfJar.toNamespace
+//        mappingsFile = reobfJar.mappingsFile
+//        remapClasspath.from(reobfJar.remapClasspath.getFrom())
+//        remapper.from(reobfJar.project.configurations.named("remapper"))
+//        remapperArgs = reobfJar.remapperArgs
+//
+//
+//        inputJar.set(new File("$buildDir/libs/modules-shadow-${mod}.jar"))
+//        //outputJar.set(new File("$buildDir/libs/${mod}-${project.version}.jar"))
+//        outputJar.set(new File("$buildDir/libs/${mod}.jar"))
+//    }
+//}

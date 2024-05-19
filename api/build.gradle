@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import io.papermc.paperweight.userdev.ReobfArtifactConfiguration
 
 plugins {
     id 'net.minecrell.plugin-yml.bukkit'
@@ -13,6 +14,8 @@ description = 'A set of utilities and features for use on the Parallel Minecraft
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
+
+paperweight.reobfArtifactConfiguration = ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
@@ -46,11 +49,11 @@ artifacts {
 
 tasks {
     assemble {
-        dependsOn(reobfJar)
+        //dependsOn(reobfJar)
     }
 
     build {
-        dependsOn(reobfJar)
+        //dependsOn(reobfJar)
     }
 
     compileJava {
