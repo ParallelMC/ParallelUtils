@@ -163,7 +163,7 @@ public class CharmParticleHandler extends ICharmRunnableHandler {
 										if (dataBlockDataType.getType() == Types.STRING) {
 											String blockData = (String) dataBlockDataType.getVal();
 
-											BlockData data = CraftBlockData.newData(material, blockData);
+											BlockData data = material.createBlockData(blockData);
 
 											builder.data(data);
 										}
