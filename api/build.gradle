@@ -287,14 +287,18 @@ bukkit {
             usage = '/openmaggieshop (player)'
         }
         points {
-            description = "View your advancement points"
-            usage = "/points"
+            description = 'View your advancement points'
+            usage = '/points'
         }
         recalculatepoints {
-            description = "Recalculates advancement points for all players"
-            usage = "/recalculatepoints"
-            permissionMessage = "You do not have permission."
-            permission = "parallelutils.recalculatepoints"
+            description = 'Recalculates advancement points for all players'
+            usage = '/recalculatepoints'
+            permissionMessage = 'You do not have permission.'
+            permission = 'parallelutils.recalculatepoints'
+        }
+        openpointsredemption {
+            description = 'Opens the point redemption shop for a player'
+            usage = '/openpointsredemption (player)'
         }
     }
 

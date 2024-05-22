@@ -2,8 +2,6 @@ package parallelmc.parallelutils.modules.points;
 
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Warning;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,25 +11,24 @@ import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
+import parallelmc.parallelutils.modules.points.commands.OpenPointsRedemption;
 import parallelmc.parallelutils.modules.points.commands.RecalculatePoints;
 import parallelmc.parallelutils.modules.points.commands.ViewPoints;
 import parallelmc.parallelutils.modules.points.events.OnAdvancementDone;
+import parallelmc.parallelutils.modules.points.gui.PointsRedeemInventory;
+import parallelmc.parallelutils.util.GUIManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.logging.Level;
 
 public class Points extends ParallelModule {
@@ -40,6 +37,8 @@ public class Points extends ParallelModule {
     private final HashMap<String, Integer> advancementMap = new HashMap<>();
 
     private final HashMap<UUID, Integer> playerPoints = new HashMap<>();
+
+    private final List<RedeemableItem> redeemableItems = new ArrayList<>();
 
     private static Points Instance;
 
@@ -68,6 +67,7 @@ public class Points extends ParallelModule {
 
         puPlugin.getCommand("points").setExecutor(new ViewPoints());
         puPlugin.getCommand("recalculatepoints").setExecutor(new RecalculatePoints(puPlugin));
+        puPlugin.getCommand("openpointsredemption").setExecutor(new OpenPointsRedemption());
 
         loadAdvancements();
 
@@ -97,6 +97,12 @@ public class Points extends ParallelModule {
 
     public int getPlayerPoints(Player player) {
         return playerPoints.getOrDefault(player.getUniqueId(), 0);
+    }
+
+    public List<RedeemableItem> getRedeemableItems() { return redeemableItems; }
+
+    public void openPointsRedemptionFor(Player player) {
+        GUIManager.get().openInventoryForPlayer(player, new PointsRedeemInventory());
     }
 
     private void loadAdvancements() {
