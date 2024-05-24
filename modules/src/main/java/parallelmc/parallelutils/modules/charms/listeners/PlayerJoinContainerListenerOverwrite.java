@@ -26,9 +26,9 @@ public class PlayerJoinContainerListenerOverwrite implements Listener {
 		Field field;
 		Field field1;
 		try {
-			field = ServerPlayer.class.getDeclaredField("dc");
+			field = ServerPlayer.class.getDeclaredField("containerSynchronizer");
 			field.setAccessible(true);
-			field1 = ServerPlayer.class.getDeclaredField("dd");
+			field1 = ServerPlayer.class.getDeclaredField("containerListener");
 			field1.setAccessible(true);
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
