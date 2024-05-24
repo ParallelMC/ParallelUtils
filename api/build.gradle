@@ -32,12 +32,12 @@ dependencies {
 
     implementation 'org.jetbrains:annotations:24.0.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
-    implementation 'net.dv8tion:JDA:5.0.0-beta.20'
-    compileOnly 'me.clip:placeholderapi:2.11.5'
+    implementation 'net.dv8tion:JDA:5.0.0-beta.24'
+    compileOnly 'me.clip:placeholderapi:2.11.6'
     compileOnly fileTree('libs') { include '*.jar' }
-    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.9'
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.10'
     implementation 'com.mysql:mysql-connector-j:8.3.0'
-    compileOnly 'com.comphenix.protocol:ProtocolLib:5.1.0'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:5.2.0-SNAPSHOT'
     compileOnly 'dev.esophose:playerparticles:8.5'
     implementation 'org.reflections:reflections:0.10.2'
 }

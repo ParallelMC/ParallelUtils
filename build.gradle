@@ -2,7 +2,7 @@ import io.papermc.paperweight.userdev.ReobfArtifactConfiguration
 
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'io.github.goooler.shadow' version '8.1.7'
     id "io.papermc.paperweight.userdev" version "1.7.1"
     id "xyz.jpenilla.run-paper" version "2.3.0"
     id 'net.minecrell.plugin-yml.bukkit' version '0.6.0'
@@ -24,7 +24,7 @@ processResources.filteringCharset = "UTF-8"
 
 allprojects {
     apply plugin: 'java'
-    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'io.github.goooler.shadow'
     apply plugin: "io.papermc.paperweight.userdev"
 
     repositories {
