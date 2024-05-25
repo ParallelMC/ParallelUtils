@@ -289,6 +289,20 @@ bukkit {
             description = 'Opens Maggies Shop'
             usage = '/openmaggieshop (player)'
         }
+        points {
+            description = 'View your advancement points'
+            usage = '/points'
+        }
+        recalculatepoints {
+            description = 'Recalculates advancement points for all players'
+            usage = '/recalculatepoints'
+            permissionMessage = 'You do not have permission.'
+            permission = 'parallelutils.recalculatepoints'
+        }
+        openpointsredemption {
+            description = 'Opens the point redemption shop for a player'
+            usage = '/openpointsredemption (player)'
+        }
     }
 
     permissions {
@@ -484,6 +498,9 @@ bukkit {
         'parallelutils.resources.unenforced' {
             description = 'Prevents being kicked from not accepting the resource pack'
             setDefault('FALSE')
+        }
+        'parallelutils.recalculatepoints' {
+            description = 'Gives access to the /recalculatepoints dev command'
         }
     }
 }
