@@ -70,7 +70,7 @@ public class Points extends ParallelModule {
         puPlugin.getCommand("openpointsredemption").setExecutor(new OpenPointsRedemption());
 
         loadAdvancements();
-
+        loadItems();
         loadPlayerPoints();
 
         Instance = this;
