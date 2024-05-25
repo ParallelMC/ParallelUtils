@@ -16,7 +16,7 @@ public class RedeemableItem {
 
     private final List<String> commands;
 
-    public RedeemableItem(Material material, int requiredPoints, string permission, List<String> commands) {
+    public RedeemableItem(Material material, int requiredPoints, String permission, List<String> commands) {
         this.material = material;
         this.modelData = -1;
         this.requiredPoints = requiredPoints;
@@ -24,7 +24,7 @@ public class RedeemableItem {
         this.commands = commands;
     }
 
-    public RedeemableItem(Material material, int requiredPoints, string permission, int modelData, List<String> commands) {
+    public RedeemableItem(Material material, int requiredPoints, String permission, int modelData, List<String> commands) {
         this.material = material;
         this.modelData = modelData;
         this.requiredPoints = requiredPoints;
@@ -42,7 +42,7 @@ public class RedeemableItem {
 
     public int getRequiredPoints() { return requiredPoints; }
 
-    public string getPermission() { return permission; }
+    public String getPermission() { return permission; }
 
     public List<String> getCommands() { return commands; }
 }

@@ -1,6 +1,7 @@
 package parallelmc.parallelutils.modules.points;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -252,7 +253,7 @@ public class Points extends ParallelModule {
 
     public void loadItems() {
         File itemFile = new File(puPlugin.getDataFolder(), "points_items.yml");
-        FileConfiguration itemConfig = new YamlConfiguration;
+        FileConfiguration itemConfig = new YamlConfiguration();
         try {
             if (itemFile.createNewFile()) {
                 ParallelUtils.log(Level.WARNING, "points_items.yml does not exist! Creating...");
@@ -260,10 +261,10 @@ public class Points extends ParallelModule {
             itemConfig.load(itemFile);
         } catch (IOException e) {
             ParallelUtils.log(Level.SEVERE, "Failed to create or read points_items.yml\n" + e);
-            return false;
+            // return false;
         } catch (Exception e) {
             ParallelUtils.log(Level.SEVERE, "Failed to load points_items.yml\n" + e);
-            return false;
+            // return false;
         }
         for (String key : itemConfig.getKeys(false)) {
             Material material = Material.valueOf(itemConfig.getString(key + ".material"));
