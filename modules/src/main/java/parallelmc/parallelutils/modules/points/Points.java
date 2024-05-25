@@ -266,7 +266,6 @@ public class Points extends ParallelModule {
             return false;
         }
         for (String key : itemConfig.getKeys(false)) {
-            String id = itemConfig.getString(key + ".id");
             Material material = Material.valueOf(itemConfig.getString(key + ".material"));
             int modelData = itemConfig.getInt(key + ".modeldata");
             int cost = itemConfig.getInt(key + ".cost");
