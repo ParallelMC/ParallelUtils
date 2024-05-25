@@ -23,14 +23,14 @@ public class PointsRedeemInventory extends GUIInventory {
     private static List<RedeemableItem> redeemableItems = new ArrayList<>();
 
     public PointsRedeemInventory() {
-        super(54, Component.text("Advancement Points Redemption", NamedTextColor.GOLD, TextDecoration.BOLD));
+        super(45, Component.text("Advancement Points Redemption", NamedTextColor.GOLD, TextDecoration.BOLD));
 
         ItemStack exit = new ItemStack(Material.BARRIER);
         ItemMeta meta = exit.getItemMeta();
         meta.displayName(Component.text("Exit GUI", NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
         exit.setItemMeta(meta);
 
-        inventory.setItem(49, exit);
+        inventory.setItem(40, exit);
     }
 
 
@@ -71,9 +71,10 @@ public class PointsRedeemInventory extends GUIInventory {
 
     @Override
     public void onSlotClicked(Player player, int slotNum, ItemStack itemClicked) {
-        if (slotNum > 8 && slotNum < 45) {
+        if (slotNum > 8 && slotNum < 36) {
+            RedeemableItem clicked = redeemableItems.get(slotNum - 9);
             // yes this looks very stupid I know
-            if (player.hasPermission("parallelutils.points.slot" + slotNum)) {
+            if (player.hasPermission(clicked.getPermission())) {
                 player.playSound(player.getLocation(), Sound.BLOCK_FIRE_EXTINGUISH, 1, 1);
                 player.closeInventory();
                 ParallelChat.sendParallelMessageTo(player, "You have already redeemed that item!");
@@ -89,7 +90,7 @@ public class PointsRedeemInventory extends GUIInventory {
             player.closeInventory();
             ParallelChat.sendParallelMessageTo(player, Component.text("Successfully redeemed the ", NamedTextColor.GREEN).append(itemClicked.displayName()));
             for (String s : redeemableItems.get(slotNum - 9).getCommands()) {
-                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), s);
+                Bukkit.getServer().dispatchCommand(Bukkit.getConsoleSender(), s.replace("%player%", player.getName()));
             }
         }
         if (slotNum == 49) {

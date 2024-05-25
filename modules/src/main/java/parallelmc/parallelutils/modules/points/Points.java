@@ -250,6 +250,33 @@ public class Points extends ParallelModule {
         return playerPoints.size();
     }
 
+    public void loadItems() {
+        File itemFile = new File(puPlugin.getDataFolder(), "points_items.yml");
+        FileConfiguration itemConfig = new YamlConfiguration;
+        try {
+            if (itemFile.createNewFile()) {
+                ParallelUtils.log(Level.WARNING, "points_items.yml does not exist! Creating...");
+            }
+            itemConfig.load(itemFile);
+        } catch (IOException e) {
+            ParallelUtils.log(Level.SEVERE, "Failed to create or read points_items.yml\n" + e);
+            return false;
+        } catch (Exception e) {
+            ParallelUtils.log(Level.SEVERE, "Failed to load points_items.yml\n" + e);
+            return false;
+        }
+        for (String key : itemConfig.getKeys(false)) {
+            String id = itemConfig.getString(key + ".id");
+            Material material = Material.valueOf(itemConfig.getString(key + ".material"));
+            int modelData = itemConfig.getInt(key + ".modeldata");
+            int cost = itemConfig.getInt(key + ".cost");
+            String permission = itemConfig.getString(key + ".permission");
+            List<String> commands = (List<String>)itemConfig.getList(key + ".commands");
+            redeemableItems.add(new RedeemableItem(material, cost, permission, modelData, commands));
+        }
+        ParallelUtils.log(Level.WARNING, "Loaded " + redeemableItems.size() + " redeemable items.");
+    }
+
     public static Points get() { return Instance; }
 
 }
