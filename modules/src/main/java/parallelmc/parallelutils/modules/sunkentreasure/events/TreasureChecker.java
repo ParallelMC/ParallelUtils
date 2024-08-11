@@ -49,7 +49,7 @@ public class TreasureChecker implements Listener {
 					ItemStack heldItem = player.getInventory().getItemInMainHand();
 					Map<Enchantment, Integer> enchantments = heldItem.getEnchantments();
 
-					Integer enchantVal = enchantments.get(Enchantment.LOOT_BONUS_BLOCKS);
+					Integer enchantVal = enchantments.get(Enchantment.FORTUNE);
 
 					ParallelUtils.log(Level.INFO, "" + enchantVal);
 

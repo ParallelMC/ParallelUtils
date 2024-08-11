@@ -1,13 +1,16 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 import io.papermc.paperweight.tasks.RemapJar
+import io.papermc.paperweight.userdev.ReobfArtifactConfiguration
 
 group = 'org.parallelmc'
 
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
+
+paperweight.reobfArtifactConfiguration = ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
@@ -19,14 +22,14 @@ dependencies {
 
     compileOnly 'org.jetbrains:annotations:24.0.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
-    compileOnly 'net.dv8tion:JDA:5.0.0-beta.20'
-    compileOnly 'me.clip:placeholderapi:2.11.3'
+    compileOnly 'net.dv8tion:JDA:5.0.0-beta.24'
+    compileOnly 'me.clip:placeholderapi:2.11.6'
     compileOnly fileTree('libs') { include '*.jar' }
-    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.8'
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.10'
     compileOnly 'com.mysql:mysql-connector-j:8.3.0'
-    compileOnly 'com.comphenix.protocol:ProtocolLib:5.0.0'
-    compileOnly 'dev.esophose:playerparticles:8.4'
-    compileOnly "io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT"
+    compileOnly 'com.comphenix.protocol:ProtocolLib:5.2.0-SNAPSHOT'
+    compileOnly 'dev.esophose:playerparticles:8.5'
+    compileOnly "io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT"
 }
 
 def names = []
@@ -63,7 +66,8 @@ names.each { mod ->
         def name = (String) "${mod}"
         exList.remove(name)
 
-        archiveClassifier.set("shadow-${mod}")
+        archiveBaseName.set("")
+        archiveClassifier.set("${mod}")
         from sourceSets.main.output
 
 
@@ -74,23 +78,23 @@ names.each { mod ->
         // Figure out how to exclude META-INF
     }
 }
-
-names.each { mod ->
-    task "reobf-${mod}" (type: RemapJar) {
-        dependsOn "shadow-${mod}"
-        group = "ReobfMod"
-        description = "Remap the compiled module jar to Spigot's obfuscated runtime names"
-
-        fromNamespace = reobfJar.fromNamespace
-        toNamespace = reobfJar.toNamespace
-        mappingsFile = reobfJar.mappingsFile
-        remapClasspath.from(reobfJar.remapClasspath.getFrom())
-        remapper.from(reobfJar.project.configurations.named("remapper"))
-        remapperArgs = reobfJar.remapperArgs
-
-
-        inputJar.set(new File("$buildDir/libs/modules-shadow-${mod}.jar"))
-        //outputJar.set(new File("$buildDir/libs/${mod}-${project.version}.jar"))
-        outputJar.set(new File("$buildDir/libs/${mod}.jar"))
-    }
-}
+//
+//names.each { mod ->
+//    task "reobf-${mod}" (type: RemapJar) {
+//        dependsOn "shadow-${mod}"
+//        group = "ReobfMod"
+//        description = "Remap the compiled module jar to Spigot's obfuscated runtime names"
+//
+//        fromNamespace = reobfJar.fromNamespace
+//        toNamespace = reobfJar.toNamespace
+//        mappingsFile = reobfJar.mappingsFile
+//        remapClasspath.from(reobfJar.remapClasspath.getFrom())
+//        remapper.from(reobfJar.project.configurations.named("remapper"))
+//        remapperArgs = reobfJar.remapperArgs
+//
+//
+//        inputJar.set(new File("$buildDir/libs/modules-shadow-${mod}.jar"))
+//        //outputJar.set(new File("$buildDir/libs/${mod}-${project.version}.jar"))
+//        outputJar.set(new File("$buildDir/libs/${mod}.jar"))
+//    }
+//}
