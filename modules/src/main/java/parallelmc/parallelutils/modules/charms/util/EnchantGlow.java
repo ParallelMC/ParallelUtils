@@ -1,18 +1,18 @@
 package parallelmc.parallelutils.modules.charms.util;
 
 import io.papermc.paper.enchantments.EnchantmentRarity;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
-import org.bukkit.Registry;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.EntityCategory;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import parallelmc.parallelutils.ParallelUtils;
 
-import java.lang.reflect.Field;
 import java.util.Set;
 
 public class EnchantGlow extends Enchantment {
@@ -40,7 +40,7 @@ public class EnchantGlow extends Enchantment {
 
 	@Override
 	public @NotNull EnchantmentTarget getItemTarget() {
-		return EnchantmentTarget.ALL;
+		return null;
 	}
 
 	@Override
@@ -90,11 +90,16 @@ public class EnchantGlow extends Enchantment {
 
 	@Override
 	public @NotNull EnchantmentRarity getRarity() {
-		return EnchantmentRarity.COMMON;
+		return null;
 	}
 
 	@Override
-	public float getDamageIncrease(int level, @NotNull EntityCategory entityCategory) {
+	public float getDamageIncrease(int i, @NotNull EntityCategory entityCategory) {
+		return 0;
+	}
+
+	@Override
+	public float getDamageIncrease(int i, @NotNull EntityType entityType) {
 		return 0;
 	}
 
@@ -132,7 +137,11 @@ public class EnchantGlow extends Enchantment {
 		return key;
 	}
 
-	// TODO: get rid of this shit lol
+	@Override
+	public @NotNull Key key() {
+		return super.key();
+	}
+
 	@Override
 	public @NotNull String getTranslationKey() {
 		return null;
