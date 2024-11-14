@@ -1,6 +1,7 @@
 package parallelmc.parallelutils.modules.charms.util;
 
 import io.papermc.paper.enchantments.EnchantmentRarity;
+import io.papermc.paper.registry.set.RegistryKeySet;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
@@ -9,8 +10,11 @@ import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.EntityCategory;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.ParallelUtils;
 
 import java.util.Set;
@@ -89,6 +93,11 @@ public class EnchantGlow extends Enchantment {
 	}
 
 	@Override
+	public int getAnvilCost() {
+		return 0;
+	}
+
+	@Override
 	public @NotNull EnchantmentRarity getRarity() {
 		return null;
 	}
@@ -106,6 +115,36 @@ public class EnchantGlow extends Enchantment {
 	@Override
 	public @NotNull Set<EquipmentSlot> getActiveSlots() {
 		return Set.of();
+	}
+
+	@Override
+	public @NotNull Set<EquipmentSlotGroup> getActiveSlotGroups() {
+		return Set.of();
+	}
+
+	@Override
+	public @NotNull Component description() {
+		return null;
+	}
+
+	@Override
+	public @NotNull RegistryKeySet<ItemType> getSupportedItems() {
+		return null;
+	}
+
+	@Override
+	public @Nullable RegistryKeySet<ItemType> getPrimaryItems() {
+		return null;
+	}
+
+	@Override
+	public int getWeight() {
+		return 0;
+	}
+
+	@Override
+	public @NotNull RegistryKeySet<Enchantment> getExclusiveWith() {
+		return null;
 	}
 
 	@Override
