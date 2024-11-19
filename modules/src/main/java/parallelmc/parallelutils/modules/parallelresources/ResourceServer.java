@@ -71,6 +71,8 @@ public class ResourceServer implements Runnable{
 					}
 				});
 
+				server = httpsServer;
+
 			} else {
 				server = HttpServer.create(new InetSocketAddress(port), 0);
 			}

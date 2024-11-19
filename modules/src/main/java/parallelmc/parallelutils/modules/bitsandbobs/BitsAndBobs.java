@@ -14,7 +14,6 @@ import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.OnPvp;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpCommand;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpManager;
 
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -62,6 +61,7 @@ public class BitsAndBobs extends ParallelModule {
         manager.registerEvents(new OnPvp(), plugin);
         manager.registerEvents(new ShardLotto(), plugin);
         manager.registerEvents(new ChickenFeatherDrops(), plugin);
+        manager.registerEvents(new EntityTweaks(), plugin);
 
         if (config.getBoolean("disable-ender-chests", false)) {
             manager.registerEvents(new DisableEnderChest(), plugin);
@@ -69,6 +69,18 @@ public class BitsAndBobs extends ParallelModule {
 
         if (config.getBoolean("prevent-spawner-mining", false)) {
             manager.registerEvents(new PreventSpawnerMining(), plugin);
+        }
+
+        if (config.getBoolean("enable-ziprails", true)) {
+            manager.registerEvents(new Ziprails(), plugin);
+        }
+      
+        if (config.getBoolean("enable-calling-bell", true)) {
+            manager.registerEvents(new CallingBell(), plugin);
+        }
+
+        if (config.getBoolean("enable-sweethearts", true)) {
+            manager.registerEvents(new Sweethearts(), plugin);
         }
     }
 

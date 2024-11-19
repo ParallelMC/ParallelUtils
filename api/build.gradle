@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import io.papermc.paperweight.userdev.ReobfArtifactConfiguration
 
 plugins {
     id 'net.minecrell.plugin-yml.bukkit'
@@ -7,28 +8,37 @@ plugins {
 
 group = 'org.parallelmc'
 
-version = '4.2.0'
+version = '4.4.0'
 description = 'A set of utilities and features for use on the Parallel Minecraft server'
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
+
+paperweight.reobfArtifactConfiguration = ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 
 compileJava.options.encoding = "UTF-8"
 compileTestJava.options.encoding = "UTF-8"
 processResources.filteringCharset = "UTF-8"
 
+repositories {
+    mavenCentral()
+    maven { url = "https://repo.papermc.io/repository/maven-public/" }
+}
 
 dependencies {
+    //compileOnly 'io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT'
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.1-R0.1-SNAPSHOT")
+
     implementation 'org.jetbrains:annotations:24.0.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
-    implementation 'net.dv8tion:JDA:5.0.0-beta.10'
-    compileOnly 'me.clip:placeholderapi:2.11.3'
+    implementation 'net.dv8tion:JDA:5.0.0-beta.24'
+    compileOnly 'me.clip:placeholderapi:2.11.6'
     compileOnly fileTree('libs') { include '*.jar' }
-    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.8'
-    implementation 'mysql:mysql-connector-java:8.0.33'
-    compileOnly 'com.comphenix.protocol:ProtocolLib:5.0.0'
-    compileOnly 'dev.esophose:playerparticles:8.4'
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.10'
+    implementation 'com.mysql:mysql-connector-j:8.3.0'
+    compileOnly 'com.comphenix.protocol:ProtocolLib:5.3.0'
+    compileOnly 'dev.esophose:playerparticles:8.6'
     implementation 'org.reflections:reflections:0.10.2'
 }
 
@@ -39,17 +49,17 @@ artifacts {
 
 tasks {
     assemble {
-        dependsOn(reobfJar)
+        //dependsOn(reobfJar)
     }
 
     build {
-        dependsOn(reobfJar)
+        //dependsOn(reobfJar)
     }
 
     compileJava {
         // Set the release flag. This configures what version bytecode the compiler will emit, as well as what JDK APIs are usable.
         // See https://openjdk.java.net/jeps/247 for more information.
-        options.release.set(17)
+        options.release.set(21)
     }
 
     shadowJar {
@@ -67,7 +77,7 @@ bukkit {
 
     main = 'parallelmc.parallelutils.ParallelUtils'
 
-    apiVersion = '1.20'
+    apiVersion = '1.20.5'
 
     depend = ['PlaceholderAPI', 'ProtocolLib']
     softDepend = ['Multiverse-Core', 'FractalForest', 'WorldGuard', 'VoteParty', 'PlayerParticles', 'ProNouns']
@@ -279,6 +289,20 @@ bukkit {
             description = 'Opens Maggies Shop'
             usage = '/openmaggieshop (player)'
         }
+        points {
+            description = 'View your advancement points'
+            usage = '/points'
+        }
+        recalculatepoints {
+            description = 'Recalculates advancement points for all players'
+            usage = '/recalculatepoints'
+            permissionMessage = 'You do not have permission.'
+            permission = 'parallelutils.recalculatepoints'
+        }
+        openpointsredemption {
+            description = 'Opens the point redemption shop for a player'
+            usage = '/openpointsredemption (player)'
+        }
     }
 
     permissions {
@@ -470,6 +494,13 @@ bukkit {
         'parallelutils.chestshop.debug' {
             description = 'Gives access to ChestShop debug commands'
             setDefault('FALSE')
+        }
+        'parallelutils.resources.unenforced' {
+            description = 'Prevents being kicked from not accepting the resource pack'
+            setDefault('FALSE')
+        }
+        'parallelutils.recalculatepoints' {
+            description = 'Gives access to the /recalculatepoints dev command'
         }
     }
 }

@@ -1,18 +1,21 @@
+import io.papermc.paperweight.userdev.ReobfArtifactConfiguration
+
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
-    id("io.papermc.paperweight.userdev") version "1.5.5"
-    id "xyz.jpenilla.run-paper" version "2.1.0"
+    id 'io.github.goooler.shadow' version '8.1.7'
+    id "io.papermc.paperweight.userdev" version "1.7.1"
+    id "xyz.jpenilla.run-paper" version "2.3.0"
     id 'net.minecrell.plugin-yml.bukkit' version '0.6.0'
 }
 
-dependencies {
-    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.20.1-R0.1-SNAPSHOT")
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 }
 
+paperweight.reobfArtifactConfiguration = ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+dependencies {
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.1-R0.1-SNAPSHOT")
 }
 
 compileJava.options.encoding = "UTF-8"
@@ -21,12 +24,12 @@ processResources.filteringCharset = "UTF-8"
 
 allprojects {
     apply plugin: 'java'
-    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'io.github.goooler.shadow'
     apply plugin: "io.papermc.paperweight.userdev"
 
     repositories {
         mavenCentral()
-        maven { url = "https://papermc.io/repo/repository/maven-public/" }
+        maven { url = "https://repo.papermc.io/repository/maven-public/" }
         maven { url = 'https://oss.sonatype.org/content/repositories/snapshots/' }
         maven { url = "https://maven.enginehub.org/repo/" }
         maven { url = 'https://repo.md-5.net/content/groups/public/' }
@@ -36,15 +39,15 @@ allprojects {
         maven { url = 'https://repo.codemc.org/repository/maven-public/' }
         maven { url = 'https://repo.rosewooddev.io/repository/public/' }
         maven { url = 'https://jitpack.io' }
-
     }
 
     dependencies {
-        paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.20.1-R0.1-SNAPSHOT")
+        paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.1-R0.1-SNAPSHOT")
+        //paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT")
 
-        compileOnly "io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT"
+        //compileOnly "io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT"
         compileOnly 'net.luckperms:api:5.4'
-        compileOnly 'dev.esophose:playerparticles:8.4'
-        compileOnly "com.github.MilkBowl:VaultAPI:1.7"
+        compileOnly 'dev.esophose:playerparticles:8.6'
+        compileOnly "com.github.MilkBowl:VaultAPI:1.7.1"
     }
 }

@@ -1,22 +1,30 @@
 package parallelmc.parallelutils.modules.charms.util;
 
 import io.papermc.paper.enchantments.EnchantmentRarity;
+import io.papermc.paper.registry.set.RegistryKeySet;
+import net.kyori.adventure.key.Key;
 import net.kyori.adventure.text.Component;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentTarget;
 import org.bukkit.entity.EntityCategory;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.EquipmentSlotGroup;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ItemType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.ParallelUtils;
 
-import java.lang.reflect.Field;
 import java.util.Set;
 
 public class EnchantGlow extends Enchantment {
+
+	private final NamespacedKey key;
+
 	public EnchantGlow(@NotNull NamespacedKey key) {
-		super(key);
+		this.key = key;
 	}
 
 	@Override
@@ -36,7 +44,7 @@ public class EnchantGlow extends Enchantment {
 
 	@Override
 	public @NotNull EnchantmentTarget getItemTarget() {
-		return EnchantmentTarget.ALL;
+		return null;
 	}
 
 	@Override
@@ -75,18 +83,68 @@ public class EnchantGlow extends Enchantment {
 	}
 
 	@Override
-	public @NotNull EnchantmentRarity getRarity() {
-		return EnchantmentRarity.COMMON;
+	public int getMinModifiedCost(int level) {
+		return 0;
 	}
 
 	@Override
-	public float getDamageIncrease(int level, @NotNull EntityCategory entityCategory) {
+	public int getMaxModifiedCost(int level) {
+		return 0;
+	}
+
+	@Override
+	public int getAnvilCost() {
+		return 0;
+	}
+
+	@Override
+	public @NotNull EnchantmentRarity getRarity() {
+		return null;
+	}
+
+	@Override
+	public float getDamageIncrease(int i, @NotNull EntityCategory entityCategory) {
+		return 0;
+	}
+
+	@Override
+	public float getDamageIncrease(int i, @NotNull EntityType entityType) {
 		return 0;
 	}
 
 	@Override
 	public @NotNull Set<EquipmentSlot> getActiveSlots() {
 		return Set.of();
+	}
+
+	@Override
+	public @NotNull Set<EquipmentSlotGroup> getActiveSlotGroups() {
+		return Set.of();
+	}
+
+	@Override
+	public @NotNull Component description() {
+		return null;
+	}
+
+	@Override
+	public @NotNull RegistryKeySet<ItemType> getSupportedItems() {
+		return null;
+	}
+
+	@Override
+	public @Nullable RegistryKeySet<ItemType> getPrimaryItems() {
+		return null;
+	}
+
+	@Override
+	public int getWeight() {
+		return 0;
+	}
+
+	@Override
+	public @NotNull RegistryKeySet<Enchantment> getExclusiveWith() {
+		return null;
 	}
 
 	@Override
@@ -97,19 +155,34 @@ public class EnchantGlow extends Enchantment {
 	public static EnchantGlow instance = null;
 
 	public static void registerFakeGlow(ParallelUtils puPlugin) {
-		try {
-			Field f = Enchantment.class.getDeclaredField("acceptingNew");
-			f.setAccessible(true);
-			f.set(null, true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+//		try {
+//			Field f = Enchantment.class.getDeclaredField("acceptingNew");
+//			f.setAccessible(true);
+//			f.set(null, true);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
 
 		try {
 			instance = new EnchantGlow(new NamespacedKey(puPlugin, "glow"));
-			Enchantment.registerEnchantment(instance);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public @NotNull NamespacedKey getKey() {
+		return key;
+	}
+
+	@Override
+	public @NotNull Key key() {
+		return super.key();
+	}
+
+	@Override
+	public @NotNull String getTranslationKey() {
+		return null;
 	}
 }
