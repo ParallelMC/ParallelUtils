@@ -178,7 +178,7 @@ public final class ParallelUtils extends JavaPlugin {
 		getCommand("pu").setExecutor(commands);
 		getCommand("pu").setTabCompleter(commands);
 
-		Bukkit.getPluginManager().registerEvents(new OnMenuInteract(), this);
+		Bukkit.getPluginManager().registerEvents(new OnMenuInteract(this), this);
 
 		// Setup modules
 
