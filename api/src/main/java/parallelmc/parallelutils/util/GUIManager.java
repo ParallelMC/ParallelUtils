@@ -4,7 +4,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.UUID;
 
 
@@ -19,7 +18,6 @@ public class GUIManager {
 
     // a list of all players with a GUI open
     private final HashMap<UUID, GUIInventory> openGUIs = new HashMap<>();
-    private final HashSet<UUID> onCooldown = new HashSet<>();
 
     public void openInventoryForPlayer(Player player, GUIInventory type) {
         type.onOpen(player);
@@ -37,17 +35,5 @@ public class GUIManager {
 
     public void closeMenu(Player player) {
         openGUIs.remove(player.getUniqueId());
-    }
-
-    public void setCooldown(UUID uuid) {
-        onCooldown.add(uuid);
-    }
-
-    public void removeCooldown(UUID uuid) {
-        onCooldown.remove(uuid);
-    }
-
-    public boolean isOnCooldown(UUID uuid) {
-        return onCooldown.contains(uuid);
     }
 }
