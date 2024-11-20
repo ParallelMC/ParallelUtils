@@ -1,5 +1,8 @@
 package parallelmc.parallelutils.events;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,6 +18,11 @@ import parallelmc.parallelutils.util.GUIInventory;
 import parallelmc.parallelutils.util.GUIManager;
 
 public class OnMenuInteract implements Listener {
+    private final ParallelUtils puPlugin;
+    public OnMenuInteract(ParallelUtils puPlugin) {
+        this.puPlugin = puPlugin;
+    }
+
     @EventHandler
     public void onMenuClick(InventoryClickEvent event) {
         Player player = (Player)event.getWhoClicked();
@@ -26,7 +34,13 @@ public class OnMenuInteract implements Listener {
             if (item == null || item.getType() == Material.AIR || item.getType() == Material.LIGHT_BLUE_STAINED_GLASS_PANE) {
                 return;
             }
+            if (GUIManager.get().isOnCooldown(player.getUniqueId())) {
+                player.sendMessage(Component.text("Slow down! Please wait a moment between clicks.", NamedTextColor.RED));
+                return;
+            }
+            GUIManager.get().setCooldown(player.getUniqueId());
             inv.onSlotClicked(player, event.getRawSlot(), item);
+            Bukkit.getScheduler().runTaskLater(puPlugin, () -> GUIManager.get().removeCooldown(player.getUniqueId()), 4);
         }
     }
 
