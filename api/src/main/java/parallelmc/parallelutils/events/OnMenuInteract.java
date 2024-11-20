@@ -7,11 +7,9 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.util.GUIInventory;
@@ -25,6 +23,9 @@ public class OnMenuInteract implements Listener {
 
     @EventHandler
     public void onMenuClick(InventoryClickEvent event) {
+        InventoryAction action = event.getAction();
+        if (action != InventoryAction.PICKUP_ALL && action != InventoryAction.PICKUP_HALF)
+            return;
         Player player = (Player)event.getWhoClicked();
         GUIInventory inv = GUIManager.get().getOpenInventory(player);
         if (inv != null && (inv.inventory.equals(event.getClickedInventory()) || inv.inventory.equals(event.getInventory()))) {
