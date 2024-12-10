@@ -57,11 +57,14 @@ public class BitsAndBobs extends ParallelModule {
 
         manager.registerEvents(new DoorKnocker(), plugin);
         manager.registerEvents(new SpecialItems(), plugin);
-        manager.registerEvents(new SpeedyMinecarts(), plugin);
         manager.registerEvents(new OnPvp(), plugin);
         manager.registerEvents(new ShardLotto(), plugin);
         manager.registerEvents(new ChickenFeatherDrops(), plugin);
         manager.registerEvents(new EntityTweaks(), plugin);
+
+        if (config.getBoolean("speedy-minecarts", false)) {
+            manager.registerEvents(new SpeedyMinecarts(), plugin);
+        }
 
         if (config.getBoolean("disable-ender-chests", false)) {
             manager.registerEvents(new DisableEnderChest(), plugin);

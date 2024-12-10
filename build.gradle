@@ -3,8 +3,8 @@ import io.papermc.paperweight.userdev.ReobfArtifactConfiguration
 plugins {
     id 'java'
     id 'io.github.goooler.shadow' version '8.1.7'
-    id "io.papermc.paperweight.userdev" version "1.7.1"
-    id "xyz.jpenilla.run-paper" version "2.3.0"
+    id "io.papermc.paperweight.userdev" version "1.7.4"
+    id "xyz.jpenilla.run-paper" version "2.3.1"
     id 'net.minecrell.plugin-yml.bukkit' version '0.6.0'
 }
 
@@ -15,7 +15,7 @@ java {
 paperweight.reobfArtifactConfiguration = ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 
 dependencies {
-    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.1-R0.1-SNAPSHOT")
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.3-R0.1-SNAPSHOT")
 }
 
 compileJava.options.encoding = "UTF-8"
@@ -42,12 +42,12 @@ allprojects {
     }
 
     dependencies {
-        paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.1-R0.1-SNAPSHOT")
+        paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.3-R0.1-SNAPSHOT")
         //paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT")
 
         //compileOnly "io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT"
         compileOnly 'net.luckperms:api:5.4'
-        compileOnly 'dev.esophose:playerparticles:8.6'
+        compileOnly 'dev.esophose:playerparticles:8.7'
         compileOnly "com.github.MilkBowl:VaultAPI:1.7.1"
     }
 }
