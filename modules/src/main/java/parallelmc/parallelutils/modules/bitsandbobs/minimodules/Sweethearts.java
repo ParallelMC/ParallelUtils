@@ -81,7 +81,7 @@ public class Sweethearts implements Listener {
 
                 // Check if recipient needs to be healed
                 double recipientHealth = recipient.getHealth();
-                double recipientMaxHealth = recipient.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+                double recipientMaxHealth = recipient.getAttribute(Attribute.MAX_HEALTH).getBaseValue();
                 if (!(recipientHealth < recipientMaxHealth)) {
                     return;
                 }
