@@ -2,23 +2,16 @@ package parallelmc.parallelutils.modules.bitsandbobs.minimodules;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-import parallelmc.parallelutils.Constants;
-import parallelmc.parallelutils.ParallelUtils;
 
 import java.util.Objects;
-import java.util.logging.Level;
 
 public class SilenceMobs implements Listener {
 
