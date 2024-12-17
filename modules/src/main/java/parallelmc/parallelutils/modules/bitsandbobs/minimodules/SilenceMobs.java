@@ -22,20 +22,6 @@ import java.util.logging.Level;
 
 public class SilenceMobs implements Listener {
 
-    NamespacedKey silencedKey;
-
-    public SilenceMobs() {
-        PluginManager manager = Bukkit.getPluginManager();
-        Plugin plugin = manager.getPlugin(Constants.PLUGIN_NAME);
-        if (plugin == null) {
-            ParallelUtils.log(Level.SEVERE, "Unable to enable SilenceMobs. Plugin " + Constants.PLUGIN_NAME
-                    + " does not exist!");
-            return;
-        }
-
-        silencedKey = new NamespacedKey(plugin, "silencedByNametag");
-    }
-
     @EventHandler
     public void useSilenceNametag(PlayerInteractEntityEvent event) {
         EquipmentSlot slot = event.getHand();
