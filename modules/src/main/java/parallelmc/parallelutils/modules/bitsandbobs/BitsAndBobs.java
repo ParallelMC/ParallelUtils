@@ -61,6 +61,7 @@ public class BitsAndBobs extends ParallelModule {
         manager.registerEvents(new ShardLotto(), plugin);
         manager.registerEvents(new ChickenFeatherDrops(), plugin);
         manager.registerEvents(new EntityTweaks(), plugin);
+        manager.registerEvents(new SilenceMobs(), plugin);
 
         if (config.getBoolean("speedy-minecarts", false)) {
             manager.registerEvents(new SpeedyMinecarts(), plugin);
