@@ -303,6 +303,12 @@ bukkit {
             description = 'Opens the point redemption shop for a player'
             usage = '/openpointsredemption (player)'
         }
+        hat {
+            description = 'Allows you to wear the item in your main hand as a hat'
+            usage = '/hat'
+            permissionMessage = 'You do not have permission.'
+            permission = 'parallelutils.hat.*'
+        }
     }
 
     permissions {
@@ -501,6 +507,10 @@ bukkit {
         }
         'parallelutils.recalculatepoints' {
             description = 'Gives access to the /recalculatepoints dev command'
+        }
+        'parallelutils.hat.*' {
+            description = 'Allows you to wear any item as a hat'
+            setDefault('FALSE')
         }
     }
 }
