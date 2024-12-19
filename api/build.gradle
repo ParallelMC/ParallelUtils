@@ -510,7 +510,6 @@ bukkit {
         }
         'parallelutils.hat.*' {
             description = 'Allows you to wear any item as a hat'
-            setDefault('FALSE')
         }
     }
 }
