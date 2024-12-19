@@ -22,7 +22,7 @@ public class OnAdvancementDone implements Listener {
             // If the advancement is a root advancement or recipes advancement, don't print an error message.
             // We can assume that advancements without displays are recipe advancements
             // ParallelUtils.log(Level.WARNING, advancementTitle.toString());
-            if (!(advancement.getRoot() == advancement) && !(advancement.getDisplay() == null)) {
+            if (advancement.getRoot() != advancement && advancement.getDisplay() != null) {
                 ParallelUtils.log(Level.WARNING, "Advancement " + advancement.getKey().asString() + " has no associated point value! Skipping...");
             }
             return;
