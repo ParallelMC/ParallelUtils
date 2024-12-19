@@ -23,10 +23,7 @@ public class OnAdvancementDone implements Listener {
         }
         Points.get().awardPoints(player, points);
         // wait 1 tick to send the message so it shows after the advancement
-        if (points == 1) {
-            ParallelChat.sendDelayedParallelMessageTo(player, 1, "You've received " + points + " advancement point!");
-        } else {
-            ParallelChat.sendDelayedParallelMessageTo(player, 1, "You've received " + points + " advancement points!");
-        }
+        ParallelChat.sendDelayedParallelMessageTo(player, 1,
+                "You currently have " + points + " advancement " + ((points == 1) ? "point!" : "points!"));
     }
 }
