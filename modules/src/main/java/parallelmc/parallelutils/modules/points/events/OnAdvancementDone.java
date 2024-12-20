@@ -16,17 +16,21 @@ public class OnAdvancementDone implements Listener {
     public void onAdvancementDone(PlayerAdvancementDoneEvent event) {
         Advancement advancement = event.getAdvancement();
         Player player = event.getPlayer();
+
         int points = Points.get().getPointsForAdvancement(advancement);
         if (points == -1) {
-            ParallelUtils.log(Level.WARNING, "Advancement " + advancement.getKey().asString() + " has no associated point value! Skipping...");
+            // If the advancement is a root advancement or recipes advancement, don't print an error message.
+            // We can assume that advancements without displays are recipe advancements
+            // ParallelUtils.log(Level.WARNING, advancementTitle.toString());
+            if (advancement.getRoot() != advancement && advancement.getDisplay() != null) {
+                ParallelUtils.log(Level.WARNING, "Advancement " + advancement.getKey().asString() + " has no associated point value! Skipping...");
+            }
             return;
         }
+
         Points.get().awardPoints(player, points);
         // wait 1 tick to send the message so it shows after the advancement
-        if (points == 1) {
-            ParallelChat.sendDelayedParallelMessageTo(player, 1, "You've received " + points + " advancement point!");
-        } else {
-            ParallelChat.sendDelayedParallelMessageTo(player, 1, "You've received " + points + " advancement points!");
-        }
+        ParallelChat.sendDelayedParallelMessageTo(player, 1,
+                "You've received " + points + " advancement " + ((points == 1) ? "point!" : "points!"));
     }
 }
