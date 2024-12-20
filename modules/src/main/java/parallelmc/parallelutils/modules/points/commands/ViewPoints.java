@@ -13,7 +13,8 @@ public class ViewPoints implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
         if (commandSender instanceof Player player) {
             int points = Points.get().getPlayerPoints(player);
-            ParallelChat.sendParallelMessageTo(player, "You currently have " + points + " advancement points!");
+            ParallelChat.sendParallelMessageTo(player,
+                    "You currently have " + points + " advancement " + ((points == 1) ? "point!" : "points!"));
         }
         return true;
     }
