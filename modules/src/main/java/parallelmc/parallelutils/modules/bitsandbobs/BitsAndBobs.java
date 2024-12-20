@@ -9,6 +9,7 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
+import parallelmc.parallelutils.modules.bitsandbobs.commands.Hat;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.*;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.OnPvp;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpCommand;
@@ -54,6 +55,7 @@ public class BitsAndBobs extends ParallelModule {
         FileConfiguration config = puPlugin.getConfig();
 
         puPlugin.getCommand("togglepvp").setExecutor(new TogglePvpCommand());
+        puPlugin.getCommand("hat").setExecutor(new Hat());
 
         manager.registerEvents(new DoorKnocker(), plugin);
         manager.registerEvents(new SpecialItems(), plugin);
@@ -61,6 +63,8 @@ public class BitsAndBobs extends ParallelModule {
         manager.registerEvents(new ShardLotto(), plugin);
         manager.registerEvents(new ChickenFeatherDrops(), plugin);
         manager.registerEvents(new EntityTweaks(), plugin);
+        manager.registerEvents(new HatSlotStuff(), plugin);
+        manager.registerEvents(new SilenceMobs(), plugin);
 
         if (config.getBoolean("speedy-minecarts", false)) {
             manager.registerEvents(new SpeedyMinecarts(), plugin);
