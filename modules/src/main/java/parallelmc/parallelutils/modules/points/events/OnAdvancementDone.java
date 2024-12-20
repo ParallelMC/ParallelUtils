@@ -9,6 +9,7 @@ import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelchat.ParallelChat;
 import parallelmc.parallelutils.modules.points.Points;
 
+import java.util.Objects;
 import java.util.logging.Level;
 
 public class OnAdvancementDone implements Listener {
@@ -21,8 +22,9 @@ public class OnAdvancementDone implements Listener {
         if (points == -1) {
             // If the advancement is a root advancement or recipes advancement, don't print an error message.
             // We can assume that advancements without displays are recipe advancements
-            // ParallelUtils.log(Level.WARNING, advancementTitle.toString());
-            if (advancement.getRoot() != advancement && advancement.getDisplay() != null) {
+            // Idk why I have to check that the displays are equal and not the advancement objects themselves, ty mojang
+            if (!(Objects.equals(advancement.getRoot().getDisplay(), advancement.getDisplay()))
+                    && advancement.getDisplay() != null) {
                 ParallelUtils.log(Level.WARNING, "Advancement " + advancement.getKey().asString() + " has no associated point value! Skipping...");
             }
             return;
