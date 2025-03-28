@@ -13,7 +13,7 @@ public class RandomTools {
      * @param high The second integer
      * @return The random integer between low and high, inclusive
      */
-    public static int betweenTwoIntegers(int low, int high) {
+    public static int betweenTwoNumbers(int low, int high) {
         Random r = new Random();
         return r.nextInt(high - low + 1) + low;
     }
