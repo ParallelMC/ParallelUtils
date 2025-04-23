@@ -25,11 +25,11 @@ dependencies {
     compileOnly 'net.dv8tion:JDA:5.0.0-beta.24'
     compileOnly 'me.clip:placeholderapi:2.11.6'
     compileOnly fileTree('libs') { include '*.jar' }
-    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.12'
+    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.13'
     compileOnly 'com.mysql:mysql-connector-j:8.3.0'
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.3.0'
     compileOnly 'dev.esophose:playerparticles:8.7'
-    compileOnly "io.papermc.paper:paper-api:1.21.3-R0.1-SNAPSHOT"
+    compileOnly "io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT"
 }
 
 def names = []
