@@ -9,12 +9,12 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
+import parallelmc.parallelutils.modules.bitsandbobs.commands.Hat;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.*;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.OnPvp;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpCommand;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpManager;
 
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -57,13 +57,20 @@ public class BitsAndBobs extends ParallelModule {
         FileConfiguration config = puPlugin.getConfig();
 
         puPlugin.getCommand("togglepvp").setExecutor(new TogglePvpCommand());
+        puPlugin.getCommand("hat").setExecutor(new Hat());
 
         manager.registerEvents(new DoorKnocker(), plugin);
         manager.registerEvents(new SpecialItems(), plugin);
-        manager.registerEvents(new SpeedyMinecarts(), plugin);
         manager.registerEvents(new OnPvp(), plugin);
         manager.registerEvents(new ShardLotto(), plugin);
         manager.registerEvents(new ChickenFeatherDrops(), plugin);
+        manager.registerEvents(new EntityTweaks(), plugin);
+        manager.registerEvents(new HatSlotStuff(), plugin);
+        manager.registerEvents(new SilenceMobs(), plugin);
+
+        if (config.getBoolean("speedy-minecarts", false)) {
+            manager.registerEvents(new SpeedyMinecarts(), plugin);
+        }
 
         if (config.getBoolean("disable-ender-chests", false)) {
             manager.registerEvents(new DisableEnderChest(), plugin);
@@ -78,6 +85,17 @@ public class BitsAndBobs extends ParallelModule {
             plugin.getServer().getScheduler().runTaskTimer(plugin, () -> cozyCampfires.checkForCampfires(), 0, 80);
         }
 
+        if (config.getBoolean("enable-ziprails", true)) {
+            manager.registerEvents(new Ziprails(), plugin);
+        }
+      
+        if (config.getBoolean("enable-calling-bell", true)) {
+            manager.registerEvents(new CallingBell(), plugin);
+        }
+
+        if (config.getBoolean("enable-sweethearts", true)) {
+            manager.registerEvents(new Sweethearts(), plugin);
+        }
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.destroystokyo.paper.ParticleBuilder;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.craftbukkit.v1_20_R1.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.block.data.CraftBlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -134,7 +134,7 @@ public class CharmParticleHandler extends ICharmRunnableHandler {
 		// Data
 
 		switch (particle) {
-			case ITEM_CRACK, BLOCK_CRACK, BLOCK_DUST, FALLING_DUST, BLOCK_MARKER -> {
+			case ITEM, BLOCK, FALLING_DUST, BLOCK_MARKER -> {
 				// Takes Material as input
 
 				EncapsulatedType dataMatType = settingsMap.get("dataMaterial");
@@ -147,7 +147,7 @@ public class CharmParticleHandler extends ICharmRunnableHandler {
 							try {
 								Material material = Material.valueOf(dataMat);
 
-								if (particle == Particle.ITEM_CRACK) {
+								if (particle == Particle.ITEM) {
 									if (material.isItem()) {
 										ItemStack itemStack = new ItemStack(material);
 
@@ -163,7 +163,7 @@ public class CharmParticleHandler extends ICharmRunnableHandler {
 										if (dataBlockDataType.getType() == Types.STRING) {
 											String blockData = (String) dataBlockDataType.getVal();
 
-											BlockData data = CraftBlockData.newData(material, blockData);
+											BlockData data = material.createBlockData(blockData);
 
 											builder.data(data);
 										}

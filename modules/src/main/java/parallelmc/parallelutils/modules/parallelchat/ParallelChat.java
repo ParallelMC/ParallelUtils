@@ -389,6 +389,16 @@ public class ParallelChat extends ParallelModule {
         Component text = MiniMessage.miniMessage().deserialize("<dark_aqua>[<white><bold>P<reset><dark_aqua>] ").append(message);
         player.sendMessage(text);
     }
+
+    /**
+     * Sends a chat message to a player with the ParallelUtils prefix after waiting a specified number of ticks
+     * @param player The player to send the message to
+     * @param wait The number of ticks to wait until sending the message
+     * @param message The component to send
+     */
+    public static void sendDelayedParallelMessageTo(Player player, long wait, String message) {
+        Bukkit.getScheduler().runTaskLater(Instance.puPlugin, () -> sendParallelMessageTo(player, message), wait);
+    }
     
     /**
      * Sends a chat message to a player
