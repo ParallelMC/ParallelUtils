@@ -78,7 +78,7 @@ public class PlayerJoinContainerListenerOverwrite implements Listener {
 
 					@Override
 					public RemoteSlot createSlot() {
-						return null;
+						return oldSynchronizer.createSlot();
 					}
 				});
 			}
