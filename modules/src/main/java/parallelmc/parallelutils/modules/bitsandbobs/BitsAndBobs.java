@@ -22,6 +22,8 @@ public class BitsAndBobs extends ParallelModule {
 
     private TogglePvpManager pvpManager;
 
+    private CozyCampfires cozyCampfires;
+
     public BitsAndBobs(ParallelClassLoader classLoader, List<String> dependents) {
         super(classLoader, dependents);
     }
@@ -76,6 +78,11 @@ public class BitsAndBobs extends ParallelModule {
 
         if (config.getBoolean("prevent-spawner-mining", false)) {
             manager.registerEvents(new PreventSpawnerMining(), plugin);
+        }
+
+        cozyCampfires = new CozyCampfires();
+        if (config.getBoolean("enable-cozy-campfires", false)) {
+            plugin.getServer().getScheduler().runTaskTimer(plugin, () -> cozyCampfires.checkForCampfires(), 0, 80);
         }
 
         if (config.getBoolean("enable-ziprails", true)) {
