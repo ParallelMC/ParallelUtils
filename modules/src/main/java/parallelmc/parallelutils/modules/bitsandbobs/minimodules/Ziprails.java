@@ -29,7 +29,7 @@ public class Ziprails implements Listener {
 
         key = new NamespacedKey(plugin, "isZipping");
 
-        plugin.getServer().getScheduler().runTaskTimer(plugin, this::checkForZiprails, 0L, 4L);
+        plugin.getServer().getScheduler().runTaskTimer(plugin, this::checkForZiprails, 0L, 2L);
     }
 
     public void checkForZiprails() {
