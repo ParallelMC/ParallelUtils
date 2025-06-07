@@ -115,6 +115,10 @@ public class ChestShops extends ParallelModule {
                 Location chestLoc = new Location(world, results.getInt("ChestX"), results.getInt("ChestY"), results.getInt("ChestZ"));
                 Location signLoc = new Location(world, results.getInt("SignX"), results.getInt("SignY"), results.getInt("SignZ"));
                 Material item = Material.getMaterial(results.getString("Item"));
+		if (item == null) {
+			ParallelUtils.log(Level.WARNING, "Skipping loading invalid ChestShop Material: " + results.getString("Item"));
+			continue;
+		}
                 int sellAmt = results.getInt("SellAmt");
                 int buyAmt = results.getInt("BuyAmt");
                 addShop(uuid, id, chestLoc, signLoc, item, sellAmt, buyAmt);
