@@ -115,6 +115,10 @@ public class ChestShops extends ParallelModule {
                 Location chestLoc = new Location(world, results.getInt("ChestX"), results.getInt("ChestY"), results.getInt("ChestZ"));
                 Location signLoc = new Location(world, results.getInt("SignX"), results.getInt("SignY"), results.getInt("SignZ"));
                 Material item = Material.getMaterial(results.getString("Item"));
+		if (item == null) {
+			ParallelUtils.log(Level.WARNING, "Skipping loading invalid ChestShop Material: " + results.getString("Item"));
+			continue;
+		}
                 int sellAmt = results.getInt("SellAmt");
                 int buyAmt = results.getInt("BuyAmt");
                 addShop(uuid, id, chestLoc, signLoc, item, sellAmt, buyAmt);
@@ -172,14 +176,18 @@ public class ChestShops extends ParallelModule {
             conn.commit();
             statement.close();
 
+	    // this logic below needs to be redone at some point
+	    // ideally shifting to a full database driven setup
+		
             // remove old chestshop entries that no longer exist on the server
             // this helps fix conflicts where someone creates a shop where one recently existed (small edge case but good to patch)
             // since existing chestshops have their timestamp updated automatically above, they shouldn't be touched by this
-            PreparedStatement cleanup = conn.prepareStatement("DELETE FROM ChestShops WHERE Timestamp < DATE_SUB(NOW(), INTERVAL 15 MINUTE)");
+            /* PreparedStatement cleanup = conn.prepareStatement("DELETE FROM ChestShops WHERE Timestamp < DATE_SUB(NOW(), INTERVAL 15 MINUTE)");
             cleanup.setQueryTimeout(30);
             cleanup.execute();
             conn.commit();
             cleanup.close();
+	     */
 
         } catch (SQLException e) {
             e.printStackTrace();

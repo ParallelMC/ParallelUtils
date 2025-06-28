@@ -15,7 +15,7 @@ import java.util.logging.Level;
 
 public class Ziprails implements Listener {
 
-    private static final double MINECART_DEFAULT_MAX_SPEED = 0.4d;
+    private static final double MINECART_DEFAULT_MAX_SPEED = 1.0d; // gamerule minecartMaxSpeed = 20
     NamespacedKey key;
 
     public Ziprails() {
@@ -29,7 +29,7 @@ public class Ziprails implements Listener {
 
         key = new NamespacedKey(plugin, "isZipping");
 
-        plugin.getServer().getScheduler().runTaskTimer(plugin, this::checkForZiprails, 0L, 4L);
+        plugin.getServer().getScheduler().runTaskTimer(plugin, this::checkForZiprails, 0L, 2L);
     }
 
     public void checkForZiprails() {

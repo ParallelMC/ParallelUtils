@@ -22,7 +22,9 @@ public class SilenceMobs implements Listener {
         if (!player.getEquipment().getItem(slot).getType().equals(Material.NAME_TAG)) {
             return;
         }
-        if (!(event.getRightClicked() instanceof LivingEntity entity)) {
+        // If the player right clicked a non-living entity or a player, return
+        // This is to prevent a player accidentally editing another player's playerdata
+        if (!(event.getRightClicked() instanceof LivingEntity entity) || event.getRightClicked() instanceof Player) {
             return;
         }
         TextComponent nametagName = (TextComponent) player.getEquipment().getItem(slot).getItemMeta().displayName();
