@@ -16,6 +16,7 @@ import parallelmc.parallelutils.modules.charms.data.NonNullListRemember;
 import parallelmc.parallelutils.modules.charms.events.PlayerSlotChangedEvent;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 public class PlayerJoinContainerListenerOverwrite implements Listener {
 
@@ -55,7 +56,7 @@ public class PlayerJoinContainerListenerOverwrite implements Listener {
 			if (oldSynchronizer != null) {
 				containerSynchronizer.set(serverPlayer, new ContainerSynchronizer() {
 					@Override
-					public void sendInitialData(@NotNull AbstractContainerMenu handler, @NotNull NonNullList<ItemStack> stacks, @NotNull ItemStack cursorStack, @NotNull int[] properties) {
+					public void sendInitialData(@NotNull AbstractContainerMenu handler, @NotNull List<ItemStack> stacks, @NotNull ItemStack cursorStack, @NotNull int[] properties) {
 						handler.lastSlots = NonNullListRemember.of(handler.lastSlots);
 						oldSynchronizer.sendInitialData(handler, stacks, cursorStack, properties);
 					}
@@ -73,6 +74,11 @@ public class PlayerJoinContainerListenerOverwrite implements Listener {
 					@Override
 					public void sendDataChange(@NotNull AbstractContainerMenu handler, int property, int value) {
 						oldSynchronizer.sendDataChange(handler, property, value);
+					}
+
+					@Override
+					public RemoteSlot createSlot() {
+						return oldSynchronizer.createSlot();
 					}
 				});
 			}

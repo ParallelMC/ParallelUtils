@@ -78,4 +78,6 @@ announcements:
 disable-ender-chests: false
 prevent-spawner-mining: false
 enable-calling-bell: true
+enable-cozy-campfires: true
 enable-sweethearts: true
+enable-ziprails: true
