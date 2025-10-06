@@ -15,7 +15,7 @@ java {
 paperweight.reobfArtifactConfiguration = ReobfArtifactConfiguration.getMOJANG_PRODUCTION()
 
 dependencies {
-    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.5-R0.1-SNAPSHOT")
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.6-R0.1-SNAPSHOT")
 }
 
 compileJava.options.encoding = "UTF-8"
@@ -42,7 +42,7 @@ allprojects {
     }
 
     dependencies {
-        paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.5-R0.1-SNAPSHOT")
+        paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.6-R0.1-SNAPSHOT")
         //paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT")
 
         //compileOnly "io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT"
