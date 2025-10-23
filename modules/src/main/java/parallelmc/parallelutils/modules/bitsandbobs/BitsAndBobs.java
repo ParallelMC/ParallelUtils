@@ -67,18 +67,7 @@ public class BitsAndBobs extends ParallelModule {
         manager.registerEvents(new EntityTweaks(), plugin);
         manager.registerEvents(new HatSlotStuff(), plugin);
         manager.registerEvents(new SilenceMobs(), plugin);
-
-        if (config.getBoolean("speedy-minecarts", false)) {
-            manager.registerEvents(new SpeedyMinecarts(), plugin);
-        }
-
-        if (config.getBoolean("disable-ender-chests", false)) {
-            manager.registerEvents(new DisableEnderChest(), plugin);
-        }
-
-        if (config.getBoolean("prevent-spawner-mining", false)) {
-            manager.registerEvents(new PreventSpawnerMining(), plugin);
-        }
+        manager.registerEvents(new HalloweenCandyDrops(), plugin);
 
         if (config.getBoolean("enable-calling-bell", true)) {
             manager.registerEvents(new CallingBell(), plugin);
@@ -95,6 +84,22 @@ public class BitsAndBobs extends ParallelModule {
 
         if (config.getBoolean("enable-ziprails", true)) {
             manager.registerEvents(new Ziprails(), plugin);
+        }
+
+        if (config.getBoolean("disable-ender-chests", false)) {
+            manager.registerEvents(new DisableEnderChest(), plugin);
+        }
+
+        if (config.getBoolean("enable-halloween-candy-drops", false)) {
+            manager.registerEvents(new HalloweenCandyDrops(), plugin);
+        }
+
+        if (config.getBoolean("prevent-spawner-mining", false)) {
+            manager.registerEvents(new PreventSpawnerMining(), plugin);
+        }
+
+        if (config.getBoolean("speedy-minecarts", false)) {
+            manager.registerEvents(new SpeedyMinecarts(), plugin);
         }
     }
 

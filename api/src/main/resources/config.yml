@@ -75,9 +75,10 @@ announcements:
       - "<dark_gray><strikethrough>--------------------------"
 
 # Bits and Bobs
-disable-ender-chests: false
-prevent-spawner-mining: false
 enable-calling-bell: true
 enable-cozy-campfires: true
 enable-sweethearts: true
 enable-ziprails: true
+disable-ender-chests: false
+enable-halloween-candy-drops: false
+prevent-spawner-mining: false
