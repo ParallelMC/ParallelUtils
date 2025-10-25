@@ -13,6 +13,7 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelitems.ParallelItems;
+import parallelmc.parallelutils.modules.parallelitems.registry.ItemRegistry;
 import parallelmc.parallelutils.util.RandomTools;
 
 import java.util.logging.Level;
@@ -49,43 +50,43 @@ public class HalloweenCandyDrops implements Listener {
             EntityType entityType = event.getEntityType();
             switch (entityType) {
                 case BLAZE:
-                    candy = parallelItems.getItem("ralnthar_roar").clone();
+                    candy = ItemRegistry.getInstance().getItem("ralnthar_roar");
                     event.getDrops().add(candy);
                     break;
                 case CREEPER:
-                    candy = parallelItems.getItem("creeper_crunch").clone();
+                    candy = ItemRegistry.getInstance().getItem("creeper_crunch");
                     event.getDrops().add(candy);
                     break;
                 case ENDERMAN:
-                    candy = parallelItems.getItem("raspberry_rift").clone();
+                    candy = ItemRegistry.getInstance().getItem("raspberry_rift");
                     event.getDrops().add(candy);
                     break;
                 case EVOKER, ILLUSIONER, PILLAGER, VINDICATOR:
-                    candy = parallelItems.getItem("green_apple_goo").clone();
+                    candy = ItemRegistry.getInstance().getItem("green_apple_goo");
                     event.getDrops().add(candy);
                     break;
                 case GHAST:
-                    candy = parallelItems.getItem("nether_portal_nougat").clone();
+                    candy = ItemRegistry.getInstance().getItem("nether_portal_nougat");
                     event.getDrops().add(candy);
                     break;
                 case MAGMA_CUBE:
-                    candy = parallelItems.getItem("magma_melt").clone();
+                    candy = ItemRegistry.getInstance().getItem("magma_melt");
                     event.getDrops().add(candy);
                     break;
                 case PIGLIN, PIGLIN_BRUTE, ZOMBIFIED_PIGLIN:
-                    candy = parallelItems.getItem("phantasmic_fudge").clone();
+                    candy = ItemRegistry.getInstance().getItem("phantasmic_fudge");
                     event.getDrops().add(candy);
                     break;
                 case SKELETON:
-                    candy = parallelItems.getItem("mysterious_mint").clone();
+                    candy = ItemRegistry.getInstance().getItem("mysterious_mint");
                     event.getDrops().add(candy);
                     break;
                 case WITHER_SKELETON:
-                    candy = parallelItems.getItem("pumpkin_pop").clone();
+                    candy = ItemRegistry.getInstance().getItem("pumpkin_pop");
                     event.getDrops().add(candy);
                     break;
                 case ZOMBIE:
-                    candy = parallelItems.getItem("eerie_eyeball").clone();
+                    candy = ItemRegistry.getInstance().getItem("eerie_eyeball");
                     event.getDrops().add(candy);
                     break;
             }
