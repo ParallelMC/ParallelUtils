@@ -1,7 +1,7 @@
 package parallelmc.parallelutils.modules.bitsandbobs.minimodules;
 
-import net.minecraft.world.entity.animal.Chicken;
 import org.bukkit.Material;
+import org.bukkit.entity.Chicken;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
