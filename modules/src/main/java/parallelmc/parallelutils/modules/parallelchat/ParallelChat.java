@@ -144,7 +144,10 @@ public class ParallelChat extends ParallelModule {
                         UUID        varchar(36) not null,
                         SocSpy      tinyint     not null,
                         CmdSpy      tinyint     not null,
-                        ChatRoomSpy tinyint     not null
+                        ChatRoomSpy tinyint     not null,
+                        constraint SocialSpy_UUID_uindex
+                            unique (UUID),
+                        PRIMARY KEY (UUID)
                     );""");
             conn.commit();
             statement.close();
@@ -305,15 +308,17 @@ public class ParallelChat extends ParallelModule {
         // save spy data across shutdowns
         try (Connection conn = puPlugin.getDbConn()) {
             if (conn == null) throw new SQLException("Unable to establish connection!");
-            PreparedStatement statement = conn.prepareStatement("INSERT INTO SocialSpy (UUID, SocSpy, CmdSpy) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE SocSpy = ?, CmdSpy = ?");
+            PreparedStatement statement = conn.prepareStatement("INSERT INTO SocialSpy (UUID, SocSpy, CmdSpy, ChatRoomSpy) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE SocSpy = ?, CmdSpy = ?, ChatRoomSpy = ?");
             statement.setQueryTimeout(30);
             this.socialSpyUsers.forEach((u, o) -> {
                 try {
                     statement.setString(1, u.toString());
                     statement.setBoolean(2, o.isSocialSpy());
                     statement.setBoolean(3, o.isCmdSpy());
-                    statement.setBoolean(4, o.isSocialSpy());
-                    statement.setBoolean(5, o.isCmdSpy());
+                    statement.setBoolean(4, o.isChatRoomSpy());
+                    statement.setBoolean(5, o.isSocialSpy());
+                    statement.setBoolean(6, o.isCmdSpy());
+                    statement.setBoolean(7, o.isChatRoomSpy());
                     statement.addBatch();
                 } catch (SQLException e) {
                     e.printStackTrace();
@@ -383,6 +388,16 @@ public class ParallelChat extends ParallelModule {
     public static void sendParallelMessageTo(Player player, Component message) {
         Component text = MiniMessage.miniMessage().deserialize("<dark_aqua>[<white><bold>P<reset><dark_aqua>] ").append(message);
         player.sendMessage(text);
+    }
+
+    /**
+     * Sends a chat message to a player with the ParallelUtils prefix after waiting a specified number of ticks
+     * @param player The player to send the message to
+     * @param wait The number of ticks to wait until sending the message
+     * @param message The component to send
+     */
+    public static void sendDelayedParallelMessageTo(Player player, long wait, String message) {
+        Bukkit.getScheduler().runTaskLater(Instance.puPlugin, () -> sendParallelMessageTo(player, message), wait);
     }
     
     /**

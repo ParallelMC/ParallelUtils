@@ -8,6 +8,8 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Constants;
@@ -63,6 +65,8 @@ public class ParallelResources extends ParallelModule {
 	@Nullable
 	private File packSquashConfig = null;
 
+	private boolean doneLoading = false;
+
 	private final HashMap<String, byte[]> resourceHashes = new HashMap<>();
 
 	public ParallelResources(ParallelClassLoader classLoader, List<String> dependents) {
@@ -104,6 +108,7 @@ public class ParallelResources extends ParallelModule {
 			if (!resourcesFile.exists()) {
 				resourcesConfig.set("domain", "resources.parallelmc.org");
 				resourcesConfig.set("port", 4444);
+				resourcesConfig.set("has_proxy", false);
 				resourcesConfig.set("https", false);
 				resourcesConfig.set("https_keystore", null);
 				resourcesConfig.set("https_keystore_pass", null);
@@ -117,6 +122,7 @@ public class ParallelResources extends ParallelModule {
 
 			// Initialize server
 			int port = resourcesConfig.getInt("port", 4444);
+			boolean has_proxy = resourcesConfig.getBoolean("has_proxy", false);
 			boolean https = resourcesConfig.getBoolean("https", false);
 			String keystore = resourcesConfig.getString("https_keystore", null);
 			String keystore_pass = resourcesConfig.getString("https_keystore_pass", null);
@@ -125,9 +131,15 @@ public class ParallelResources extends ParallelModule {
 
 			server = new ResourceServer(port, https, keystore != null ? new File(resourcesDir, keystore) : null, keystore_pass);
 
-			String https_head = https ? "https://" : "http://";
+			// Use HTTPS if there's a proxy
+			String https_head = (https|has_proxy) ? "https://" : "http://";
 
-			base_url = https_head + domain + ":" + port + "/";
+			// URL does not include port if there's a proxy
+			if (has_proxy) {
+				base_url = https_head + domain + "/";
+			} else {
+				base_url = https_head + domain + ":" + port + "/";
+			}
 
 			// Try loading packsquash
 
@@ -165,6 +177,7 @@ public class ParallelResources extends ParallelModule {
 
 			if (!base_zip.exists()) {
 				ParallelUtils.log(Level.WARNING, "Base zip does not exist! Will not continue");
+				doneLoading = true;
 				return;
 			}
 
@@ -206,7 +219,37 @@ public class ParallelResources extends ParallelModule {
 				packsTemp.add(base_temp);
 
 				// Squash all the files
-				packs = squashFiles(packsTemp, resourcesDir, squashOut);
+
+
+				ParallelResources resources = this;
+				BukkitTask squashTask = new BukkitRunnable() {
+					@Override
+					public void run() {
+						try {
+							handler = new ResourcePackHandle(puPlugin, resources, warning_component);
+
+							List<File> packs = squashFiles(packsTemp, resourcesDir, squashOut);
+
+							for (File f : packs) {
+								String trimmed_name = f.getName().replace(".zip", "");
+								server.addResource(trimmed_name, f);
+								resourceHashes.put(trimmed_name, createSha1(f));
+							}
+
+
+
+						} catch (Exception e) {
+							ParallelUtils.log(Level.SEVERE, "Exception while loading ParallelResources! Quitting...");
+							doneLoading = true;
+							return;
+                        }
+
+						serverThread = new Thread(server);
+						serverThread.start();
+						doneLoading = true;
+                    }
+				}.runTaskAsynchronously(puPlugin);
+
 			} else {
 				// Just put them right in the final output directory
 				packs = generatePacks(squashOut, base_zip, resourceMods);
@@ -215,28 +258,28 @@ public class ParallelResources extends ParallelModule {
 				File base_final = new File(modOut, base_zip.getName());
 				Files.copy(base_zip.toPath(), base_final.toPath());
 				packs.add(base_final);
-			}
 
-			for (File f : packs) {
-				String trimmed_name = f.getName().replace(".zip", "");
-				server.addResource(trimmed_name, f);
-				resourceHashes.put(trimmed_name, createSha1(f));
-			}
+				for (File f : packs) {
+					String trimmed_name = f.getName().replace(".zip", "");
+					server.addResource(trimmed_name, f);
+					resourceHashes.put(trimmed_name, createSha1(f));
+				}
 
-			handler = new ResourcePackHandle(puPlugin, this, warning_component);
+				handler = new ResourcePackHandle(puPlugin, this, warning_component);
+
+				serverThread = new Thread(server);
+				serverThread.start();
+			}
 
 		} catch (IOException e) {
 			e.printStackTrace();
 			ParallelUtils.log(Level.SEVERE, "IOException while loading ParallelResources! Quitting...");
-			return;
 		} catch (Exception e) {
 			e.printStackTrace();
 			ParallelUtils.log(Level.SEVERE, "Exception while loading ParallelResources! Quitting...");
-			return;
 		}
 
-		serverThread = new Thread(server);
-		serverThread.start();
+		doneLoading = true;
 	}
 
 	@Override
@@ -362,7 +405,7 @@ public class ParallelResources extends ParallelModule {
 				out = new File(outDir, f.getName());
 				Files.copy(f.toPath(), out.toPath());
 			}
-			squashed.add(f);
+			squashed.add(out);
 		}
 
 		purgeDirectory(tempDir.toFile());
@@ -564,6 +607,10 @@ public class ParallelResources extends ParallelModule {
 	@Nullable
 	public byte[] getHash(@NotNull String world) {
 		return resourceHashes.get(world);
+	}
+
+	public boolean doneLoading() {
+		return doneLoading;
 	}
 
 }

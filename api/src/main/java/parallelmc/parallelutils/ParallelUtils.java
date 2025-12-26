@@ -77,8 +77,8 @@ public final class ParallelUtils extends JavaPlugin {
 		config = this.getConfig();
 
 		config.options().copyDefaults(true);
-		config.options().parseComments(true);
-		config.options().setHeader(List.of(HEADER));
+		//config.options().parseComments(true);
+		config.options().header(HEADER);
 
 		// Read config
 		this.saveDefaultConfig();

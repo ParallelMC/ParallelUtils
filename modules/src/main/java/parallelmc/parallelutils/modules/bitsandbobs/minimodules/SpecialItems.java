@@ -1,10 +1,11 @@
 package parallelmc.parallelutils.modules.bitsandbobs.minimodules;
 
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.item.component.CustomData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.craftbukkit.v1_20_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -36,53 +37,40 @@ public class SpecialItems implements Listener {
 
     private final String[] SPECIAL_ITEMS = {"CustomHat", "CustomTrophy"};
 
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         // Creates an empty list for all items to be prevented from dropping
         ArrayList<ItemStack> preventedDrops = new ArrayList<>();
 
         for (ItemStack item : event.getDrops()) {
-            // TODO: This probably doesn't need to be dependent on item type. Just checking the tag is a bit more futureproof
-            // TODO: The leather horse armor add is a band-aid because I'm lazy, will fix later
-            if (item.getType() == Material.PAPER || item.getType() == Material.LEATHER_HORSE_ARMOR) {
-                // TODO: Try to change this code to use item.getItemMeta().getPersistentDataContainer()
-                // TODO: Make this 2-part check not jank - hopefully transition entirely to persistentdatacontainer
-                NamespacedKey hatKey = new NamespacedKey(plugin, "CustomHat");
-                PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
-                if (container.has(hatKey, PersistentDataType.INTEGER)) {
-                    preventedDrops.add(item);
-                    continue;
-                }
-
-                net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
-                // Grabs the NMS items compound and checks if it's null
-                CompoundTag compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new CompoundTag();
-
-                if (compound == null) continue;
-
-                if (compound.contains("CustomHat")) {
-                    preventedDrops.add(item);
-                }
-            } else if (item.getType() == Material.PLAYER_HEAD) {
-                net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
-                // Grabs the NMS items compound and checks if it's null
-                CompoundTag compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new CompoundTag();
-
-                if (compound == null) continue;
-
-                if (compound.contains("CustomTrophy")) {
-                    preventedDrops.add(item);
-                }
+            // TODO: The NMS check down below won't be needed anymore if we start making every hat and trophy through PU
+            NamespacedKey hatKeyOld = new NamespacedKey(plugin, "CustomHat");
+            NamespacedKey hatKey = new NamespacedKey(plugin, "ParallelHat");
+            PersistentDataContainer container = item.getItemMeta().getPersistentDataContainer();
+            if (container.has(hatKeyOld, PersistentDataType.INTEGER) || container.has(hatKey, PersistentDataType.STRING)) {
+                preventedDrops.add(item);
+                continue;
             }
+
+            net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
+            // Grabs the custom data component (returns an empty component if it's null)
+            CustomData customData = nmsItem.getComponents().getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
+
+            if (customData.contains("CustomHat") || customData.contains("CustomTrophy")) {
+                preventedDrops.add(item);
+            }
+
         }
+
         // If the list of special drops has items in it, add a new player entry to the logger hashmap and remove the
-        // dropped items
+        // items from dropping upon death
         if (!preventedDrops.isEmpty()) {
             // Gets the UUID of the player
             UUID uuid = event.getEntity().getUniqueId();
             specialItemsLogger.put(uuid, preventedDrops);
 
-            // Removes each special item from the original list of dropped items
+            // Removes each special item from dropping upon death
             for (ItemStack item : preventedDrops) {
                 event.getDrops().remove(item);
             }
@@ -112,20 +100,28 @@ public class SpecialItems implements Listener {
             if (itemMeta == null) {  // itemMeta could be null, so we have to check this
                 continue;
             }
-            NamespacedKey hatKey = new NamespacedKey(plugin, "CustomHat");
+            NamespacedKey hatKeyOld = new NamespacedKey(plugin, "CustomHat");
+            NamespacedKey hatKey = new NamespacedKey(plugin, "ParallelHat");
+            NamespacedKey dyeableKey = new NamespacedKey(plugin, "Dyeable");
             NamespacedKey modifyKey = new NamespacedKey(plugin, "NoModify");
             PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-            if (container.has(hatKey, PersistentDataType.INTEGER) || container.has(modifyKey, PersistentDataType.INTEGER)) {
-                ingredients.setResult(null); // Sets the crafting output to null if a CustomHat tag is found
+            // skip this item if it has the dyeableKey
+            if (container.has(dyeableKey, PersistentDataType.INTEGER)) {
+                continue;
+            }
+            // otherwise, if it's a hat or has the NoModify key, cancel the recipe
+            if (container.has(hatKeyOld, PersistentDataType.INTEGER)
+                    || container.has(hatKey, PersistentDataType.STRING)
+                    || container.has(modifyKey, PersistentDataType.INTEGER)) {
+                ingredients.setResult(null);
                 break;
             }
             // Now we have to use NMS if the item doesn't have a PersistentDataContainer
             net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
-            // Grabs the NMS items compound and checks if it's null
-            CompoundTag compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new CompoundTag();
-            if (compound == null) continue;
+            // Grabs the custom data component (returns an empty component if it's null)
+            CustomData customData = nmsItem.getComponents().getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
 
-            if (compound.contains("CustomHat")) {
+            if (customData.contains("CustomHat")) {
                 ingredients.setResult(null);
                 break;
             }
@@ -143,21 +139,29 @@ public class SpecialItems implements Listener {
                     if (item.getType() == Material.LEATHER_HORSE_ARMOR) {
                         ItemMeta itemMeta = item.getItemMeta();
                         if (itemMeta != null) {  // itemMeta could be null, so we have to check this
-                            NamespacedKey hatKey = new NamespacedKey(plugin, "CustomHat");
+                            NamespacedKey hatKeyOld = new NamespacedKey(plugin, "CustomHat");
+                            NamespacedKey hatKey = new NamespacedKey(plugin, "ParallelHat");
+                            NamespacedKey dyeableKey = new NamespacedKey(plugin, "Dyeable");
                             NamespacedKey modifyKey = new NamespacedKey(plugin, "NoModify");
                             PersistentDataContainer container = itemMeta.getPersistentDataContainer();
-                            if (container.has(hatKey, PersistentDataType.INTEGER) || container.has(modifyKey, PersistentDataType.INTEGER)) {
+                            // skip this item if it has the dyeableKey
+                            if (container.has(dyeableKey, PersistentDataType.INTEGER)) {
+                                return;
+                            }
+                            // otherwise, if it's a hat or has the NoModify key, cancel the recipe
+                            if (container.has(hatKeyOld, PersistentDataType.INTEGER)
+                                    || container.has(hatKey, PersistentDataType.STRING)
+                                    || container.has(modifyKey, PersistentDataType.INTEGER)) {
                                 event.setCancelled(true);
                                 return;
                             }
 
                             // Now we have to use NMS if the item doesn't have a PersistentDataContainer
                             net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(item); // does this even work lol
-                            // Grabs the NMS items compound and checks if it's null
-                            CompoundTag compound = (nmsItem.hasTag()) ? nmsItem.getTag() : new CompoundTag();
-                            if (compound == null) return;
+                            // Grabs the custom data component (returns an empty component if it's null)
+                            CustomData customData = nmsItem.getComponents().getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY);
 
-                            if (compound.contains("CustomHat")) {
+                            if (customData.contains("CustomHat")) {
                                 event.setCancelled(true);
                             }
                         }

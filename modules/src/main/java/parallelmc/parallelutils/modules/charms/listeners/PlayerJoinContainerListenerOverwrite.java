@@ -5,7 +5,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -16,6 +16,7 @@ import parallelmc.parallelutils.modules.charms.data.NonNullListRemember;
 import parallelmc.parallelutils.modules.charms.events.PlayerSlotChangedEvent;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 public class PlayerJoinContainerListenerOverwrite implements Listener {
 
@@ -26,9 +27,9 @@ public class PlayerJoinContainerListenerOverwrite implements Listener {
 		Field field;
 		Field field1;
 		try {
-			field = ServerPlayer.class.getDeclaredField("cW");
+			field = ServerPlayer.class.getDeclaredField("containerSynchronizer");
 			field.setAccessible(true);
-			field1 = ServerPlayer.class.getDeclaredField("cX");
+			field1 = ServerPlayer.class.getDeclaredField("containerListener");
 			field1.setAccessible(true);
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
@@ -55,7 +56,7 @@ public class PlayerJoinContainerListenerOverwrite implements Listener {
 			if (oldSynchronizer != null) {
 				containerSynchronizer.set(serverPlayer, new ContainerSynchronizer() {
 					@Override
-					public void sendInitialData(@NotNull AbstractContainerMenu handler, @NotNull NonNullList<ItemStack> stacks, @NotNull ItemStack cursorStack, @NotNull int[] properties) {
+					public void sendInitialData(@NotNull AbstractContainerMenu handler, @NotNull List<ItemStack> stacks, @NotNull ItemStack cursorStack, @NotNull int[] properties) {
 						handler.lastSlots = NonNullListRemember.of(handler.lastSlots);
 						oldSynchronizer.sendInitialData(handler, stacks, cursorStack, properties);
 					}
@@ -73,6 +74,11 @@ public class PlayerJoinContainerListenerOverwrite implements Listener {
 					@Override
 					public void sendDataChange(@NotNull AbstractContainerMenu handler, int property, int value) {
 						oldSynchronizer.sendDataChange(handler, property, value);
+					}
+
+					@Override
+					public RemoteSlot createSlot() {
+						return oldSynchronizer.createSlot();
 					}
 				});
 			}

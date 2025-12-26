@@ -9,6 +9,8 @@ import com.sk89q.worldguard.session.Session;
 import com.sk89q.worldguard.session.handler.Handler;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -157,7 +159,7 @@ public class CustomArmorHealth extends Handler {
 			}
 
 			EntityDamageEvent event = new EntityDamageEvent(bukkitPlayer.getPlayer(),
-					EntityDamageEvent.DamageCause.CUSTOM, damageAmount);
+					EntityDamageEvent.DamageCause.CUSTOM, DamageSource.builder(DamageType.GENERIC).build(),damageAmount);
 			bukkitPlayer.getPlayer().setLastDamageCause(event);
 
 			bukkitPlayer.getPlayer().damage(player.getMaxHealth());
@@ -179,7 +181,7 @@ public class CustomArmorHealth extends Handler {
 				}
 
 				EntityDamageEvent event = new EntityDamageEvent(bukkitPlayer.getPlayer(),
-						EntityDamageEvent.DamageCause.CUSTOM, damageAmount);
+						EntityDamageEvent.DamageCause.CUSTOM, DamageSource.builder(DamageType.GENERIC).build(), damageAmount);
 				bukkitPlayer.getPlayer().setLastDamageCause(event);
 			}
 

@@ -9,18 +9,20 @@ import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
+import parallelmc.parallelutils.modules.bitsandbobs.commands.Hat;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.*;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.OnPvp;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpCommand;
 import parallelmc.parallelutils.modules.bitsandbobs.minimodules.togglepvp.TogglePvpManager;
 
-import java.net.URLClassLoader;
 import java.util.List;
 import java.util.logging.Level;
 
 public class BitsAndBobs extends ParallelModule {
 
     private TogglePvpManager pvpManager;
+
+    private CozyCampfires cozyCampfires;
 
     public BitsAndBobs(ParallelClassLoader classLoader, List<String> dependents) {
         super(classLoader, dependents);
@@ -55,20 +57,49 @@ public class BitsAndBobs extends ParallelModule {
         FileConfiguration config = puPlugin.getConfig();
 
         puPlugin.getCommand("togglepvp").setExecutor(new TogglePvpCommand());
+        puPlugin.getCommand("hat").setExecutor(new Hat());
 
         manager.registerEvents(new DoorKnocker(), plugin);
         manager.registerEvents(new SpecialItems(), plugin);
-        manager.registerEvents(new SpeedyMinecarts(), plugin);
         manager.registerEvents(new OnPvp(), plugin);
         manager.registerEvents(new ShardLotto(), plugin);
         manager.registerEvents(new ChickenFeatherDrops(), plugin);
+        manager.registerEvents(new EntityTweaks(), plugin);
+        manager.registerEvents(new HatSlotStuff(), plugin);
+        manager.registerEvents(new SilenceMobs(), plugin);
+        manager.registerEvents(new HalloweenCandyDrops(), plugin);
+
+        if (config.getBoolean("enable-calling-bell", true)) {
+            manager.registerEvents(new CallingBell(), plugin);
+        }
+
+        cozyCampfires = new CozyCampfires();
+        if (config.getBoolean("enable-cozy-campfires", true)) {
+            plugin.getServer().getScheduler().runTaskTimer(plugin, () -> cozyCampfires.checkForCampfires(), 0, 80);
+        }
+
+        if (config.getBoolean("enable-sweethearts", true)) {
+            manager.registerEvents(new Sweethearts(), plugin);
+        }
+
+        if (config.getBoolean("enable-ziprails", true)) {
+            manager.registerEvents(new Ziprails(), plugin);
+        }
 
         if (config.getBoolean("disable-ender-chests", false)) {
             manager.registerEvents(new DisableEnderChest(), plugin);
         }
 
+        if (config.getBoolean("enable-halloween-candy-drops", false)) {
+            manager.registerEvents(new HalloweenCandyDrops(), plugin);
+        }
+
         if (config.getBoolean("prevent-spawner-mining", false)) {
             manager.registerEvents(new PreventSpawnerMining(), plugin);
+        }
+
+        if (config.getBoolean("speedy-minecarts", false)) {
+            manager.registerEvents(new SpeedyMinecarts(), plugin);
         }
     }
 
