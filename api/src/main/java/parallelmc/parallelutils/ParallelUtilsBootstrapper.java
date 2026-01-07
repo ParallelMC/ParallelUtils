@@ -8,6 +8,7 @@ import io.papermc.paper.registry.event.RegistryEvents;
 import io.papermc.paper.registry.keys.EnchantmentKeys;
 import net.minecraft.core.Holder;
 import net.minecraft.core.MappedRegistry;
+import net.minecraft.core.Registry;
 import net.minecraft.core.WritableRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -22,18 +23,8 @@ import java.util.Map;
 public class ParallelUtilsBootstrapper implements PluginBootstrap {
     @Override
     public void bootstrap(BootstrapContext context) {
-        MappedRegistry<WritableRegistry<?>> writable_registry = (MappedRegistry<WritableRegistry<?>>) getPrivateField("WRITABLE_REGISTRY", BuiltInRegistries.class, null, WritableRegistry.class);
 
-        Map<WritableRegistry<?>, Holder.Reference<WritableRegistry<?>>> byValue = getPrivateField("byValue", MappedRegistry.class, writable_registry, Map.class);
-
-        WritableRegistry<Block> blockRegistry = null;
-
-        for (WritableRegistry i : byValue.keySet()) {
-            if (String.valueOf(i.key().location()).equals(String.valueOf(Registries.BLOCK.location()))) {
-                blockRegistry = i;
-                break;
-            }
-        }
+        WritableRegistry<Block> blockRegistry = getWritableRegistry(Registries.BLOCK);
 
         if (blockRegistry == null) {
             return;
@@ -62,5 +53,24 @@ public class ParallelUtilsBootstrapper implements PluginBootstrap {
             e.printStackTrace();
             return null;
         }
+    }
+
+    // This is private since it can ONLY be run during bootstrap or things break real bad
+    @Nullable
+    private static <T> WritableRegistry<T> getWritableRegistry(ResourceKey<Registry<T>> registryKey) {
+
+        // Get the global WRITABLE_REGISTRY registry
+        MappedRegistry<WritableRegistry<?>> writable_registry = (MappedRegistry<WritableRegistry<?>>) getPrivateField("WRITABLE_REGISTRY", BuiltInRegistries.class, null, WritableRegistry.class);
+
+        // Search registry byValue (since byKey doesn't work for whatever reason...)
+        Map<WritableRegistry<?>, Holder.Reference<WritableRegistry<?>>> byValue = getPrivateField("byValue", MappedRegistry.class, writable_registry, Map.class);
+
+        for (WritableRegistry i : byValue.keySet()) {
+            if (String.valueOf(i.key().location()).equals(String.valueOf(registryKey.location()))) {
+                return i;
+            }
+        }
+
+        return null;
     }
 }
