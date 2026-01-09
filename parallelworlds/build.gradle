@@ -26,15 +26,19 @@ processResources.filteringCharset = "UTF-8"
 repositories {
     mavenCentral()
     maven { url "https://papermc.io/repo/repository/maven-public/" }
+    maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
+
+    maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
 }
 
 dependencies {
     //compileOnly 'io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT'
-    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.6-R0.1-SNAPSHOT")
+    paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.11-R0.1-SNAPSHOT")
 
     implementation 'org.jetbrains:annotations:24.0.1'
-    compileOnly 'com.comphenix.protocol:ProtocolLib:5.3.0'
+    compileOnly("com.github.retrooper:packetevents-spigot:2.11.1")
     implementation 'org.reflections:reflections:0.10.2'
+
 }
 
 artifacts {
@@ -76,241 +80,11 @@ paper {
 
     generateLibrariesJson = true
 
-    apiVersion = '1.21.5'
+    apiVersion = '1.21.11'
 
     serverDependencies {
-        "ProtocolLib" {
+        "packetevents" {
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
     }
-
-//    commands {
-//        parallelutils {
-//            description = 'Get information about the plugin'
-//            usage = '/parallelutils'
-//            permissionMessage = 'You do not have permission'
-//            aliases = ['pu',]
-//        }
-//        chatroom {
-//            description = 'Base command for all ChatRoom commands'
-//            usage = '/cr'
-//            permissionMessage = 'You do not have permission'
-//            aliases = ['cr',]
-//        }
-//        town {
-//            description = 'Base command for all Town commands'
-//            usage = '/town'
-//            permissionMessage = 'You do not have permission'
-//        }
-//        chestshop {
-//            description = 'Base command for all ChestShop debug commands'
-//            usage = '/chestshop'
-//            permissionMessage = 'You do not have permission'
-//        }
-//        depositexp {
-//            description = 'Deposit exp into the player\' s ender chest '
-//            usage = '/depositexp <amount | all>'
-//            permissionMessage = 'You do not have permission'
-//        }
-//        withdrawexp {
-//            description = 'Withdraw exp from the player\' s ender chest '
-//            usage = '/withdrawexp <amount | all>'
-//            permissionMessage = 'You do not have permission'
-//        }
-//        fakejoin {
-//            description = 'Sends a fake join message in chat'
-//            usage = '/fakejoin [player]'
-//            permissionMessage = 'You do not have permission'
-//            permission = 'parallelutils.fakelogin'
-//        }
-//        fakeleave {
-//            description = 'Sends a fake leave message in chat'
-//            usage = '/fakeleave [player]'
-//            permissionMessage = 'You do not have permission'
-//            permission = 'parallelutils.fakelogin'
-//        }
-//        msg {
-//            description = 'Send a private message to a player'
-//            usage = '/msg <player> <message>'
-//            aliases = ['message', 'w', 'm', 't', 'pm', 'tell', 'whisper',]
-//        }
-//        r {
-//            description = 'Reply to a recently messaged player'
-//            usage = '/r <message>'
-//            aliases = ['reply',]
-//        }
-//        sc {
-//            description = 'Toggle or send a message in staff chat'
-//            usage = '/sc [message]'
-//            permissionMessage = 'You do not have permission'
-//            permission = 'parallelutils.staffchat'
-//            aliases = ['staffchat',]
-//        }
-//        tc {
-//            description = 'Toggle or send a message in team chat'
-//            usage = '/tc [message]'
-//            permissionMessage = 'You do not have permission'
-//            permission = 'parallelutils.teamchat'
-//            aliases = ['teamchat',]
-//        }
-//        lc {
-//            description = 'Toggle or send a message in lore chat'
-//            usage = '/lc [message]'
-//            permissionMessage = 'You do not have permission'
-//            permission = 'parallelutils.lorechat'
-//            aliases = ['lorechat',]
-//        }
-//        broadcast {
-//            description = 'Broadcast a message to the server'
-//            usage = '/broadcast (message)'
-//            permissionMessage = 'You do not have permission'
-//            permission = 'parallelutils.broadcast'
-//        }
-//        announce {
-//            description = 'Announce a message to the server'
-//            usage = '/announce (message)'
-//            permissionMessage = 'You do not have permission'
-//            permission = 'parallelutils.announce'
-//        }
-//        clearchat {
-//            description = 'Clears chat'
-//            usage = '/clearchat'
-//            permissionMessage = 'You do not have permission'
-//            permission = 'parallelutils.clearchat'
-//        }
-//        socialspy {
-//            description = 'Toggles social spy'
-//            usage = '/socialspy'
-//            permissionMessage = 'You do not have permission'
-//            permission = 'parallelutils.socialspy'
-//        }
-//        commandspy {
-//            description = 'Toggles command spy'
-//            usage = '/commandspy'
-//            permissionMessage = 'You do not have permission'
-//            permission = 'parallelutils.commandspy'
-//        }
-//        chatroomspy {
-//            description = 'Toggles chatroom spy'
-//            usage = '/chatroomspy'
-//            permissionMessage = 'You do not have permission'
-//            permission = 'parallelutils.chatrooms.chatroomspy'
-//        }
-//        mutechat {
-//            description = 'Mute or unmute the chat'
-//            usage = '/mutechat'
-//            permissionMessage = 'You do not have permission'
-//            permission = 'parallelutils.mutechat'
-//        }
-//        colors {
-//            description = 'View all chat colors'
-//            usage = '/colors'
-//        }
-//        formats {
-//            description = 'View all chat formats'
-//            usage = '/formats'
-//        }
-//        chatcommands {
-//            description = 'View all chat commands'
-//            usage = '/chatcommands'
-//        }
-//        dnd {
-//            description = 'Toggles Do Not Disturb mode'
-//            usage = '/dnd'
-//            aliases = ['donotdisturb',]
-//        }
-//        starttutorial {
-//            description = 'Starts a tutorial for a player'
-//            usage = '/starttutorial (player) (tutorial)'
-//        }
-//        listtutorials {
-//            description = 'Lists all tutorials'
-//            usage = '/listtutorials'
-//        }
-//        reloadtutorials {
-//            description = 'Reloads all tutorials'
-//            usage = '/reloadtutorials'
-//        }
-//        reloademojis {
-//            description = 'Reloads all emojis'
-//            usage = '/reloademojis'
-//        }
-//        emojis {
-//            description = 'Lists all emojis'
-//            usage = '/emojis'
-//        }
-//        banword {
-//            description = 'Adds a word to the banned words list'
-//            usage = '/banword (word)'
-//        }
-//        allowword {
-//            description = 'Remove a word from the banned words list'
-//            usage = '/allowword (word)'
-//        }
-//        leavetutorial {
-//            description = 'Exit the tutorial you are currently in'
-//            usage = '/leavetutorial'
-//        }
-//        tutorialinfo {
-//            description = 'Shows all instructions for a tutorial'
-//            usage = '/tutorialinfo (tutorial)'
-//        }
-//        togglepvp {
-//            description = 'Toggles PVP on or off'
-//            usage = '/togglepvp'
-//        }
-//        createcourse {
-//            description = 'Begin creating a new course layout'
-//            usage = '/createcourse (name)'
-//        }
-//        deletecourse {
-//            description = 'Deletes and existing course layout'
-//            usage = '/deletecourse (name)'
-//        }
-//        cancelcourse {
-//            description = 'Cancels a course layout creation'
-//            usage = '/cancelcourse'
-//        }
-//        endrun {
-//            description = 'Ends a speedrun early'
-//            usage = '/endrun'
-//        }
-//        leaderboard {
-//            description = 'Shows the top scores for a course'
-//            usage = '/leaderboard (course name)'
-//        }
-//        joinmessages {
-//            description = 'Opens the join/leave message GUI'
-//            usage = '/joinmessages'
-//        }
-//        leavemessages {
-//            description = 'Opens the join/leave message GUI'
-//            usage = '/leavemessages'
-//        }
-//        openmaggieshop {
-//            description = 'Opens Maggies Shop'
-//            usage = '/openmaggieshop (player)'
-//        }
-//        points {
-//            description = 'View your advancement points'
-//            usage = '/points'
-//        }
-//        recalculatepoints {
-//            description = 'Recalculates advancement points for all players'
-//            usage = '/recalculatepoints'
-//            permissionMessage = 'You do not have permission.'
-//            permission = 'parallelutils.recalculatepoints'
-//        }
-//        openpointsredemption {
-//            description = 'Opens the point redemption shop for a player'
-//            usage = '/openpointsredemption (player)'
-//        }
-//        hat {
-//            description = 'Allows you to wear the item in your main hand as a hat'
-//            usage = '/hat'
-//            permissionMessage = 'You do not have permission.'
-//            permission = 'parallelutils.hat.*'
-//        }
-//    }
-
 }
