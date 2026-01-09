@@ -10,8 +10,8 @@ plugins {
 
 group = 'org.parallelmc'
 
-version = '4.7.0'
-description = 'A set of utilities and features for use on the Parallel Minecraft server'
+version = '1.0.0'
+description = 'ParallelWorlds'
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
@@ -33,14 +33,7 @@ dependencies {
     paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.21.6-R0.1-SNAPSHOT")
 
     implementation 'org.jetbrains:annotations:24.0.1'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.2'
-    implementation 'net.dv8tion:JDA:5.0.0-beta.24'
-    compileOnly 'me.clip:placeholderapi:2.11.6'
-    compileOnly fileTree('libs') { include '*.jar' }
-    compileOnly 'com.sk89q.worldguard:worldguard-bukkit:7.0.13'
-    implementation 'com.mysql:mysql-connector-j:8.3.0'
     compileOnly 'com.comphenix.protocol:ProtocolLib:5.3.0'
-    compileOnly 'dev.esophose:playerparticles:8.7'
     implementation 'org.reflections:reflections:0.10.2'
 }
 
@@ -71,56 +64,23 @@ tasks {
 }
 
 paper {
-    name = "ParallelUtils"
+    name = "ParallelWorlds"
     version = project.version
-    description = "A plugin containing miscellaneous features and changes for play.parallelmc.org"
+    description = "ParallelWorlds"
     website = 'parallelmc.org'
     author = 'ParallelMC Team'
 
-    main = 'parallelmc.parallelutils.ParallelUtils'
+    main = 'parallelmc.parallelworlds.ParallelWorlds'
+
+    bootstrapper = 'parallelmc.parallelworlds.ParallelWorldsBootstrapper'
 
     generateLibrariesJson = true
 
     apiVersion = '1.21.5'
 
     serverDependencies {
-        "PlaceholderAPI" {
-            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
-        }
-
         "ProtocolLib" {
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
-        }
-
-        // Optional
-        "Multiverse-Core" {
-            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
-            required = false
-        }
-
-        "FractalForest" {
-            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
-            required = false
-        }
-
-        "WorldGuard" {
-            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
-            required = false
-        }
-
-        "VoteParty" {
-            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
-            required = false
-        }
-
-        "PlayerParticles" {
-            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
-            required = false
-        }
-
-        "ProNouns" {
-            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
-            required = false
         }
     }
 
@@ -353,205 +313,4 @@ paper {
 //        }
 //    }
 
-    permissions {
-        'parallelutils.*' {
-            description = 'Gives access to all PU commands'
-            childrenMap = ['parallelutils.basic': true, 'parallelutils.test': true, 'parallelutils.spawn': true, 'parallelutils.help': true,]
-            setDefault('FALSE')
-        }
-        'parallelutils.basic' {
-            description = 'Gives access to any PU commands. Required to do anything'
-            childrenMap = ['parallelutils.help': true,]
-            setDefault('FALSE')
-        }
-        'parallelutils.spawn' {
-            description = 'Gives access to spawning commands, such as summoning and monster spawners.'
-            childrenMap = ['parallelutils.spawn.summon': true, 'parallelutils.spawn.spawners': true,]
-            setDefault('FALSE')
-        }
-        'parallelutils.spawn.summon' {
-            description = 'Gives access to spawn summon command.'
-            setDefault('FALSE')
-        }
-        'parallelutils.spawn.spawners' {
-            description = 'Gives access to commands involving spawners.'
-            childrenMap = ['parallelutils.spawn.spawners.create': true, 'parallelutils.spawn.spawners.list': true, 'parallelutils.spawn.spawners.delete': true,]
-            setDefault('FALSE')
-        }
-        'parallelutils.spawn.spawners.create' {
-            description = 'Gives access to creating spawners.'
-            setDefault('FALSE')
-        }
-        'parallelutils.spawn.spawners.list' {
-            description = 'Gives access to listing spawners'
-            setDefault('FALSE')
-        }
-        'parallelutils.spawn.spawners.delete' {
-            description = 'Gives access to deleting spawners.'
-            setDefault('FALSE')
-        }
-        'parallelutils.createcourse' {
-            description = 'Gives access to creating course layouts.'
-            setDefault('FALSE')
-        }
-        'parallelutils.deletecourse' {
-            description = 'Gives access to deleting course layouts.'
-            setDefault('FALSE')
-        }
-        'parallelutils.cancelcourse' {
-            description = 'Gives access to cancelling a course layout.'
-            setDefault('FALSE')
-        }
-        'parallelutils.give' {
-            description = 'Gives access to giving ParallelItems.'
-            setDefault('FALSE')
-        }
-        'parallelutils.enchant' {
-            description = 'Gives access to using ParallelItems enchants'
-            setDefault('FALSE')
-        }
-        'parallelutils.test' {
-            description = 'Gives access to the test command'
-            setDefault('FALSE')
-        }
-        'parallelutils.help' {
-            description = 'Gives access to the help command'
-            setDefault('FALSE')
-        }
-        'parallelutils.effects' {
-            description = 'Gives access to effects debug command'
-            setDefault('FALSE')
-        }
-        'parallelutils.fakelogin' {
-            description = 'Gives access to fakejoin and fakeleave commands'
-            setDefault('FALSE')
-        }
-        'parallelutils.banword' {
-            description = 'Gives access to banword command'
-            setDefault('FALSE')
-        }
-        'parallelutils.allowword' {
-            description = 'Gives access to allowword command'
-            setDefault('FALSE')
-        }
-        'parallelutils.staffchat' {
-            description = 'Gives access to reading and writing to staff chat'
-        }
-        'parallelutils.teamchat' {
-            description = 'Gives access to reading and writing to team chat'
-        }
-        'parallelutils.lorechat' {
-            description = 'Gives access to reading and writing to lore chat'
-        }
-        'parallelutils.broadcast' {
-            description = 'Gives access to the broadcast command'
-        }
-        'parallelutils.announce' {
-            description = 'Gives access to the announce command'
-        }
-        'parallelutils.mutechat' {
-            description = 'Gives access to the mutechat command'
-        }
-        'parallelutils.socialspy' {
-            description = 'Gives access to the SocialSpy command'
-        }
-        'parallelutils.commandspy' {
-            description = 'Gives access to the CommandSpy command'
-        }
-        'parallelutils.chatroomspy' {
-            description = 'Gives access to the ChatroomSpy command'
-        }
-        'parallelutils.clearchat' {
-            description = 'Gives access to the clearchat command'
-        }
-        'parallelutils.starttutorial' {
-            description = 'Gives access to starttutorial command'
-        }
-        'parallelutils.listtutorials' {
-            description = 'Gives access to listtutorials command'
-        }
-        'parallelutils.reloadtutorials' {
-            description = 'Gives access to reloadtutorials command'
-        }
-        'parallelutils.reloademojis' {
-            description = 'Gives access to reloademojis command'
-        }
-        'parallelutils.tutorialinfo' {
-            description = 'Gives access to tutorialinfo command'
-        }
-        'parallelutils.chat' {
-            description = 'Gives access to chat elemets'
-            childrenMap = ['parallelutils.chat.colors': true, 'parallelutils.chat.formats': true,]
-        }
-        'parallelutils.chat.colors' {
-            description = 'Gives access to chat colors'
-        }
-        'parallelutils.chat.formats' {
-            description = 'Gives access to chat formatting'
-        }
-        'parallelutils.book' {
-            description = 'Gives access to chat elements on books'
-            childrenMap = ['parallelutils.book.colors': true, 'parallelutils.book.formats': true,'parallelutils.book.hex': true,'parallelutils.book.magic': true,]
-            setDefault('FALSE')
-        }
-        'parallelutils.book.colors' {
-            description = 'Gives access to chat colors on signs'
-            setDefault('FALSE')
-        }
-        'parallelutils.book.formats' {
-            description = 'Gives access to chat formatting on signs'
-            setDefault('FALSE')
-        }
-        'parallelutils.book.hex' {
-            description = 'Gives access to chat hex colors on signs'
-            setDefault('FALSE')
-        }
-        'parallelutils.book.magic' {
-            description = 'Gives access to magic chat formatting on signs'
-            setDefault('FALSE')
-        }
-        'parallelutils.bypass' {
-            description = 'Bypasses some ParallelUtils modules'
-            childrenMap = ['parallelutils.bypass.anticaps': true, 'parallelutils.bypass.antislur': true, 'parallelutils.bypass.clearchat': true, 'parallelutils.bypass.socialspy': true, 'parallelutils.bypass.commandspy': true, 'parallelutils.bypass.mutechat': true,]
-        }
-        'parallelutils.bypass.anticaps' {
-            description = 'Bypasses the Anti-Caps module'
-        }
-        'parallelutils.bypass.antislur' {
-            description = 'Bypasses the Anti-Slur module in chat and on signs'
-        }
-        'parallelutils.bypass.clearchat' {
-            description = 'Bypasses chat being cleared by clearchat'
-        }
-        'parallelutils.bypass.socialspy' {
-            description = 'Bypasses the Social Spy module'
-        }
-        'parallelutils.bypass.commandspy' {
-            description = 'Bypasses the Command Spy module'
-        }
-        'parallelutils.bypass.mutechat' {
-            description = 'Bypasses chat being muted'
-        }
-        'parallelutils.notify' {
-            description = 'Be notified by some ParallelUtils modules'
-            childrenMap = ['parallelutils.notify.antislur': true,]
-        }
-        'parallelutils.notify.antislur' {
-            description = 'Be notified of swearing'
-        }
-        'parallelutils.chestshop.debug' {
-            description = 'Gives access to ChestShop debug commands'
-            setDefault('FALSE')
-        }
-        'parallelutils.resources.unenforced' {
-            description = 'Prevents being kicked from not accepting the resource pack'
-            setDefault('FALSE')
-        }
-        'parallelutils.recalculatepoints' {
-            description = 'Gives access to the /recalculatepoints dev command'
-        }
-        'parallelutils.hat.*' {
-            description = 'Allows you to wear any item as a hat'
-        }
-    }
 }

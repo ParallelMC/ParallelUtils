@@ -1,11 +1,8 @@
-package parallelmc.parallelutils;
+package parallelmc.parallelworlds;
 
 import io.papermc.paper.plugin.bootstrap.BootstrapContext;
 import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.bootstrap.PluginProviderContext;
-import io.papermc.paper.registry.RegistryAccess;
-import io.papermc.paper.registry.event.RegistryEvents;
-import io.papermc.paper.registry.keys.EnchantmentKeys;
 import net.minecraft.core.Holder;
 import net.minecraft.core.MappedRegistry;
 import net.minecraft.core.Registry;
@@ -20,7 +17,8 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.util.Map;
 
-public class ParallelUtilsBootstrapper implements PluginBootstrap {
+public class ParallelWorldsBootstrapper implements PluginBootstrap {
+
     @Override
     public void bootstrap(BootstrapContext context) {
 
