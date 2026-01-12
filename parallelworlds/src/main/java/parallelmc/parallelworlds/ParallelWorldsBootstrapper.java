@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.MapColor;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelworlds.blocks.TestBlock;
 
@@ -25,6 +26,8 @@ import java.util.logging.Logger;
 
 public class ParallelWorldsBootstrapper implements PluginBootstrap {
 
+    private static int firstCustomId = 0;
+
     @Override
     public void bootstrap(BootstrapContext context) {
 
@@ -32,23 +35,19 @@ public class ParallelWorldsBootstrapper implements PluginBootstrap {
         Block dummy = Blocks.DIRT;
         Logger.getGlobal().log(Level.WARNING, dummy.toString());
 
+        firstCustomId = Block.BLOCK_STATE_REGISTRY.size();
+
+
         WritableRegistry<Block> blockRegistry = getWritableRegistry(Registries.BLOCK);
 
         if (blockRegistry == null) {
             return;
         }
 
-
-
         ResourceKey<Block> testBlockKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("parallelutils", "testblock"));
         Block block = new TestBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(0.5f).sound(SoundType.AMETHYST).setId(testBlockKey));
 
-        Holder.Reference<Block> registeredBlock = blockRegistry.register(testBlockKey, block, RegistrationInfo.BUILT_IN);
-
-        for (BlockState blockState : registeredBlock.value().getStateDefinition().getPossibleStates()) {
-            Block.BLOCK_STATE_REGISTRY.add(blockState);
-            blockState.initCache();
-        }
+        registerBlock(blockRegistry, testBlockKey, block);
     }
 
     @Override
@@ -91,5 +90,18 @@ public class ParallelWorldsBootstrapper implements PluginBootstrap {
         }
 
         return null;
+    }
+
+    private static void registerBlock(WritableRegistry<Block> blockRegistry, ResourceKey<@NotNull Block> key, Block block) {
+        Holder.Reference<Block> registeredBlock = blockRegistry.register(key, block, RegistrationInfo.BUILT_IN);
+
+        for (BlockState blockState : registeredBlock.value().getStateDefinition().getPossibleStates()) {
+            Block.BLOCK_STATE_REGISTRY.add(blockState);
+            blockState.initCache();
+        }
+    }
+
+    public static int getFirstCustomId() {
+        return firstCustomId;
     }
 }

@@ -24,7 +24,7 @@ public final class ParallelWorlds extends JavaPlugin {
     @Override
     public void onLoad() {
 
-        PacketEvents.getAPI().getEventManager().registerListener(new BlockPacketListener(), PacketListenerPriority.NORMAL);
+        PacketEvents.getAPI().getEventManager().registerListener(new BlockPacketListener(ParallelWorldsBootstrapper.getFirstCustomId()), PacketListenerPriority.HIGHEST);
     }
 
     @Override

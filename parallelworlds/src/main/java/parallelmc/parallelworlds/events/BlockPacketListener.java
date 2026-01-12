@@ -5,9 +5,16 @@ import com.github.retrooper.packetevents.event.PacketReceiveEvent;
 import com.github.retrooper.packetevents.event.PacketSendEvent;
 import com.github.retrooper.packetevents.protocol.packettype.PacketType;
 import com.github.retrooper.packetevents.protocol.world.chunk.BaseChunk;
+import com.github.retrooper.packetevents.protocol.world.chunk.impl.v_1_18.Chunk_v1_18;
+import com.github.retrooper.packetevents.protocol.world.chunk.palette.DataPalette;
+import com.github.retrooper.packetevents.protocol.world.chunk.palette.ListPalette;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerChunkData;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import parallelmc.parallelworlds.ParallelWorldsBootstrapper;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,16 +22,20 @@ import java.util.logging.Logger;
 
 public class BlockPacketListener implements PacketListener {
 
+    private final int firstCustomId;
+
+    private final int replace_state;
+
+    public BlockPacketListener(int firstCustomId) {
+        this.firstCustomId = firstCustomId;
+        this.replace_state = Block.BLOCK_STATE_REGISTRY.getId(Blocks.NOTE_BLOCK.defaultBlockState());;
+    }
+
     @Override
     public void onPacketReceive(PacketReceiveEvent event) {}
 
     @Override
     public void onPacketSend(PacketSendEvent event) {
-//        if (event.getPacketType() == PacketType.Play.Server.CHUNK_DATA) {
-//            //Health of an entity was updated!
-//            WrapperPlayServerUpdateHealth packet = new WrapperPlayServerUpdateHealth(event);
-//            float health = packet.getHealth();
-//        }
         if (event.getPacketType() == PacketType.Play.Server.CHUNK_DATA) {
             WrapperPlayServerChunkData packet = new WrapperPlayServerChunkData(event);
 
@@ -32,20 +43,41 @@ public class BlockPacketListener implements PacketListener {
                 for (int x = 0; x < 16; x++) {
                     for (int y = 0; y < 16; y++) {
                         for (int z = 0; z < 16; z++) {
-                            if (c.getBlockId(x, y, z) == -1) {
-                                WrappedBlockState state = c.get(x, y, z);
+                            int id = c.getBlockId(x, y, z);
+                            if (id >= firstCustomId) {
+                                BlockState state = Block.BLOCK_STATE_REGISTRY.byId(id);
                                 Logger.getGlobal().log(Level.WARNING, state.toString());
+
+                                c.set(x, y, z, replace_state);
+
+                                Chunk_v1_18 chunkV118 = (Chunk_v1_18) c;
+
+                                DataPalette palette = ParallelWorldsBootstrapper.getPrivateField("chunkData", Chunk_v1_18.class, chunkV118, DataPalette.class);
+                                ListPalette lp = (ListPalette) palette.palette;
+
+                                int[] palatteData = ParallelWorldsBootstrapper.getPrivateField("data", ListPalette.class, lp, int[].class);
+
+                                for (int i = 0; i< palatteData.length; i++) {
+                                    if (palatteData[i] >= firstCustomId) {
+                                        palatteData[i] = replace_state;
+                                    }
+                                }
+
+
+                                event.markForReEncode(true);
                             }
                         }
                     }
                 }
             }
+
+            int a = 0;
+
         } else if (event.getPacketType() == PacketType.Play.Server.BLOCK_CHANGE) {
             WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange(event);
 
             Logger.getGlobal().log(Level.WARNING, String.valueOf(packet.getBlockId()));
         }
-        //Logger.getGlobal().log(Level.WARNING, event.getPacketType().getName());
     }
 
 
