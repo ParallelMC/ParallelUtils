@@ -309,6 +309,14 @@ bukkit {
             permissionMessage = 'You do not have permission.'
             permission = 'parallelutils.hat.*'
         }
+        questtracker {
+            description = 'Opens the quest tracker to view your active quests'
+            usage = '/questtracker'
+        }
+        exampleconversation {
+            description = 'Runs a test conversation'
+            usage = '/exampleconversation'
+        }
     }
 
     permissions {
