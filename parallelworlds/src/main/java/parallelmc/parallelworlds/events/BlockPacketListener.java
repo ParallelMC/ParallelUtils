@@ -9,6 +9,7 @@ import com.github.retrooper.packetevents.protocol.world.chunk.impl.v_1_18.Chunk_
 import com.github.retrooper.packetevents.protocol.world.chunk.palette.DataPalette;
 import com.github.retrooper.packetevents.protocol.world.chunk.palette.ListPalette;
 import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockAction;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerChunkData;
 import net.minecraft.world.level.block.Block;
@@ -76,7 +77,19 @@ public class BlockPacketListener implements PacketListener {
         } else if (event.getPacketType() == PacketType.Play.Server.BLOCK_CHANGE) {
             WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange(event);
 
-            Logger.getGlobal().log(Level.WARNING, String.valueOf(packet.getBlockId()));
+            if (packet.getBlockId() >= firstCustomId) {
+                packet.setBlockID(replace_state);
+                event.markForReEncode(true);
+            }
+
+            //Logger.getGlobal().log(Level.WARNING, String.valueOf(packet.getBlockId()));
+        } else if (event.getPacketType() == PacketType.Play.Server.BLOCK_ACTION) {
+            WrapperPlayServerBlockAction packet = new WrapperPlayServerBlockAction(event);
+
+            if (packet.getBlockTypeId() >= firstCustomId) {
+                packet.setBlockTypeId(replace_state);
+                event.markForReEncode(true);
+            }
         }
     }
 
