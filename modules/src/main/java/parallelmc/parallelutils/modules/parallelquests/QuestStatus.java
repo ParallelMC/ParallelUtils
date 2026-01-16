@@ -1,23 +1,20 @@
 package parallelmc.parallelutils.modules.parallelquests;
 
+
 public class QuestStatus {
     private final String questId;
-    private boolean completed;
+    private String questStage;
 
-    public QuestStatus(String questId, boolean completed) {
+    public QuestStatus(String questId, String questStage) {
         this.questId = questId;
-        this.completed = completed;
+        this.questStage = questStage;
     }
 
-    public String getQuestId() {
-        return questId;
-    }
+    public String getQuestId() { return questId; }
 
-    public boolean isCompleted() {
-        return completed;
-    }
+    public String getQuestStage() { return questStage; }
 
-    public void markCompleted() {
-        completed = true;
-    }
+    public void setQuestStage(String stage) { this.questStage = stage; }
+
+    public boolean isCompleted() { return questStage.equalsIgnoreCase("completed"); }
 }

@@ -1,5 +1,6 @@
 package parallelmc.parallelutils.modules.parallelquests.events;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -17,7 +18,8 @@ public class OnJoinLeave implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerLeave(PlayerQuitEvent event) {
-        ParallelQuests.get().saveAndRemovePlayerQuestStatus(event.getPlayer().getUniqueId());
-        ParallelQuests.get().endConversation(event.getPlayer().getUniqueId());
+        Player player = event.getPlayer();
+        ParallelQuests.get().savePlayerQuestStatus(player.getUniqueId(), true);
+        ParallelQuests.getConversationManager().endConversation(player);
     }
 }

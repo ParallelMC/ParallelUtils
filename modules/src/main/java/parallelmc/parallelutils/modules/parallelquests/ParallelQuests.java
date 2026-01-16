@@ -1,22 +1,20 @@
 package parallelmc.parallelutils.modules.parallelquests;
 
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
-import org.checkerframework.checker.units.qual.C;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import parallelmc.parallelutils.Constants;
 import parallelmc.parallelutils.ParallelClassLoader;
 import parallelmc.parallelutils.ParallelModule;
 import parallelmc.parallelutils.ParallelUtils;
-import parallelmc.parallelutils.modules.parallelquests.commands.ExampleConversation;
 import parallelmc.parallelutils.modules.parallelquests.commands.QuestTracker;
-import parallelmc.parallelutils.modules.parallelquests.dialogue.Conversation;
-import parallelmc.parallelutils.modules.parallelquests.dialogue.Dialogue;
+import parallelmc.parallelutils.modules.parallelquests.dialogue.ConversationManager;
+import parallelmc.parallelutils.modules.parallelquests.events.OnCommand;
 import parallelmc.parallelutils.modules.parallelquests.events.OnJoinLeave;
-import parallelmc.parallelutils.modules.parallelquests.events.OnSlotUpdated;
+import parallelmc.parallelutils.modules.parallelquests.quests.Quest;
+import parallelmc.parallelutils.modules.parallelquests.quests.TheBakersBeastQuest;
 
 import java.sql.*;
 import java.util.*;
@@ -28,11 +26,11 @@ public class ParallelQuests extends ParallelModule {
 
     public ParallelQuests(ParallelClassLoader classLoader, List<String> dependents) { super(classLoader, dependents); }
 
-    // TODO: populate
-    private final HashSet<String> ValidQuests = new HashSet<>();
+    private final HashMap<String, Quest> RegisteredQuests = new HashMap<>();
 
     private final ConcurrentHashMap<UUID, List<QuestStatus>> PlayerQuestStatuses = new ConcurrentHashMap<>();
-    private final HashMap<UUID, Conversation> ActiveConversations = new HashMap<>();
+
+    private static final ConversationManager ConversationManager = new ConversationManager();
 
     private static ParallelQuests Instance;
 
@@ -59,10 +57,17 @@ public class ParallelQuests extends ParallelModule {
         }
 
         manager.registerEvents(new OnJoinLeave(), puPlugin);
-        manager.registerEvents(new OnSlotUpdated(), puPlugin);
+        manager.registerEvents(new OnCommand(), puPlugin);
 
         puPlugin.getCommand("questtracker").setExecutor(new QuestTracker());
-        puPlugin.getCommand("exampleconversation").setExecutor(new ExampleConversation());
+
+        RegisteredQuests.put("thebakersbeast", new TheBakersBeastQuest());
+
+        for (Quest quest : RegisteredQuests.values()) {
+            quest.init();
+        }
+
+        ParallelUtils.log(Level.WARNING, "Initialized " + RegisteredQuests.size() + " quests.");
 
         try (Connection conn = puPlugin.getDbConn()) {
             if (conn == null) throw new SQLException("Unable to establish connection!");
@@ -74,7 +79,7 @@ public class ParallelQuests extends ParallelModule {
                     Id          int          not null auto_increment,
                     UUID        varchar(36)  not null,
                     QuestId     varchar(128) not null,
-                    Completed   tinyint      not null,
+                    QuestStage  varchar(128) not null,
                     constraint Quests_Id_uindex
                         unique (Id),
                     PRIMARY KEY (Id)
@@ -87,7 +92,7 @@ public class ParallelQuests extends ParallelModule {
         }
 
         Bukkit.getScheduler().runTaskTimer(puPlugin, () -> {
-           PlayerQuestStatuses.keySet().forEach(this::savePlayerQuestStatus);
+           PlayerQuestStatuses.keySet().forEach(u -> savePlayerQuestStatus(u, false));
         }, 6000L, 6000L); // 5 minutes
 
         Instance = this;
@@ -108,22 +113,17 @@ public class ParallelQuests extends ParallelModule {
         return Instance;
     }
 
-    public void startConversation(Player player, Dialogue dialogue) {
-        if (ActiveConversations.containsKey(player.getUniqueId())) {
-            ParallelUtils.log(Level.WARNING, "Tried to add " + player.getName() + " to a conversation when they are already in one!");
-            return;
-        }
-        Conversation c = new Conversation(dialogue);
-        c.enter(player);
-        ActiveConversations.put(player.getUniqueId(), c);
+    public static ConversationManager getConversationManager() { return ConversationManager; }
+
+    @Nullable
+    public Quest getQuest(String questId) {
+        return RegisteredQuests.get(questId);
     }
 
-    public void endConversation(UUID uuid) {
-        ActiveConversations.remove(uuid);
-    }
-
-    public @Nullable Conversation getActiveConversation(UUID uuid) {
-        return ActiveConversations.getOrDefault(uuid, null);
+    public Optional<QuestStatus> getQuestStatus(UUID uuid, String questId) {
+        return getAllQuestStatuses(uuid).stream()
+                .filter(x -> x.getQuestId().equals(questId))
+                .findFirst();
     }
 
     /**
@@ -131,23 +131,31 @@ public class ParallelQuests extends ParallelModule {
      * If a quest ID is not in this list, the player has not accepted it yet.
      * @param uuid The player UUID to search
      */
-    public List<QuestStatus> getQuestStatus(UUID uuid) {
-        return PlayerQuestStatuses.getOrDefault(uuid, List.of());
+    public List<QuestStatus> getAllQuestStatuses(UUID uuid) {
+        return PlayerQuestStatuses.getOrDefault(uuid, new ArrayList<>());
     }
 
-    public boolean markQuestCompleted(UUID uuid, String questId) {
-        if (!ValidQuests.contains(questId)) {
-            ParallelUtils.log(Level.SEVERE, "Invalid Quest ID " + questId + " provided for quest completion!");
-            return false;
+    public void startQuest(UUID uuid, String questId, String initialStage) {
+        List<QuestStatus> statuses = getAllQuestStatuses(uuid);
+        if (statuses.isEmpty()) {
+            statuses.add(new QuestStatus(questId, initialStage));
+            PlayerQuestStatuses.put(uuid, statuses);
+            return;
         }
+        if (statuses.stream().anyMatch(x -> x.getQuestId().equals(questId))) {
+            ParallelUtils.log(Level.WARNING, "Tried to start already active quest " + questId + " for UUID " + uuid);
+            return;
+        }
+        statuses.add(new QuestStatus(questId, initialStage));
+    }
 
-        Optional<QuestStatus> status = getQuestStatus(uuid).stream().filter(x -> x.getQuestId().equals(questId)).findFirst();
+    public void setQuestStage(UUID uuid, String questId, String newStage) {
+        var status = getQuestStatus(uuid, questId);
         if (status.isEmpty()) {
-            return false;
+            ParallelUtils.log(Level.WARNING, "Tried to update status of quest " + questId + " for UUID " + uuid + " that has not accepted said quest!");
+            return;
         }
-
-        status.get().markCompleted();
-        return false;
+        status.get().setQuestStage(newStage);
     }
 
     /**
@@ -165,8 +173,8 @@ public class ParallelQuests extends ParallelModule {
                 ResultSet results = statement.executeQuery("select * from Quests where UUID = '" + uuid + "'");
                 while (results.next()) {
                     String questId = results.getString("QuestId");
-                    boolean completed = results.getBoolean("Completed");
-                    result.add(new QuestStatus(questId, completed));
+                    String questStage = results.getString("QuestStage");
+                    result.add(new QuestStatus(questId, questStage));
                 }
                 conn.commit();
                 statement.close();
@@ -182,34 +190,24 @@ public class ParallelQuests extends ParallelModule {
 
     /**
      * Asynchronously saves a player's quest data to the database.
-     * The player's data WILL be removed from the cache, see savePlayerQuestStatus to avoid this.
      * @param uuid The Player UUID to save
+     * @param removeFromCache If true, the data will also be removed from the local cache
      */
-    public void saveAndRemovePlayerQuestStatus(UUID uuid) {
-        savePlayerQuestStatus(uuid);
-        PlayerQuestStatuses.remove(uuid);
-    }
-
-    /**
-     * Asynchronously saves a player's quest data to the database.
-     * The player's data will NOT be removed from the cache, see saveAndRemovePlayerQuestStatus
-     * @param uuid The Player UUID to save
-     */
-    public void savePlayerQuestStatus(UUID uuid) {
+    public void savePlayerQuestStatus(UUID uuid, boolean removeFromCache) {
         Bukkit.getScheduler().runTaskAsynchronously(puPlugin, () -> {
-            List<QuestStatus> status = getQuestStatus(uuid);
+            List<QuestStatus> status = getAllQuestStatuses(uuid);
             try (Connection conn = puPlugin.getDbConn()) {
                 if (conn == null) throw new SQLException("Unable to establish connection!");
                 Statement statement = conn.createStatement();
                 statement.setQueryTimeout(10);
                 statement.execute("delete from Quests where UUID = '" + uuid + "'");
-                PreparedStatement prepared = conn.prepareStatement("insert into Quests (UUID, QuestId, Completed) values (?, ?, ?)");
+                PreparedStatement prepared = conn.prepareStatement("insert into Quests (UUID, QuestId, QuestStage) values (?, ?, ?)");
                 prepared.setQueryTimeout(30);
                 status.forEach(s -> {
                     try {
                         prepared.setString(1, uuid.toString());
                         prepared.setString(2, s.getQuestId());
-                        prepared.setBoolean(3, s.isCompleted());
+                        prepared.setString(3, s.getQuestStage());
                         prepared.addBatch();
                     }
                     catch (SQLException e){
@@ -222,6 +220,9 @@ public class ParallelQuests extends ParallelModule {
                 prepared.close();
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                if (removeFromCache)
+                    PlayerQuestStatuses.remove(uuid);
             }
         });
     }

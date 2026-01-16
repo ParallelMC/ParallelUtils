@@ -7,12 +7,15 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import parallelmc.parallelutils.ParallelUtils;
 import parallelmc.parallelutils.modules.parallelquests.ParallelQuests;
 import parallelmc.parallelutils.modules.parallelquests.QuestStatus;
+import parallelmc.parallelutils.modules.parallelquests.quests.Quest;
 import parallelmc.parallelutils.util.GUIInventory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 public class QuestTrackerInventory extends GUIInventory {
 
@@ -43,17 +46,20 @@ public class QuestTrackerInventory extends GUIInventory {
 
     @Override
     public void onOpen(Player player) {
-        List<QuestStatus> statuses = ParallelQuests.get().getQuestStatus(player.getUniqueId());
+        List<QuestStatus> statuses = ParallelQuests.get().getAllQuestStatuses(player.getUniqueId());
         int slot = 9;
         for (QuestStatus status : statuses) {
-            ItemStack entry;
-            // TODO: populate with quest info
-            if (status.isCompleted()) {
-                entry = new ItemStack(Material.YELLOW_CONCRETE);
+            Quest quest = ParallelQuests.get().getQuest(status.getQuestId());
+            if (quest == null) {
+                ParallelUtils.log(Level.SEVERE, "Got null Quest from Quest ID " + status.getQuestId() + " when opening quest tracker!");
+                continue;
             }
-            else {
-                entry = new ItemStack(Material.LIME_CONCRETE);
-            }
+
+            ItemStack entry = new ItemStack(status.isCompleted() ? Material.LIME_CONCRETE : Material.YELLOW_CONCRETE);
+            ItemMeta meta = entry.getItemMeta();
+            meta.displayName(Component.text(quest.getQuestName(), NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+            meta.lore(List.of(Component.text(quest.getQuestDescription(), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)));
+            entry.setItemMeta(meta);
 
             inventory.setItem(slot, entry);
             slot++;
