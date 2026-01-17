@@ -16,6 +16,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import parallelmc.parallelworlds.ParallelWorldsBootstrapper;
+import parallelmc.parallelworlds.registry.ParallelBlockRegistry;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,11 +28,14 @@ public class BlockPacketListener implements PacketListener {
 
     private final int firstCustomId;
 
-    private final int replace_state;
+    private final int defaultReplaceState;
+
+    private final ParallelBlockRegistry registry;
 
     public BlockPacketListener(int firstCustomId) {
         this.firstCustomId = firstCustomId;
-        this.replace_state = Block.BLOCK_STATE_REGISTRY.getId(Blocks.NOTE_BLOCK.defaultBlockState());;
+        this.defaultReplaceState = Block.BLOCK_STATE_REGISTRY.getId(Blocks.NOTE_BLOCK.defaultBlockState());;
+        this.registry = ParallelBlockRegistry.getInstance();
     }
 
     @Override
@@ -48,8 +52,13 @@ public class BlockPacketListener implements PacketListener {
                         for (int z = 0; z < 16; z++) {
                             int id = c.getBlockId(x, y, z);
                             if (id >= firstCustomId) {
-                                BlockState state = Block.BLOCK_STATE_REGISTRY.byId(id);
-                                Logger.getGlobal().log(Level.WARNING, state.toString());
+                                //BlockState state = Block.BLOCK_STATE_REGISTRY.byId(id);
+                                //Logger.getGlobal().log(Level.WARNING, state.toString());
+                                Integer replace_state = registry.getMappedState(id);
+                                if (replace_state == null) {
+                                    replace_state = defaultReplaceState;
+                                    Logger.getGlobal().log(Level.WARNING, "Could not find mapping for id" + id);
+                                }
 
                                 c.set(x, y, z, replace_state);
 
@@ -79,7 +88,14 @@ public class BlockPacketListener implements PacketListener {
         } else if (event.getPacketType() == PacketType.Play.Server.BLOCK_CHANGE) {
             WrapperPlayServerBlockChange packet = new WrapperPlayServerBlockChange(event);
 
-            if (packet.getBlockId() >= firstCustomId) {
+            int id = packet.getBlockId();
+            if (id >= firstCustomId) {
+                Integer replace_state = registry.getMappedState(id);
+                if (replace_state == null) {
+                    replace_state = defaultReplaceState;
+                    Logger.getGlobal().log(Level.WARNING, "Could not find mapping for id" + id);
+                }
+
                 packet.setBlockID(replace_state);
                 event.markForReEncode(true);
             }
@@ -88,7 +104,14 @@ public class BlockPacketListener implements PacketListener {
         } else if (event.getPacketType() == PacketType.Play.Server.BLOCK_ACTION) {
             WrapperPlayServerBlockAction packet = new WrapperPlayServerBlockAction(event);
 
-            if (packet.getBlockTypeId() >= firstCustomId) {
+            int id = packet.getBlockTypeId();
+            if (id >= firstCustomId) {
+                Integer replace_state = registry.getMappedState(id);
+                if (replace_state == null) {
+                    replace_state = defaultReplaceState;
+                    Logger.getGlobal().log(Level.WARNING, "Could not find mapping for id" + id);
+                }
+
                 packet.setBlockTypeId(replace_state);
                 event.markForReEncode(true);
             }

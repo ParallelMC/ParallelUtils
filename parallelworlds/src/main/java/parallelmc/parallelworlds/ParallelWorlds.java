@@ -4,13 +4,14 @@ import com.github.retrooper.packetevents.PacketEvents;
 import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelworlds.events.BlockPacketListener;
+import parallelmc.parallelworlds.registry.ParallelBlockRegistry;
 
 public final class ParallelWorlds extends JavaPlugin {
 
     @Override
     public void onLoad() {
 
-        PacketEvents.getAPI().getEventManager().registerListener(new BlockPacketListener(ParallelWorldsBootstrapper.getFirstCustomId()), PacketListenerPriority.HIGHEST);
+        PacketEvents.getAPI().getEventManager().registerListener(new BlockPacketListener(ParallelBlockRegistry.getFirstCustomId()), PacketListenerPriority.HIGHEST);
     }
 
     @Override
