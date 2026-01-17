@@ -8,3 +8,4 @@ pluginManagement {
 rootProject.name = "ParallelUtils"
 include 'api'
 include 'modules'
+include 'parallelworlds'

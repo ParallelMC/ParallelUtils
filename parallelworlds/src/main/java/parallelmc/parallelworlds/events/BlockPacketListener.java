@@ -8,10 +8,10 @@ import com.github.retrooper.packetevents.protocol.world.chunk.BaseChunk;
 import com.github.retrooper.packetevents.protocol.world.chunk.impl.v_1_18.Chunk_v1_18;
 import com.github.retrooper.packetevents.protocol.world.chunk.palette.DataPalette;
 import com.github.retrooper.packetevents.protocol.world.chunk.palette.ListPalette;
-import com.github.retrooper.packetevents.protocol.world.states.WrappedBlockState;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockAction;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerBlockChange;
 import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerChunkData;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerDeclareCommands;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -19,6 +19,8 @@ import parallelmc.parallelworlds.ParallelWorldsBootstrapper;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static parallelmc.parallelworlds.ReflectionHelper.getPrivateField;
 
 
 public class BlockPacketListener implements PacketListener {
@@ -53,10 +55,10 @@ public class BlockPacketListener implements PacketListener {
 
                                 Chunk_v1_18 chunkV118 = (Chunk_v1_18) c;
 
-                                DataPalette palette = ParallelWorldsBootstrapper.getPrivateField("chunkData", Chunk_v1_18.class, chunkV118, DataPalette.class);
+                                DataPalette palette = getPrivateField("chunkData", Chunk_v1_18.class, chunkV118, DataPalette.class);
                                 ListPalette lp = (ListPalette) palette.palette;
 
-                                int[] palatteData = ParallelWorldsBootstrapper.getPrivateField("data", ListPalette.class, lp, int[].class);
+                                int[] palatteData = getPrivateField("data", ListPalette.class, lp, int[].class);
 
                                 for (int i = 0; i< palatteData.length; i++) {
                                     if (palatteData[i] >= firstCustomId) {
@@ -90,7 +92,17 @@ public class BlockPacketListener implements PacketListener {
                 packet.setBlockTypeId(replace_state);
                 event.markForReEncode(true);
             }
+        } else if (event.getPacketType() == PacketType.Play.Server.DECLARE_COMMANDS) {
+            WrapperPlayServerDeclareCommands packet = new WrapperPlayServerDeclareCommands(event);
+
+            packet.getNodes();
         }
+//        } else if (event.getPacketType() != PacketType.Play.Server.ENTITY_HEAD_LOOK &&
+//                event.getPacketType() != PacketType.Play.Server.ENTITY_RELATIVE_MOVE &&
+//                event.getPacketType() != PacketType.Play.Server.ENTITY_RELATIVE_MOVE_AND_ROTATION &&
+//        event.getPacketType() != PacketType.Play.Server.ENTITY_VELOCITY){
+//            Logger.getGlobal().log(Level.WARNING, event.getPacketType().getName());
+//        }
     }
 
 

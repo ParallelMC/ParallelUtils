@@ -17,12 +17,14 @@ import net.minecraft.world.level.material.MapColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import parallelmc.parallelworlds.blocks.QuicksandBlock;
 import parallelmc.parallelworlds.blocks.TestBlock;
 
-import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static parallelmc.parallelworlds.ReflectionHelper.getPrivateField;
 
 public class ParallelWorldsBootstrapper implements PluginBootstrap {
 
@@ -44,10 +46,15 @@ public class ParallelWorldsBootstrapper implements PluginBootstrap {
             return;
         }
 
-        ResourceKey<Block> testBlockKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("parallelutils", "testblock"));
-        Block block = new TestBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(0.5f).sound(SoundType.AMETHYST).setId(testBlockKey));
 
-        registerBlock(blockRegistry, testBlockKey, block);
+        ResourceKey<Block> testBlockKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("parallelutils", "testblock"));
+        Block testBlock = new TestBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(0.5f).sound(SoundType.AMETHYST).setId(testBlockKey));
+        registerBlock(blockRegistry, testBlockKey, testBlock);
+
+        ResourceKey<Block> quicksandKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("parallelutils", "quicksand"));
+        Block quicksandBlock = new QuicksandBlock(BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(0.25F).sound(SoundType.SAND)
+                .dynamicShape().noOcclusion().isRedstoneConductor((blockState, blockGetter, blockPos) -> false).setId(quicksandKey));
+        registerBlock(blockRegistry, quicksandKey, quicksandBlock);
     }
 
     @Override
@@ -55,23 +62,7 @@ public class ParallelWorldsBootstrapper implements PluginBootstrap {
         return PluginBootstrap.super.createPlugin(context);
     }
 
-    @Nullable
-    public static <T, U> U getPrivateField(String fieldName, Class<T> clazz, T object, Class<U> retClazz) throws ClassCastException{
-        Field field;
 
-        try {
-            field = clazz.getDeclaredField(fieldName);
-
-            field.setAccessible(true);
-
-            Object o = field.get(object);
-
-            return (U) o;
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     // This is private since it can ONLY be run during bootstrap or things break real bad
     @Nullable
