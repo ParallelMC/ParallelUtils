@@ -114,7 +114,7 @@ public class ParallelBlockRegistry {
     }
 
     public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate, Component name) {
-        ItemStack stack = Items.DIRT.getDefaultInstance();
+        ItemStack stack = Items.BARRIER.getDefaultInstance();
 
         stack.applyComponentsAndValidate(
                 DataComponentPatch.builder()
