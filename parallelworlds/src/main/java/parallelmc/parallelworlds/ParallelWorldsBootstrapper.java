@@ -5,6 +5,7 @@ import io.papermc.paper.plugin.bootstrap.PluginBootstrap;
 import io.papermc.paper.plugin.bootstrap.PluginProviderContext;
 import net.minecraft.core.*;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.block.Block;
@@ -19,6 +20,7 @@ import parallelmc.parallelworlds.blocks.QuicksandBlock;
 import parallelmc.parallelworlds.blocks.TestBlock;
 import parallelmc.parallelworlds.registry.ParallelBlockRegistry;
 
+
 public class ParallelWorldsBootstrapper implements PluginBootstrap {
 
     @Override
@@ -28,13 +30,14 @@ public class ParallelWorldsBootstrapper implements PluginBootstrap {
 
         ResourceKey<Block> testBlockKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("parallelutils", "testblock"));
         Block testBlock = new TestBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(0.5f).sound(SoundType.AMETHYST).setId(testBlockKey));
-        registry.registerBlock(testBlockKey, testBlock, Blocks.NOTE_BLOCK.getStateDefinition().any().setValue(NoteBlock.INSTRUMENT, NoteBlockInstrument.BANJO).setValue(NoteBlock.NOTE, 0));
+        registry.registerBlock(testBlockKey, testBlock,
+                Blocks.NOTE_BLOCK.getStateDefinition().any().setValue(NoteBlock.INSTRUMENT, NoteBlockInstrument.BANJO).setValue(NoteBlock.NOTE, 0), Component.literal("Test Block"), 10001);
 
         ResourceKey<Block> quicksandKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("parallelutils", "quicksand"));
         Block quicksandBlock = new QuicksandBlock(BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(0.25F).sound(SoundType.SAND)
                 .dynamicShape().noOcclusion().isRedstoneConductor((blockState, blockGetter, blockPos) -> false).setId(quicksandKey));
-        registry.registerBlock(quicksandKey, quicksandBlock, Blocks.NOTE_BLOCK.getStateDefinition().any().setValue(NoteBlock.INSTRUMENT, NoteBlockInstrument.BANJO).setValue(NoteBlock.NOTE, 1));
-
+        registry.registerBlock(quicksandKey, quicksandBlock,
+                Blocks.NOTE_BLOCK.getStateDefinition().any().setValue(NoteBlock.INSTRUMENT, NoteBlockInstrument.BANJO).setValue(NoteBlock.NOTE, 1), Component.literal("Quicksand"), 10002);
 
         registry.freeze();
     }

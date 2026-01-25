@@ -34,7 +34,7 @@ public class BlockPacketListener implements PacketListener {
 
     public BlockPacketListener(int firstCustomId) {
         this.firstCustomId = firstCustomId;
-        this.defaultReplaceState = Block.BLOCK_STATE_REGISTRY.getId(Blocks.NOTE_BLOCK.defaultBlockState());;
+        this.defaultReplaceState = Block.BLOCK_STATE_REGISTRY.getId(Blocks.NOTE_BLOCK.defaultBlockState());
         this.registry = ParallelBlockRegistry.getInstance();
     }
 

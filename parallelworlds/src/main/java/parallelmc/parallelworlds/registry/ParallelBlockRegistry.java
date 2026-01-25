@@ -1,21 +1,24 @@
 package parallelmc.parallelworlds.registry;
 
 import net.minecraft.core.*;
+import net.minecraft.core.component.DataComponentPatch;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.NoteBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
+import net.minecraft.world.level.storage.loot.functions.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -33,9 +36,11 @@ public class ParallelBlockRegistry {
     // this can be converted into map of BlockType -> Queue<Integer> since we can choose values entirely server side
     private final HashMap<BlockState, Integer> availableStates;
 
+    private final HashMap<Integer, List<ItemStack>> dropMap;
+
     private boolean frozen = false;
     
-    private ParallelBlockRegistry() throws RuntimeException {
+    private ParallelBlockRegistry() throws RuntimeException, NoSuchMethodException {
         // This is a ridiculous hack to force internal blocks to register first
         Block dummy = Blocks.DIRT;
         Logger.getGlobal().log(Level.INFO, dummy.toString());
@@ -50,6 +55,7 @@ public class ParallelBlockRegistry {
 
         stateMap = new HashMap<>();
         availableStates = new HashMap<>();
+        dropMap = new HashMap<>();
 
         // TODO: Fill available states
         for (BlockState state : Blocks.NOTE_BLOCK.getStateDefinition().getPossibleStates()) {
@@ -69,7 +75,12 @@ public class ParallelBlockRegistry {
 
     public static ParallelBlockRegistry getInstance() {
         if (instance == null) {
-            instance = new ParallelBlockRegistry();
+            try {
+                instance = new ParallelBlockRegistry();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         return instance;
@@ -100,7 +111,18 @@ public class ParallelBlockRegistry {
         return null;
     }
 
-    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate) {
+    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate, Component name, float customModelData) {
+        ItemStack stack = Items.PAPER.getDefaultInstance();
+
+        stack.applyComponentsAndValidate(
+                DataComponentPatch.builder()
+                        .set(TypedDataComponent.createUnchecked(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(List.of(customModelData), List.of(), List.of(), List.of())))
+                        .set(TypedDataComponent.createUnchecked(DataComponents.ITEM_NAME, name)).build());
+
+        return registerBlock(key, block, targetBlockstate, List.of(stack));
+    }
+
+    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate, List<ItemStack> item) {
         if (frozen) return false;
 
         if (!availableStates.containsKey(targetBlockstate)) throw new IllegalStateException("Block state is already used or does not exist");
@@ -113,6 +135,7 @@ public class ParallelBlockRegistry {
             Integer stateId = availableStates.remove(targetBlockstate);
 
             stateMap.put(Block.BLOCK_STATE_REGISTRY.size(), stateId); // Map the new block state to an unused state
+            dropMap.put(Block.BLOCK_STATE_REGISTRY.size(), item);
 
             Block.BLOCK_STATE_REGISTRY.add(blockState);
 
@@ -129,5 +152,10 @@ public class ParallelBlockRegistry {
     @Nullable
     public Integer getMappedState(int state) {
         return stateMap.get(state);
+    }
+
+    @Nullable
+    public List<ItemStack> getDrops(int state) {
+        return dropMap.get(state);
     }
 }
