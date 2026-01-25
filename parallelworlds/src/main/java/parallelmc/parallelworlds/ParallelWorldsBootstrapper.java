@@ -28,16 +28,11 @@ public class ParallelWorldsBootstrapper implements PluginBootstrap {
 
         ParallelBlockRegistry registry = ParallelBlockRegistry.getInstance();
 
-        ResourceKey<Block> testBlockKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("parallelutils", "testblock"));
-        Block testBlock = new TestBlock(BlockBehaviour.Properties.of().mapColor(MapColor.STONE).strength(0.5f).sound(SoundType.AMETHYST).setId(testBlockKey));
-        registry.registerBlock(testBlockKey, testBlock,
-                Blocks.NOTE_BLOCK.getStateDefinition().any().setValue(NoteBlock.INSTRUMENT, NoteBlockInstrument.BANJO).setValue(NoteBlock.NOTE, 0), Component.literal("Test Block"), 10001);
-
         ResourceKey<Block> quicksandKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("parallelutils", "quicksand"));
         Block quicksandBlock = new QuicksandBlock(BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(0.25F).sound(SoundType.SAND)
                 .dynamicShape().noOcclusion().isRedstoneConductor((blockState, blockGetter, blockPos) -> false).setId(quicksandKey));
         registry.registerBlock(quicksandKey, quicksandBlock,
-                Blocks.NOTE_BLOCK.getStateDefinition().any().setValue(NoteBlock.INSTRUMENT, NoteBlockInstrument.BANJO).setValue(NoteBlock.NOTE, 1), Component.literal("Quicksand"), 10002);
+                Blocks.NOTE_BLOCK.getStateDefinition().any().setValue(NoteBlock.INSTRUMENT, NoteBlockInstrument.BANJO).setValue(NoteBlock.NOTE, 1), Component.literal("Quicksand"));
 
         registry.freeze();
     }

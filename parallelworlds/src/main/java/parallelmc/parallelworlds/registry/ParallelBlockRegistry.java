@@ -7,10 +7,10 @@ import net.minecraft.core.component.TypedDataComponent;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -37,6 +37,7 @@ public class ParallelBlockRegistry {
     private final HashMap<BlockState, Integer> availableStates;
 
     private final HashMap<Integer, List<ItemStack>> dropMap;
+    private final HashMap<Integer, BlockState> placeMap;
 
     private boolean frozen = false;
     
@@ -56,6 +57,7 @@ public class ParallelBlockRegistry {
         stateMap = new HashMap<>();
         availableStates = new HashMap<>();
         dropMap = new HashMap<>();
+        placeMap = new HashMap<>();
 
         // TODO: Fill available states
         for (BlockState state : Blocks.NOTE_BLOCK.getStateDefinition().getPossibleStates()) {
@@ -111,18 +113,18 @@ public class ParallelBlockRegistry {
         return null;
     }
 
-    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate, Component name, float customModelData) {
-        ItemStack stack = Items.PAPER.getDefaultInstance();
+    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate, Component name) {
+        ItemStack stack = Items.DIRT.getDefaultInstance();
 
         stack.applyComponentsAndValidate(
                 DataComponentPatch.builder()
-                        .set(TypedDataComponent.createUnchecked(DataComponents.CUSTOM_MODEL_DATA, new CustomModelData(List.of(customModelData), List.of(), List.of(), List.of())))
+                        .set(TypedDataComponent.createUnchecked(DataComponents.ITEM_MODEL, Identifier.fromNamespaceAndPath("minecraft", "sand")))
                         .set(TypedDataComponent.createUnchecked(DataComponents.ITEM_NAME, name)).build());
 
-        return registerBlock(key, block, targetBlockstate, List.of(stack));
+        return registerBlock(key, block, targetBlockstate, List.of(stack), stack);
     }
 
-    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate, List<ItemStack> item) {
+    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate, List<ItemStack> item, ItemStack placeBlock) {
         if (frozen) return false;
 
         if (!availableStates.containsKey(targetBlockstate)) throw new IllegalStateException("Block state is already used or does not exist");
@@ -136,6 +138,7 @@ public class ParallelBlockRegistry {
 
             stateMap.put(Block.BLOCK_STATE_REGISTRY.size(), stateId); // Map the new block state to an unused state
             dropMap.put(Block.BLOCK_STATE_REGISTRY.size(), item);
+            placeMap.put(ItemStack.hashItemAndComponents(placeBlock), blockState);
 
             Block.BLOCK_STATE_REGISTRY.add(blockState);
 
@@ -157,5 +160,10 @@ public class ParallelBlockRegistry {
     @Nullable
     public List<ItemStack> getDrops(int state) {
         return dropMap.get(state);
+    }
+
+    @Nullable
+    public BlockState getBlockState(@NotNull ItemStack item) {
+        return placeMap.get(ItemStack.hashItemAndComponents(item));
     }
 }
