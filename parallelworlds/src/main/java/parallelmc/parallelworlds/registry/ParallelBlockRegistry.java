@@ -118,7 +118,7 @@ public class ParallelBlockRegistry {
 
         stack.applyComponentsAndValidate(
                 DataComponentPatch.builder()
-                        .set(TypedDataComponent.createUnchecked(DataComponents.ITEM_MODEL, Identifier.fromNamespaceAndPath("minecraft", "sand")))
+                        .set(TypedDataComponent.createUnchecked(DataComponents.ITEM_MODEL, key.identifier()))
                         .set(TypedDataComponent.createUnchecked(DataComponents.ITEM_NAME, name)).build());
 
         return registerBlock(key, block, targetBlockstate, List.of(stack), stack);
