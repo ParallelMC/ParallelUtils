@@ -60,19 +60,21 @@ public class ParallelBlockRegistry {
         placeMap = new HashMap<>();
 
         // TODO: Fill available states
-        for (BlockState state : Blocks.NOTE_BLOCK.getStateDefinition().getPossibleStates()) {
-            if (state.equals(Blocks.NOTE_BLOCK.defaultBlockState())) continue; // This is the one actually used for rendering
-
-            addFullBlock(state);
-        }
+        addFullBlock(Blocks.NOTE_BLOCK);
+        addFullBlock(Blocks.SCULK_SENSOR);
 
     }
 
-    private void addFullBlock(BlockState state) {
+    private void addFullBlock(Block block) {
 
-        if (availableStates.containsKey(state)) throw new IllegalStateException("Cannot add state that already exists");
+        for (BlockState state : block.getStateDefinition().getPossibleStates()) {
+            if (state.equals(block.defaultBlockState())) continue; // This is the one actually used for rendering
 
-        availableStates.put(state, Block.BLOCK_STATE_REGISTRY.getId(state));
+            if (availableStates.containsKey(state)) throw new IllegalStateException("Cannot add state that already exists");
+
+            availableStates.put(state, Block.BLOCK_STATE_REGISTRY.getId(state));
+        }
+
     }
 
     public static ParallelBlockRegistry getInstance() {
