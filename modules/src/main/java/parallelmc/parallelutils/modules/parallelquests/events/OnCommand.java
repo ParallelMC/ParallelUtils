@@ -36,13 +36,14 @@ public class OnCommand implements Listener {
         else if (message.startsWith("/startdialogue")) {
             event.setCancelled(true);
             String[] split = event.getMessage().split(" ");
-            if (split.length != 2) return;
+            if (split.length != 3) return;
             Quest quest = ParallelQuests.get().getQuest(split[1]);
             if (quest == null) {
                 ParallelUtils.log(Level.WARNING, "Got null quest when attempting to start dialogue with quest ID " + split[1]);
                 return;
             }
-            quest.enter(player);
+            String npcName = split[2];
+            quest.enter(player, npcName);
         }
     }
 }

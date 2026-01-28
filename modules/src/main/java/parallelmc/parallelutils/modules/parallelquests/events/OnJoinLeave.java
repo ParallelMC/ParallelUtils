@@ -13,13 +13,13 @@ import java.sql.*;
 public class OnJoinLeave implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        ParallelQuests.get().loadPlayerQuestStatus(event.getPlayer().getUniqueId());
+        ParallelQuests.get().loadPlayerQuestStatus(event.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerLeave(PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        ParallelQuests.get().savePlayerQuestStatus(player.getUniqueId(), true);
+        ParallelQuests.get().savePlayerQuestStatus(player, true);
         ParallelQuests.getConversationManager().endConversation(player);
     }
 }

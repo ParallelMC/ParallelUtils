@@ -3,6 +3,7 @@ package parallelmc.parallelutils.modules.parallelquests.gui;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -46,7 +47,7 @@ public class QuestTrackerInventory extends GUIInventory {
 
     @Override
     public void onOpen(Player player) {
-        List<QuestStatus> statuses = ParallelQuests.get().getAllQuestStatuses(player.getUniqueId());
+        List<QuestStatus> statuses = ParallelQuests.get().getAllQuestStatuses(player);
         int slot = 9;
         for (QuestStatus status : statuses) {
             Quest quest = ParallelQuests.get().getQuest(status.getQuestId());
@@ -58,7 +59,20 @@ public class QuestTrackerInventory extends GUIInventory {
             ItemStack entry = new ItemStack(status.isCompleted() ? Material.LIME_CONCRETE : Material.YELLOW_CONCRETE);
             ItemMeta meta = entry.getItemMeta();
             meta.displayName(Component.text(quest.getQuestName(), NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
-            meta.lore(List.of(Component.text(quest.getQuestDescription(), NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false)));
+            ArrayList<Component> lore = new ArrayList<>();
+            for (String line : quest.getQuestDescription()) {
+                lore.add(MiniMessage.miniMessage().deserialize(line).decoration(TextDecoration.ITALIC, false));
+            }
+            lore.add(Component.empty());
+            lore.add(Component.text("Current Stage:", NamedTextColor.AQUA).decoration(TextDecoration.ITALIC, false));
+            if (status.isCompleted())
+                lore.add(Component.text("Completed!", NamedTextColor.GREEN).decoration(TextDecoration.ITALIC, false));
+            else {
+                for (String line : quest.getStageDescription(status.getQuestStage())) {
+                    lore.add(MiniMessage.miniMessage().deserialize(line).decoration(TextDecoration.ITALIC, false));
+                }
+            }
+            meta.lore(lore);
             entry.setItemMeta(meta);
 
             inventory.setItem(slot, entry);

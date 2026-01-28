@@ -28,7 +28,6 @@ public class DialogueBuilder {
         this.options.add(new DialogueOption(optionText, next.build()));
         return this;
     }
-
     public DialogueNode build() {
         return new DialogueNode(text, options, actions);
     }

@@ -1,9 +1,6 @@
 package parallelmc.parallelutils.modules.parallelquests.dialogue;
 
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MinecraftFont;
 
@@ -29,19 +26,17 @@ public class Conversation {
     }
 
     private void display(Player player) {
-        Component message = Component
-                .text(centerText(dialogue.getSpeaker()), NamedTextColor.YELLOW)
-                .appendNewline()
-                .append(Component.text(current.getText(), NamedTextColor.WHITE))
-                .appendNewline();
+        StringBuilder sb = new StringBuilder();
+        sb.append("<yellow>").append(centerText(dialogue.getSpeaker())).append("</yellow><br>")
+                .append(current.getText()).append("<br>");
+
         for (int i = 0; i < current.getOptions().size(); i++) {
             DialogueOption option = current.getOptions().get(i);
-            message = message.append(Component.text(" ".repeat(5) + option.getText(), NamedTextColor.AQUA)
-                    .clickEvent(ClickEvent.runCommand("/dialogueoption " + i))
-                    .hoverEvent(HoverEvent.showText(Component.text("Click to Select Option " + (i + 1), NamedTextColor.YELLOW)))
-                    ).appendNewline();
+            sb.append("<hover:show_text:'<yellow>Click to select option ").append(i + 1)
+                    .append("</yellow>'><click:run_command:dialogueoption ").append(i).append("><aqua>")
+                    .append(" ".repeat(5)).append(option.getText()).append("</aqua><br>");
         }
-        player.sendMessage(message);
+        player.sendMessage(MiniMessage.miniMessage().deserialize(sb.toString()));
     }
 
     public boolean isFinished() { return !current.hasNext(); }
