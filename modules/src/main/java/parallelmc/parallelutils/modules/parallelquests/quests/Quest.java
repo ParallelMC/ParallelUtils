@@ -52,7 +52,7 @@ public abstract class Quest {
 
     protected void completeQuest(Player player) {
         setQuestStage(player, "completed");
-        player.sendMessage(Component.text("Quest Completed: " + questName, NamedTextColor.GREEN));
+        player.sendMessage(Component.text("Quest Completed: " + questName, NamedTextColor.GREEN).appendNewline());
         player.playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "entity.player.levelup"), Sound.Source.MASTER, 1f, 1f));
     }
 

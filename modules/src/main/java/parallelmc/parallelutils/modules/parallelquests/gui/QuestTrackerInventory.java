@@ -24,7 +24,7 @@ public class QuestTrackerInventory extends GUIInventory {
     private static final int EXIT_INDEX = 49;
 
     public QuestTrackerInventory() {
-        super(54, Component.text("Quest Tracker", NamedTextColor.GOLD, TextDecoration.BOLD));
+        super(54, Component.text("Quest Tracker", NamedTextColor.DARK_AQUA, TextDecoration.BOLD));
 
         ItemStack map = new ItemStack(Material.SPYGLASS);
         ItemMeta meta = map.getItemMeta();

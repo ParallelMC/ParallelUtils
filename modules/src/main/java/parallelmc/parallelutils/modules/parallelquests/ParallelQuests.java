@@ -157,7 +157,7 @@ public class ParallelQuests extends ParallelModule {
             ParallelUtils.log(Level.SEVERE, "Tried to start-nonexistent quest: " + questId);
             return;
         }
-        player.sendMessage(Component.text("Quest Accepted: " + quest.getQuestName(), NamedTextColor.GOLD));
+        player.sendMessage(Component.text("Quest Accepted: " + quest.getQuestName(), NamedTextColor.GOLD).appendNewline());
         player.playSound(Sound.sound(Key.key(Key.MINECRAFT_NAMESPACE, "block.note_block.chime"), Sound.Source.MASTER, 1f, 1f));
         UUID uuid = player.getUniqueId();
         List<QuestStatus> statuses = getAllQuestStatuses(player);
