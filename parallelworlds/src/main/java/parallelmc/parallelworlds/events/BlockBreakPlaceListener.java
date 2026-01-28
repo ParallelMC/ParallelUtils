@@ -5,6 +5,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import org.bukkit.GameMode;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.bukkit.craftbukkit.inventory.CraftItemStack;
@@ -27,6 +28,7 @@ public class BlockBreakPlaceListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void handleBlockBreak(BlockBreakEvent event) {
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         CraftBlock cb = (CraftBlock)event.getBlock();
 
         BlockState blockState = cb.getNMS();

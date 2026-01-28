@@ -62,6 +62,7 @@ public class ParallelBlockRegistry {
         // TODO: Fill available states
         addFullBlock(Blocks.NOTE_BLOCK);
         addFullBlock(Blocks.SCULK_SENSOR);
+        addFullBlock(Blocks.CALIBRATED_SCULK_SENSOR);
 
     }
 
