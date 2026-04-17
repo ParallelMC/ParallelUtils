@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import org.bukkit.GameMode;
 import org.bukkit.block.data.BlockData;
@@ -14,9 +15,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import parallelmc.parallelworlds.ParallelBlockData;
 import parallelmc.parallelworlds.registry.ParallelBlockRegistry;
 
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BlockBreakPlaceListener implements Listener {
 
@@ -28,26 +32,32 @@ public class BlockBreakPlaceListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void handleBlockBreak(BlockBreakEvent event) {
-        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         CraftBlock cb = (CraftBlock)event.getBlock();
 
         BlockState blockState = cb.getNMS();
 
         int id = Block.getId(blockState);
 
-        List<ItemStack> drops = blockRegistry.getDrops(id);
+        ParallelBlockData blockData = blockRegistry.getBlockData(id);
 
-        if (drops != null) {
-            // This is a registered Parallel Block
-            event.setDropItems(false); // Stop normal drops
+        if (blockData == null) return;
 
-            ServerLevel level = cb.getCraftWorld().getHandle();
-            BlockPos pos = cb.getPosition();
+        event.setDropItems(false);
 
-            for (ItemStack item : drops) {
-                Block.popResource(level, pos, item);
-            }
+        ServerLevel level = cb.getCraftWorld().getHandle();
+        BlockPos pos = cb.getPosition();
+
+
+        if (event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+
+        // TODO: Need special cases for silk touch, etc.
+
+        List<ItemStack> drops = blockData.drops();
+
+        for (ItemStack item : drops) {
+            Block.popResource(level, pos, item);
         }
+
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

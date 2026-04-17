@@ -37,11 +37,13 @@ public class ParallelWorldsBootstrapper implements PluginBootstrap {
         register(registry, "polished_sandstone", Block::new,
                 BlockBehaviour.Properties.of().mapColor(MapColor.SAND).requiresCorrectToolForDrops().strength(0.8F).sound(SoundType.STONE),
                 Blocks.NOTE_BLOCK.getStateDefinition().any().setValue(NoteBlock.INSTRUMENT, NoteBlockInstrument.BANJO).setValue(NoteBlock.NOTE, 0),
+                Blocks.SANDSTONE.defaultBlockState(),
                 Component.literal("Polished Sandstone").setStyle(Style.EMPTY));
 
         register(registry, "quicksand", QuicksandBlock::new,
                 BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(0.25F).sound(SoundType.SAND).dynamicShape().noOcclusion().isRedstoneConductor((blockState, blockGetter, blockPos) -> false),
                 Blocks.NOTE_BLOCK.getStateDefinition().any().setValue(NoteBlock.INSTRUMENT, NoteBlockInstrument.BANJO).setValue(NoteBlock.NOTE, 1),
+                Blocks.SAND.defaultBlockState(),
                 Component.literal("Quicksand").setStyle(Style.EMPTY));
 
         registry.freeze();
@@ -52,10 +54,12 @@ public class ParallelWorldsBootstrapper implements PluginBootstrap {
         return PluginBootstrap.super.createPlugin(context);
     }
 
-    private static void register(ParallelBlockRegistry registry, String name, Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties properties, BlockState targetBlockstate, Component itemName) {
+    private static void register(ParallelBlockRegistry registry, String name,
+                                 Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties properties,
+                                 BlockState targetBlockstate, BlockState particleState, Component itemName) {
         ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("parallelutils", name));
         Block block = factory.apply(properties.setId(blockKey));
-        registry.registerBlock(blockKey, block, targetBlockstate, itemName);
+        registry.registerBlock(blockKey, block, targetBlockstate, particleState, itemName);
     }
 
 

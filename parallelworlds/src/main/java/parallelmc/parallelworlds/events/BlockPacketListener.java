@@ -14,6 +14,7 @@ import com.github.retrooper.packetevents.protocol.world.chunk.palette.MapPalette
 import com.github.retrooper.packetevents.protocol.world.chunk.palette.SingletonPalette;
 import com.github.retrooper.packetevents.util.Vector3i;
 import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerBlockPlacement;
+import com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientPlayerDigging;
 import com.github.retrooper.packetevents.wrapper.play.server.*;
 import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import net.minecraft.world.level.block.Block;
@@ -58,6 +59,7 @@ public class BlockPacketListener implements PacketListener {
     public void onPacketSend(PacketSendEvent event) {
 
         PacketTypeCommon type = event.getPacketType();
+
         
         if (type == PacketType.Play.Server.CHUNK_DATA || type == PacketType.Play.Server.MAP_CHUNK_BULK) {
 
@@ -201,13 +203,14 @@ public class BlockPacketListener implements PacketListener {
             WrapperPlayServerDeclareCommands packet = new WrapperPlayServerDeclareCommands(event);
 
             packet.getNodes();
+            
+        } else if (type != PacketType.Play.Server.ENTITY_HEAD_LOOK &&
+                type != PacketType.Play.Server.ENTITY_RELATIVE_MOVE &&
+                type != PacketType.Play.Server.ENTITY_RELATIVE_MOVE_AND_ROTATION &&
+        type != PacketType.Play.Server.ENTITY_VELOCITY &&
+        type != PacketType.Play.Server.ENTITY_POSITION_SYNC){
+            //Logger.getGlobal().log(Level.WARNING, type.getName());
         }
-//        } else if (type != PacketType.Play.Server.ENTITY_HEAD_LOOK &&
-//                type != PacketType.Play.Server.ENTITY_RELATIVE_MOVE &&
-//                type != PacketType.Play.Server.ENTITY_RELATIVE_MOVE_AND_ROTATION &&
-//        type != PacketType.Play.Server.ENTITY_VELOCITY){
-//            Logger.getGlobal().log(Level.WARNING, type.getName());
-//        }
     }
 
 

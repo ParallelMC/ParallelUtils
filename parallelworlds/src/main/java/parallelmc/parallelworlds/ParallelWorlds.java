@@ -19,6 +19,7 @@ public final class ParallelWorlds extends JavaPlugin {
         super.onEnable();
 
         getServer().getPluginManager().registerEvents(new BlockBreakPlaceListener(), this);
+
     }
 
 

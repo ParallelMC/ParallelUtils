@@ -4,6 +4,9 @@ import net.minecraft.core.*;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.component.TypedDataComponent;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -15,8 +18,12 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.functions.*;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.block.CraftBlock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import parallelmc.parallelworlds.ParallelBlockData;
+import parallelmc.parallelworlds.ReflectionHelper;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -36,8 +43,10 @@ public class ParallelBlockRegistry {
     // this can be converted into map of BlockType -> Queue<Integer> since we can choose values entirely server side
     private final HashMap<BlockState, Integer> availableStates;
 
-    private final HashMap<Integer, List<ItemStack>> dropMap;
+    private final HashMap<Integer, ParallelBlockData> blockDataMap;
     private final HashMap<Integer, BlockState> placeMap;
+    private int nextMaterialIndex = Material.values().length;
+    private final Map<String, Material> BY_NAME;
 
     private boolean frozen = false;
     
@@ -50,13 +59,15 @@ public class ParallelBlockRegistry {
 
         blockRegistry = getWritableRegistry(Registries.BLOCK);
 
+        BY_NAME = getPrivateField("BY_NAME", Material.class, null, Map.class);
+
         if (blockRegistry == null) {
             throw new RuntimeException("Cannot find block registry");
         }
 
         stateMap = new HashMap<>();
         availableStates = new HashMap<>();
-        dropMap = new HashMap<>();
+        blockDataMap = new HashMap<>();
         placeMap = new HashMap<>();
 
         // TODO: Fill available states
@@ -75,7 +86,6 @@ public class ParallelBlockRegistry {
 
             availableStates.put(state, Block.BLOCK_STATE_REGISTRY.getId(state));
         }
-
     }
 
     public static ParallelBlockRegistry getInstance() {
@@ -116,7 +126,7 @@ public class ParallelBlockRegistry {
         return null;
     }
 
-    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate, Component name) {
+    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate, BlockState particleState, Component name) {
         ItemStack stack = Items.BARRIER.getDefaultInstance();
 
         stack.applyComponentsAndValidate(
@@ -124,13 +134,25 @@ public class ParallelBlockRegistry {
                         .set(TypedDataComponent.createUnchecked(DataComponents.ITEM_MODEL, key.identifier()))
                         .set(TypedDataComponent.createUnchecked(DataComponents.ITEM_NAME, name)).build());
 
-        return registerBlock(key, block, targetBlockstate, List.of(stack), stack);
+        return registerBlock(key, block, targetBlockstate, List.of(stack), new BlockParticleOption(ParticleTypes.BLOCK, particleState),stack);
     }
 
-    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate, List<ItemStack> item, ItemStack placeBlock) {
+    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate, List<ItemStack> drops, ParticleOptions particle, ItemStack placeBlock) {
         if (frozen) return false;
 
         if (!availableStates.containsKey(targetBlockstate)) throw new IllegalStateException("Block state is already used or does not exist");
+
+        try {
+            Material newMat = ReflectionHelper.makeEnum(Material.class,
+                    key.identifier().getPath().toUpperCase(Locale.ROOT), nextMaterialIndex++, new Class[]{int.class}, -1);
+
+            BY_NAME.put(newMat.name(), newMat);
+
+        } catch (Throwable t) {
+            Logger.getGlobal().log(Level.SEVERE, "Unable to create new Material!");
+            t.printStackTrace();
+
+        }
 
         Holder.Reference<Block> registeredBlock = blockRegistry.register(key, block, RegistrationInfo.BUILT_IN);
 
@@ -140,7 +162,7 @@ public class ParallelBlockRegistry {
             Integer stateId = availableStates.remove(targetBlockstate);
 
             stateMap.put(Block.BLOCK_STATE_REGISTRY.size(), stateId); // Map the new block state to an unused state
-            dropMap.put(Block.BLOCK_STATE_REGISTRY.size(), item);
+            blockDataMap.put(Block.BLOCK_STATE_REGISTRY.size(), new ParallelBlockData(drops, particle));
             placeMap.put(ItemStack.hashItemAndComponents(placeBlock), blockState);
 
             Block.BLOCK_STATE_REGISTRY.add(blockState);
@@ -161,8 +183,8 @@ public class ParallelBlockRegistry {
     }
 
     @Nullable
-    public List<ItemStack> getDrops(int state) {
-        return dropMap.get(state);
+    public ParallelBlockData getBlockData(int state) {
+        return blockDataMap.get(state);
     }
 
     @Nullable
