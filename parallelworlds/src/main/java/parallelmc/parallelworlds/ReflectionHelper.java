@@ -30,6 +30,20 @@ public class ReflectionHelper {
         }
     }
 
+    public static <T> void setPrivateField(String fieldName, Class<T> clazz, T object, Object fieldVal) throws ClassCastException{
+        Field field;
+
+        try {
+            field = clazz.getDeclaredField(fieldName);
+
+            field.setAccessible(true);
+
+            field.set(object, fieldVal);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
     /*
     Jank Enum code from https://notes.highlysuspect.agency/blog/enum_reflection/
      */

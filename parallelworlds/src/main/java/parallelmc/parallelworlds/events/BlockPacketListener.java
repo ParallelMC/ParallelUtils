@@ -20,6 +20,7 @@ import io.github.retrooper.packetevents.util.SpigotConversionUtil;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import org.bukkit.Server;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import parallelmc.parallelworlds.ParallelWorldsBootstrapper;
 import parallelmc.parallelworlds.registry.ParallelBlockRegistry;
@@ -179,6 +180,29 @@ public class BlockPacketListener implements PacketListener {
             event.markForReEncode(true);
 
             //Logger.getGlobal().log(Level.WARNING, String.valueOf(packet.getBlockId()));
+        } else if (type == PacketType.Play.Server.MULTI_BLOCK_CHANGE) {
+            WrapperPlayServerMultiBlockChange packet = new WrapperPlayServerMultiBlockChange(event);
+
+            for (WrapperPlayServerMultiBlockChange.EncodedBlock block : packet.getBlocks()) {
+                int id = block.getBlockId();
+
+                Integer replace_state;
+                if (id >= firstCustomId) {
+                    replace_state = registry.getMappedState(id);
+                    if (replace_state == null) {
+                        replace_state = defaultReplaceState;
+                        Logger.getGlobal().log(Level.WARNING, "Could not find mapping for id" + id);
+                    }
+                } else if (id >= noteblockStart && id <= noteblockEnd) {
+                    replace_state = noteblockStart;
+                } else {
+                    continue;
+                }
+
+                block.setBlockId(replace_state);
+                event.markForReEncode(true);
+            }
+            
         } else if (type == PacketType.Play.Server.BLOCK_ACTION) {
             WrapperPlayServerBlockAction packet = new WrapperPlayServerBlockAction(event);
 
@@ -192,6 +216,7 @@ public class BlockPacketListener implements PacketListener {
                 return;
             }
 
+
             if (replace_state == null) {
                 replace_state = defaultReplaceState;
                 Logger.getGlobal().log(Level.WARNING, "Could not find mapping for id" + id);
@@ -203,7 +228,7 @@ public class BlockPacketListener implements PacketListener {
             WrapperPlayServerDeclareCommands packet = new WrapperPlayServerDeclareCommands(event);
 
             packet.getNodes();
-            
+
         } else if (type != PacketType.Play.Server.ENTITY_HEAD_LOOK &&
                 type != PacketType.Play.Server.ENTITY_RELATIVE_MOVE &&
                 type != PacketType.Play.Server.ENTITY_RELATIVE_MOVE_AND_ROTATION &&

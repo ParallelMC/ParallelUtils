@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.loot.functions.*;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.craftbukkit.block.CraftBlock;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static parallelmc.parallelworlds.ReflectionHelper.getPrivateField;
+import static parallelmc.parallelworlds.ReflectionHelper.setPrivateField;
 
 public class ParallelBlockRegistry {
     
@@ -145,6 +147,8 @@ public class ParallelBlockRegistry {
         try {
             Material newMat = ReflectionHelper.makeEnum(Material.class,
                     key.identifier().getPath().toUpperCase(Locale.ROOT), nextMaterialIndex++, new Class[]{int.class}, -1);
+
+            setPrivateField("key", Material.class, newMat, new NamespacedKey(key.identifier().getNamespace(), key.identifier().getPath()));
 
             BY_NAME.put(newMat.name(), newMat);
 
