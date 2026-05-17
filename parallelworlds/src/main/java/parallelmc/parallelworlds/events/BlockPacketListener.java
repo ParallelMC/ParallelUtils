@@ -202,7 +202,7 @@ public class BlockPacketListener implements PacketListener {
                 block.setBlockId(replace_state);
                 event.markForReEncode(true);
             }
-            
+
         } else if (type == PacketType.Play.Server.BLOCK_ACTION) {
             WrapperPlayServerBlockAction packet = new WrapperPlayServerBlockAction(event);
 
