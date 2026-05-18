@@ -41,9 +41,8 @@ public class ParallelBlockRegistry {
     private final WritableRegistry<Block> blockRegistry;
     private final HashMap<Integer, Integer> stateMap;
 
-    // NOTE: If the resource pack can be automatically generated and served
-    // this can be converted into map of BlockType -> Queue<Integer> since we can choose values entirely server side
-    private final HashMap<BlockState, Integer> availableStates;
+    // By type of custom block, a queue of each available ID for the register functions to consume
+    private final HashMap<BlockType, Queue<Integer>> availableStates;
 
     private final HashMap<Integer, ParallelBlockData> blockDataMap;
     private final HashMap<Integer, BlockState> placeMap;
@@ -73,20 +72,32 @@ public class ParallelBlockRegistry {
         placeMap = new HashMap<>();
 
         // TODO: Fill available states
-        addFullBlock(Blocks.NOTE_BLOCK);
-        addFullBlock(Blocks.SCULK_SENSOR);
-        addFullBlock(Blocks.CALIBRATED_SCULK_SENSOR);
+        addFullBlock(Blocks.NOTE_BLOCK, BlockType.FULL_BLOCK);
+        addFullBlock(Blocks.SCULK_SENSOR, BlockType.TRANSPARENT_SLAB);
+        addFullBlock(Blocks.CALIBRATED_SCULK_SENSOR, BlockType.TRANSPARENT_SLAB);
 
     }
 
-    private void addFullBlock(Block block) {
+    private void addFullBlock(Block block, BlockType type) {
+
+        Queue<Integer> queue;
+
+        if (!availableStates.containsKey(type)) {
+            // Create new queue if it doesn't exist, and set its initial size for a slight efficiency boost
+            queue = new ArrayDeque<>(block.getStateDefinition().getPossibleStates().size());
+            availableStates.put(type, queue);
+        } else {
+            queue = availableStates.get(type);
+        }
 
         for (BlockState state : block.getStateDefinition().getPossibleStates()) {
             if (state.equals(block.defaultBlockState())) continue; // This is the one actually used for rendering
 
-            if (availableStates.containsKey(state)) throw new IllegalStateException("Cannot add state that already exists");
+            int stateId = Block.BLOCK_STATE_REGISTRY.getId(state);
 
-            availableStates.put(state, Block.BLOCK_STATE_REGISTRY.getId(state));
+            if (queue.contains(stateId)) throw new IllegalStateException("Cannot add state that already exists");
+
+            queue.add(stateId);
         }
     }
 
@@ -117,7 +128,8 @@ public class ParallelBlockRegistry {
         MappedRegistry<@NotNull WritableRegistry<?>> writable_registry = (MappedRegistry<WritableRegistry<?>>) getPrivateField("WRITABLE_REGISTRY", BuiltInRegistries.class, null, WritableRegistry.class);
 
         // Search registry byValue (since byKey doesn't work for whatever reason...)
-        Map<WritableRegistry<?>, Holder.Reference<@NotNull WritableRegistry<?>>> byValue = getPrivateField("byValue", MappedRegistry.class, writable_registry, Map.class);
+        Map<WritableRegistry<?>, Holder.Reference<@NotNull WritableRegistry<?>>> byValue =
+                getPrivateField("byValue", MappedRegistry.class, writable_registry, Map.class);
 
         for (WritableRegistry i : byValue.keySet()) {
             if (String.valueOf(i.key().identifier()).equals(String.valueOf(registryKey.identifier()))) {
@@ -128,7 +140,8 @@ public class ParallelBlockRegistry {
         return null;
     }
 
-    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate, BlockState particleState, Component name) {
+    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockType targetType,
+                                 BlockState particleState, Component name) {
         ItemStack stack = Items.BARRIER.getDefaultInstance();
 
         stack.applyComponentsAndValidate(
@@ -136,13 +149,21 @@ public class ParallelBlockRegistry {
                         .set(TypedDataComponent.createUnchecked(DataComponents.ITEM_MODEL, key.identifier()))
                         .set(TypedDataComponent.createUnchecked(DataComponents.ITEM_NAME, name)).build());
 
-        return registerBlock(key, block, targetBlockstate, List.of(stack), new BlockParticleOption(ParticleTypes.BLOCK, particleState),stack);
+        return registerBlock(key, block, targetType, List.of(stack), new BlockParticleOption(ParticleTypes.BLOCK, particleState),stack);
     }
 
-    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockState targetBlockstate, List<ItemStack> drops, ParticleOptions particle, ItemStack placeBlock) {
+    public boolean registerBlock(ResourceKey<@NotNull Block> key, Block block, BlockType targetType, List<ItemStack> drops, ParticleOptions particle, ItemStack placeBlock) {
         if (frozen) return false;
 
-        if (!availableStates.containsKey(targetBlockstate)) throw new IllegalStateException("Block state is already used or does not exist");
+        Queue<Integer> blockQueue = availableStates.get(targetType);
+        if (blockQueue == null) {
+            throw new IllegalStateException("No BlockState of requested type is registered");
+        }
+
+        Integer nextState = blockQueue.poll();
+        if (nextState == null) {
+            throw new IllegalStateException("No remaining BlockState of requested type");
+        }
 
         try {
             Material newMat = ReflectionHelper.makeEnum(Material.class,
@@ -155,7 +176,7 @@ public class ParallelBlockRegistry {
         } catch (Throwable t) {
             Logger.getGlobal().log(Level.SEVERE, "Unable to create new Material!");
             t.printStackTrace();
-
+            throw new IllegalStateException();
         }
 
         Holder.Reference<Block> registeredBlock = blockRegistry.register(key, block, RegistrationInfo.BUILT_IN);
@@ -163,9 +184,7 @@ public class ParallelBlockRegistry {
         // TODO: This technically doesn't work since several blockstates are mapped to a single one, but it's easier for now
         for (BlockState blockState : registeredBlock.value().getStateDefinition().getPossibleStates()) {
 
-            Integer stateId = availableStates.remove(targetBlockstate);
-
-            stateMap.put(Block.BLOCK_STATE_REGISTRY.size(), stateId); // Map the new block state to an unused state
+            stateMap.put(Block.BLOCK_STATE_REGISTRY.size(), nextState); // Map the new block state to an unused state
             blockDataMap.put(Block.BLOCK_STATE_REGISTRY.size(), new ParallelBlockData(drops, particle));
             placeMap.put(ItemStack.hashItemAndComponents(placeBlock), blockState);
 
@@ -194,5 +213,14 @@ public class ParallelBlockRegistry {
     @Nullable
     public BlockState getBlockState(@NotNull ItemStack item) {
         return placeMap.get(ItemStack.hashItemAndComponents(item));
+    }
+
+    public enum BlockType {
+        FULL_BLOCK,
+        TRANSPARENT_BLOCK,
+        TRANSPARENT_BLOCK_WATERLOGGED,
+        BIOME_TRANSPARENT_BLOCK,
+        TRANSPARENT_SLAB,
+
     }
 }
