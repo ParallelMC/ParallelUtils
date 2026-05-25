@@ -19,6 +19,7 @@ import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.material.MapColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import parallelmc.parallelworlds.blocks.QuicksandBlock;
+import parallelmc.parallelworlds.blocks.TestBlock;
 import parallelmc.parallelworlds.registry.ParallelBlockRegistry;
 
 import java.util.function.Function;
@@ -34,17 +35,14 @@ public class ParallelWorldsBootstrapper implements PluginBootstrap {
         if (registry == null) throw new RuntimeException("ParallelBlockRegistry is null!");
 
         register(registry, "polished_sandstone", Block::new,
-                BlockBehaviour.Properties.of().mapColor(MapColor.SAND).requiresCorrectToolForDrops().strength(0.8F)
-                        .sound(SoundType.STONE),
-                ParallelBlockRegistry.BlockType.FULL_BLOCK,
+                BlockBehaviour.Properties.of().mapColor(MapColor.SAND).requiresCorrectToolForDrops().strength(0.8F).sound(SoundType.STONE),
+                Blocks.NOTE_BLOCK.getStateDefinition().any().setValue(NoteBlock.INSTRUMENT, NoteBlockInstrument.BANJO).setValue(NoteBlock.NOTE, 0),
                 Blocks.SANDSTONE.defaultBlockState(),
                 Component.literal("Polished Sandstone").setStyle(Style.EMPTY));
 
         register(registry, "quicksand", QuicksandBlock::new,
-                BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(0.25F)
-                        .sound(SoundType.SAND).dynamicShape().noOcclusion()
-                        .isRedstoneConductor((blockState, blockGetter, blockPos) -> false),
-                ParallelBlockRegistry.BlockType.FULL_BLOCK,
+                BlockBehaviour.Properties.of().mapColor(MapColor.SAND).strength(0.25F).sound(SoundType.SAND).dynamicShape().noOcclusion().isRedstoneConductor((blockState, blockGetter, blockPos) -> false),
+                Blocks.NOTE_BLOCK.getStateDefinition().any().setValue(NoteBlock.INSTRUMENT, NoteBlockInstrument.BANJO).setValue(NoteBlock.NOTE, 1),
                 Blocks.SAND.defaultBlockState(),
                 Component.literal("Quicksand").setStyle(Style.EMPTY));
 
@@ -58,10 +56,10 @@ public class ParallelWorldsBootstrapper implements PluginBootstrap {
 
     private static void register(ParallelBlockRegistry registry, String name,
                                  Function<BlockBehaviour.Properties, Block> factory, BlockBehaviour.Properties properties,
-                                 ParallelBlockRegistry.BlockType targetType, BlockState particleState, Component itemName) {
+                                 BlockState targetBlockstate, BlockState particleState, Component itemName) {
         ResourceKey<Block> blockKey = ResourceKey.create(Registries.BLOCK, Identifier.fromNamespaceAndPath("parallelutils", name));
         Block block = factory.apply(properties.setId(blockKey));
-        registry.registerBlock(blockKey, block, targetType, particleState, itemName);
+        registry.registerBlock(blockKey, block, targetBlockstate, particleState, itemName);
     }
 
 
